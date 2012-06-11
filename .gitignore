@@ -1,0 +1,8 @@
+.settings
+.cproject
+.project
+bin
+lib
+Debug
+Release
+
