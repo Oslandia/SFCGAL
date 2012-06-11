@@ -47,6 +47,9 @@ namespace io {
 		void write( const TriangulatedSurface & g );
 
 		void write( const PolyhedralSurface & g );
+		void writeInner( const PolyhedralSurface & g );
+
+		void write( const Solid & g );
 
 	private:
 		std::ostream & _s ;

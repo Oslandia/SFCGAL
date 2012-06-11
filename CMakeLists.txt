@@ -85,7 +85,8 @@ endif()
 
 
 #-- build the library
-OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
+#note : not available on windows without export/import
+OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" ON )
 add_subdirectory( src )
 
 

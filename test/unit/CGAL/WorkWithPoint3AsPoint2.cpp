@@ -2,20 +2,9 @@
 
 #include <cmath>
 
-#include <CGAL/Cartesian.h>
-#include <CGAL/Point_2.h>
-#include <CGAL/Point_3.h>
-#include <CGAL/Segment_2.h>
-#include <CGAL/Segment_3.h>
+#include <SFCGAL/Kernel.h>
 
-
-typedef CGAL::Cartesian< double > K ;
-
-typedef K::Point_2           Point_2 ;
-typedef K::Point_3           Point_3 ;
-typedef CGAL::Segment_2< K > Segment_2 ;
-typedef CGAL::Segment_3< K > Segment_3 ;
-
+using namespace SFCGAL ;
 
 // always after CGAL
 using namespace boost::unit_test ;

@@ -1,5 +1,6 @@
 #include <SFCGAL/Geometry.h>
 
+#include <SFCGAL/GeometryVisitor.h>
 #include <SFCGAL/io/WktWriter.h>
 
 namespace SFCGAL {
@@ -25,6 +26,14 @@ std::string Geometry::asText( const int & numDecimals ) const
 	io::WktWriter writer( oss );
 	writer.write( *this );
 	return oss.str();
+}
+
+///
+///
+///
+void Geometry::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
 }
 
 

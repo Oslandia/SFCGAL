@@ -93,6 +93,12 @@ namespace io {
 		 */
 		void                     readInnerPolyhedralSurface( PolyhedralSurface & g ) ;
 
+
+		/**
+		 * Read Solid content from wkt
+		 */
+		void                     readInnerSolid( Solid & g ) ;
+
 		/**
 		 * Read coordinate from WKT
 		 * @todo ZM management

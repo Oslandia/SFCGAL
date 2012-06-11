@@ -53,6 +53,9 @@ void WktWriter::write( const Geometry& g )
 	case TYPE_POLYHEDRALSURFACE:
 		write( g.as< PolyhedralSurface >() );
 		return ;
+	case TYPE_SOLID:
+		write( g.as< Solid >() );
+		return ;
 	}
 
 	std::ostringstream oss;
@@ -295,7 +298,14 @@ void WktWriter::write( const PolyhedralSurface & g )
 		_s << " EMPTY" ;
 		return ;
 	}
+	writeInner( g );
+}
 
+///
+///
+///
+void WktWriter::writeInner( const PolyhedralSurface & g )
+{
 	_s << "(" ; //begin POLYHEDRALSURFACE
 	for ( size_t i = 0; i < g.numPolygons(); i++ ){
 		if ( i != 0 ){
@@ -305,6 +315,26 @@ void WktWriter::write( const PolyhedralSurface & g )
 	}
 	_s << ")" ; //end POLYHEDRALSURFACE
 }
+
+///
+///
+///
+void WktWriter::write( const Solid & g )
+{
+	_s << "SOLID" ;
+	if ( g.isEmpty() ){
+		_s << " EMPTY" ;
+		return ;
+	}
+	_s << "(" ; //begin SOLID
+	writeInner(g.exteriorShell());
+	for ( size_t i = 0; i < g.numInteriorShells(); i++ ){
+		_s << ",";
+		writeInner( g.interiorShellN(i) );
+	}
+	_s << ")" ; //end SOLID
+}
+
 
 
 

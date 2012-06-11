@@ -18,7 +18,7 @@ WktReader::WktReader( std::istream & s ):
 
 }
 
-///
+///Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.
 ///
 ///
 Geometry*    WktReader::readGeometry()
@@ -40,6 +40,7 @@ Geometry*    WktReader::readGeometry()
 		readInnerLineString( *g );
 		return g.release() ;
 	}
+	case TYPE_TRIANGLE:
 	case TYPE_POLYGON:
 	{
 		std::auto_ptr< Polygon > g( new Polygon() );
@@ -82,6 +83,12 @@ Geometry*    WktReader::readGeometry()
 		readInnerPolyhedralSurface( *g );
 		return g.release() ;
 	}
+	case TYPE_SOLID :
+	{
+		std::auto_ptr< Solid > g( new Solid() );
+		readInnerSolid( *g );
+		return g.release() ;
+	}
 	}
 	BOOST_THROW_EXCEPTION( Exception("unexpected geometry") );
 }
@@ -112,6 +119,9 @@ GeometryType WktReader::readGeometryType()
 		return TYPE_TIN ;
 	}else if ( _reader.match("POLYHEDRALSURFACE") ){
 		return TYPE_POLYHEDRALSURFACE ;
+	}else if ( _reader.match("SOLID") ){
+		//not official
+		return TYPE_SOLID ;
 	}
 
 	std::ostringstream oss;
@@ -391,7 +401,7 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface & g )
 			g.triangles().push_back( Triangle() );
 			readInnerTriangle( g.triangles().back() );
 
-			//break if not followed by another points
+			//break if not Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.followed by another points
 			if ( ! _reader.match(',') ){
 				break ;
 			}
@@ -440,6 +450,40 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface & g )
 	}
 }
 
+
+///
+///
+///
+void WktReader::readInnerSolid( Solid & g )
+{
+	if ( _reader.match("EMPTY") ){
+		return ;
+	}
+
+	//solid begin
+	if ( ! _reader.match('(') ){
+		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+	}
+
+	std::vector< PolyhedralSurface > shells ;
+	while( ! _reader.eof() ){
+		PolyhedralSurface shell ;
+		readInnerPolyhedralSurface( shell );
+		shells.push_back( shell );
+
+		//break if not followed by another points
+		if ( ! _reader.match(',') ){
+			break ;
+		}
+	}
+
+	//solid end
+	if ( ! _reader.match(')') ){
+		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+	}
+
+	g = Solid( shells );
+}
 
 ///
 ///

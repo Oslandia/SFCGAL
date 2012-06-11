@@ -15,4 +15,6 @@
 
 #include <SFCGAL/PolyhedralSurface.h>
 
+#include <SFCGAL/Solid.h>
+
 #endif

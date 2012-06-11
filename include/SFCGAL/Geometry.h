@@ -9,6 +9,8 @@
 
 namespace SFCGAL {
 
+	class GeometryVisitor ;
+
     class Point ;
     class LineString ;
     class Polygon ;
@@ -22,6 +24,9 @@ namespace SFCGAL {
     class TriangulatedSurface ;
 
     class PolyhedralSurface ;
+
+    //not SFA, appears in GML/CityGML
+    class Solid ;
 }
 
 namespace SFCGAL {
@@ -52,7 +57,8 @@ namespace SFCGAL {
        TYPE_TIN                 = 16,
 
        //-- not official codes
-       TYPE_TRIANGLE            = 100
+       TYPE_TRIANGLE            = 100, //17 in Wikipedia???
+       TYPE_SOLID               = 101
     } GeometryType ;
 
 
@@ -176,6 +182,17 @@ namespace SFCGAL {
               return *static_cast< Derived * >( this );
        }
 
+
+       /**
+        * [visitor]
+        * @todo dispatch using virtual mecanism instead of switch in visit(Geometry&)
+        */
+       virtual void accept( GeometryVisitor & visitor ) ;
+       /**
+        * [visitor]
+        * @todo implement in order to avoid const_cast everywhere
+        */
+       //void accept( ConstGeometryVisitor & visitor ) const ;
 
     protected:
        Geometry();
