@@ -2,6 +2,10 @@
 set( SFCGAL_TEST_DIRECTORY "${CMAKE_SOURCE_DIR}/test" )
 configure_file( ${CMAKE_SOURCE_DIR}/test/test_config.h.cmake ${CMAKE_SOURCE_DIR}/test/test_config.h )
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+  add_definitions( "-frounding-math" )
+endif(CMAKE_COMPILER_IS_GNUCXX)
+
 #-- build unit tests
 file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES unit/*.cpp )
 add_executable( test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
