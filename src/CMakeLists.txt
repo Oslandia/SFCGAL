@@ -21,5 +21,7 @@ else()
 	)
 endif()
 
+install( TARGETS SFCGAL DESTINATION lib )
+
 
 

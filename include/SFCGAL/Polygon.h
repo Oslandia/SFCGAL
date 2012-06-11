@@ -90,7 +90,12 @@ namespace SFCGAL {
 			return _rings[n+1];
 		}
 
-
+		/**
+		 * Rings (both interior and exterior) accessors
+		 * @todo expose only the exterior subset, through iterators ?
+		 */
+		const std::vector< LineString > & rings() const { return _rings; }
+		std::vector< LineString > &       rings() { return _rings; }
 	private:
 		/**
 		 * rings forming the polygon (size() >= 1)
