@@ -1,4 +1,5 @@
 #include <SFCGAL/LineString.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -91,7 +92,6 @@ int LineString::dimension() const
 
 ///
 ///
-///
 int   LineString::coordinateDimension() const
 {
 	return isEmpty() ? 0 : _points[0].coordinateDimension() ;
@@ -114,6 +114,23 @@ bool  LineString::is3D() const
 }
 
 
+
+
+///
+///
+///
+void LineString::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void LineString::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 
 }//SFCGAL

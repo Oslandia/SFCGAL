@@ -69,6 +69,14 @@ namespace SFCGAL {
 		{
 			return _vertices[ i % 3 ];
 		}
+
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
 		/**
 		 * point forming the triangle

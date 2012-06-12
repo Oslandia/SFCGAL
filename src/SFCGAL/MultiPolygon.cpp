@@ -1,4 +1,5 @@
 #include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -69,6 +70,21 @@ bool           MultiPolygon::isAllowed( Geometry const& g )
 	return g.geometryTypeId() == TYPE_POLYGON ;
 }
 
+///
+///
+///
+void MultiPolygon::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void MultiPolygon::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 }//SFCGAL
 

@@ -1,5 +1,5 @@
 #include <SFCGAL/PolyhedralSurface.h>
-
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -112,7 +112,21 @@ bool  PolyhedralSurface::is3D() const
 	}
 }
 
+///
+///
+///
+void PolyhedralSurface::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
 
+///
+///
+///
+void PolyhedralSurface::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 }//SFCGAL
 
 

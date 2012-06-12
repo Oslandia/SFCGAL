@@ -5,4 +5,7 @@ bin
 lib
 Debug
 Release
+triangulation2.obj
+polygon_triangulation2.obj
+
 

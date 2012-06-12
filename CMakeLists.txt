@@ -17,10 +17,16 @@ if( NOT ${Boost_USE_AUTO_LINK} )
 	add_definitions( "-DBOOST_ALL_NO_LIB" )
 endif()
 
-find_package( Boost COMPONENTS unit_test_framework thread REQUIRED )
+option( Boost_USE_AUTO_LINK "boost use dynamic libraries" OFF )
 if( ${Boost_USE_STATIC_LIBS} )
+	message( STATUS "Boost_USE_STATIC_LIBS=ON" )
 	add_definitions( "-DBOOST_THREAD_USE_LIB" )
+else()
+	message( STATUS "Boost_USE_STATIC_LIBS=OFF" )
+	add_definitions( "-DBOOST_TEST_DYN_LINK" )
 endif()
+
+find_package( Boost COMPONENTS unit_test_framework thread REQUIRED )
 
 
 #-- GMP (facultative)  -------------------------------------
@@ -28,7 +34,7 @@ find_package( GMP )
 if( ${GMP_FOUND} )
 	message( STATUS "GMP_INCLUDE_DIRS = ${GMP_INCLUDE_DIRS}" )
 	message( STATUS "GMP_LIBRARIES = ${GMP_LIBRARIES}" )
-	set( EPLU_WITH_GMP ON )
+	set( SFCGAL_WITH_GMP ON )
 endif()
 
 
@@ -70,7 +76,7 @@ link_directories(
 	${GMP_LIBRARY_DIRS}	
 )
 
-add_definitions( "-DBOOST_TEST_DYN_LINK" )
+
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -92,6 +98,9 @@ add_subdirectory( src )
 
 #-- build test (todo only if boost use dyn link)
 add_subdirectory( test )
+
+#-- build examples
+add_subdirectory( example )
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)

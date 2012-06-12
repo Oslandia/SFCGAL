@@ -89,6 +89,13 @@ namespace SFCGAL {
 		bool operator == (const Point & other ) const ;
 		bool operator != (const Point &p ) const ;
 
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
 	private:
 		/**
 		 * Represents the coordinates of the point (resizable)

@@ -1,7 +1,7 @@
 #include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/GeometryVisitor.h>
 
-#include <boost/exception/all.hpp>
-#include <exception>
+#include <SFCGAL/Exception.h>
 
 
 
@@ -148,6 +148,26 @@ void    GeometryCollection::assign( const GeometryCollection & other )
 		_geometries.push_back( other.geometryN(i).clone() );
 	}
 }
+
+
+///
+///
+///
+void GeometryCollection::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void GeometryCollection::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
+
+
+
 
 }//SFCGAL
 

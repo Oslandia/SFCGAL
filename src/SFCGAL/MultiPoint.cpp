@@ -1,4 +1,6 @@
 #include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/GeometryVisitor.h>
+
 
 namespace SFCGAL {
 
@@ -69,6 +71,23 @@ bool           MultiPoint::isAllowed( Geometry const& g )
 	return g.geometryTypeId() == TYPE_POINT ;
 }
 
+
+
+///
+///
+///
+void MultiPoint::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void MultiPoint::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 }//SFCGAL
 

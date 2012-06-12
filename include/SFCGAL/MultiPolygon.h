@@ -41,6 +41,13 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual GeometryType   geometryTypeId() const ;
 
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
 	protected:
 		//-- SFCGAL::GeometryCollection
 		virtual bool           isAllowed( Geometry const& g ) ;

@@ -28,13 +28,6 @@ std::string Geometry::asText( const int & numDecimals ) const
 	return oss.str();
 }
 
-///
-///
-///
-void Geometry::accept( GeometryVisitor & visitor )
-{
-	return visitor.visit(*this);
-}
 
 
 ///

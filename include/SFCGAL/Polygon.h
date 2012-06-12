@@ -91,11 +91,40 @@ namespace SFCGAL {
 		}
 
 		/**
+		 * Returns the number of rings
+		 */
+		inline size_t  numRings() const {
+			return _rings.size() ;
+		}
+		/**
+		 * Returns the n-th ring, 0 is exteriorRing
+		 * @warning not standard, avoid conditionnal to access rings
+		 */
+		inline const LineString &    ringN( const size_t & n ) const {
+			return _rings[n];
+		}
+		/**
+		 * Returns the n-th ring, 0 is exteriorRing
+		 * @warning not standard, avoid conditionnal to access rings
+		 */
+		inline LineString &          ringN( const size_t & n ) {
+			return _rings[n];
+		}
+
+		/**
 		 * Rings (both interior and exterior) accessors
 		 * @todo expose only the exterior subset, through iterators ?
 		 */
 		const std::vector< LineString > & rings() const { return _rings; }
 		std::vector< LineString > &       rings() { return _rings; }
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
 	private:
 		/**
 		 * rings forming the polygon (size() >= 1)

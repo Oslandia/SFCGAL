@@ -95,6 +95,14 @@ namespace SFCGAL {
 
 		const std::vector< Point > & points() const { return _points; }
 		std::vector< Point > &       points() { return _points; }
+
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
 		std::vector< Point > _points ;
 	};

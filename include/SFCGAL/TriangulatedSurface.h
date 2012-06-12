@@ -81,6 +81,14 @@ namespace SFCGAL {
 
 		const std::vector< Triangle > & triangles() const { return _triangles; }
 		std::vector< Triangle > &       triangles() { return _triangles; }
+
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
 		std::vector< Triangle > _triangles ;
 	};

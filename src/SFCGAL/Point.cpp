@@ -1,4 +1,5 @@
 #include <SFCGAL/Point.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -144,7 +145,21 @@ bool Point::operator != (const Point &p ) const
 }
 
 
+///
+///
+///
+void Point::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
 
+///
+///
+///
+void Point::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 
 

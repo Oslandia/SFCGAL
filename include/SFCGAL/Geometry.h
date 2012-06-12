@@ -9,8 +9,6 @@
 
 namespace SFCGAL {
 
-	class GeometryVisitor ;
-
     class Point ;
     class LineString ;
     class Polygon ;
@@ -27,6 +25,9 @@ namespace SFCGAL {
 
     //not SFA, appears in GML/CityGML
     class Solid ;
+
+    class GeometryVisitor ;
+    class ConstGeometryVisitor ;
 }
 
 namespace SFCGAL {
@@ -184,15 +185,13 @@ namespace SFCGAL {
 
 
        /**
-        * [visitor]
-        * @todo dispatch using virtual mecanism instead of switch in visit(Geometry&)
+        * [visitor]dispatch visitor
         */
-       virtual void accept( GeometryVisitor & visitor ) ;
+       virtual void accept( GeometryVisitor & visitor ) = 0 ;
        /**
-        * [visitor]
-        * @todo implement in order to avoid const_cast everywhere
+        * [visitor]dispatch visitor
         */
-       //void accept( ConstGeometryVisitor & visitor ) const ;
+       virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
     protected:
        Geometry();
