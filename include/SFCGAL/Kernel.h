@@ -37,6 +37,15 @@ namespace SFCGAL {
 	typedef Kernel::Point_3           Point_3 ;
 
 	/**
+	 * Defines the Triangle_2 in the default Kernel
+	 */
+	typedef Kernel::Triangle_2        Triangle_2 ;
+	/**
+	 * Defines the Triangle_3 in the default Kernel
+	 */
+	typedef Kernel::Triangle_3        Triangle_3 ;
+
+	/**
 	 * Defines a Segment_2 in the default Kernel
 	 */
 	typedef CGAL::Segment_2< Kernel > Segment_2 ;
