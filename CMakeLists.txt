@@ -45,7 +45,7 @@ if( ${GMP_FOUND} )
 	if( ${MPFR_FOUND} )
 		message( STATUS "MPFR_INCLUDE_DIRS = ${MPFR_INCLUDE_DIRS}" )
 		message( STATUS "MPFR_LIBRARIES = ${MPFR_LIBRARIES}" )
-		set( EPLU_WITH_MPFR ON )
+		set( SFCGAL_WITH_MPFR ON )
 	endif()
 endif()
 
@@ -89,6 +89,8 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
 endif()
 
+#-- configure the library
+configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
 
 #-- build the library
 #note : not available on windows without export/import

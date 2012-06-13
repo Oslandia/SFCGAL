@@ -17,18 +17,20 @@
 option( GMP_ENABLE_CXX "enable cxx library" OFF )
 
 find_path(GMP_INCLUDE_DIRS gmp.h
-    HINTS $ENV{GMP_DIR}/include ${GMP_DIR}/include
-    PATH_SUFFIXES gmp
+    HINTS $ENV{GMP_DIR} ${GMP_DIR} ${GMP_INCLUDE_DIRS}
+    PATH_SUFFIXES include
 )
 
 find_library(GMP_LIBRARY NAMES gmp gmp-10 
-	HINTS $ENV{GMP_DIR}/lib ${GMP_DIR}/lib
+	HINTS $ENV{GMP_DIR} ${GMP_DIR}
+	PATH_SUFFIXES lib
 )
 set( GMP_LIBRARIES ${GMP_LIBRARY} )
 
 if( ${GMP_ENABLE_CXX} )
 	find_library(GMP_CXX_LIBRARY NAMES gmpxx gmpxx-4
-		HINTS $ENV{GMP_DIR}/lib ${GMP_DIR}/lib 
+		HINTS $ENV{GMP_DIR} ${GMP_DIR} 
+		PATH_SUFFIXES lib
 	)
 	set( GMP_LIBRARIES "${GMP_CXX_LIBRARY};${GMP_LIBRARIES}" )
 endif()
