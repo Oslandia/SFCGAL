@@ -65,19 +65,19 @@ namespace SFCGAL {
 
 		//--- accessors
 
-		inline const double& x() const { return _coordinates[0] ; }
-		inline double & x() { return _coordinates[0] ; }
+		inline const double& x() const { BOOST_ASSERT(_coordinates.size() >= 1); return _coordinates[0] ; }
+		inline double & x() { BOOST_ASSERT(_coordinates.size() >= 1); _isEmpty = false; return _coordinates[0] ; }
 
-		inline const double& y() const { return _coordinates[1] ; }
-		inline double & y() { return _coordinates[1] ; }
+		inline const double& y() const { BOOST_ASSERT(_coordinates.size() >= 2); return _coordinates[1] ; }
+		inline double & y() { BOOST_ASSERT(_coordinates.size() >= 2); _isEmpty = false; return _coordinates[1] ; }
 
-		inline const double& z() const { return _coordinates[2] ; }
-		inline double & z() { return _coordinates[2] ; }
+		inline const double& z() const { BOOST_ASSERT(_coordinates.size() >= 3); return _coordinates[2] ; }
+		inline double & z() { BOOST_ASSERT(_coordinates.size() >= 3); _isEmpty = false; return _coordinates[2] ; }
 
 		/**
 		 * @warning may change
 		 */
-		inline Coordinate &       coordinates() { return _coordinates; }
+		inline Coordinate &       coordinates() { _isEmpty = false; return _coordinates; }
 		/**
 		 * @warning may change
 		 */
@@ -101,6 +101,9 @@ namespace SFCGAL {
 		 * Represents the coordinates of the point (resizable)
 		 */
 		Coordinate _coordinates ;
+
+		bool _is3D;
+		bool _isEmpty;
 	};
 
 

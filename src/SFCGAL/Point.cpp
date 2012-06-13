@@ -7,26 +7,29 @@ namespace SFCGAL {
 ///
 ///
 Point::Point():
-	_coordinates()
+	_coordinates(3), _is3D(false), _isEmpty(true)
 {
-
+	_coordinates[0] = 0.0;
+	_coordinates[1] = 0.0;
+	_coordinates[2] = 0.0;
 }
 
 ///
 ///
 ///
 Point::Point( const double & x, const double & y ):
-	_coordinates(2)
+	_coordinates(3), _is3D(false), _isEmpty(false)
 {
 	_coordinates[0] = x ;
 	_coordinates[1] = y ;
+	_coordinates[2] = 0.0;
 }
 
 ///
 ///
 ///
 Point::Point( const double & x, const double & y, const double & z ):
-	_coordinates(3)
+	_coordinates(3), _is3D(true), _isEmpty(false)
 {
 	_coordinates[0] = x ;
 	_coordinates[1] = y ;
@@ -37,7 +40,7 @@ Point::Point( const double & x, const double & y, const double & z ):
 ///
 ///
 Point::Point( const Point & other ):
-	_coordinates(other._coordinates)
+	_coordinates(other._coordinates), _is3D(other._is3D), _isEmpty(other._isEmpty)
 {
 
 }
@@ -48,6 +51,8 @@ Point::Point( const Point & other ):
 Point& Point::operator = ( const Point & other )
 {
 	_coordinates = other._coordinates ;
+	_is3D = other._is3D;
+	_isEmpty = other._isEmpty;
 	return *this ;
 }
 
@@ -106,7 +111,7 @@ int Point::coordinateDimension() const
 ///
 bool Point::isEmpty() const
 {
-	return _coordinates.empty() ;
+	return _isEmpty;
 }
 
 ///
@@ -114,7 +119,7 @@ bool Point::isEmpty() const
 ///
 bool Point::is3D() const
 {
-	return _coordinates.size() > 2 ;
+	return _is3D;
 }
 
 

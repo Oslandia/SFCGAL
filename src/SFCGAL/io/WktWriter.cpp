@@ -67,9 +67,10 @@ void WktWriter::write( const Geometry& g )
 ///
 ///
 ///
-void WktWriter::write( const Coordinate & g )
+void WktWriter::write( const Coordinate & g, bool is3D )
 {
-	for ( size_t i = 0; i < g.size(); i++ ){
+	size_t s = is3D ? 3 : 2;
+	for ( size_t i = 0; i < s; i++ ){
 		if ( i != 0 )
 			_s << " ";
 		_s << g[i] ;
@@ -96,7 +97,7 @@ void WktWriter::write( const Point & g )
 void WktWriter::writeInner( const Point & g )
 {
 	_s << "(";
-	write( g.coordinates() );
+	write( g.coordinates(), g.is3D() );
 	_s << ")";
 }
 
@@ -123,7 +124,7 @@ void WktWriter::writeInner( const LineString & g )
 		if ( i != 0 )
 			_s << ",";
 
-		write( g.pointN(i).coordinates() );
+		write( g.pointN(i).coordinates(), g.pointN(i).is3D() );
 	}
 	_s << ")";
 }
@@ -256,11 +257,11 @@ void WktWriter::writeInner( const Triangle & g )
 {
 	_s << "(";
 	_s << "(";
-	for ( size_t i = 0; i < 4; i++ ){
+	for ( size_t i = 0; i < 3; i++ ){
 		if ( i != 0 ){
 			_s << "," ;
 		}
-		write( g.vertex(i).coordinates() );
+		write( g.vertex(i).coordinates(), g.vertex(i).is3D() );
 	}
 	_s << ")";
 	_s << ")";
