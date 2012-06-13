@@ -3,8 +3,10 @@
 
 #include <boost/assert.hpp>
 
+#include <SFCGAL/numeric.h>
+
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/Coordinate.h>
+
 
 namespace SFCGAL {
 
@@ -27,13 +29,9 @@ namespace SFCGAL {
 		 */
 		Point() ;
 		/**
-		 * XY constructor
+		 * XY[Z] constructor
 		 */
-		Point( const double & x, const double & y ) ;
-		/**
-		 * XYZ constructor
-		 */
-		Point( const double & x, const double & y, const double & z ) ;
+		Point( const double & x, const double & y, const double & z = NaN() ) ;
 		/**
 		 * copy constructor
 		 */
@@ -65,29 +63,29 @@ namespace SFCGAL {
 
 		//--- accessors
 
-		inline const double& x() const { BOOST_ASSERT(_coordinates.size() >= 1); return _coordinates[0] ; }
-		inline double & x() { BOOST_ASSERT(_coordinates.size() >= 1); _isEmpty = false; return _coordinates[0] ; }
+		inline const double& x() const { return _x ; }
+		inline double & x() { return _x ; }
 
-		inline const double& y() const { BOOST_ASSERT(_coordinates.size() >= 2); return _coordinates[1] ; }
-		inline double & y() { BOOST_ASSERT(_coordinates.size() >= 2); _isEmpty = false; return _coordinates[1] ; }
+		inline const double& y() const { return _y ; }
+		inline double & y() { return _y ; }
 
-		inline const double& z() const { BOOST_ASSERT(_coordinates.size() >= 3); return _coordinates[2] ; }
-		inline double & z() { BOOST_ASSERT(_coordinates.size() >= 3); _isEmpty = false; return _coordinates[2] ; }
+		inline const double& z() const { return _z ; }
+		inline double & z() { return _z ; }
+
 
 		/**
-		 * @warning may change
+		 * compare two points
 		 */
-		inline Coordinate &       coordinates() { _isEmpty = false; return _coordinates; }
+		bool operator < ( const Point & other ) const ;
+
 		/**
-		 * @warning may change
+		 * compare with an other point
 		 */
-		inline const Coordinate & coordinates() const { return _coordinates; }
-
-
-		//--- comparators
-
-		bool operator == (const Point & other ) const ;
-		bool operator != (const Point &p ) const ;
+		bool operator == ( const Point & other ) const ;
+		/**
+		 * compare with an other point
+		 */
+		bool operator != ( const Point & other ) const ;
 
 		//-- visitors
 
@@ -97,13 +95,9 @@ namespace SFCGAL {
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
 	private:
-		/**
-		 * Represents the coordinates of the point (resizable)
-		 */
-		Coordinate _coordinates ;
-
-		bool _is3D;
-		bool _isEmpty;
+		double _x ;
+		double _y ;
+		double _z ;
 	};
 
 
