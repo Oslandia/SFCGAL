@@ -87,8 +87,37 @@ namespace SFCGAL {
 			_shells.push_back( shell );
 		}
 
+		/**
+		 * Returns the number of shells
+		 */
+		inline size_t  numShells() const {
+			return _shells.size() ;
+		}
+		/**
+		 * Returns the n-th shell, 0 is exteriorShell
+		 * @warning not standard, avoid conditionnal to access rings
+		 */
+		inline const PolyhedralSurface &  shellN( const size_t & n ) const {
+			return _shells[n];
+		}
+		/**
+		 * Returns the n-th shell, 0 is exteriorShell
+		 * @warning not standard, avoid conditionnal to access rings
+		 */
+		inline PolyhedralSurface &        shellN( const size_t & n ) {
+			return _shells[n];
+		}
+
+
 		const std::vector< PolyhedralSurface > & shells() const { return _shells; }
 		std::vector< PolyhedralSurface > &       shells() { return _shells; }
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
 		std::vector< PolyhedralSurface > _shells ;
 	};

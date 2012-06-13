@@ -69,6 +69,14 @@ namespace SFCGAL {
 		 */
 		void                      addGeometry( Geometry const& geometry ) ;
 
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
 	private:
 		std::vector< Geometry * > _geometries ;
 

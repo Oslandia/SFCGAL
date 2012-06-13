@@ -7,7 +7,6 @@ namespace SFCGAL {
 
 	/**
 	 * GeometryVisitor
-	 * @todo remove switch an move implementation to virtual void Geometry::accept( GeometryVisitor & visitor)
 	 */
 	class GeometryVisitor {
 	public:
@@ -53,6 +52,52 @@ namespace SFCGAL {
 
 	};
 
+
+	/**
+	 * Visitor for const geometries
+	 */
+	class ConstGeometryVisitor {
+	public:
+		virtual ~ConstGeometryVisitor() ;
+
+		/**
+		 * apply visitor
+		 */
+		virtual void visit( const Geometry & g ) ;
+
+		virtual void visit( const Point & g ) = 0 ;
+		virtual void visit( const LineString & g ) = 0 ;
+		virtual void visit( const Polygon & g ) = 0 ;
+		virtual void visit( const Triangle & g ) = 0 ;
+		virtual void visit( const Solid & g ) = 0 ;
+
+		/**
+		 * invoke visit(Point) for each point
+		 */
+		virtual void visit( const MultiPoint & g ) ;
+		/**
+		 * invoke visit(LineString) for each lineString
+		 */
+		virtual void visit( const MultiLineString & g ) ;
+		/**
+		 * invoke visit(Polygon) for each polygon
+		 */
+		virtual void visit( const MultiPolygon & g ) ;
+
+		/**
+		 * invoke g.accept(geometry) for each sub geometry
+		 */
+		virtual void visit( const GeometryCollection & g ) ;
+
+		/**
+		 * invoke g.accept(polygon) for each polygon
+		 */
+		virtual void visit( const PolyhedralSurface & g ) ;
+		/**
+		 * invoke g.accept(triangle) for each triangle
+		 */
+		virtual void visit( const TriangulatedSurface & g ) ;
+	};
 
 
 }//SFCGAL

@@ -78,6 +78,13 @@ namespace SFCGAL {
 
 		const std::vector< Polygon > & polygons() const { return _polygons; }
 		std::vector< Polygon > &       polygons() { return _polygons; }
+
+		//-- visitors
+
+		//-- SFCGAL::Geometry
+		virtual void accept( GeometryVisitor & visitor ) ;
+		//-- SFCGAL::Geometry
+		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
 		std::vector< Polygon > _polygons ;
 	};

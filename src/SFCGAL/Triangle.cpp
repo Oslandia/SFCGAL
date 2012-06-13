@@ -1,5 +1,5 @@
 #include <SFCGAL/Triangle.h>
-
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -109,6 +109,22 @@ bool  Triangle::is3D() const
 	return _vertices[0].is3D() ;
 }
 
+
+///
+///
+///
+void Triangle::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void Triangle::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 
 

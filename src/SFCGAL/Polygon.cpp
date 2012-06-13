@@ -1,4 +1,5 @@
 #include <SFCGAL/Polygon.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -109,7 +110,21 @@ bool   Polygon:: is3D() const
 	return exteriorRing().is3D() ;
 }
 
+///
+///
+///
+void Polygon::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
 
+///
+///
+///
+void Polygon::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 
 }//SFCGAL

@@ -7,6 +7,8 @@
 #include <CGAL/Segment_2.h>
 #include <CGAL/Segment_3.h>
 
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
 
 
 namespace SFCGAL {
@@ -43,7 +45,16 @@ namespace SFCGAL {
 	 */
 	typedef CGAL::Segment_3< Kernel > Segment_3 ;
 
-}
+	/**
+	 * A polygon defined by an exterior ring
+	 */
+	typedef CGAL::Polygon_2< Kernel >            Polygon_2 ;
+	/**
+	 * A polygon defined by an exterior ring and interior rings
+	 */
+	typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
+}//SFCGAL
+
 
 
 #endif

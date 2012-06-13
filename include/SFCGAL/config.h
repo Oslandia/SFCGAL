@@ -6,7 +6,6 @@
 
 namespace SFCGAL {
 
-	typedef CGAL::
 
 }
 

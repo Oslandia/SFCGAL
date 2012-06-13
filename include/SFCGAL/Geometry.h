@@ -5,11 +5,8 @@
 #include <string>
 #include <sstream>
 
-#include <SFCGAL/Coordinate.h>
 
 namespace SFCGAL {
-
-	class GeometryVisitor ;
 
     class Point ;
     class LineString ;
@@ -27,6 +24,9 @@ namespace SFCGAL {
 
     //not SFA, appears in GML/CityGML
     class Solid ;
+
+    class GeometryVisitor ;
+    class ConstGeometryVisitor ;
 }
 
 namespace SFCGAL {
@@ -115,11 +115,14 @@ namespace SFCGAL {
         * [OGC/SFA]test if geometry is empty
         */
        virtual bool         isEmpty() const = 0 ;
+
        /**
         * [OGC/SFA]test if geometry is 3d
         * @warning suppose no mix of 2D/3D coordinates
         */
        virtual bool         is3D() const = 0 ;
+
+
        /**
         * [OGC/SFA]Indicate if the geometry is simple (~no self-intersections)
         */
@@ -184,15 +187,13 @@ namespace SFCGAL {
 
 
        /**
-        * [visitor]
-        * @todo dispatch using virtual mecanism instead of switch in visit(Geometry&)
+        * [visitor]dispatch visitor
         */
-       virtual void accept( GeometryVisitor & visitor ) ;
+       virtual void accept( GeometryVisitor & visitor ) = 0 ;
        /**
-        * [visitor]
-        * @todo implement in order to avoid const_cast everywhere
+        * [visitor]dispatch visitor
         */
-       //void accept( ConstGeometryVisitor & visitor ) const ;
+       virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
     protected:
        Geometry();

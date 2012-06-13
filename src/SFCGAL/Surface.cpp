@@ -1,4 +1,5 @@
 #include <SFCGAL/Surface.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 

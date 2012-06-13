@@ -1,4 +1,5 @@
 #include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -106,7 +107,21 @@ bool  Solid::is3D() const
 	return exteriorShell().is3D();
 }
 
+///
+///
+///
+void Solid::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
 
+///
+///
+///
+void Solid::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 }//SFCGAL
 

@@ -1,5 +1,5 @@
 #include <SFCGAL/TriangulatedSurface.h>
-
+#include <SFCGAL/GeometryVisitor.h>
 
 namespace SFCGAL {
 
@@ -108,6 +108,21 @@ bool TriangulatedSurface::is3D() const
 	return ! _triangles.empty() && _triangles.front().is3D() ;
 }
 
+///
+///
+///
+void TriangulatedSurface::accept( GeometryVisitor & visitor )
+{
+	return visitor.visit(*this);
+}
+
+///
+///
+///
+void TriangulatedSurface::accept( ConstGeometryVisitor & visitor ) const
+{
+	return visitor.visit(*this);
+}
 
 
 }//SFCGAL

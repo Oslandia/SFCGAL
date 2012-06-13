@@ -1,6 +1,6 @@
 #include <SFCGAL/GeometryVisitor.h>
 #include <SFCGAL/all.h>
-#include <SFCGAL/Exception.h>
+//#include <SFCGAL/Exception.h>
 
 
 
@@ -19,32 +19,7 @@ GeometryVisitor::~GeometryVisitor()
 ///
 void GeometryVisitor::visit( Geometry & g )
 {
-	switch ( g.geometryTypeId() ){
-	case TYPE_POINT:
-		return visit( g.as< Point >() );
-	case TYPE_LINESTRING:
-		return visit( g.as< LineString >() );
-	case TYPE_POLYGON:
-		return visit( g.as< Polygon >() );
-	case TYPE_MULTIPOINT:
-		return visit( g.as< MultiPoint >() );
-	case TYPE_MULTILINESTRING:
-		return visit( g.as< MultiLineString >() );
-	case TYPE_MULTIPOLYGON:
-		return visit( g.as< MultiPolygon >() );
-	case TYPE_GEOMETRYCOLLECTION:
-		return visit( g.as< GeometryCollection >() );
-	case TYPE_POLYHEDRALSURFACE:
-		return visit( g.as< PolyhedralSurface >() );
-	case TYPE_TIN:
-		return visit( g.as< TriangulatedSurface >() );
-	case TYPE_TRIANGLE:
-		return visit( g.as< Triangle >() );
-	case TYPE_SOLID:
-		return visit( g.as< Solid >() );
-	}
-
-	BOOST_THROW_EXCEPTION( Exception("!!! missing switch case in visitor dispatching !!!") );
+	g.accept(*this);
 }
 
 ///
@@ -107,6 +82,89 @@ void GeometryVisitor::visit( TriangulatedSurface & g )
 		visit( g.triangleN(i) );
 	}
 }
+
+
+//---------------- ConstGeometryVisitor
+
+
+
+///
+///
+///
+ConstGeometryVisitor::~ConstGeometryVisitor()
+{
+
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const Geometry & g )
+{
+	g.accept(*this);
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const MultiPoint & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.geometryN(i).as< Point >() );
+	}
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const MultiLineString & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.geometryN(i).as< LineString >() );
+	}
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const MultiPolygon & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.geometryN(i).as< Polygon >() );
+	}
+}
+
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const GeometryCollection & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.geometryN(i) );
+	}
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const PolyhedralSurface & g )
+{
+	for ( size_t i = 0; i < g.numPolygons(); i++ ){
+		visit( g.polygonN(i) );
+	}
+}
+
+///
+///
+///
+void ConstGeometryVisitor::visit( const TriangulatedSurface & g )
+{
+	for ( size_t i = 0; i < g.numTriangles(); i++ ){
+		visit( g.triangleN(i) );
+	}
+}
+
 
 
 
