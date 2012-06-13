@@ -95,6 +95,8 @@ int main( int argc, char* argv[] ){
 		Point_3 b( 3.0, 4.0, 5.0 );
 		std::cout << "a : " << a << std::endl ;
 		std::cout << "b : " << b << std::endl ;
+
+		std::cout << "a < b : " << ( a < b ) << std::endl;
 	}
 	std::cout << "--- Segment_3 ----" << std::endl;
 	{

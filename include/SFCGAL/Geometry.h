@@ -5,7 +5,6 @@
 #include <string>
 #include <sstream>
 
-#include <SFCGAL/Coordinate.h>
 
 namespace SFCGAL {
 
@@ -116,11 +115,14 @@ namespace SFCGAL {
         * [OGC/SFA]test if geometry is empty
         */
        virtual bool         isEmpty() const = 0 ;
+
        /**
         * [OGC/SFA]test if geometry is 3d
         * @warning suppose no mix of 2D/3D coordinates
         */
        virtual bool         is3D() const = 0 ;
+
+
        /**
         * [OGC/SFA]Indicate if the geometry is simple (~no self-intersections)
         */

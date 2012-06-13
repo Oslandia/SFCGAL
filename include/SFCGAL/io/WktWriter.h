@@ -23,7 +23,7 @@ namespace io {
 		void write( const Geometry & g ) ;
 
 	protected:
-		void write( const Coordinate & g );
+		void writeCoordinate( const Point& g );
 
 		void write( const Point & g ) ;
 		void writeInner( const Point & g ) ;
