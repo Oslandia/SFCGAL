@@ -128,6 +128,8 @@ void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface 
 		triangulate( g.as< Polygon >(), triangulatedSurface ) ;
 	}else if ( g.is< MultiPolygon >() ){
 		triangulate( g.as< MultiPolygon >(), triangulatedSurface ) ;
+	}else if ( g.is< PolyhedralSurface >() ){
+		triangulate( g.as< PolyhedralSurface >(), triangulatedSurface ) ;
 	}else{
 		BOOST_THROW_EXCEPTION(
 			Exception(
@@ -229,6 +231,15 @@ void triangulate( const MultiPolygon & multiPolygon, TriangulatedSurface & trian
 	}
 }
 
+///
+///
+///
+void triangulate( const PolyhedralSurface & poly, TriangulatedSurface & triangulatedSurface )
+{
+	for ( size_t i = 0; i < poly.numPolygons(); i++ ){
+		triangulate( poly.polygonN(i), triangulatedSurface );
+	}	
+}
 
 
 }//algorithm
