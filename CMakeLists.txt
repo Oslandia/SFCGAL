@@ -102,7 +102,10 @@ add_subdirectory( src )
 add_subdirectory( test )
 
 #-- build examples
-add_subdirectory( example )
+option( SFCGAL_BUILD_EXAMPLE "build examples" OFF )
+if( ${SFCGAL_BUILD_EXAMPLE} )
+	add_subdirectory( example )
+endif()
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)
