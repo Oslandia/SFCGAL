@@ -1,25 +1,24 @@
 #ifndef _SFCGAL_ALGORITHM_TRIANGULATE_H_
 #define _SFCGAL_ALGORITHM_TRIANGULATE_H_
 
-namespace SFCGAL {
-	class Polygon ;
-	class MultiPolygon ;
-	class TriangulatedSurface ;
-}
+#include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * Convert a 2D/3D polygon to a TriangulatedSurface.
-	 * @todo Project points according to the normal
-	 * @warning suppose no null segments!
+	 * Convert a 2D/3D [Multi]Polygon to a TriangulatedSurface.
 	 */
-	void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSurface ) ;
+	void triangulate( const Geometry & geometry, TriangulatedSurface & triangulatedSurface ) ;
 
 	/**
+	 * Convert a 2D/3D polygon to a TriangulatedSurface.
+	 * @warning projects points in the polygon plane
+	 */
+	void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSurface ) ;
+	/**
 	 * Convert a 2D/3D MultiPolygon to a TriangulatedSurface. Each polygon is triangulated invidualy
-	 * @warning suppose no null segments!
+	 * @warning projects points in the polygon plane
 	 */
 	void triangulate( const MultiPolygon & polygon, TriangulatedSurface & triangulatedSurface ) ;
 

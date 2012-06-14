@@ -41,13 +41,31 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual GeometryType   geometryTypeId() const ;
 
+
+		/**
+		 * returns the n-th Geometry as a Point
+		 */
+		inline Point &         pointN( const size_t & n )
+		{
+			return geometryN(n).as< Point >() ;
+		}
+		/**
+		 * returns the n-th Geometry as a Point
+		 */
+		inline const Point &   pointN( const size_t & n ) const
+		{
+			return geometryN(n).as< Point >() ;
+		}
+
+
+
+
 		//-- visitors
 
 		//-- SFCGAL::Geometry
 		virtual void accept( GeometryVisitor & visitor ) ;
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
-
 	protected:
 		//-- SFCGAL::GeometryCollection
 		virtual bool           isAllowed( Geometry const& g ) ;

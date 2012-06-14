@@ -119,7 +119,23 @@ void mark_domains(CDT& cdt) {
 }
 
 
-
+///
+///
+///
+void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface )
+{
+	if ( g.is< Polygon >() ){
+		triangulate( g.as< Polygon >(), triangulatedSurface ) ;
+	}else if ( g.is< MultiPolygon >() ){
+		triangulate( g.as< MultiPolygon >(), triangulatedSurface ) ;
+	}else{
+		BOOST_THROW_EXCEPTION(
+			Exception(
+				( boost::format( "can't triangulate type '%1%'" ) % g.geometryType() ).str()
+			)
+		);
+	}
+}
 
 
 ///
@@ -164,8 +180,13 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 			CDT::Vertex_handle vh = cdt.insert( polygonPlane.to_2d( p3d ) );
 			vh->info().original = point ;
 
+			// filter first point
 			if ( j != 0 ){
-				cdt.insert_constraint(vh, v_prev);
+				if ( vh != v_prev ){
+					cdt.insert_constraint(vh, v_prev);
+				}else{
+					//@todo log
+				}
 			}
 			v_prev = vh;
 		}

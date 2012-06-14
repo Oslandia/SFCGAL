@@ -41,6 +41,21 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual GeometryType   geometryTypeId() const ;
 
+		/**
+		 * returns the n-th Geometry as a Polygon
+		 */
+		inline LineString &       lineStringN( const size_t & n )
+		{
+			return geometryN(n).as< LineString >() ;
+		}
+		/**
+		 * returns the n-th Geometry as a Polygon
+		 */
+		inline const LineString & lineStringN( const size_t & n ) const
+		{
+			return geometryN(n).as< LineString >() ;
+		}
+
 		//-- visitors
 
 		//-- SFCGAL::Geometry

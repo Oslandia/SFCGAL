@@ -6,7 +6,7 @@ using namespace boost::unit_test ;
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/WaveFrontObj.h>
 
-#include "../../test_config.h"
+#include "../../../test_config.h"
 
 using namespace SFCGAL ;
 
@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_io_WaveFrontObjTest )
 BOOST_AUTO_TEST_CASE( testTeaPot )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/SFCGAL/teapot.obj" ;
+	filename += "/regress/data/teapot.obj" ;
 
 	io::WaveFrontObj obj;
 	obj.load( filename );

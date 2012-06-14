@@ -1,10 +1,11 @@
 set( EXAMPLE_NAMES
-	basic_manip
-	cartesian_kernel
-	point_generator
-	triangulation2
-	polygon_triangulation2
-	save_obj_file
+	CGAL-basic_manip
+	CGAL-cartesian_kernel
+	CGAL-point_generator
+	CGAL-triangulation2
+	CGAL-polygon_triangulation2
+	
+	SFCGAL-save_obj_file
 )
 foreach( EXAMPLE_NAME ${EXAMPLE_NAMES} )
 	file( GLOB_RECURSE EXAMPLE_SOURCES ${EXAMPLE_NAME}/*.cpp )

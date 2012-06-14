@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
 
-#include "../../test_config.h"
+#include "../../../test_config.h"
 
 #include <fstream>
 #include <boost/format.hpp>
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatePolygonTest )
 BOOST_AUTO_TEST_CASE( testReadWriter )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/SFCGAL/TriangulatePolygonTest.txt" ;
+	filename += "/regress/data/TriangulatePolygonTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

@@ -14,61 +14,61 @@ using namespace boost::unit_test ;
 /**
  * get type from Geometry
  */
-class DemoVisitorGetType : public GeometryVisitor {
+class DemoVisitorGetType : public ConstGeometryVisitor {
 public:
 
-	virtual void visit( Point & g ) {
+	virtual void visit( const Point & g ) {
 		type = "Point";
 	}
-	virtual void visit( LineString & g ) {
+	virtual void visit( const LineString & g ) {
 		type = "LineString";
 	}
-	virtual void visit( Polygon & g ) {
+	virtual void visit( const Polygon & g ) {
 		type = "Polygon";
 	}
-	virtual void visit( Triangle & g ) {
+	virtual void visit( const Triangle & g ) {
 		type = "Triangle";
 	}
-	virtual void visit( Solid & g ) {
+	virtual void visit( const Solid & g ) {
 		type = "Solid";
 	}
 
 	/**
 	 * invoke visit(Point) for each point
 	 */
-	virtual void visit( MultiPoint & g ) {
+	virtual void visit( const MultiPoint & g ) {
 		type = "MultiPoint";
 	}
 	/**
 	 * invoke visit(LineString) for each lineString
 	 */
-	virtual void visit( MultiLineString & g ){
+	virtual void visit( const MultiLineString & g ){
 		type = "MultiLineString";
 	}
 	/**
 	 * invoke visit(Polygon) for each polygon
 	 */
-	virtual void visit( MultiPolygon & g ){
+	virtual void visit( const MultiPolygon & g ){
 		type = "MultiPolygon";
 	}
 
 	/**
 	 * invoke g.accept(geometry) for each sub geometry
 	 */
-	virtual void visit( GeometryCollection & g ){
+	virtual void visit( const GeometryCollection & g ){
 		type = "GeometryCollection";
 	}
 
 	/**
 	 * invoke g.accept(polygon) for each polygon
 	 */
-	virtual void visit( PolyhedralSurface & g ) {
+	virtual void visit( const PolyhedralSurface & g ) {
 		type = "PolyhedralSurface";
 	}
 	/**
 	 * invoke g.accept(triangle) for each triangle
 	 */
-	virtual void visit( TriangulatedSurface & g ) {
+	virtual void visit( const TriangulatedSurface & g ) {
 		type = "TriangulatedSurface";
 	}
 

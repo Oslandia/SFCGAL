@@ -1,12 +1,19 @@
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Kernel.h>
+#include <CGAL/Cartesian.h>
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
 
 #include <cmath>
 
 #include <CGAL/Aff_transformation_3.h>
 
-using namespace SFCGAL ;
+typedef CGAL::Cartesian< double > Kernel ;
+typedef Kernel::Vector_2          Vector_2 ;
+typedef Kernel::Vector_3          Vector_3 ;
+typedef Kernel::Point_2           Point_2 ;
+typedef Kernel::Point_3           Point_3 ;
+
 
 // always after CGAL
 using namespace boost::unit_test ;

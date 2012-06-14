@@ -7,6 +7,11 @@
 
 #include <SFCGAL/Geometry.h>
 
+#include <CGAL/Vector_2.h>
+#include <CGAL/Vector_3.h>
+
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
 
 namespace SFCGAL {
 
@@ -93,6 +98,58 @@ namespace SFCGAL {
 		virtual void accept( GeometryVisitor & visitor ) ;
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
+
+
+		/**
+		 * Convert to CGAL::Vector_2
+		 */
+		template < typename K >
+		inline CGAL::Vector_2< K > toVector_2() const
+		{
+			return CGAL::Vector_2< K >(
+				isNaN(_x) ? 0.0 : _x,
+				isNaN(_y) ? 0.0 : _y
+			);
+		}
+
+		/**
+		 * Convert to CGAL::Vector_3
+		 */
+		template < typename K >
+		inline CGAL::Vector_3< K > toVector_3() const
+		{
+			return CGAL::Vector_3< K >(
+				isNaN(_x) ? 0.0 : _x,
+				isNaN(_y) ? 0.0 : _y,
+				isNaN(_z) ? 0.0 : _z
+			);
+		}
+
+		/**
+		 * Convert to CGAL::Point_2
+		 */
+		template < typename K >
+		inline CGAL::Point_2< K > toPoint_2() const
+		{
+			return CGAL::Point_2< K >(
+				isNaN(_x) ? 0.0 : _x,
+				isNaN(_y) ? 0.0 : _y
+			);
+		}
+
+		/**
+		 * Convert to CGAL::Point_3
+		 */
+		template < typename K >
+		inline CGAL::Point_3< K > toPoint_3() const
+		{
+			return CGAL::Point_3< K >(
+				isNaN(_x) ? 0.0 : _x,
+				isNaN(_y) ? 0.0 : _y,
+				isNaN(_z) ? 0.0 : _z
+			);
+		}
 
 	private:
 		double _x ;

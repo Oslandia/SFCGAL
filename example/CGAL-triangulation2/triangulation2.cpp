@@ -1,10 +1,24 @@
 #include <fstream>
 
 
-#include <SFCGAL/Kernel.h>
+#include <CGAL/Cartesian.h>
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
+#include <CGAL/Segment_2.h>
+#include <CGAL/Segment_3.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
 
 
-using namespace SFCGAL ;
+typedef CGAL::Cartesian< double >            Kernel ;
+typedef Kernel::Vector_2                     Vector_2 ;
+typedef Kernel::Vector_3                     Vector_3 ;
+typedef Kernel::Point_2                      Point_2 ;
+typedef Kernel::Point_3                      Point_3 ;
+typedef CGAL::Segment_2< Kernel >            Segment_2 ;
+typedef CGAL::Segment_3< Kernel >            Segment_3 ;
+typedef CGAL::Polygon_2< Kernel >            Polygon_2 ;
+typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
 
 
 #include <CGAL/Delaunay_triangulation_2.h>
