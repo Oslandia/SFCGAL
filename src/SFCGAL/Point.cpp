@@ -14,7 +14,6 @@ Point::Point():
 	_y( NaN() ),
 	_z( NaN() )
 {
-
 }
 
 ///

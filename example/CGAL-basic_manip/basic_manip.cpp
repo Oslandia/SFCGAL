@@ -155,6 +155,19 @@ int main( int argc, char* argv[] ){
 		std::cout << ab.source() << " => " << ab.target() << std::endl;
 		std::cout << ab << std::endl;
 	}
+	std::cout << "--- Triangle_3 ---" << std::endl;
+	{
+	    Triangle_3 tri( Point_3( 0.0, 0.0, 1.0),
+			    Point_3( 1.0, 0.0, 1.0),
+			    Point_3( 0.0, 1.0, 1.0) );
+	    Point_3 p( 0.2, 0.2, 1.0 );
+	    Point_3 p2( 0.2, 0.2, 0.0 );
+	    std::cout << "p  : " << p << std::endl;
+	    std::cout << "p2 : " << p2 << std::endl;
+	    std::cout << "tri: " << tri << std::endl;
+	    std::cout << "tri.has_on(p) : " << tri.has_on( p ) << std::endl;
+	    std::cout << "tri.has_on(p2): " << tri.has_on( p2 ) << std::endl;
+	}
 
 
 	return 0;

@@ -254,7 +254,7 @@ void WktWriter::writeInner( const Triangle & g )
 {
 	_s << "(";
 	_s << "(";
-	for ( size_t i = 0; i < 4; i++ ){
+	for ( size_t i = 0; i < 3; i++ ){
 		if ( i != 0 ){
 			_s << "," ;
 		}
