@@ -21,7 +21,11 @@ namespace algorithm {
 	 * @warning projects points in the polygon plane
 	 */
 	void triangulate( const MultiPolygon & polygon, TriangulatedSurface & triangulatedSurface ) ;
-
+	/**
+	 * Convert a 2D/3D PolyhedralSurface to a TriangulatedSurface. Each polygon is triangulated invidualy
+	 * @warning projects points in the polygon plane
+	 */
+	void triangulate( const PolyhedralSurface & poly, TriangulatedSurface & triangulatedSurface ) ;
 }//algorithm
 }//algorithm
 
