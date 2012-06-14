@@ -1,13 +1,28 @@
 #include <SFCGAL/algorithm/intersects.h>
 
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
+#include <CGAL/Segment_2.h>
+#include <CGAL/Segment_3.h>
+#include <CGAL/Triangle_2.h>
+#include <CGAL/Triangle_3.h>
 #include <CGAL/Arr_segment_traits_2.h>
 #include <CGAL/Sweep_line_2_algorithms.h>
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/triangulate.h>
-#include <SFCGAL/Kernel.h>
+//#include <SFCGAL/Kernel.h>
 
 #include <SFCGAL/io/WktWriter.h>
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+typedef CGAL::Point_2<Kernel> Point_2;
+typedef CGAL::Point_3<Kernel> Point_3;
+typedef CGAL::Segment_2<Kernel> Segment_2;
+typedef CGAL::Segment_3<Kernel> Segment_3;
+typedef CGAL::Triangle_2<Kernel> Triangle_2;
+typedef CGAL::Triangle_3<Kernel> Triangle_3;
 
 namespace SFCGAL {
 namespace algorithm
