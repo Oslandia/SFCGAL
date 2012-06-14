@@ -13,12 +13,13 @@
 
 
 find_path(MPFR_INCLUDE_DIRS mpfr.h
-    HINTS $ENV{MPFR_DIR}/include ${MPFR_DIR}/include
-    PATH_SUFFIXES mpfr
+    HINTS $ENV{MPFR_DIR} ${MPFR_DIR}
+    PATH_SUFFIXES include
 )
 
 find_library(MPFR_LIBRARY NAMES mpfr
-	HINTS $ENV{MPFR_DIR}/lib ${MPFR_DIR}/lib
+	HINTS $ENV{MPFR_DIR} ${MPFR_DIR}
+	PATH_SUFFIXES lib
 )
 set( MPFR_LIBRARIES ${MPFR_LIBRARY} )
 

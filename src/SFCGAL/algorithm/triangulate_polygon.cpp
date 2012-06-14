@@ -1,12 +1,17 @@
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/all.h>
 
-
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
-#include <CGAL/Polygon_2.h>
+//#include <CGAL/Polygon_2.h>
+
+#include <CGAL/Point_3.h>
+#include <CGAL/Vector_3.h>
+#include <CGAL/Line_3.h>
+
+#include <SFCGAL/algorithm/plane.h>
 
 #include <iostream>
 
@@ -58,7 +63,7 @@ typedef CGAL::Constrained_Delaunay_triangulation_2<
 
 typedef CDT::Point                                                                    triangulation_point;
 typedef CGAL::Point_2<Kernel>                                                         Point_2;
-typedef CGAL::Polygon_2<Kernel>                                                       Polygon_2;
+//typedef CGAL::Polygon_2<Kernel>                                                       Polygon_2;
 
 
 
@@ -133,12 +138,9 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 	 */
 	CDT cdt;
 
-	/*
-	 * All points of the polygon are projected in the plan defined by the origin and the normal
-	 * to the polygon and then inserted in the triangulation.
-	Vector_3 normal = normal3D< K( polygon ) ;
-	std::cout << normal << std::endl;
-	 */
+//	std::cout << "---------------------------------------------------------" << std::endl ;
+//	std::cout << "triangulate polygon : " << polygon.asText() << std::endl;
+	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon ) ;
 
 	/*
 	 * insert each ring in the triangulation
@@ -148,11 +150,19 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 
 		CDT::Vertex_handle v_prev ;
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
-			const Point & p = ring.pointN( j );
+			const Point & point = ring.pointN( j );
 
-			// @todo project point according to the normal
-			CDT::Vertex_handle vh = cdt.insert( Point_2( p.x(), p.y() ) );
-			vh->info().original = p ;
+			CGAL::Point_3< Kernel > p3d(
+				point.x(),
+				point.y(),
+				point.is3D()?point.z():0.0
+			);
+
+			/*
+			 * insert into triangulation
+			 */
+			CDT::Vertex_handle vh = cdt.insert( polygonPlane.to_2d( p3d ) );
+			vh->info().original = point ;
 
 			if ( j != 0 ){
 				cdt.insert_constraint(vh, v_prev);

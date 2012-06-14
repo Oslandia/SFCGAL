@@ -1,0 +1,17 @@
+
+
+
+#---------------------- COMPILE ISSUES  ------------------------------------------------
+
+#-- CGAL with boost static libs (set_tss_data), CGAL_Boost_USE_STATIC_LIBS has no effect
+# patch : 
+
+if( Boost_USE_STATIC_LIBS )
+	message( STATUS "[IGN]add preprocessor definition BOOST_THREAD_USE_LIB" )
+	add_definitions( "-DBOOST_THREAD_USE_LIB" )
+endif()
+
+#-- GMP/MPFR
+MinGW/MSYS : Finder can't find system installation of gmp / mpfr (mingw-get install gmp, mingw-get install mpfr)
+
+

@@ -45,7 +45,7 @@ if( ${GMP_FOUND} )
 	if( ${MPFR_FOUND} )
 		message( STATUS "MPFR_INCLUDE_DIRS = ${MPFR_INCLUDE_DIRS}" )
 		message( STATUS "MPFR_LIBRARIES = ${MPFR_LIBRARIES}" )
-		set( EPLU_WITH_MPFR ON )
+		set( SFCGAL_WITH_MPFR ON )
 	endif()
 endif()
 
@@ -91,6 +91,8 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	add_definitions( "-frounding-math" )
 endif()
 
+#-- configure the library
+configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
 
 #-- build the library
 #note : not available on windows without export/import
@@ -102,7 +104,10 @@ add_subdirectory( src )
 add_subdirectory( test )
 
 #-- build examples
-add_subdirectory( example )
+option( SFCGAL_BUILD_EXAMPLE "build examples" OFF )
+if( ${SFCGAL_BUILD_EXAMPLE} )
+	add_subdirectory( example )
+endif()
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)

@@ -1,10 +1,26 @@
 #ifndef _SFCGAL_ALGORITHM_NORMAL_H_
 #define _SFCGAL_ALGORITHM_NORMAL_H_
 
+
 #include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
 namespace algorithm {
+
+	/**
+	 * Returns the 3D normal to 3 consecutive points.
+	 */
+	template < typename Kernel >
+	CGAL::Vector_3< Kernel > normal3D(
+		const CGAL::Vector_3< Kernel > & a,
+		const CGAL::Vector_3< Kernel > & b,
+		const CGAL::Vector_3< Kernel > & c
+	)
+	{
+		// bc ^ ba
+		return CGAL::cross_product( c - b, a - b ) ;
+	}
+
 
 	/**
 	 * Returns the 3D normal to a polygon (supposed to be planar).
@@ -22,7 +38,8 @@ namespace algorithm {
 		CGAL::Vector_3< Kernel > b( pb.x(), pb.y(), is3D ? pb.z() : 0.0 );
 		CGAL::Vector_3< Kernel > c( pc.x(), pc.y(), is3D ? pc.z() : 0.0 );
 
-		return CGAL::cross_product( c - b, a - b ) ;
+		// ba ^ bc
+		return normal3D(a,b,c) ;
 	}
 
 }//algorithm
