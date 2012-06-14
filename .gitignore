@@ -8,6 +8,8 @@ Release
 triangulation2.obj
 polygon_triangulation2.obj
 
+/test/test_config.h
 
 
 /triangulation3d_in_plane.obj
+

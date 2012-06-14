@@ -48,17 +48,13 @@ BOOST_AUTO_TEST_CASE( testReadWriter )
 		/*
 		 * check polygon
 		 */
-		BOOST_CHECK( g->is< Polygon >() );
-		if ( ! g->is< Polygon >() ){
-			BOOST_TEST_MESSAGE( boost::format("skip test (#%1%)") % inputWkt );
-			continue ;
-		}
+		BOOST_CHECK( g->is< Polygon >() || g->is< MultiPolygon >() );
 
 		/*
 		 * triangulate polygon
 		 */
 		TriangulatedSurface triangulatedSurface ;
-		algorithm::triangulate( g->as< Polygon >(), triangulatedSurface ) ;
+		algorithm::triangulate( *g, triangulatedSurface ) ;
 		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numTriangles() );
 
 

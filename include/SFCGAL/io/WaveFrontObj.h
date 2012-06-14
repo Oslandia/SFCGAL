@@ -75,6 +75,10 @@ namespace io {
 		 * save to file
 		 */
 		void save( const std::string & filename ) const ;
+		/**
+		 * save to ostream
+		 */
+		void save( std::ostream & s ) const ;
 
 		/**
 		 * returns the number of vertices
@@ -115,6 +119,11 @@ namespace io {
 		 */
 		size_t addFace( const WaveFrontFace & face );
 
+		/**
+		 * add a Geometry
+		 * @warning supports Polygon, MultiPolygon, TriangulatedSurface
+		 */
+		void   addGeometry( const Geometry & polygon ) ;
 		/**
 		 * add a Polygon
 		 */

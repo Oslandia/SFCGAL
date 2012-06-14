@@ -124,6 +124,25 @@ size_t WaveFrontObj::addFace( const WaveFrontFace & face )
 	return id ;
 }
 
+///
+///
+///
+void WaveFrontObj::addGeometry( const Geometry & g )
+{
+	switch ( g.geometryTypeId() ){
+	case TYPE_POLYGON:
+		return addGeometry( g.as< Polygon >() );
+	case TYPE_MULTIPOLYGON:
+		return addGeometry( g.as< MultiPolygon >() );
+	case TYPE_TIN:
+		return addGeometry( g.as< TriangulatedSurface >() );
+	}
+	BOOST_THROW_EXCEPTION(
+		Exception(
+			( boost::format( "%1% is not supported by WaveFrontObj" ) % g.geometryType() ).str()
+		)
+	);
+}
 
 ///
 ///
@@ -150,13 +169,26 @@ void   WaveFrontObj::addGeometry( const MultiPolygon & polygon )
 ///
 void WaveFrontObj::addGeometry( const TriangulatedSurface & triangulatedSurface )
 {
+	typedef std::map< Point, size_t >::const_iterator const_index_iterator ;
+	std::map< Point, size_t > newPoints ;
+
 	for ( size_t i = 0; i < triangulatedSurface.numTriangles(); i++ ){
 		const Triangle & triangle = triangulatedSurface.triangleN(i) ;
 
 		WaveFrontFace face ;
 		for ( size_t j = 0; j < 3; j++ ){
-			size_t v = addVertex( triangle.vertex(j) ) ;
-			face.push_back( WaveFrontFaceItem( v ) );
+			const Point & vertex = triangle.vertex(j) ;
+
+			const_index_iterator it_idx = newPoints.find( vertex );
+
+			size_t idVertex ;
+			if ( it_idx == newPoints.end() ){
+				idVertex = addVertex( vertex );
+				newPoints.insert( std::make_pair( vertex, idVertex ) );
+			}else{
+				idVertex = it_idx->second ;
+			}
+			face.push_back( WaveFrontFaceItem( idVertex ) );
 		}
 		addFace( face );
 	}
@@ -172,13 +204,20 @@ void WaveFrontObj::save( const std::string & filename ) const
 		std::string message = ( boost::format( "can't write file : '%1%'" ) % filename ).str() ;
 		BOOST_THROW_EXCEPTION( Exception( message ) );
 	}
+	save( ofs );
+}
 
+///
+///
+///
+void WaveFrontObj::save( std::ostream & s ) const
+{
 	/*
 	 * write vertices
 	 */
 	for ( size_t i = 0; i < _vertices.size(); i++ ){
 		const Point & vertex = _vertices[i] ;
-		ofs << "v " << vertex.x() << " " << vertex.y() << " " << ( vertex.is3D() ? vertex.z() : 0.0 ) << std::endl ;
+		s << "v " << vertex.x() << " " << vertex.y() << " " << ( vertex.is3D() ? vertex.z() : 0.0 ) << std::endl ;
 	}
 
 	/*
@@ -186,14 +225,15 @@ void WaveFrontObj::save( const std::string & filename ) const
 	 */
 	for ( size_t i = 0; i < _faces.size(); i++ ){
 		const WaveFrontFace & face = _faces[i] ;
-		ofs << "f" ;
+		s << "f" ;
 		for ( size_t j = 0; j < face.size(); j++ ){
 			// note : 1-indexed
-			ofs << " " << face[j].toString() ;
+			s << " " << face[j].toString() ;
 		}
-		ofs << std::endl;
+		s << std::endl;
 	}
 }
+
 
 ///
 ///

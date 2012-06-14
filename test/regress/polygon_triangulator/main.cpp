@@ -59,9 +59,10 @@ int main( int argc, char* argv[] ){
 		return 1;
 	}
 
-	std::ofstream ofs( "test-regress-polygon_triangulator.wkt" ) ;
+	std::string ofilename( filename+".tri.wkt" );
+	std::ofstream ofs( ofilename.c_str() ) ;
 	if ( ! ofs.good() ){
-		std::cerr << "fail to write : " << "test-regress-polygon_triangulator.wkt" << std::endl ;
+		std::cerr << "fail to write : " << ofilename << std::endl ;
 		return 1;
 	}
 
@@ -83,7 +84,7 @@ int main( int argc, char* argv[] ){
 			continue ;
 		}
 
-		if ( lineNumber % 10000 == 0 ){
+		if ( lineNumber % 1000 == 0 ){
 			std::cout.width(12) ;
 			std::cout << std::left << lineNumber << "(" << timer.elapsed() << " s)"<< std::endl ;
 		}
@@ -113,25 +114,30 @@ int main( int argc, char* argv[] ){
 			continue ;
 		}
 
+		bool failed = true ;
 		TriangulatedSurface triangulatedSurface ;
 		try {
 			algorithm::triangulate( *g, triangulatedSurface ) ;
+			if ( ! g->isEmpty() && triangulatedSurface.isEmpty() ){
+				std::cerr << "[error]" << id << "|" << g->asText() << "(empty triangulation for non empty polygon)" << std::endl ;
+				continue ;
+			}
+			//TODO : check area()
+
+
+			failed = false ;
 		}catch ( Exception & e ){
 			std::cerr << "[Exception]" << id << "|" << g->asText() << "(" << e.what() << ")" << std::endl ;
-			continue ;
 		}catch ( std::exception & e ){
 			std::cerr << "[std::exception]" << id << "|" << g->asText() << "(" << e.what() << ")" << std::endl ;
-			continue ;
 		}catch ( ... ){
 			std::cerr << "[unknown]" << id << "|" << g->asText() << "(unknown)" << std::endl ;
-			continue ;
 		}
 
 		//output triangulated surface
-		ofs << id << "|" << triangulatedSurface.asText() << std::endl;
-	}
+		ofs << id << "|" << failed << "|" << triangulatedSurface.asText() << std::endl;
 
-
+	}//end for each line
 
 	return 0 ;
 }

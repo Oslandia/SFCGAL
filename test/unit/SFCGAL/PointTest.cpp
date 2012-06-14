@@ -1,7 +1,11 @@
-#include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
+#include <CGAL/Cartesian.h>
+
+typedef CGAL::Cartesian< double >  Kernel ;
 
 #include <SFCGAL/Point.h>
+
+#include <boost/test/unit_test.hpp>
+using namespace boost::unit_test ;
 
 using namespace SFCGAL ;
 
@@ -40,6 +44,38 @@ BOOST_AUTO_TEST_CASE( xyzConstructor )
 	BOOST_CHECK_EQUAL( g.y(), 3.0 );
 	BOOST_CHECK_EQUAL( g.z(), 4.0 );
 }
+
+
+//-- toVector_2
+
+BOOST_AUTO_TEST_CASE( emptyToVector_2 )
+{
+	Point g ;
+	CGAL::Vector_2< Kernel > p = g.toVector_2< Kernel >();
+	BOOST_CHECK_EQUAL( p.x(), 0.0 );
+	BOOST_CHECK_EQUAL( p.y(), 0.0 );
+	BOOST_CHECK_EQUAL( g.asText(1), "POINT EMPTY" );
+}
+
+BOOST_AUTO_TEST_CASE( xyToVector_2 )
+{
+	Point g( 3.0, 4.0 );
+	CGAL::Vector_2< Kernel > p = g.toVector_2< Kernel >();
+	BOOST_CHECK_EQUAL( p.x(), 3.0 );
+	BOOST_CHECK_EQUAL( p.y(), 4.0 );
+	BOOST_CHECK_EQUAL( g.asText(1), "POINT EMPTY" );
+}
+
+BOOST_AUTO_TEST_CASE( xyToVector_3 )
+{
+	Point g( 3.0, 4.0 );
+	CGAL::Vector_3< Kernel > p = g.toVector_3< Kernel >();
+	BOOST_CHECK_EQUAL( p.x(), 3.0 );
+	BOOST_CHECK_EQUAL( p.y(), 4.0 );
+	BOOST_CHECK_EQUAL( p.z(), 0.0 );
+	BOOST_CHECK_EQUAL( g.asText(1), "POINT EMPTY" );
+}
+
 
 //-- asText
 

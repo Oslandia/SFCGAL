@@ -104,10 +104,18 @@ add_subdirectory( src )
 add_subdirectory( test )
 
 #-- build examples
-option( SFCGAL_BUILD_EXAMPLE "build examples" OFF )
-if( ${SFCGAL_BUILD_EXAMPLE} )
+option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
+if( ${SFCGAL_BUILD_EXAMPLES} )
 	add_subdirectory( example )
 endif()
+
+#-- build tools
+option( SFCGAL_BUILD_TOOLS "build tools" OFF )
+if( ${SFCGAL_BUILD_TOOLS} )
+	add_subdirectory( tools )
+endif()
+
+
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)
