@@ -5,6 +5,7 @@ using namespace boost::unit_test ;
 #include <fstream>
 
 #include <SFCGAL/all.h>
+#include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/WaveFrontObj.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/triangulate.h>
@@ -51,6 +52,28 @@ BOOST_AUTO_TEST_CASE( testIntersectsTeapot )
     BOOST_CHECK_EQUAL( intersects2, false );
 }
 
+//
+// Test limit case
+BOOST_AUTO_TEST_CASE( testLimitsIntersects )
+{
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/regress/data/countries.wkt" ;
+    
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
+
+    std::string wkt1, wkt2;
+    std::getline( ifs, wkt1 );
+    std::getline( ifs, wkt2 );
+    
+    std::auto_ptr< Geometry > g1( io::readWkt(wkt1) );
+    std::auto_ptr< Geometry > g2( io::readWkt(wkt2) );
+
+    // check that a call to intersects() does not throw
+    bool throws = false;
+    algorithm::intersects( *g1, *g2 );
+    BOOST_CHECK_EQUAL( throws, false );
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
