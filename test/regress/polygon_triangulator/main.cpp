@@ -10,6 +10,7 @@
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/algorithm/area.h>
 
 #include <boost/timer.hpp>
 
@@ -72,7 +73,7 @@ int main( int argc, char* argv[] ){
 	/*
 	 * process file
 	 */
-	int lineNumber = 0 ;
+	int lineNumber = 0 , numFailed = 0 , numSuccess = 0 ;
 	std::string line ;
 
 	timer.restart();
@@ -88,7 +89,6 @@ int main( int argc, char* argv[] ){
 			std::cout.width(12) ;
 			std::cout << std::left << lineNumber << "(" << timer.elapsed() << " s)"<< std::endl ;
 		}
-
 
 
 		std::vector< std::string > tokens ;
@@ -118,27 +118,41 @@ int main( int argc, char* argv[] ){
 		TriangulatedSurface triangulatedSurface ;
 		try {
 			algorithm::triangulate( *g, triangulatedSurface ) ;
-			if ( ! g->isEmpty() && triangulatedSurface.isEmpty() ){
-				std::cerr << "[error]" << id << "|" << g->asText() << "(empty triangulation for non empty polygon)" << std::endl ;
-				continue ;
+
+			//check area
+			double areaPolygons  = algorithm::area3D( *g ) ;
+			double areaTriangles = algorithm::area3D( triangulatedSurface );
+
+			double ratio = fabs( areaPolygons - areaTriangles ) / std::max( areaPolygons, areaTriangles );
+			if ( ratio > 0.1 ){
+				std::cerr << "[error]" << id << "|" << "area(polygon) != area(tin) ( " << areaPolygons << " !=" << areaTriangles <<  ")" << "|" << g->asText() << "|" << triangulatedSurface.asText() << std::endl ;
 			}
-			//TODO : check area()
-
-
 			failed = false ;
 		}catch ( Exception & e ){
-			std::cerr << "[Exception]" << id << "|" << g->asText() << "(" << e.what() << ")" << std::endl ;
+			std::cerr << "[Exception]" << id << "|" << e.what() << "|" << g->asText() << std::endl ;
 		}catch ( std::exception & e ){
-			std::cerr << "[std::exception]" << id << "|" << g->asText() << "(" << e.what() << ")" << std::endl ;
+			std::cerr << "[std::exception]" << id << "|" << e.what() << "|" << g->asText() << "|"<< std::endl ;
 		}catch ( ... ){
-			std::cerr << "[unknown]" << id << "|" << g->asText() << "(unknown)" << std::endl ;
+			std::cerr << "[...]" << id << "|" << g->asText() << std::endl ;
+		}
+
+		if ( failed ){
+			numFailed++ ;
+		}else{
+			numSuccess++ ;
 		}
 
 		//output triangulated surface
 		ofs << id << "|" << failed << "|" << triangulatedSurface.asText() << std::endl;
-
 	}//end for each line
 
-	return 0 ;
+	std::cout << "--- complete ---" << std::endl;
+	std::cout << numFailed << " failed /" << (numFailed + numSuccess) << std::endl ;
+
+	if ( numFailed == 0 ){
+		return EXIT_SUCCESS ;
+	}else{
+		return EXIT_FAILURE ;
+	}
 }
 

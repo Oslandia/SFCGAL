@@ -10,6 +10,7 @@ using namespace boost::unit_test ;
 #include <SFCGAL/io/wkt.h>
 
 #include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/algorithm/area.h>
 
 using namespace SFCGAL ;
 
@@ -19,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatePolygonTest )
  * Triangulate polygon and make some checks
  * @ŧodo Check inPolygon.area3D() == outPolygon.area3D();
  */
-BOOST_AUTO_TEST_CASE( testReadWriter )
+BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
 	filename += "/regress/data/TriangulatePolygonTest.txt" ;
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( testReadWriter )
 		/*
 		 * parse wkt
 		 */
-		BOOST_TEST_MESSAGE( boost::format("triangulate polygon (#%1%)") % inputWkt );
+		BOOST_TEST_MESSAGE( boost::format("triangulate polygon : #%1%") % inputWkt );
 		std::auto_ptr< Geometry > g( io::readWkt(inputWkt) );
 
 		/*
@@ -54,9 +55,8 @@ BOOST_AUTO_TEST_CASE( testReadWriter )
 		 * triangulate polygon
 		 */
 		TriangulatedSurface triangulatedSurface ;
-		algorithm::triangulate( *g, triangulatedSurface ) ;
+		BOOST_CHECK_NO_THROW( algorithm::triangulate( *g, triangulatedSurface ) ) ;
 		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numTriangles() );
-
 
 		/*
 		 * make some check
@@ -69,6 +69,9 @@ BOOST_AUTO_TEST_CASE( testReadWriter )
 		if ( g->is3D() ){
 			BOOST_CHECK( triangulatedSurface.is3D() );
 		}
+
+		//check area
+		BOOST_CHECK_CLOSE( algorithm::area3D(*g), algorithm::area3D( triangulatedSurface ), 0.5 );
 	}
 }
 
