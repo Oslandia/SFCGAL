@@ -1,3 +1,5 @@
+#include <map>
+
 #include <SFCGAL/algorithm/intersects.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -20,9 +22,8 @@
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/AABB_segment_primitive.h>
 
-#include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/triangulate.h>
-
+#include <SFCGAL/all.h>
 #include <SFCGAL/io/WktWriter.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
@@ -35,6 +36,8 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 typedef CGAL::Triangle_3<Kernel> Triangle_3;
 typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
+
+#define CACHE_TRIANGULATION
 
 namespace SFCGAL {
 namespace algorithm
@@ -228,8 +231,71 @@ namespace algorithm
 
 	Triangle_3 request_tri;
 	to_triangle( la, request_tri );
-	return tree.do_intersect( request_tri );
+	bool r;
+	try {
+	    r = tree.do_intersect( request_tri );
+	}
+	catch ( std::exception& e ) {
+	    std::cout << surf.asText() << " does not have a good AABB tree" << std::endl;
+	    return false;
+	}
+	return r;
     }
+
+    typedef std::list<Triangle_3>::const_iterator TIterator;
+    typedef CGAL::AABB_triangle_primitive<Kernel,TIterator> TPrimitive;
+    typedef CGAL::AABB_traits<Kernel, TPrimitive> AABB_triangle_traits;
+    typedef CGAL::AABB_tree<AABB_triangle_traits> TriangleTree;
+
+#ifdef CACHE_AABBTREE
+    typedef std::map<const Geometry*, boost::shared_ptr<TriangleTree> > TriangleTreeCache;
+    TriangleTreeCache triangle_tree_cache;
+#endif
+
+    // accelerator for TriangulatedSurface x TriangulatedSurface
+    bool intersects_( const TriangulatedSurface& surfa, const TriangulatedSurface& surfb )
+    {
+	TriangleTree* ptree;
+#ifdef CACHE_AABBTREE
+	TriangleTreeCache::const_iterator it = triangle_tree_cache.find( &surfa );
+	if ( it == triangle_tree_cache.end() ) {
+#endif
+	    std::list<Triangle_3> tris;
+	    to_triangles( surfa, tris );
+	    // Construct an AABB Tree
+#ifdef CACHE_AABBTREE
+	    ptree = new TriangleTree( tris.begin(), tris.end() );
+	    triangle_tree_cache[&surfa].reset( ptree );
+	}
+	else {
+	    ptree = it->second.get();
+	}
+#else
+	TriangleTree tree( tris.begin(), tris.end() );
+	ptree = &tree;
+#endif
+
+	bool r = false;
+	for ( size_t i = 0; i < surfb.numTriangles(); i++ ) {
+	    Triangle_3 request_tri;
+	    to_triangle( surfb.triangleN(i), request_tri );
+	    try {
+		r = ptree->do_intersect( request_tri );
+	    }
+	    catch ( std::exception& e ) {
+		std::cout << surfa.asText() << " has not a good AABB tree" << std::endl;
+		return false;
+	    }
+	    if ( r )
+		return r;
+	}
+	return r;
+    }
+
+#ifdef CACHE_TRIANGULATION
+    typedef std::map<const Geometry*, boost::shared_ptr<TriangulatedSurface> > TriangulationCache;
+    TriangulationCache triangulation_cache;
+#endif
 
     bool intersects( const Geometry& ga, const Geometry& gb )
     {
@@ -260,8 +326,6 @@ namespace algorithm
 	// Use a 2-dimension arrays of function pointers ?
 	// cf http://collaboration.cmc.ec.gc.ca/science/rpn/biblio/ddj/Website/articles/DDJ/2004/0401/0401e/0401e.htm
 
-	bool generic_processing = false;
-
 	switch ( ga.geometryTypeId() ) {
 	case TYPE_POINT: {
 	    const Point& pta = static_cast<const Point&>( ga );
@@ -278,9 +342,10 @@ namespace algorithm
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_TIN:
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    default:
+		// symmetric call
+		return intersects( gb, ga );
 		break;
 	    } // switch( gb.geometryTypeId() )
 	    break;
@@ -296,13 +361,13 @@ namespace algorithm
 	    case TYPE_POLYGON:
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    case TYPE_TIN:
 		// call the proper accelerator
 	     	return intersects_( ls, static_cast<const TriangulatedSurface&>( gb ));
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_LINESTRING
@@ -315,13 +380,13 @@ namespace algorithm
 	    case TYPE_POLYGON:
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    case TYPE_TIN:
 		// call the proper accelerator
 	     	return intersects_( tri, static_cast<const TriangulatedSurface&>( gb ));
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_TRIANGLE
@@ -331,10 +396,10 @@ namespace algorithm
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_TIN:
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_POLYGON
@@ -343,31 +408,33 @@ namespace algorithm
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_TIN:
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_POLYHEDRALSURFACE
 	case TYPE_TIN: {
 	    switch ( gb.geometryTypeId() ) {
 	    case TYPE_TIN:
+		return intersects_( static_cast<const TriangulatedSurface&>(ga),
+				    static_cast<const TriangulatedSurface&>(gb) );
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_TIN
 	case TYPE_SOLID: {
 	    switch ( gb.geometryTypeId() ) {
 	    case TYPE_SOLID:
-		generic_processing = true;
 		break;
 	    default:
-		break;
+		// symmetric call
+		return intersects( gb, ga );
 	    } // switch( gb.geometryTypeId() )
 	    break;
 	} // TYPE_SOLID
@@ -376,21 +443,42 @@ namespace algorithm
 	    break;
 	} // switch ( ga.geometryTypeId() )
 
-	// symmetric arguments
-	if ( !generic_processing ) {
-	    return intersects( gb, ga );
-	}
-
 	// Generic processing of a polygon : triangulate it and apply on the triangulated surface
 	if ( gb.geometryTypeId() == TYPE_POLYGON || gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE ) {
+#ifdef CACHE_TRIANGULATION
+	    TriangulationCache::const_iterator it = triangulation_cache.find( &gb );
+	    if ( it == triangulation_cache.end() ) {
+		boost::shared_ptr<TriangulatedSurface> tri ( new TriangulatedSurface );
+		algorithm::triangulate( gb, *tri );
+		triangulation_cache[ &gb ] = tri;
+		return intersects( ga, *tri );
+	    }
+	    // else
+	    boost::shared_ptr<TriangulatedSurface> tri = it->second;
+	    return intersects( ga, *tri );
+#else
 	    TriangulatedSurface tri;
 	    algorithm::triangulate( gb, tri );
 	    return intersects( ga, tri );
+#endif
 	}
-	if ( ga.geometryTypeId() == TYPE_POLYGON || gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE ) {
+	if ( ga.geometryTypeId() == TYPE_POLYGON || ga.geometryTypeId() == TYPE_POLYHEDRALSURFACE ) {
+#ifdef CACHE_TRIANGULATION
+	    TriangulationCache::const_iterator it = triangulation_cache.find( &ga );
+	    if ( it == triangulation_cache.end() ) {
+		boost::shared_ptr<TriangulatedSurface> tri ( new TriangulatedSurface );
+		algorithm::triangulate( ga, *tri );
+		triangulation_cache[ &ga ] = tri;
+		return intersects( gb, *tri );
+	    }
+	    // else
+	    boost::shared_ptr<TriangulatedSurface> tri = it->second;
+	    return intersects( gb, *tri );
+#else
 	    TriangulatedSurface tri;
 	    algorithm::triangulate( ga, tri );
 	    return intersects( gb, tri );
+#endif
 	}
 
 	// Generic processing of a TIN : apply on each triangle
