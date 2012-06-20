@@ -16,6 +16,37 @@ namespace algorithm {
 namespace detail {
 
 	/**
+	 * Returns 2D area for a Polygon
+	 */
+	template < typename Kernel >
+	double area(
+		const Polygon & g
+	)
+	{
+		typename Kernel::RT area = 0.0 ;
+
+		for ( size_t i = 0; i < g.numRings(); i++ ){
+			const LineString & ring = g.ringN(i);
+
+			CGAL::Polygon_2< Kernel > projectedPolygon;
+			for ( size_t j = 0; j < ring.numPoints() - 1 ; j++ ){
+				projectedPolygon.push_back( ring.pointN(j).toPoint_2< Kernel >() );
+			}
+
+			if ( i == 0 ){
+				//exterior ring
+				area += CGAL::abs( projectedPolygon.area() );
+			}else{
+				//interior ring
+				area -= CGAL::abs( projectedPolygon.area() );
+			}
+		}
+
+		return CGAL::to_double( area ) ;
+	}
+
+
+	/**
 	 * Returns 3D area for a Polygon
 	 */
 	template < typename Kernel >
@@ -26,15 +57,31 @@ namespace detail {
 		/*
 		 * compute 2D area in the Polygon plane
 		 */
-		//CGAL::Plane_3< Kernel > plane = plane3D< Kernel >(g);
+		if ( ! g.is3D() ){
+			return area< Kernel >( g );
+		}
 
-		CGAL::Aff_transformation_3< Kernel > transform = affineTransformToPlane3D< Kernel >( g );
+//		std::cout << "#" << g.asText(1) << std::endl;
 
-		//std::cout << "plane : " << plane << std::endl;
-		//std::cout << "origin : " << plane.point() << std::endl;
-		//std::cout << "base1  : " << plane.base1() << std::endl;
-		//std::cout << "base2  : " << plane.base2() << std::endl;
-		//std::cout << "normal : " << plane.orthogonal_vector() << std::endl;
+		CGAL::Point_3< Kernel > a, b, c ;
+		algorithm::plane3D< Kernel >( g, a, b, c );
+
+		/*
+		 * compute polygon base
+		 * ux = bc
+		 * uz = bc^ba
+		 * uy = uz^ux
+		 */
+		CGAL::Vector_3< Kernel > ux = c - b ;
+		CGAL::Vector_3< Kernel > uz = CGAL::cross_product( ux, a - b ) ;
+		ux = ux / CGAL::sqrt( ux.squared_length() ) ;
+		uz = uz / CGAL::sqrt( uz.squared_length() ) ;
+		CGAL::Vector_3< Kernel > uy = CGAL::cross_product( uz, ux );
+
+//		std::cout << "ux : " << ux << std::endl ;
+//		std::cout << "uz : " << uz << std::endl ;
+//		std::cout << "uy : " << uy << std::endl ;
+
 
 		typename Kernel::RT area = 0.0 ;
 
@@ -43,9 +90,14 @@ namespace detail {
 
 			CGAL::Polygon_2< Kernel > projectedPolygon;
 			for ( size_t j = 0; j < ring.numPoints() - 1 ; j++ ){
-				CGAL::Point_3< Kernel > proj = ring.pointN(j).toPoint_3< Kernel >();
-				proj = proj.transform(transform);
-				projectedPolygon.push_back( CGAL::Point_2< Kernel >( proj.x(), proj.y() ) );
+				CGAL::Point_3< Kernel > point = ring.pointN(j).toPoint_3< Kernel >();
+//				std::cout << "point : " << point << std::endl;
+				CGAL::Point_2< Kernel > projectedPoint(
+					( point - b ) * ux,
+					( point - b ) * uy
+				);
+//				std::cout << "projectedPoint : " << projectedPoint << std::endl;
+				projectedPolygon.push_back( projectedPoint );
 			}
 
 			if ( i == 0 ){

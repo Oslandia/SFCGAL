@@ -12,12 +12,19 @@
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/area.h>
 
-#include <boost/timer.hpp>
+#include <boost/chrono.hpp>
+
+#include <boost/filesystem.hpp>
 
 using namespace SFCGAL ;
 
 
 namespace po = boost::program_options ;
+
+
+
+
+
 
 /*
  * Triangulate each polygon in an input file containing lines in the following format :
@@ -30,6 +37,8 @@ int main( int argc, char* argv[] ){
 	po::options_description desc("polygon triangulator options : ");
 	desc.add_options()
 	    ("help", "produce help message")
+	    ("progress", "display progress")
+	    ("verbose",  "verbose mode")
 	    ("filename", po::value< std::string >(), "input filename (id|wkt_[multi]polygon on each line)")
 	;
 
@@ -41,6 +50,9 @@ int main( int argc, char* argv[] ){
 	    std::cout << desc << std::endl ;
 	    return 0;
 	}
+
+	bool verbose  = vm.count("verbose") != 0 ;
+	bool progress = vm.count("progress") != 0 ;
 
 	std::string filename ;
 	if ( vm.count("filename") ) {
@@ -60,15 +72,23 @@ int main( int argc, char* argv[] ){
 		return 1;
 	}
 
-	std::string ofilename( filename+".tri.wkt" );
-	std::ofstream ofs( ofilename.c_str() ) ;
-	if ( ! ofs.good() ){
-		std::cerr << "fail to write : " << ofilename << std::endl ;
+	std::string tri_filename( filename+".tri.wkt" );
+	std::ofstream tri_ofs( tri_filename.c_str() ) ;
+	if ( ! tri_ofs.good() ){
+		std::cerr << "fail to write : " << tri_filename << std::endl ;
+		return 1;
+	}
+
+	std::string error_filename( filename+".error.wkt" );
+	std::ofstream ofs_error( error_filename.c_str() ) ;
+	if ( ! ofs_error.good() ){
+		std::cerr << "fail to write : " << error_filename << std::endl ;
 		return 1;
 	}
 
 
-	boost::timer timer ;
+	//boost::timer timer ;
+	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
 	/*
 	 * process file
@@ -76,7 +96,6 @@ int main( int argc, char* argv[] ){
 	int lineNumber = 0 , numFailed = 0 , numSuccess = 0 ;
 	std::string line ;
 
-	timer.restart();
 	while ( std::getline( ifs, line ) ){
 		lineNumber++ ;
 //		std::cout << line << std::endl ;
@@ -85,9 +104,16 @@ int main( int argc, char* argv[] ){
 			continue ;
 		}
 
-		if ( lineNumber % 1000 == 0 ){
+		if ( verbose ){
+			std::cout << "#" << line << std::endl;
+			std::cout.flush();
+		}
+
+
+		if ( progress && lineNumber % 1000 == 0 ){
 			std::cout.width(12) ;
-			std::cout << std::left << lineNumber << "(" << timer.elapsed() << " s)"<< std::endl ;
+			boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
+			std::cout << std::left << lineNumber << "(" << elapsed << " s)"<< std::endl ;
 		}
 
 
@@ -138,18 +164,27 @@ int main( int argc, char* argv[] ){
 
 		if ( failed ){
 			numFailed++ ;
+			ofs_error << line << std::endl ;
 		}else{
 			numSuccess++ ;
 		}
 
 		//output triangulated surface
-		ofs << id << "|" << failed << "|" << triangulatedSurface.asText() << std::endl;
+		tri_ofs << id << "|" << failed << "|" << triangulatedSurface.asText(5) << std::endl;
 	}//end for each line
 
-	std::cout << "--- complete ---" << std::endl;
+
+	ofs_error.close();
+	tri_ofs.close();
+
+
+	boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
+	std::cout << filename << " complete (" << elapsed << " s)---" << std::endl;
 	std::cout << numFailed << " failed /" << (numFailed + numSuccess) << std::endl ;
 
 	if ( numFailed == 0 ){
+		//delete empty error file
+		boost::filesystem::remove( error_filename );
 		return EXIT_SUCCESS ;
 	}else{
 		return EXIT_FAILURE ;

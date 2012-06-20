@@ -26,7 +26,7 @@ else()
 	add_definitions( "-DBOOST_TEST_DYN_LINK" )
 endif()
 
-find_package( Boost COMPONENTS program_options unit_test_framework thread REQUIRED )
+find_package( Boost COMPONENTS chrono program_options unit_test_framework filesystem system thread REQUIRED )
 
 
 #-- GMP (facultative)  -------------------------------------

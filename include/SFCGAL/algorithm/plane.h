@@ -77,37 +77,6 @@ namespace algorithm {
 	}
 
 
-	/**
-	 * Returns an afine transform to a 3D plane defined by the polygon
-	 */
-	template < typename Kernel >
-	CGAL::Aff_transformation_3< Kernel > affineTransformToPlane3D( const Polygon & polygon )
-	{
-		if ( ! polygon.is3D() ){
-			return CGAL::Aff_transformation_3< Kernel >();
-		}
-
-		typedef CGAL::Point_3< Kernel > Point_3 ;
-
-		Point_3 a,b,c;
-		plane3D(polygon,a,b,c);
-
-		CGAL::Vector_3< Kernel > ba = a - b ;
-		ba = ba / CGAL::sqrt( ba.squared_length() );
-
-		CGAL::Vector_3< Kernel > uy = c - b ;
-		uy = uy / CGAL::sqrt( uy.squared_length() ) ;
-
-		CGAL::Vector_3< Kernel > uz = CGAL::cross_product( uy, ba ) ;
-		CGAL::Vector_3< Kernel > ux = CGAL::cross_product( uy, uz ) ;
-
-		CGAL::Aff_transformation_3< Kernel > transform(
-			ux.x(), ux.y(), ux.z(), -b.x(),
-			uy.x(), uy.y(), uy.z(), -b.y(),
-			uz.x(), uz.y(), uz.z(), -b.z()
-		) ;
-		return transform ;
-	}
 
 
 }//algorithm

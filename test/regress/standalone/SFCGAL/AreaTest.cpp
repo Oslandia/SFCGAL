@@ -11,8 +11,25 @@ using namespace boost::unit_test ;
 
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/area.h>
+#include <SFCGAL/Transform.h>
+
 
 using namespace SFCGAL ;
+
+
+class RotateCoordinate : public Transform {
+public:
+
+	virtual void transform( Point & p )
+	{
+		BOOST_ASSERT( ! p.isEmpty() );
+		p.z() = p.is3D() ? p.z() : 0.0 ;
+		std::swap( p.x(), p.z() );
+		std::swap( p.y(), p.z() );
+	}
+
+};
+
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_AreaTest )
 
@@ -34,6 +51,10 @@ BOOST_AUTO_TEST_CASE( testComputeArea )
 			continue ;
 
 		std::istringstream iss(line);
+
+		std::string id ;
+		iss >> id ;
+
 		double expectedArea ;
 		iss >> expectedArea ;
 
@@ -44,7 +65,13 @@ BOOST_AUTO_TEST_CASE( testComputeArea )
 		double area = algorithm::area3D( *g ) ;
 		BOOST_TEST_MESSAGE( boost::format("area( '%1%' ) = %2%") % inputWkt % area );
 
-		//check area
+		RotateCoordinate rotateCoordinate ;
+		g->accept(rotateCoordinate);
+		double areaRotate = algorithm::area3D( *g ) ;
+
+		//check area == areaRotate
+		BOOST_CHECK_CLOSE( area, areaRotate, 0.5 );
+		//check area == expectedArea
 		BOOST_CHECK_CLOSE( area, expectedArea, 0.5 );
 	}
 }

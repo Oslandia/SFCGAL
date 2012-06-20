@@ -210,13 +210,18 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 			continue ;
 		}
 //		assert( it->is_valid() );
-		triangulatedSurface.addTriangle(
-			Triangle(
-				it->vertex(0)->info().original,
-				it->vertex(1)->info().original,
-				it->vertex(2)->info().original
-			)
-		);
+
+		const Point & a = it->vertex(0)->info().original ;
+		const Point & b = it->vertex(1)->info().original ;
+		const Point & c = it->vertex(2)->info().original ;
+
+		// check that vertex has an original vertex
+		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+			BOOST_THROW_EXCEPTION( Exception(
+				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % polygon.asText() ).str()
+			) ) ;
+		}
+		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
 	}
 }
 

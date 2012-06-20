@@ -195,6 +195,7 @@ namespace SFCGAL {
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
+
     protected:
        Geometry();
        Geometry( Geometry const& other );
