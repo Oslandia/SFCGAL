@@ -8,8 +8,9 @@ namespace algorithm {
 
 	/**
 	 * Compute the 3D convex hull for a geometry
+	 * @todo improve to handle collinear points and coplanar points
 	 */
-	double convexHull3D( const Geometry & g ) ;
+	Geometry* convexHull3D( const Geometry & g ) ;
 
 
 }//algorithm

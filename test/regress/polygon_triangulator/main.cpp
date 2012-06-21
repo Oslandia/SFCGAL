@@ -98,7 +98,7 @@ int main( int argc, char* argv[] ){
 
 	while ( std::getline( ifs, line ) ){
 		lineNumber++ ;
-//		std::cout << line << std::endl ;
+
 		boost::algorithm::trim( line );
 		if ( line.empty() ){
 			continue ;
@@ -132,17 +132,12 @@ int main( int argc, char* argv[] ){
 
 		//std::cout << "process " << id << std::endl;
 
-		std::auto_ptr< Geometry > g;
-		try {
-			g = io::readWkt( wkt ) ;
-		}catch( Exception & e ){
-			std::cerr << "[WKT-ERROR]" << wkt << std::endl ;
-			continue ;
-		}
-
 		bool failed = true ;
+
 		TriangulatedSurface triangulatedSurface ;
 		try {
+			std::auto_ptr< Geometry > g;
+			g = io::readWkt( wkt ) ;
 			algorithm::triangulate( *g, triangulatedSurface ) ;
 
 			//check area
@@ -155,11 +150,11 @@ int main( int argc, char* argv[] ){
 			}
 			failed = false ;
 		}catch ( Exception & e ){
-			std::cerr << "[Exception]" << id << "|" << e.what() << "|" << g->asText() << std::endl ;
+			std::cerr << "[Exception]" << id << "|" << e.what() << "|" << wkt << std::endl ;
 		}catch ( std::exception & e ){
-			std::cerr << "[std::exception]" << id << "|" << e.what() << "|" << g->asText() << "|"<< std::endl ;
+			std::cerr << "[std::exception]" << id << "|" << e.what() << "|" << wkt << std::endl ;
 		}catch ( ... ){
-			std::cerr << "[...]" << id << "|" << g->asText() << std::endl ;
+			std::cerr << "[...]" << id << "|" << wkt << std::endl ;
 		}
 
 		if ( failed ){

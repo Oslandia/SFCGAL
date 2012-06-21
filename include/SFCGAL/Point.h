@@ -37,6 +37,32 @@ namespace SFCGAL {
 		 * XY[Z] constructor
 		 */
 		Point( const double & x, const double & y, const double & z = NaN() ) ;
+
+		/**
+		 * Constructor from CGAL::Point_2<K>
+		 */
+		template < typename K >
+		Point( const CGAL::Point_2< K > & other ):
+			_x(other.x()),
+			_y(other.y()),
+			_z(NaN())
+		{
+
+		}
+
+		/**
+		 * Constructor from CGAL::Point_3<K>
+		 */
+		template < typename K >
+		Point( const CGAL::Point_3< K > & other ):
+			_x(other.x()),
+			_y(other.y()),
+			_z(other.z())
+		{
+
+		}
+
+
 		/**
 		 * copy constructor
 		 */
