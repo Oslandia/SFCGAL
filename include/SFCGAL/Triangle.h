@@ -6,6 +6,8 @@
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
 
+#include <CGAL/Triangle_2.h>
+#include <CGAL/Triangle_3.h>
 
 namespace SFCGAL {
 
@@ -70,6 +72,23 @@ namespace SFCGAL {
 			return _vertices[ i % 3 ];
 		}
 
+		/**
+		 * Convert to CGAL::Triangle_2
+		 */
+		template < typename K >
+		inline CGAL::Triangle_2<K> toTriangle_2() const
+		{
+			return CGAL::Triangle_2<K>( vertex(0).toPoint_2<K>(), vertex(1).toPoint_2<K>(), vertex(2).toPoint_2<K>() );
+		}
+
+		/**
+		 * Convert to CGAL::Triangle_3
+		 */
+		template < typename K >
+		inline CGAL::Triangle_3<K> toTriangle_3() const
+		{
+			return CGAL::Triangle_3<K>( vertex(0).toPoint_3<K>(), vertex(1).toPoint_3<K>(), vertex(2).toPoint_3<K>() );
+		}
 
 		//-- visitors
 

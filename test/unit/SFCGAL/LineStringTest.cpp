@@ -1,3 +1,5 @@
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
 
@@ -46,6 +48,29 @@ BOOST_AUTO_TEST_CASE( isLineString )
 {
 	LineString g;
 	BOOST_CHECK( g.is< LineString >() );
+}
+
+BOOST_AUTO_TEST_CASE( iteratorTests )
+{
+	std::vector<Point> points;
+	points.push_back( Point(2.0, 3.0, 1.0) );
+	points.push_back( Point(4.0, 5.0, 1.0) );
+	points.push_back( Point(6.0, 7.0, 1.0) );
+	points.push_back( Point(8.0, 9.0, 1.0) );
+	LineString g( points );
+
+	typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+
+	LineString::Point_2_Iterator<Kernel> pi, pi_end;
+	int i = 0;
+	for ( boost::tie( pi, pi_end ) = g.points_2<Kernel>(); pi != pi_end; pi++, i++ ) {
+		BOOST_CHECK_EQUAL( *pi, g.points()[i].toPoint_2<Kernel>() );
+	}
+	LineString::Point_3_Iterator<Kernel> ppi, ppi_end;
+	i = 0;
+	for ( boost::tie( ppi, ppi_end ) = g.points_3<Kernel>(); ppi != ppi_end; ppi++, i++ ) {
+		BOOST_CHECK_EQUAL( *ppi, g.points()[i].toPoint_3<Kernel>() );
+	}
 }
 
 BOOST_AUTO_TEST_SUITE_END()

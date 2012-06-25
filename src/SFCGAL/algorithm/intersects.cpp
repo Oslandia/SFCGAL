@@ -38,6 +38,7 @@ typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 
 #define CACHE_TRIANGULATION
+#define CACHE_AABBTREE
 
 namespace SFCGAL {
 namespace algorithm
@@ -64,27 +65,11 @@ namespace algorithm
 	}
     }
 
-    void to_triangle( const Triangle& tri, Triangle_2& rtri )
-    {
-	rtri = Triangle_2( Point_2( tri.vertex(0).x(), tri.vertex(0).y() ),
-			   Point_2( tri.vertex(1).x(), tri.vertex(1).y() ),
-			   Point_2( tri.vertex(2).x(), tri.vertex(2).y() ) );
-    }
-
-    void to_triangle( const Triangle& tri, Triangle_3& rtri )
-    {
-	rtri = Triangle_3( Point_3( tri.vertex(0).x(), tri.vertex(0).y(), tri.vertex(0).is3D() ? tri.vertex(0).z() : 0.0 ),
-			   Point_3( tri.vertex(1).x(), tri.vertex(1).y(), tri.vertex(1).is3D() ? tri.vertex(1).z() : 0.0 ),
-			   Point_3( tri.vertex(2).x(), tri.vertex(2).y(), tri.vertex(2).is3D() ? tri.vertex(2).z() : 0.0 ) );
-    }
-
     // TODO : replace by an iterator adaptor
     void to_triangles( const TriangulatedSurface& surf, std::list<Triangle_3>& rtri )
     {
 	for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
-	    Triangle_3 t;
-	    to_triangle( surf.triangleN( i ), t );
-	    rtri.push_back( t );
+	    rtri.push_back( surf.triangleN(i).toTriangle_3<Kernel>() );
 	}
     }
 
@@ -116,9 +101,7 @@ namespace algorithm
 
     bool intersects_( const Point& pta, const Triangle& tri )
     {
-	Triangle_3 t;
-	to_triangle( tri, t );
-	return t.has_on( pta.toPoint_3<Kernel>() );
+	return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
     }
 
     bool intersects_( const LineString& la, const LineString& lb )
@@ -180,17 +163,13 @@ namespace algorithm
 
 	Tree tree( segsa.begin(), segsa.end() );
 
-	Triangle_3 request_tri;
-	to_triangle( tri, request_tri );
+	Triangle_3 request_tri = tri.toTriangle_3<Kernel>();
 	return tree.do_intersect( request_tri );
     }
 
     bool intersects_( const Triangle& tri1, const Triangle& tri2 )
     {
-	Triangle_3 ctri1, ctri2;
-	to_triangle( tri1, ctri1 );
-	to_triangle( tri2, ctri2 );
-	return CGAL::do_intersect( ctri1, ctri2 );
+	return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
     }
 
     // accelerator for LineString x TriangulatedSurface
@@ -229,8 +208,7 @@ namespace algorithm
 	// Construct an AABB Tree
 	Tree tree( tris.begin(), tris.end() );
 
-	Triangle_3 request_tri;
-	to_triangle( la, request_tri );
+	Triangle_3 request_tri = la.toTriangle_3<Kernel>();
 	bool r;
 	try {
 	    r = tree.do_intersect( request_tri );
@@ -240,6 +218,18 @@ namespace algorithm
 	    return false;
 	}
 	return r;
+    }
+
+    typedef std::map<const Geometry*, boost::shared_ptr<CGAL::Polygon_2<Kernel> > > PolygonCache;
+    PolygonCache polygon_cache;
+
+    bool intersects_( const Polygon& pa, const Polygon& pb )
+    {
+	// no polygon with holes for now ...
+	BOOST_ASSERT( pa.numInteriorRings() == 0 );
+	BOOST_ASSERT( pb.numInteriorRings() == 0 );
+
+	return CGAL::do_intersect( pa.exteriorRing().toPolygon_2<Kernel>(), pb.exteriorRing().toPolygon_2<Kernel>() );
     }
 
     typedef std::list<Triangle_3>::const_iterator TIterator;
@@ -277,8 +267,7 @@ namespace algorithm
 
 	bool r = false;
 	for ( size_t i = 0; i < surfb.numTriangles(); i++ ) {
-	    Triangle_3 request_tri;
-	    to_triangle( surfb.triangleN(i), request_tri );
+	    Triangle_3 request_tri = surfb.triangleN(i).toTriangle_3<Kernel>();
 	    try {
 		r = ptree->do_intersect( request_tri );
 	    }
@@ -393,6 +382,7 @@ namespace algorithm
 	case TYPE_POLYGON: {
 	    switch ( gb.geometryTypeId() ) {
 	    case TYPE_POLYGON:
+		return intersects_( static_cast<const Polygon&>(ga), static_cast<const Polygon&>(gb) );
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_TIN:
 	    case TYPE_SOLID:
