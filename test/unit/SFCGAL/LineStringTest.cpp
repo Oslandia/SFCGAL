@@ -1,11 +1,11 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 #include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
 
 #include <SFCGAL/LineString.h>
 
 using namespace SFCGAL ;
+using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_LineStringTest )
 
@@ -61,12 +61,12 @@ BOOST_AUTO_TEST_CASE( iteratorTests )
 
 	typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 
-	LineString::Point_2_Iterator<Kernel> pi, pi_end;
+	LineString::Point_2_const_iterator<Kernel> pi, pi_end;
 	int i = 0;
 	for ( boost::tie( pi, pi_end ) = g.points_2<Kernel>(); pi != pi_end; pi++, i++ ) {
 		BOOST_CHECK_EQUAL( *pi, g.points()[i].toPoint_2<Kernel>() );
 	}
-	LineString::Point_3_Iterator<Kernel> ppi, ppi_end;
+	LineString::Point_3_const_iterator<Kernel> ppi, ppi_end;
 	i = 0;
 	for ( boost::tie( ppi, ppi_end ) = g.points_3<Kernel>(); ppi != ppi_end; ppi++, i++ ) {
 		BOOST_CHECK_EQUAL( *ppi, g.points()[i].toPoint_3<Kernel>() );

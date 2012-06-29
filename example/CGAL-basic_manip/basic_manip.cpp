@@ -1,18 +1,24 @@
 #include <iostream>
 
-#include <CGAL/Cartesian.h>
+//#include <CGAL/Cartesian.h>
+//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Point_2.h>
 #include <CGAL/Point_3.h>
 #include <CGAL/Segment_2.h>
 #include <CGAL/Segment_3.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
+#include <CGAL/Arr_segment_traits_2.h>
+#include <CGAL/Arrangement_2.h>
+#include <CGAL/Nef_polyhedron_3.h>
 
 /**
  * Defines the default Kernel used by SFCGAL
  * @todo allow to choose between differents Kernels
  */
-typedef CGAL::Cartesian< double > Kernel ;
+//typedef CGAL::Cartesian< double > Kernel ;
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
 
 /**
  * Defines a 2D mathematical vector
@@ -31,6 +37,8 @@ typedef Kernel::Point_2           Point_2 ;
  * Defines the Point_3 in the default Kernel
  */
 typedef Kernel::Point_3           Point_3 ;
+
+typedef Kernel::Triangle_3        Triangle_3 ;
 
 /**
  * Defines a Segment_2 in the default Kernel
@@ -168,7 +176,73 @@ int main( int argc, char* argv[] ){
 	    std::cout << "tri.has_on(p) : " << tri.has_on( p ) << std::endl;
 	    std::cout << "tri.has_on(p2): " << tri.has_on( p2 ) << std::endl;
 	}
+	std::cout << "--- 2D Arrangements ---" << std::endl;
+	{
+	    typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
+	    typedef Traits_2::Point_2                  APoint_2;
+	    typedef Traits_2::X_monotone_curve_2       ASegment_2;
+	    typedef CGAL::Arrangement_2<Traits_2>      Arrangement_2;
+	    
+	    Arrangement_2 arr;
+	    std::vector<ASegment_2> segs;
+	    segs.push_back( ASegment_2( APoint_2( 0.0, 0.0 ), APoint_2( 2.0, 0.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 2.0, 0.0 ), APoint_2( 1.0, 1.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 1.0, 1.0 ), APoint_2( 1.0, -1.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 1.0, -1.0 ), APoint_2( 0.0, 0.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 1.0, -1.0 ), APoint_2( 0.0, 0.0 ) ) );
+	    CGAL::insert( arr, segs.begin(), segs.end() );
 
+	    std::cout << "# of vertices: " << arr.number_of_vertices() << std::endl;
+	    std::cout << "# of faces: " << arr.number_of_faces() << std::endl;
+	    std::cout << "autointersects ? " << (arr.number_of_vertices() > 4 ? "YES" : "NO") << std::endl;
 
+	    arr.clear();
+	    segs.clear();
+	    // a triangle
+	    segs.push_back( ASegment_2( APoint_2( 0.0, 0.0 ), APoint_2( 1.0, 1.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 1.0, 1.0 ), APoint_2( 1.0, 0.0 ) ) );
+	    segs.push_back( ASegment_2( APoint_2( 1.0, 0.0 ), APoint_2( 0.0, 0.0 ) ) );
+	    // and a segment contained in the triangle
+	    segs.push_back( ASegment_2( APoint_2( 0.55, 0.5 ), APoint_2( 0.6, 0.5 ) ) );
+	    CGAL::insert( arr, segs.begin(), segs.end() );
+	    std::cout << "# of vertices: " << arr.number_of_vertices() << std::endl;
+	    std::cout << "# of faces: " << arr.number_of_faces() << std::endl;
+	    Arrangement_2::Face_iterator it;
+	    for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
+		std::cout << "unbounded: " << it->is_unbounded() << " has holes: " << (it->holes_begin() != it->holes_end()) << std::endl;
+	    }
+	}
+	std::cout << "--- Nef_polyhedron_3 ---" << std::endl;
+	{
+	    typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron;
+	    typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
+	    
+	    Polyhedron poly1;
+	    poly1.make_tetrahedron( Point_3( 0.0, -1.0, -1.0 ),
+	    			    Point_3( 2.0, -1.0, -1.0 ),
+	    			    Point_3( 1.5, 1.0, -1.0 ),
+	    			    Point_3( 1.0, 0.0, 1.0 ) );
+	    Nef_polyhedron nef1( poly1 );
+	    std::cout << "nef1.is_valid() " << nef1.is_valid() << std::endl;
+	    std::cout << "nef1.is_empty() " << nef1.is_empty() << std::endl;
+
+	    Polyhedron poly2;
+	    poly2.make_tetrahedron( Point_3( -1.0, -1.0, -1.0 ),
+	    			    Point_3( 1.0, -1.0, -1.0 ),
+	    			    Point_3( 0.5, 1.0, -1.0 ),
+	    			    Point_3( 0.0, 0.0, 1.0 ) );
+
+	    Nef_polyhedron nef2( poly2 );
+	    std::cout << "# of vertices: " << nef1.number_of_vertices() << std::endl;
+	    std::cout << "# of volumes: " << nef1.number_of_volumes() << std::endl;
+	    std::cout << "# of edges: " << nef1.number_of_edges() << std::endl;
+	    std::cout << "# of facets: " << nef1.number_of_facets() << std::endl;
+
+	    nef1 = nef1.join(nef2);
+	    std::cout << "# of vertices: " << nef1.number_of_vertices() << std::endl;
+	    std::cout << "# of volumes: " << nef1.number_of_volumes() << std::endl;
+	    std::cout << "# of edges: " << nef1.number_of_edges() << std::endl;
+	    std::cout << "# of facets: " << nef1.number_of_facets() << std::endl;
+	}
 	return 0;
 }

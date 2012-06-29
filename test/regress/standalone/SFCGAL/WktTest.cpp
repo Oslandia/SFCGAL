@@ -1,13 +1,12 @@
-#include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
-
 #include <fstream>
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
-
 #include "../../../test_config.h"
+
+#include <boost/test/unit_test.hpp>
+using namespace boost::unit_test ;
 
 using namespace SFCGAL ;
 

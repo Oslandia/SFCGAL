@@ -104,56 +104,76 @@ namespace SFCGAL {
 		 * Const iterator to 2D points
 		 */
 		template < typename K >
-		class Point_2_Iterator :
+		class Point_2_const_iterator :
 			public boost::iterator_facade<
-			Point_2_Iterator<K>,
+			Point_2_const_iterator<K>,
 			CGAL::Point_2<K> const,
 			boost::forward_traversal_tag >
 		{
 		public:
-			Point_2_Iterator() {}
-			explicit Point_2_Iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
-			Point_2_Iterator( const Point_2_Iterator<K>& other ) : it_(other.it_) {}
+			Point_2_const_iterator() {}
+			explicit Point_2_const_iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
+			Point_2_const_iterator( const Point_2_const_iterator<K>& other ) : it_(other.it_) {}
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
-			bool equal( const Point_2_Iterator<K>& other ) const { return this->it_ == other.it_; }
+			bool equal( const Point_2_const_iterator<K>& other ) const { return this->it_ == other.it_; }
 			const CGAL::Point_2<K>& dereference() const { p_ = it_->toPoint_2<K>(); return p_; }
 			mutable CGAL::Point_2<K> p_;
 			std::vector<Point>::const_iterator it_;
 		};
 		template < typename K >
-		std::pair< Point_2_Iterator<K>, Point_2_Iterator<K> > points_2() const
+		Point_2_const_iterator<K> points_2_begin() const
 		{
-			return std::make_pair( Point_2_Iterator<K>(points().begin()), Point_2_Iterator<K>(points().end()) );
+			return Point_2_const_iterator<K>(points().begin());
+		}
+		template < typename K >
+		Point_2_const_iterator<K> points_2_end() const
+		{
+			return Point_2_const_iterator<K>(points().end());
+		}
+		template < typename K >
+		std::pair< Point_2_const_iterator<K>, Point_2_const_iterator<K> > points_2() const
+		{
+			return std::make_pair( points_2_begin<K>(), points_2_end<K>() );
 		}
 		
 		/**
 		 * Const iterator to 3D points
 		 */
 		template < typename K >
-		class Point_3_Iterator :
+		class Point_3_const_iterator :
 			public boost::iterator_facade<
-			Point_3_Iterator<K>,
+			Point_3_const_iterator<K>,
 			CGAL::Point_3<K> const,
 			boost::forward_traversal_tag >
 		{
 		public:
-			Point_3_Iterator() {}
-			explicit Point_3_Iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
-			Point_3_Iterator( const Point_3_Iterator<K>& other ) : it_(other.it_) {}
+			Point_3_const_iterator() {}
+			explicit Point_3_const_iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
+			Point_3_const_iterator( const Point_3_const_iterator<K>& other ) : it_(other.it_) {}
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
-			bool equal( const Point_3_Iterator<K>& other ) const { return this->it_ == other.it_; }
+			bool equal( const Point_3_const_iterator<K>& other ) const { return this->it_ == other.it_; }
 			const CGAL::Point_3<K>& dereference() const { p_ = it_->toPoint_3<K>(); return p_; }
 			mutable CGAL::Point_3<K> p_;
 			std::vector<Point>::const_iterator it_;
 		};
 		template < typename K >
-		std::pair< Point_3_Iterator<K>, Point_3_Iterator<K> > points_3() const
+		Point_3_const_iterator<K> points_3_begin() const
 		{
-			return std::make_pair( Point_3_Iterator<K>(points().begin()), Point_3_Iterator<K>(points().end()) );
+			return Point_3_const_iterator<K>(points().begin());
+		}
+		template < typename K >
+		Point_3_const_iterator<K> points_3_end() const
+		{
+			return Point_3_const_iterator<K>(points().end());
+		}
+		template < typename K >
+		std::pair< Point_3_const_iterator<K>, Point_3_const_iterator<K> > points_3() const
+		{
+			return std::make_pair( points_3_begin<K>(), points_3_end<K>() );
 		}
 
 		/*
@@ -163,8 +183,7 @@ namespace SFCGAL {
 		template < typename K >
 		CGAL::Polygon_2<K> toPolygon_2() const
 		{
-			std::pair< Point_2_Iterator<K>, Point_2_Iterator<K> > p = this->points_2<K>();
-			return CGAL::Polygon_2<K>( p.first, p.second );
+			return CGAL::Polygon_2<K>( points_2_begin<K>(), points_2_end<K>() );
 		}
 		//-- visitors
 

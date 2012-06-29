@@ -1,7 +1,3 @@
-#include <boost/test/unit_test.hpp>
-#include <boost/format.hpp>
-using namespace boost::unit_test ;
-
 #include <fstream>
 
 #include <SFCGAL/all.h>
@@ -12,6 +8,9 @@ using namespace boost::unit_test ;
 
 #include "../../../test_config.h"
 
+#include <boost/test/unit_test.hpp>
+#include <boost/format.hpp>
+using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_IntersectsTest )

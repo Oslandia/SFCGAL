@@ -1,6 +1,3 @@
-#include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
-
 #include "../../../test_config.h"
 
 #include <fstream>
@@ -12,6 +9,8 @@ using namespace boost::unit_test ;
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/area.h>
 
+#include <boost/test/unit_test.hpp>
+using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatePolygonTest )

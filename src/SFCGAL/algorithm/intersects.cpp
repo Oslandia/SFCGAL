@@ -16,11 +16,7 @@
 #include <CGAL/Arr_segment_traits_2.h>
 #include <CGAL/Sweep_line_2_algorithms.h>
 #include <CGAL/Boolean_set_operations_2.h>
-
-#include <CGAL/AABB_tree.h>
-#include <CGAL/AABB_traits.h>
-#include <CGAL/AABB_triangle_primitive.h>
-#include <CGAL/AABB_segment_primitive.h>
+#include <CGAL/Arr_naive_point_location.h>
 
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/all.h>
@@ -37,23 +33,11 @@ typedef CGAL::Triangle_3<Kernel> Triangle_3;
 typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 
-#define CACHE_TRIANGULATION
-#define CACHE_AABBTREE
+//#define CACHE_TRIANGULATION
 
 namespace SFCGAL {
 namespace algorithm
 {
-    void to_segments( const LineString& ls, std::vector< Segment_3 >& segs )
-    {
-	segs.resize( ls.numPoints() - 1 );
-	for ( size_t i = 1; i < ls.numPoints(); i++ ) {
-	    const Point& prev = ls.pointN( i - 1 );
-	    const Point& curr = ls.pointN( i );
-	    segs[i-1] = Segment_3( Point_3( prev.x(), prev.y(), prev.is3D() ? prev.z() : 0.0 ),
-				       Point_3( curr.x(), curr.y(), curr.is3D() ? curr.z() : 0.0 ) );
-	}
-    }
-
     void to_segments( const LineString& ls, std::vector< Segment_2 >& segs )
     {
 	segs.resize( ls.numPoints() - 1 );
@@ -65,21 +49,6 @@ namespace algorithm
 	}
     }
 
-    // TODO : replace by an iterator adaptor
-    void to_triangles( const TriangulatedSurface& surf, std::list<Triangle_3>& rtri )
-    {
-	for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
-	    rtri.push_back( surf.triangleN(i).toTriangle_3<Kernel>() );
-	}
-    }
-
-    bool intersects_( const Point& pa, const Point& pb );
-    bool intersects_( const Point& pta, const LineString& ls );
-    bool intersects_( const Point& pta, const Triangle& tri );
-    bool intersects_( const Point& pta, const Polygon& poly );
-    bool intersects_( const Point& pta, const TriangulatedSurface& tri );
-    bool intersects_( const Point& pta, const PolyhedralSurface& tri );
-
     bool intersects_( const Point& pa, const Point& pb )
     {
 	return pa == pb;
@@ -87,10 +56,12 @@ namespace algorithm
 
     bool intersects_( const Point& pta, const LineString& ls )
     {
-	// build a CGAL::Segment for each line string element and call CGAL::has_on
-	Point_3 p = pta.toPoint_3<Kernel>();
+	// TODO : use point location with arrangements ?
 
-	std::vector< Segment_3 > segs;
+	// build a CGAL::Segment for each line string element and call CGAL::has_on
+	Point_2 p = pta.toPoint_2<Kernel>();
+
+	std::vector< Segment_2 > segs;
 	to_segments( ls, segs );
 	for ( size_t i = 0; i < segs.size(); i++ ) {
 	    if ( segs[i].has_on( p ) )
@@ -101,184 +72,167 @@ namespace algorithm
 
     bool intersects_( const Point& pta, const Triangle& tri )
     {
-	return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
-    }
+	// compute an arrangement of the triangle and the isolated point
+	// they intersect if the face where the point lies in is the triangle's face
+	typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
+	typedef Traits_2::Curve_2 Segment_2;
+	typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
+	typedef CGAL::Arr_naive_point_location<Arrangement_2> PointLocation;
 
-    bool intersects_( const LineString& la, const LineString& lb )
-    {
-	// Use 2D arrangments and compute_intersection_points for 2D lines ?
-	// TODO Equivalent in 3D ?? => 3D plane sweep ??
-	
-	if ( !la.is3D() && !lb.is3D() ) {
-	    typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
-	    typedef Traits_2::Curve_2 Segment_2;
-	    
-	    std::vector<Segment_2> segs;
-	    const std::vector<Point>& pts_a = la.points();
-	    const std::vector<Point>& pts_b = lb.points();
-	    for ( size_t i = 1; i < pts_a.size(); i++ ) {
-		Segment_2 seg( Point_2( pts_a[i-1].x(), pts_a[i-1].y() ),
-			       Point_2( pts_a[i].x(), pts_a[i].y() ) );
-		segs.push_back( seg );
-	    }
-	    for ( size_t i = 1; i < pts_b.size(); i++ ) {
-		Segment_2 seg( Point_2( pts_b[i-1].x(), pts_b[i-1].y() ),
-			       Point_2( pts_b[i].x(), pts_b[i].y() ) );
-		segs.push_back( seg );
-	    }
-	    
-	    std::vector<Point_2> pts;
-	    CGAL::compute_intersection_points( segs.begin(), segs.end(), std::back_inserter(pts) );
-	    return pts.size() > 0;
+	Arrangement_2 arr;
+	for ( size_t i = 0; i < 3 ; i++ ) {
+	    Segment_2 seg( tri.vertex(i).toPoint_2<Kernel>(), tri.vertex( (i+1)%3 ).toPoint_2<Kernel>() );
+	    CGAL::insert( arr, seg );
 	}
 
-	typedef std::vector<Segment_3>::const_iterator Iterator;
-	typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
-	typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
-	typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
-
-	std::vector<Segment_3> segsa, segsb;
-	to_segments( la, segsa );
-	to_segments( lb, segsb );
-
-	Tree tree( segsa.begin(), segsa.end() );
-
-	for ( size_t i = 0; i < segsb.size(); i++ ) {
-	    if ( tree.do_intersect( segsb[i] ) ) {
-		return true;
-	    }
+	Arrangement_2::Face_const_handle f;
+	PointLocation pl(arr);
+	CGAL::Object obj = pl.locate( pta.toPoint_2<Kernel>() );
+	if ( CGAL::assign( f, obj ) ) {
+	    // it intersects if it is the bounded face
+	    return !f->is_unbounded();
 	}
 	return false;
     }
 
+    bool intersects_( const LineString& la, const LineString& lb )
+    {
+	// Use 2D arrangments and compute_intersection_points for 2D lines
+	
+	typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
+	typedef Traits_2::Curve_2 Segment_2;
+	
+	std::vector<Segment_2> segs;
+	const std::vector<Point>& pts_a = la.points();
+	const std::vector<Point>& pts_b = lb.points();
+	for ( size_t i = 1; i < pts_a.size(); i++ ) {
+	    Segment_2 seg( Point_2( pts_a[i-1].x(), pts_a[i-1].y() ),
+			   Point_2( pts_a[i].x(), pts_a[i].y() ) );
+	    segs.push_back( seg );
+	}
+	for ( size_t i = 1; i < pts_b.size(); i++ ) {
+	    Segment_2 seg( Point_2( pts_b[i-1].x(), pts_b[i-1].y() ),
+			   Point_2( pts_b[i].x(), pts_b[i].y() ) );
+	    segs.push_back( seg );
+	}
+	
+	std::vector<Point_2> pts;
+	CGAL::compute_intersection_points( segs.begin(), segs.end(), std::back_inserter(pts) );
+	return pts.size() > 0;
+    }
+
     bool intersects_( const LineString& la, const Triangle& tri )
     {
-	typedef std::vector<Segment_3>::const_iterator Iterator;
-	typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
-	typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
-	typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
+	typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
+	typedef Traits_2::Curve_2 Segment_2;
+	typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
 
-	std::vector<Segment_3> segsa;
-	to_segments( la, segsa );
+	Arrangement_2 arr;
+	for ( size_t i = 0; i < la.points().size() ; i++ ) {
+	    Segment_2 seg( la.pointN(i).toPoint_2<Kernel>(), la.pointN( (i+1)%la.points().size() ).toPoint_2<Kernel>() );
+	    CGAL::insert( arr, seg );
+	}
 
-	Tree tree( segsa.begin(), segsa.end() );
+	// count number of vertices, faces and holes before inserting the triangle
+	size_t n_vertices = arr.number_of_vertices();
+	size_t n_faces = arr.number_of_vertices();
+	size_t n_holes = 0;
+	Arrangement_2::Face_iterator it;
+	for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
+	    n_holes += std::distance( it->holes_begin(), it->holes_end() );
+	}
 
-	Triangle_3 request_tri = tri.toTriangle_3<Kernel>();
-	return tree.do_intersect( request_tri );
+	CGAL::Triangle_2<Kernel> ctri = tri.toTriangle_2<Kernel>();
+	for ( size_t i = 0; i < 3; i++ ) {
+	    Segment_2 seg ( ctri[i], ctri[(i+1)%3] );
+	    CGAL::insert( arr, seg );
+	}
+	size_t new_n_holes = 0;
+	for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
+	    new_n_holes += std::distance( it->holes_begin(), it->holes_end() );
+	}
+
+	// they intersect if there are new vertices
+	// or new faces
+	// or new holes
+	// in the arrangement
+	return arr.number_of_vertices() > (n_vertices + 3) ||
+	    arr.number_of_faces() > (n_faces + 1) ||
+	    new_n_holes > n_holes;
     }
 
     bool intersects_( const Triangle& tri1, const Triangle& tri2 )
     {
-	return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
+	return CGAL::do_intersect( tri1.toTriangle_2<Kernel>(), tri2.toTriangle_2<Kernel>() );
     }
 
     // accelerator for LineString x TriangulatedSurface
     bool intersects_( const LineString& la, const TriangulatedSurface& surf )
     {
-	typedef std::list<Triangle_3>::const_iterator Iterator;
-	typedef CGAL::AABB_triangle_primitive<Kernel,Iterator> Primitive;
-	typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-	typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+	typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
+	typedef Traits_2::Curve_2 Segment_2;
+	typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
 
-	std::list<Triangle_3> tris;
-	to_triangles( surf, tris );
-	// Construct an AABB Tree
-	Tree tree( tris.begin(), tris.end() );
+	Arrangement_2 arr;
+	for ( size_t i = 0; i < la.points().size() ; i++ ) {
+	    Segment_2 seg( la.pointN(i).toPoint_2<Kernel>(), la.pointN( (i+1)%la.points().size() ).toPoint_2<Kernel>() );
+	    CGAL::insert( arr, seg );
+	}
 
-	std::vector<Segment_3> segs;
-	to_segments( la, segs );
-	for ( size_t i = 0; i < segs.size(); i++ ) {
-	    if ( tree.do_intersect( segs[i] ) ) {
-		return true;
+	// count number of vertices, faces and holes before inserting the triangle
+	size_t n_vertices = arr.number_of_vertices();
+	size_t n_faces = arr.number_of_vertices();
+	size_t n_holes = 0;
+	Arrangement_2::Face_iterator it;
+	for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
+	    n_holes += std::distance( it->holes_begin(), it->holes_end() );
+	}
+
+	for ( size_t j = 0; j < surf.numTriangles(); j++ ) {
+	    CGAL::Triangle_2<Kernel> ctri = surf.triangleN(j).toTriangle_2<Kernel>();
+	    for ( size_t i = 0; i < 3; i++ ) {
+		Segment_2 seg ( ctri[i], ctri[(i+1)%3] );
+		CGAL::insert( arr, seg );
 	    }
 	}
-	return false;
-    }
-
-    // accelerator for Triangle x TriangulatedSurface
-    bool intersects_( const Triangle& la, const TriangulatedSurface& surf )
-    {
-	typedef std::list<Triangle_3>::const_iterator Iterator;
-	typedef CGAL::AABB_triangle_primitive<Kernel,Iterator> Primitive;
-	typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-	typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
-
-	std::list<Triangle_3> tris;
-	to_triangles( surf, tris );
-	// Construct an AABB Tree
-	Tree tree( tris.begin(), tris.end() );
-
-	Triangle_3 request_tri = la.toTriangle_3<Kernel>();
-	bool r;
-	try {
-	    r = tree.do_intersect( request_tri );
+	size_t new_n_holes = 0;
+	for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
+	    new_n_holes += std::distance( it->holes_begin(), it->holes_end() );
 	}
-	catch ( std::exception& e ) {
-	    std::cout << surf.asText() << " does not have a good AABB tree" << std::endl;
-	    return false;
-	}
-	return r;
-    }
 
-    typedef std::map<const Geometry*, boost::shared_ptr<CGAL::Polygon_2<Kernel> > > PolygonCache;
-    PolygonCache polygon_cache;
+	// they intersect if there are new vertices
+	// or new faces
+	// or new holes
+	// in the arrangement
+	return arr.number_of_vertices() > (n_vertices + 3) ||
+	    arr.number_of_faces() > (n_faces + 1) ||
+	    new_n_holes > n_holes;
+    }
 
     bool intersects_( const Polygon& pa, const Polygon& pb )
     {
-	// no polygon with holes for now ...
-	BOOST_ASSERT( pa.numInteriorRings() == 0 );
-	BOOST_ASSERT( pb.numInteriorRings() == 0 );
+	LineString::Point_2_const_iterator<Kernel> pia, pia_end;
+	LineString::Point_2_const_iterator<Kernel> pib, pib_end;
+	pia = pa.exteriorRing().points_2_begin<Kernel>();
+	pia_end = pa.exteriorRing().points_2_end<Kernel>();
+	pib = pb.exteriorRing().points_2_begin<Kernel>();
+	pib_end = pb.exteriorRing().points_2_end<Kernel>();
 
-	return CGAL::do_intersect( pa.exteriorRing().toPolygon_2<Kernel>(), pb.exteriorRing().toPolygon_2<Kernel>() );
-    }
-
-    typedef std::list<Triangle_3>::const_iterator TIterator;
-    typedef CGAL::AABB_triangle_primitive<Kernel,TIterator> TPrimitive;
-    typedef CGAL::AABB_traits<Kernel, TPrimitive> AABB_triangle_traits;
-    typedef CGAL::AABB_tree<AABB_triangle_traits> TriangleTree;
-
-#ifdef CACHE_AABBTREE
-    typedef std::map<const Geometry*, boost::shared_ptr<TriangleTree> > TriangleTreeCache;
-    TriangleTreeCache triangle_tree_cache;
-#endif
-
-    // accelerator for TriangulatedSurface x TriangulatedSurface
-    bool intersects_( const TriangulatedSurface& surfa, const TriangulatedSurface& surfb )
-    {
-	TriangleTree* ptree;
-#ifdef CACHE_AABBTREE
-	TriangleTreeCache::const_iterator it = triangle_tree_cache.find( &surfa );
-	if ( it == triangle_tree_cache.end() ) {
-#endif
-	    std::list<Triangle_3> tris;
-	    to_triangles( surfa, tris );
-	    // Construct an AABB Tree
-#ifdef CACHE_AABBTREE
-	    ptree = new TriangleTree( tris.begin(), tris.end() );
-	    triangle_tree_cache[&surfa].reset( ptree );
+	CGAL::Polygon_with_holes_2<Kernel> polya( CGAL::Polygon_2<Kernel>( pia, pia_end ) );
+	for ( size_t i = 0; i < pa.numInteriorRings(); i++ ) {
+	    LineString::Point_2_const_iterator<Kernel> pi, pi_end;
+	    pi = pa.interiorRingN( i ).points_2_begin<Kernel>();
+	    pi_end = pa.interiorRingN( i ).points_2_end<Kernel>();
+	    polya.add_hole( CGAL::Polygon_2<Kernel>( pi, pi_end ) );
 	}
-	else {
-	    ptree = it->second.get();
+	CGAL::Polygon_with_holes_2<Kernel> polyb( CGAL::Polygon_2<Kernel>( pib, pib_end ) );
+	for ( size_t i = 0; i < pb.numInteriorRings(); i++ ) {
+	    LineString::Point_2_const_iterator<Kernel> pi, pi_end;
+	    pi = pb.interiorRingN( i ).points_2_begin<Kernel>();
+	    pi_end = pb.interiorRingN( i ).points_2_end<Kernel>();
+	    polyb.add_hole( CGAL::Polygon_2<Kernel>( pi, pi_end ) );
 	}
-#else
-	TriangleTree tree( tris.begin(), tris.end() );
-	ptree = &tree;
-#endif
-
-	bool r = false;
-	for ( size_t i = 0; i < surfb.numTriangles(); i++ ) {
-	    Triangle_3 request_tri = surfb.triangleN(i).toTriangle_3<Kernel>();
-	    try {
-		r = ptree->do_intersect( request_tri );
-	    }
-	    catch ( std::exception& e ) {
-		std::cout << surfa.asText() << " has not a good AABB tree" << std::endl;
-		return false;
-	    }
-	    if ( r )
-		return r;
-	}
-	return r;
+	return CGAL::do_intersect( polya, polyb );
     }
 
 #ifdef CACHE_TRIANGULATION
@@ -369,10 +323,8 @@ namespace algorithm
 	    case TYPE_POLYGON:
 	    case TYPE_POLYHEDRALSURFACE:
 	    case TYPE_SOLID:
-		break;
 	    case TYPE_TIN:
-		// call the proper accelerator
-	     	return intersects_( tri, static_cast<const TriangulatedSurface&>( gb ));
+		break;
 	    default:
 		// symmetric call
 		return intersects( gb, ga );
@@ -408,8 +360,6 @@ namespace algorithm
 	case TYPE_TIN: {
 	    switch ( gb.geometryTypeId() ) {
 	    case TYPE_TIN:
-		return intersects_( static_cast<const TriangulatedSurface&>(ga),
-				    static_cast<const TriangulatedSurface&>(gb) );
 	    case TYPE_SOLID:
 		break;
 	    default:
@@ -489,9 +439,6 @@ namespace algorithm
 	    return false;
 	}
 
-	if ( (ga.geometryTypeId() == TYPE_SOLID) || (gb.geometryTypeId() == TYPE_SOLID) ) {
-	    throw std::runtime_error( "intersects() not yet implemented on " + ga.geometryType() + " x " + gb.geometryType() );
-	}
 	throw std::runtime_error( "intersects() not supported on " + ga.geometryType() + " x " + gb.geometryType() );
 	return false;
     }

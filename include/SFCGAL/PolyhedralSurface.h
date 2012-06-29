@@ -6,7 +6,10 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Polygon.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/algorithm/triangulate.h>
 
+#include <CGAL/Polyhedron_3.h>
 
 namespace SFCGAL {
 
@@ -74,6 +77,17 @@ namespace SFCGAL {
 		inline void               addPolygon( const Polygon & polygon )
 		{
 			_polygons.push_back( polygon );
+		}
+
+		/**
+		 * Convert to CGAL::Polyhedron_3
+		 */
+		template < typename K >
+		CGAL::Polyhedron_3<K> toPolyhedron_3() const
+		{
+			TriangulatedSurface tri;
+			algorithm::triangulate( *this, tri );
+			return tri.toPolyhedron_3<K>();
 		}
 
 		const std::vector< Polygon > & polygons() const { return _polygons; }
