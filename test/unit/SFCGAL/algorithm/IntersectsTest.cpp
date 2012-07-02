@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( testPointLineStringIntersects )
     BOOST_CHECK_EQUAL( algorithm::intersects( ptb, *ls ), true );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, *ls ), true );
     // point not on a line
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptc, *ls ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptc, *ls ), true ); // force 2D
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptc, *ls ), false );
     // symmetric calls
 }
@@ -57,13 +57,11 @@ BOOST_AUTO_TEST_CASE( testPointTriangleIntersects )
     Point pte( 2.8, 2.2, 0.0 );
     Triangle tri( Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
     // point on a vertex
-    BOOST_CHECK_EQUAL( algorithm::intersects( pta, tri ), false );
-    // FIXME : should be false
-    //    BOOST_CHECK_EQUAL( algorithm::intersects3D( pta, tri ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pta, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( pta, tri ), true );
     // point on a boundary
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, tri ), false );
-    // FIXME : should be false
-    //    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, tri ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, tri ), true );
     // point not inside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptc, tri ), false );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptc, tri ), false );
@@ -94,27 +92,24 @@ BOOST_AUTO_TEST_CASE( testPointPolygonIntersects )
     Polygon poly( ext );
 
     // point on a vertex
-    BOOST_CHECK_EQUAL( algorithm::intersects( pta, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pta, poly ), true );
     // point on a boundary
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, poly ), true );
     // point outside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptc, poly ), false );
     // point inside
     BOOST_CHECK_EQUAL( algorithm::intersects( pte, poly ), true );
-    // point inside
-    // FIXME : should be false.
-    // ! intersection with a polygon relies on a triangulation.
-    // This 0.5, 0.5 point is on the edge of a triangle and thus return false
-    //    BOOST_CHECK_EQUAL( algorithm::intersects( ptd, poly ), true );
+    // point inside and on a triangulation edge
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptd, poly ), true );
 }
 
 BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
 {
-    Point pta( 0.0, 0.0 );
-    Point ptb( 0.5, 0.0 );
-    Point ptc( 0.0, 1.5 );
-    Point ptd( 0.6, 0.6 );
-    Point pte( 0.5, 0.5 );
+	Point pta( 0.0, 0.0, 0.0 );
+	Point ptb( 0.5, 0.0, 0.0 );
+	Point ptc( 0.0, 1.5, 0.0 );
+	Point ptd( 0.6, 0.6, 0.0 );
+	Point pte( 0.5, 0.5, 0.0 );
 
     // a square
     std::vector<Point> ring;
@@ -127,11 +122,11 @@ BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
     Polygon poly( ext );
 
     // point on a vertex
-    BOOST_CHECK_EQUAL( algorithm::intersects( pta, poly ), false );
-    BOOST_CHECK_EQUAL( algorithm::intersects3D( pta, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pta, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( pta, poly ), true );
     // point on a boundary
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, poly ), false );
-    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, poly ), true );
     // point outside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptc, poly ), false );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptc, poly ), false );
@@ -139,9 +134,8 @@ BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
     BOOST_CHECK_EQUAL( algorithm::intersects( ptd, poly ), true );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptd, poly ), true );
     // point inside and on a triangulation edge
-    // FIXME: should be true
-    //    BOOST_CHECK_EQUAL( algorithm::intersects( pte, poly ), true );
-    //    BOOST_CHECK_EQUAL( algorithm::intersects3D( pte, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pte, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( pte, poly ), true );
 }
 
 BOOST_AUTO_TEST_CASE( testLineStringLineStringIntersects )
@@ -198,9 +192,9 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 	// intersection with a point
 	{
 		// point on a vertex
-		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.0, 0.0), solid ), false );
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.0, 0.0), solid ), true );
 		// point on an edge
-		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.5, 0.0), solid ), false );
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.5, 0.0), solid ), true );
 		// point outside the volume
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(1.5, 0.5, 0.5), solid ), false );
 		// point inside the volume
@@ -223,8 +217,7 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 		// segment crossing the volume
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( lsd, solid ), true );
 		// segment crossing the volume on an edge
-		// FIXME should be false ??
-		//	BOOST_CHECK_EQUAL( algorithm::intersects3D( lse, solid ), false );
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( lse, solid ), true );
 	}
 
 	// intersection with a triangle
@@ -244,8 +237,7 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 		// triangle crossing the volume
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( tri4, solid ), true );
 		// triangle crossing the volume on an edge
-		// FIXME should be false ??
-		//		BOOST_CHECK_EQUAL( algorithm::intersects3D( tri5, solid ), false );
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( tri5, solid ), true );
 	}
 
 	// intersection with another solid
@@ -276,8 +268,7 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 		// a non-overlapping solid
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( solidb, solid ), false );
 		// a touching solid (on the edge)
-		// FIXME : should be false
-		//		BOOST_CHECK_EQUAL( algorithm::intersects3D( solidc, solid ), false );
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( solidc, solid ), true );
 		// an overlapping solid
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( solidd, solid ), true );
 	}
