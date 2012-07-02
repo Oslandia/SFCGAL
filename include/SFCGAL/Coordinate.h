@@ -155,6 +155,6 @@ namespace SFCGAL {
 	};
 
 
-}
+}//SFCGAL
 
 #endif

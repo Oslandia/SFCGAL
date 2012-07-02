@@ -151,6 +151,9 @@ namespace SFCGAL {
 			return _coordinate.toPoint_3< K >();
 		}
 
+
+		inline Coordinate &       coordinate() { return _coordinate; }
+		inline const Coordinate & coordinate() const { return _coordinate; }
 	private:
 		Coordinate _coordinate ;
 		//add m here, keep coordinate as a spatial position that can be shared
