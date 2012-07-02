@@ -13,9 +13,11 @@
 #include <vector>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  Kernel;
-typedef CGAL::Polyhedron_3<Kernel>                           Polyhedron_3;
-typedef CGAL::Segment_3< Kernel >                            Segment_3;
+
 typedef CGAL::Point_3< Kernel >                              Point_3;
+typedef CGAL::Segment_3< Kernel >                            Segment_3;
+typedef CGAL::Triangle_3< Kernel >                           Triangle_3;
+typedef CGAL::Polyhedron_3< Kernel >                         Polyhedron_3;
 
 
 namespace SFCGAL {
@@ -26,6 +28,9 @@ namespace algorithm {
 ///
 Geometry* convexHull3D( const Geometry & g )
 {
+	using CGAL::object_cast ;
+
+
 	detail::GetPointsVisitor getPointVisitor;
 	const_cast< Geometry & >(g).accept( getPointVisitor );
 
@@ -36,45 +41,46 @@ Geometry* convexHull3D( const Geometry & g )
 		points.push_back( getPointVisitor.points[i]->toPoint_3< Kernel >() );
 	}
 
-	if ( points.empty() ){
-		return new GeometryCollection();
-	}else if ( points.size() == 1 ){
-		std::vector< Point_3 >::iterator it = points.begin() ;
-		return new Point( it->x(), it->y(), it->z() );
-	}else if ( points.size() == 2 ){
-		std::vector< Point_3 >::iterator it = points.begin() ;
-		Point a( it->x(), it->y(), it->z() ); ++it ;
-		Point b( it->x(), it->y(), it->z() );
-		return new LineString( a, b );
-	}else if ( points.size() < 4 ){
-		BOOST_THROW_EXCEPTION(Exception(
-			(boost::format("Not enougth points to compute ConvexHull3D in %1%") % g.asText()).str()
-		));
+	/*
+	 * http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Convex_hull_3/Chapter_main.html
+	 *
+	 * handles all degenerate cases and returns a CGAL::Object,
+	 * which may be a point, a segment, a triangle, or a polyhedron.
+	 */
+	CGAL::Object hull;
+	CGAL::convex_hull_3( points.begin(), points.end(), hull ) ;
+
+	if (const Point_3 * point = object_cast< Point_3 >(&hull)) {
+		return new Point( *point );
+	} else if (const Segment_3 * segment = object_cast< Segment_3 >(&hull)) {
+		return new LineString( Point( segment->start() ), Point( segment->end() ) );
+	} else if (const Triangle_3 * triangle = object_cast< Triangle_3 >(&hull)) {
+		return new Triangle(
+			Point( triangle->vertex(0) ),
+			Point( triangle->vertex(1) ),
+			Point( triangle->vertex(2) )
+		);
+	} else if (const Polyhedron_3 * polyhedron = object_cast< Polyhedron_3 >(&hull)) {
+		std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
+		for ( Polyhedron_3::Facet_const_iterator it_facet = polyhedron->facets_begin();
+				it_facet != polyhedron->facets_end(); ++it_facet)
+		{
+			Polyhedron_3::Halfedge_around_facet_const_circulator it = it_facet->facet_begin();
+
+			std::vector< Point > ring ;
+			do {
+				ring.push_back( Point( it->vertex()->point() ) );
+			} while ( ++it != it_facet->facet_begin());
+			ring.push_back( ring.front() );
+
+			result->addPolygon( Polygon( ring ) );
+		}
+		return result.release() ;
+	}else{
+		BOOST_THROW_EXCEPTION( Exception("unexpected CGAL output type in CGAL::convex_hull_3") );
 	}
-
-	Polyhedron_3 polyhedron;
-	CGAL::convex_hull_3( points.begin(), points.end(), polyhedron ) ;
-
-	//std::cout << polyhedron.size_of_vertices() << std::endl ;
-	std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
-	for ( Polyhedron_3::Facet_iterator it_facet = polyhedron.facets_begin();
-			it_facet != polyhedron.facets_end(); ++it_facet)
-	{
-		Polyhedron_3::Halfedge_around_facet_circulator it = it_facet->facet_begin();
-
-		std::vector< Point > ring ;
-		do {
-			ring.push_back( Point( it->vertex()->point() ) );
-		} while ( ++it != it_facet->facet_begin());
-		ring.push_back( ring.front() );
-
-		result->addPolygon( Polygon( ring ) );
-	}
-
-	return result.release() ;
 }
 
 
 }//algorithm
 }//SFCGAL
-
