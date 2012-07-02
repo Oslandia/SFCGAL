@@ -219,20 +219,54 @@ namespace algorithm
 	{
 		CGAL::Object obj = nef.locate( pt.toPoint_3<ExactKernel>() );
 		typename Nef::Volume_const_handle vol;
+		typename Nef::Halffacet_const_handle facet;
+		typename Nef::Halfedge_const_handle edge;
+		typename Nef::Vertex_const_handle vertex;
 		if ( CGAL::assign(vol, obj) ) {
 			typename Nef::Volume_const_iterator it;
-			int i = 0;
-			// Here we assume the unbounded volume (around the tested volume)
-			// is the first one in the list of volumes
-			// WARNING ! Not very clean ! There might be other ways ...
-			for ( it = nef.volumes_begin(); it != nef.volumes_end(); ++it, ++i ) {
+			// If mark() is true, the volume is the one we requested
+			for ( it = nef.volumes_begin(); it != nef.volumes_end(); ++it ) {
 				if ( it == vol ) {
-					if ( 0 == i ) {
-						return false;
-					}
-					else {
+					if ( it->mark() )
 						return true;
-					}
+					else
+						return false;
+				}
+			}
+		}
+		else if ( CGAL::assign(facet, obj) ) {
+			typename Nef::Halffacet_const_iterator it;
+			// If mark() is true, the volume is the one we requested
+			for ( it = nef.halffacets_begin(); it != nef.halffacets_end(); ++it ) {
+				if ( it == facet ) {
+					if ( it->mark() )
+						return true;
+					else
+						return false;
+				}
+			}
+		}
+		else if ( CGAL::assign(edge, obj) ) {
+			typename Nef::Halfedge_const_iterator it;
+			// If mark() is true, the volume is the one we requested
+			for ( it = nef.halfedges_begin(); it != nef.halfedges_end(); ++it ) {
+				if ( it == edge ) {
+					if ( it->mark() )
+						return true;
+					else
+						return false;
+				}
+			}
+		}
+		else if ( CGAL::assign(vertex, obj) ) {
+			typename Nef::Vertex_const_iterator it;
+			// If mark() is true, the volume is the one we requested
+			for ( it = nef.vertices_begin(); it != nef.vertices_end(); ++it ) {
+				if ( it == vertex ) {
+					if ( it->mark() )
+						return true;
+					else
+						return false;
 				}
 			}
 		}
