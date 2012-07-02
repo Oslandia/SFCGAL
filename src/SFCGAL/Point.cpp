@@ -10,9 +10,7 @@ namespace SFCGAL {
 ///
 ///
 Point::Point():
-	_x( NaN() ),
-	_y( NaN() ),
-	_z( NaN() )
+	_coordinate()
 {
 }
 
@@ -20,9 +18,7 @@ Point::Point():
 ///
 ///
 Point::Point( const double & x, const double & y, const double & z ):
-	_x(x),
-	_y(y),
-	_z(z)
+	_coordinate(x,y,z)
 {
 
 }
@@ -32,9 +28,7 @@ Point::Point( const double & x, const double & y, const double & z ):
 ///
 ///
 Point::Point( const Point & other ):
-	_x(other._x),
-	_y(other._y),
-	_z(other._z)
+	_coordinate(other._coordinate)
 {
 
 }
@@ -44,9 +38,7 @@ Point::Point( const Point & other ):
 ///
 Point& Point::operator = ( const Point & other )
 {
-	_x = other._x ;
-	_y = other._y ;
-	_z = other._z ;
+	_coordinate = other._coordinate ;
 	return *this ;
 }
 
@@ -96,11 +88,7 @@ int Point::dimension() const
 ///
 int Point::coordinateDimension() const
 {
-	if ( isEmpty() ){
-		return 0 ;
-	}else {
-		return is3D() ? 3 : 2 ;
-	}
+	return _coordinate.coordinateDimension() ;
 }
 
 
@@ -109,7 +97,7 @@ int Point::coordinateDimension() const
 ///
 bool Point::isEmpty() const
 {
-	return isNaN(_x) || isNaN(_y);
+	return _coordinate.isEmpty() ;
 }
 
 ///
@@ -117,7 +105,7 @@ bool Point::isEmpty() const
 ///
 bool Point::is3D() const
 {
-	return ! isEmpty() && ! isNaN(_z) ;
+	return _coordinate.is3D() ;
 }
 
 
@@ -142,41 +130,7 @@ void Point::accept( ConstGeometryVisitor & visitor ) const
 ///
 bool Point::operator < ( const Point & other ) const
 {
-	// no empty comparison
-	if ( isEmpty() || other.isEmpty() ){
-		BOOST_THROW_EXCEPTION( Exception("try to compare empty points using a < b ") );
-	}
-
-	// no mixed dimension comparison
-	if ( ( is3D() && ! other.is3D() ) || ( ! is3D() && other.is3D() ) ){
-		BOOST_THROW_EXCEPTION( Exception("try to compare empty points with different coordinate dimension using a < b") );
-	}
-
-	// comparison along x
-	if ( _x < other._x ){
-		return true ;
-	}else if ( other._x < _x ){
-		return false;
-	}
-
-	// comparison along y
-	if ( _y < other._y ){
-		return true ;
-	}else if ( other._y < _y ){
-		return false;
-	}
-
-	// comparison along z if possible
-	if ( is3D() ){
-		if ( _z < other._z ){
-			return true ;
-		}else if ( other._z < _z ){
-			return false;
-		}
-	}
-
-	// points are equals
-	return false;
+	return _coordinate < other._coordinate ;
 }
 
 ///
@@ -184,14 +138,7 @@ bool Point::operator < ( const Point & other ) const
 ///
 bool Point::operator == ( const Point & other ) const
 {
-	if ( isEmpty() ){
-		return other.isEmpty() ;
-	}
-	if ( is3D() || other.is3D() ){
-		return _x == other._x && _y == other._y  && _z == other._z ;
-	}else{
-		return _x == other._x && _y == other._y ;
-	}
+	return _coordinate == other._coordinate ;
 }
 
 ///
@@ -199,7 +146,7 @@ bool Point::operator == ( const Point & other ) const
 ///
 bool Point::operator != ( const Point & other ) const
 {
-	return ! ( *this == other );
+	return _coordinate != other._coordinate ;
 }
 
 

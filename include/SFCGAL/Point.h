@@ -1,17 +1,9 @@
 #ifndef _SFCGAL_POINT_H_
 #define _SFCGAL_POINT_H_
 
-#include <boost/assert.hpp>
-
-#include <SFCGAL/numeric.h>
+#include <SFCGAL/Coordinate.h>
 
 #include <SFCGAL/Geometry.h>
-
-#include <CGAL/Vector_2.h>
-#include <CGAL/Vector_3.h>
-
-#include <CGAL/Point_2.h>
-#include <CGAL/Point_3.h>
 
 namespace SFCGAL {
 
@@ -43,9 +35,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Point( const CGAL::Point_2< K > & other ):
-			_x(other.x()),
-			_y(other.y()),
-			_z(NaN())
+			_coordinate(other)
 		{
 
 		}
@@ -55,9 +45,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Point( const CGAL::Point_3< K > & other ):
-			_x(other.x()),
-			_y(other.y()),
-			_z(other.z())
+			_coordinate(other)
 		{
 
 		}
@@ -94,14 +82,14 @@ namespace SFCGAL {
 
 		//--- accessors
 
-		inline const double& x() const { return _x ; }
-		inline double & x() { return _x ; }
+		inline const double& x() const { return _coordinate.x() ; }
+		inline double & x() { return _coordinate.x() ; }
 
-		inline const double& y() const { return _y ; }
-		inline double & y() { return _y ; }
+		inline const double& y() const { return _coordinate.y() ; }
+		inline double & y() { return _coordinate.y() ; }
 
-		inline const double& z() const { return _z ; }
-		inline double & z() { return _z ; }
+		inline const double& z() const { return _coordinate.z() ; }
+		inline double & z() { return _coordinate.z() ; }
 
 
 		/**
@@ -133,10 +121,7 @@ namespace SFCGAL {
 		template < typename K >
 		inline CGAL::Vector_2< K > toVector_2() const
 		{
-			return CGAL::Vector_2< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y
-			);
+			return _coordinate.toVector_2< K >();
 		}
 
 		/**
@@ -145,11 +130,7 @@ namespace SFCGAL {
 		template < typename K >
 		inline CGAL::Vector_3< K > toVector_3() const
 		{
-			return CGAL::Vector_3< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y,
-				isNaN(_z) ? 0.0 : _z
-			);
+			return _coordinate.toVector_3< K >();
 		}
 
 		/**
@@ -158,10 +139,7 @@ namespace SFCGAL {
 		template < typename K >
 		inline CGAL::Point_2< K > toPoint_2() const
 		{
-			return CGAL::Point_2< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y
-			);
+			return _coordinate.toPoint_2< K >();
 		}
 
 		/**
@@ -170,17 +148,12 @@ namespace SFCGAL {
 		template < typename K >
 		inline CGAL::Point_3< K > toPoint_3() const
 		{
-			return CGAL::Point_3< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y,
-				isNaN(_z) ? 0.0 : _z
-			);
+			return _coordinate.toPoint_3< K >();
 		}
 
 	private:
-		double _x ;
-		double _y ;
-		double _z ;
+		Coordinate _coordinate ;
+		//add m here, keep coordinate as a spatial position that can be shared
 	};
 
 
