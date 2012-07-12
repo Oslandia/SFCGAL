@@ -26,8 +26,8 @@ void makeConsistentOrientation( TriangulatedSurface & g )
 	std::vector< std::vector< edge_descriptor > >    sharedTriangles ;
 
 	GeometryGraph graph ;
-	GeometryGraphBuilder graphBuilder( graph ) ;
-	sharedTriangles = graphBuilder.addTriangulatedSurface( g );
+	GeometryGraphBuilder<Vertex, Edge> graphBuilder( graph ) ;
+	//	sharedTriangles = graphBuilder.addTriangulatedSurface( g );
 
 	std::cout << "sharedTriangles.size() " << sharedTriangles.size() << std::endl;
 
