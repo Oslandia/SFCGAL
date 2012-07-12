@@ -2,9 +2,6 @@
 #define _SFCGAL_GRAPH_GEOMETRYGRAPHBUILDER_H_
 
 #include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
 namespace graph {
@@ -16,9 +13,9 @@ namespace graph {
 	template < typename V, typename E >
 	class GeometryGraphBuilder {
 	public:
-		typedef GeometryGraphT< V, E >                                    graph_t ;
-		typedef typename GeometryGraphT< V, E >::vertex_descriptor        vertex_descriptor ;
-		typedef typename GeometryGraphT< V, E >::edge_descriptor          edge_descriptor ;
+		typedef GeometryGraph< V, E >                                    graph_t ;
+		typedef typename GeometryGraph< V, E >::vertex_descriptor        vertex_descriptor ;
+		typedef typename GeometryGraph< V, E >::edge_descriptor          edge_descriptor ;
 
 		/**
 		 * allows to match duplicates
@@ -49,7 +46,7 @@ namespace graph {
 		vertex_descriptor addPoint( const Point & point ) {
 			BOOST_ASSERT( ! point.isEmpty() );
 
-			typename coordinate_list::const_iterator it = _vertices.find( point.coordinate() ) ;
+			coordinate_list::const_iterator it = _vertices.find( point.coordinate() ) ;
 			if ( it != _vertices.end() ){
 				return it->second ;
 			}else{
@@ -97,8 +94,8 @@ namespace graph {
 			BOOST_ASSERT( ! polygon.isEmpty() );
 
 			std::vector< std::vector< edge_descriptor > > rings ;
-			for ( size_t i = 0; i < polygon.numRings(); i++ ){
-				rings.push_back( addLineString( polygon.ringN(i) ) );
+			for ( size_t i = 0; i < rings.numRings(); i++ ){
+				edges.push_back( addLineString( polygon.ringN(i) ) );
 			}
 			return rings ;
 		}

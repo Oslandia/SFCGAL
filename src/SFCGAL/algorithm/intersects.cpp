@@ -89,8 +89,8 @@ namespace algorithm
 			CGAL::Point_2<ExactKernel> p1( tri.vertex(i).toPoint_2<ExactKernel>() );
 			CGAL::Point_2<ExactKernel> p2( tri.vertex( (i+1)%3 ).toPoint_2<ExactKernel>() );
 			Segment_2 seg( p1, p2 );
-			//			std::string msg = (boost::format( "Insert (%1%,%2%)-(%3%,%4%)") % p1.x() % p1.y() % p2.x() % p2.y()).str();
-			//			Logger::get()->log( Logger::Debug, msg );
+			std::string msg = (boost::format( "Insert (%1%,%2%)-(%3%,%4%)") % p1.x() % p1.y() % p2.x() % p2.y()).str();
+			Logger::get()->log( Logger::Debug, msg );
 			CGAL::insert( arr, seg );
 		}
 
@@ -330,7 +330,7 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
-		//		Logger::get()->log( Logger::Debug, "ga: " + ga.geometryType() + " gb: " + gb.geometryType() );
+		Logger::get()->log( Logger::Debug, "ga: " + ga.geometryType() + " gb: " + gb.geometryType() );
 		// deal with geometry collection
 		// call intersects on each geometry of the collection
 		const GeometryCollection* coll;

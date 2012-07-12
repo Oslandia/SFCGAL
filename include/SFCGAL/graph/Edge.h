@@ -9,7 +9,7 @@ namespace graph {
 	 * more informations)
 	 */
 	struct Edge {
-	    Edge();
+
 	};
 
 }//graph

@@ -78,13 +78,13 @@ namespace graph {
 		/**
 		 * get the source vertex for an edge
 		 */
-		vertex_descriptor source( const edge_descriptor & edge ) const {
+		vertex_descriptor source( const edge_descriptor & edge ) {
 			return boost::source( edge, _graph ) ;
 		}
 		/**
 		 * get the target vertex for an edge
 		 */
-		vertex_descriptor target( const edge_descriptor & edge ) const {
+		vertex_descriptor target( const edge_descriptor & edge ) {
 			return boost::target( edge, _graph ) ;
 		}
 
@@ -125,22 +125,6 @@ namespace graph {
 		inline std::pair< edge_iterator, edge_iterator > edges() const
 		{
 			return boost::edges( _graph );
-		}
-
-		/**
-		 * return the number of vertices
-		 */
-		inline size_t numVertices() const
-		{
-		    return boost::num_vertices( _graph );
-		}
-
-		/**
-		 * return the number of edges
-		 */
-		inline size_t numEdges() const
-		{
-		    return boost::num_edges( _graph );
 		}
 
 		/**

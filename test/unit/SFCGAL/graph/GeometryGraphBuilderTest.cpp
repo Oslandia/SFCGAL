@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE( addPoint )
 	typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
 	typedef GeometryGraph::edge_descriptor   edge_descriptor ;
 	GeometryGraph        graph;
-	GeometryGraphBuilder<Vertex, Edge> graphBuilder( graph );
+	GeometryGraphBuilder graphBuilder( graph );
 
 	vertex_descriptor a = graphBuilder.addPoint( Point(0.0,0.0,0.0) );
 	vertex_descriptor b = graphBuilder.addPoint( Point(1.0,1.0,1.0) );
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( addLineString )
 	typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
 	typedef GeometryGraph::edge_descriptor   edge_descriptor ;
 	GeometryGraph        graph;
-	GeometryGraphBuilder<Vertex, Edge> graphBuilder( graph );
+	GeometryGraphBuilder graphBuilder( graph );
 
 	std::vector< Point > points ;
 	points.push_back( Point(0.0,0.0,0.0) );
