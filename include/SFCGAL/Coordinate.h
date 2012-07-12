@@ -66,11 +66,11 @@ namespace SFCGAL {
 		~Coordinate() ;
 
 		//-- SFCGAL::Geometry
-		virtual int          coordinateDimension() const ;
+		int          coordinateDimension() const ;
 		//-- SFCGAL::Geometry
-		virtual bool         isEmpty() const ;
+		bool         isEmpty() const ;
 		//-- SFCGAL::Geometry
-		virtual bool         is3D() const ;
+		bool         is3D() const ;
 
 		//--- accessors
 

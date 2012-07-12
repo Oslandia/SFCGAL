@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE( polyhedronConversionTest )
 
 	CGAL::Polyhedron_3<Kernel> poly( tri.toPolyhedron_3<Kernel>() );
 	// we check the two squares share a common edge
-	BOOST_CHECK_EQUAL( poly.size_of_facets(), 4 );
-	BOOST_CHECK_EQUAL( poly.size_of_vertices(), 6 );
+	BOOST_CHECK_EQUAL( poly.size_of_facets(), 4U );
+	BOOST_CHECK_EQUAL( poly.size_of_vertices(), 6U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
