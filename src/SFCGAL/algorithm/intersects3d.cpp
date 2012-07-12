@@ -25,26 +25,25 @@
 #include <CGAL/AABB_triangle_primitive.h>
 #include <CGAL/AABB_segment_primitive.h>
 
+#include <CGAL/box_intersection_d.h>
+
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/WktWriter.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
-//typedef CGAL::Cartesian< double > Kernel;
-typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Point_3<Kernel> Point_3;
-typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Segment_3<Kernel> Segment_3;
-typedef CGAL::Triangle_2<Kernel> Triangle_2;
 typedef CGAL::Triangle_3<Kernel> Triangle_3;
-typedef CGAL::Polygon_2<Kernel> Polygon_2;
-typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
 typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron;
 
 #define CACHE_TRIANGULATION
 
+typedef std::vector<Segment_3> Segments;
+typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Segments::const_iterator> SegmentBox;
+	
 namespace SFCGAL {
 namespace algorithm
 {
@@ -92,23 +91,53 @@ namespace algorithm
 		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
 	}
 
+	struct found_intersection_segments {};
+	void segment_intersect_callback( const SegmentBox& a, const SegmentBox& b )
+	{
+		if ( CGAL::do_intersect( *(a.handle()), *(b.handle()))) {
+			throw found_intersection_segments();
+		}
+	}
+
 	bool intersects3D_( const LineString& la, const LineString& lb )
 	{
-		typedef std::vector<Segment_3>::const_iterator Iterator;
-		typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
-		typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
-		typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
+	    
+		// typedef std::vector<Segment_3>::const_iterator Iterator;
+		// typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
+		// typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
+		// typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
 
-		std::vector<Segment_3> segsa, segsb;
+		// std::vector<Segment_3> segsa, segsb;
+		// to_segments( la, segsa );
+		// to_segments( lb, segsb );
+
+		// Tree tree( segsa.begin(), segsa.end() );
+
+		// for ( size_t i = 0; i < segsb.size(); i++ ) {
+		// 	if ( tree.do_intersect( segsb[i] ) ) {
+		// 		return true;
+		// 	}
+		// }
+		// return false;
+		Segments segsa, segsb;
 		to_segments( la, segsa );
 		to_segments( lb, segsb );
 
-		Tree tree( segsa.begin(), segsa.end() );
-
-		for ( size_t i = 0; i < segsb.size(); i++ ) {
-			if ( tree.do_intersect( segsb[i] ) ) {
-				return true;
-			}
+		std::vector<SegmentBox> boxa, boxb;
+		for ( Segments::const_iterator it = segsa.begin(); it != segsa.end(); ++it ) {
+			boxa.push_back( SegmentBox( it->bbox(), it ));
+		}
+		for ( Segments::const_iterator it = segsb.begin(); it != segsb.end(); ++it ) {
+			boxb.push_back( SegmentBox( it->bbox(), it ));
+		}
+		
+		try {
+			CGAL::box_intersection_d( boxa.begin(), boxa.end(),
+						  boxb.begin(), boxb.end(),
+						  segment_intersect_callback );
+		}
+		catch ( found_intersection_segments& e ) {
+			return true;
 		}
 		return false;
 	}
@@ -275,8 +304,8 @@ namespace algorithm
 
 	bool intersects3D_( const Point& pta, const Solid& solid )
 	{
-		Nef nef( solid.toNef_polyhedron_3<ExactKernel>());
-		return intersects3D_( pta, nef );
+	    //		Nef nef( solid.toNef_polyhedron_3<ExactKernel>());
+	    //		return intersects3D_( pta, nef );
 	}
 
 	// helper function that fills a TriangleTree with triangles from a Nef_polyhedron
@@ -363,6 +392,7 @@ namespace algorithm
 		return tree.do_intersect( tri.toTriangle_3<Kernel>() );
 	}
 
+	// TODO: use "Box_intersection_d()" here ?
 	bool intersects3D_( const TriangulatedSurface& surf, const Solid& solid )
 	{
 		CGAL::Polyhedron_3<ExactKernel> poly(surf.toPolyhedron_3<ExactKernel>());
@@ -372,6 +402,7 @@ namespace algorithm
 		return ! N.is_empty();
 	}
 
+	// TODO: use "Box_intersection_d()" here ?
 	bool intersects3D_( const Solid& solid1, const Solid& solid2 )
 	{
 		Nef nef1( solid1.toNef_polyhedron_3<ExactKernel>());
