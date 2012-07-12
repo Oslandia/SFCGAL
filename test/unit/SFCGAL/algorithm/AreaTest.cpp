@@ -27,6 +27,15 @@ BOOST_AUTO_TEST_CASE( testArea3D_Triangle2 )
 	BOOST_CHECK_EQUAL( algorithm::area3D( triangle ), 8.0 );
 }
 
+BOOST_AUTO_TEST_CASE( testArea2D_Triangle )
+{
+	Triangle triangle1( Point(0.0,0.0), Point(4.0,0.0), Point(4.0,4.0) );
+	// the same, inverted
+	Triangle triangle2( Point(0.0,0.0), Point(0.0,4.0), Point(4.0,4.0) );
+	BOOST_CHECK_EQUAL( algorithm::area2D( triangle1 ), 8.0 );
+	BOOST_CHECK_EQUAL( algorithm::area2D( triangle2 ), 8.0 );
+}
+
 BOOST_AUTO_TEST_CASE( testArea3D_Square1x1 )
 {
 	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 1.0,0.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 0.0))" ) );

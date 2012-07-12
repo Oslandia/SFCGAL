@@ -28,12 +28,14 @@ namespace algorithm {
 double area2D( const Geometry & g )
 {
 	switch ( g.geometryTypeId() ){
+	case TYPE_TRIANGLE:
+		return detail::area< Kernel >( g.as< Triangle >() );
 	case TYPE_POLYGON:
 		return detail::area< Kernel >( g.as< Polygon >() );
 	case TYPE_MULTIPOLYGON:
+		return detail::area< Kernel >( g.as< MultiPolygon >() );
 	case TYPE_POLYHEDRALSURFACE:
 	case TYPE_TIN:
-	case TYPE_TRIANGLE:
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_POINT:
 	case TYPE_LINESTRING:

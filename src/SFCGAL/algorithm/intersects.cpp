@@ -270,6 +270,32 @@ namespace algorithm
 		return CGAL::Bbox_2( xmin, ymin, xmax, ymax );
 	}
 
+	bool intersects_( const Point& pt, const Polygon& poly )
+	{
+		CGAL::Bounded_side b1 = CGAL::bounded_side_2( poly.exteriorRing().points_2_begin<Kernel>(),
+							      poly.exteriorRing().points_2_end<Kernel>(),
+							      pt.toPoint_2<Kernel>() );
+		if ( b1 == CGAL::ON_BOUNDARY ) {
+			return true;
+		}
+		if ( b1 == CGAL::ON_BOUNDED_SIDE ) {
+			// might be in a hole
+			for ( size_t i = 0; i < poly.numInteriorRings(); ++i ) {
+				const LineString& ring = poly.interiorRingN(i);
+				CGAL::Bounded_side b = CGAL::bounded_side_2( ring.points_2_begin<Kernel>(),
+									     ring.points_2_end<Kernel>(),
+									     pt.toPoint_2<Kernel>() );
+				if ( b == CGAL::ON_BOUNDED_SIDE ) {
+					return false;
+				}
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
+	}
+
 	bool intersects_( const Polygon& pa, const Polygon& pb )
 	{
 		// first compute the bbox of the two polygons
@@ -307,17 +333,17 @@ namespace algorithm
 		// rings do not intersect, check if one polygon is inside another
 
 		// is pa inside pb ?
-		if ( CGAL::bounded_side_2( pb.exteriorRing().points_2_begin<Kernel>(),
-					   pb.exteriorRing().points_2_end<Kernel>(),
-					   pa.exteriorRing().startPoint().toPoint_2<Kernel>() )
-		     == CGAL::ON_BOUNDED_SIDE ) {
+		CGAL::Bounded_side b1 = CGAL::bounded_side_2( pb.exteriorRing().points_2_begin<Kernel>(),
+							      pb.exteriorRing().points_2_end<Kernel>(),
+							      pa.exteriorRing().startPoint().toPoint_2<Kernel>() );
+		if ( b1 == CGAL::ON_BOUNDED_SIDE ) {
 		    return true;
 		}
 		// is pb inside pa ?
-		if ( CGAL::bounded_side_2( pa.exteriorRing().points_2_begin<Kernel>(),
-					   pa.exteriorRing().points_2_end<Kernel>(),
-					   pb.exteriorRing().startPoint().toPoint_2<Kernel>() )
-		     == CGAL::ON_BOUNDED_SIDE ) {
+		CGAL::Bounded_side b2 = CGAL::bounded_side_2( pa.exteriorRing().points_2_begin<Kernel>(),
+							      pa.exteriorRing().points_2_end<Kernel>(),
+							      pb.exteriorRing().startPoint().toPoint_2<Kernel>() );
+		if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
 		    return true;
 		}
 		return false;
@@ -371,6 +397,7 @@ namespace algorithm
 			case TYPE_TRIANGLE:
 				return intersects_( pta, static_cast<const Triangle&>( gb ));
 			case TYPE_POLYGON:
+				return intersects_( pta, static_cast<const Polygon&>( gb ));
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_TIN:
 			case TYPE_SOLID:

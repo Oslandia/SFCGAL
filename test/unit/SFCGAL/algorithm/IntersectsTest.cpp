@@ -82,25 +82,41 @@ BOOST_AUTO_TEST_CASE( testPointPolygonIntersects )
     Point pte( 0.6, 0.6 );
 
     // a square
-    std::vector<Point> ring;
-    ring.push_back( Point(0.0, 0.0) );
-    ring.push_back( Point(1.0, 0.0) );
-    ring.push_back( Point(1.0, 1.0) );
-    ring.push_back( Point(0.0, 1.0) );
-    ring.push_back( Point(0.0, 0.0) );
-    LineString ext(ring);
-    Polygon poly( ext );
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" ) );
 
     // point on a vertex
-    BOOST_CHECK_EQUAL( algorithm::intersects( pta, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pta, *g ), true );
     // point on a boundary
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, *g ), true );
     // point outside
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptc, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptc, *g ), false );
     // point inside
-    BOOST_CHECK_EQUAL( algorithm::intersects( pte, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( pte, *g ), true );
     // point inside and on a triangulation edge
-    BOOST_CHECK_EQUAL( algorithm::intersects( ptd, poly ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptd, *g ), true );
+}
+
+BOOST_AUTO_TEST_CASE( testPointPolygonWithHoleIntersects )
+{
+    Point pta( 0.0, 0.0 );
+    Point ptb( 0.5, 0.0 );
+    Point ptc( 0.0, 5.5 );
+    Point ptd( 0.5, 0.5 );
+    Point pte( 2.5, 2.5 );
+
+    // a square
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,4.0 0.0,4.0 4.0,0.0 4.0,0.0 0.0),(2 2,2 3,3 3,3 2,2 2))" ) );
+
+    // point on a vertex
+    BOOST_CHECK_EQUAL( algorithm::intersects( pta, *g ), true );
+    // point on a boundary
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptb, *g ), true );
+    // point outside
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptc, *g ), false );
+    // point inside
+    BOOST_CHECK_EQUAL( algorithm::intersects( ptd, *g ), true );
+    // point inside the hole
+    BOOST_CHECK_EQUAL( algorithm::intersects( pte, *g ), false );
 }
 
 BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
