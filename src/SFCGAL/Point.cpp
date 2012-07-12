@@ -17,6 +17,15 @@ Point::Point():
 ///
 ///
 ///
+Point::Point( const Coordinate & coordinate ):
+	_coordinate(coordinate)
+{
+
+}
+
+///
+///
+///
 Point::Point( const double & x, const double & y, const double & z ):
 	_coordinate(x,y,z)
 {

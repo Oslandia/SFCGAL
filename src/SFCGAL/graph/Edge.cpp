@@ -6,7 +6,8 @@ namespace graph {
 ///
 ///
 ///
-Edge::Edge()
+Edge::Edge( const int & face_ ):
+	face(face_)
 {
 
 }
