@@ -20,6 +20,9 @@ endif()
 if( ${SFCGAL_WITH_GMP} )
   target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_GMP} )
+if( ${SFCGAL_WITH_MPFR} )
+  target_link_libraries( SFCGAL ${MPFR_LIBRARIES} )
+endif( ${SFCGAL_WITH_MPFR} )
 
 # install library
 install(

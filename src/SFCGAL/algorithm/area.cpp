@@ -25,6 +25,33 @@ namespace algorithm {
 ///
 ///
 ///
+double area2D( const Geometry & g )
+{
+	switch ( g.geometryTypeId() ){
+	case TYPE_POLYGON:
+		return detail::area< Kernel >( g.as< Polygon >() );
+	case TYPE_MULTIPOLYGON:
+	case TYPE_POLYHEDRALSURFACE:
+	case TYPE_TIN:
+	case TYPE_TRIANGLE:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_POINT:
+	case TYPE_LINESTRING:
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_SOLID:
+		BOOST_THROW_EXCEPTION(
+			Exception(
+				( boost::format("can't compute area2D for %1% type") % g.geometryType() ).str()
+			)
+		);
+	}
+	BOOST_THROW_EXCEPTION( Exception("missing case in SFCGAL::algorithm::area2D") );
+}
+
+///
+///
+///
 double area3D( const Geometry & g )
 {
 	switch ( g.geometryTypeId() ){
