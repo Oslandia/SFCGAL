@@ -6,7 +6,8 @@ namespace SFCGAL {
 ///
 ///
 ///
-Triangle::Triangle()
+Triangle::Triangle() :
+	Surface()
 {
 
 }
@@ -14,7 +15,8 @@ Triangle::Triangle()
 ///
 ///
 ///
-Triangle::Triangle( const Point & p, const Point & q, const Point & r )
+Triangle::Triangle( const Point & p, const Point & q, const Point & r ) :
+	Surface()
 {
 	_vertices[0] = p ;
 	_vertices[1] = q ;
@@ -26,6 +28,7 @@ Triangle::Triangle( const Point & p, const Point & q, const Point & r )
 ///
 ///
 Triangle::Triangle( const Triangle & other )
+	: Surface()
 {
 	_vertices[0] = other._vertices[0] ;
 	_vertices[1] = other._vertices[1] ;

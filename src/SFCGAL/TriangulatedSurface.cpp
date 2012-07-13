@@ -7,6 +7,7 @@ namespace SFCGAL {
 ///
 ///
 TriangulatedSurface::TriangulatedSurface():
+	Geometry(),
 	_triangles()
 {
 
@@ -16,6 +17,7 @@ TriangulatedSurface::TriangulatedSurface():
 ///
 ///
 TriangulatedSurface::TriangulatedSurface( const std::vector< Triangle > & triangles ):
+	Geometry(),
 	_triangles(triangles)
 {
 
@@ -25,6 +27,7 @@ TriangulatedSurface::TriangulatedSurface( const std::vector< Triangle > & triang
 ///
 ///
 TriangulatedSurface::TriangulatedSurface( TriangulatedSurface const& other ):
+	Geometry(),
 	_triangles(other._triangles)
 {
 

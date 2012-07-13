@@ -22,7 +22,8 @@ int  Surface::dimension() const
 ///
 ///
 ///
-Surface::Surface()
+Surface::Surface() :
+	Geometry()
 {
 
 }
@@ -30,7 +31,8 @@ Surface::Surface()
 ///
 ///
 ///
-Surface::Surface( Surface const& other )
+Surface::Surface( Surface const& other ) :
+	Geometry()
 {
 
 }

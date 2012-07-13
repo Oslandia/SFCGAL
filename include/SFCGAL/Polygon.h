@@ -125,6 +125,8 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
+	protected:
+		virtual void computeBoundingBox() const;
 	private:
 		/**
 		 * rings forming the polygon (size() >= 1)

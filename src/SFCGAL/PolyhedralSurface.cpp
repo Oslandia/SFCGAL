@@ -7,6 +7,7 @@ namespace SFCGAL {
 ///
 ///
 PolyhedralSurface::PolyhedralSurface():
+	Geometry(),
 	_polygons()
 {
 
@@ -16,6 +17,7 @@ PolyhedralSurface::PolyhedralSurface():
 ///
 ///
 PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) :
+	Geometry(),
 	_polygons(polygons)
 {
 
@@ -25,6 +27,7 @@ PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) 
 ///
 ///
 PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
+	Geometry(),
 	_polygons(other._polygons)
 {
 

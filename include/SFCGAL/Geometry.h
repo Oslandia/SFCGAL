@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 
+#include <SFCGAL/BoundingBox.h>
 
 namespace SFCGAL {
 
@@ -145,6 +146,7 @@ namespace SFCGAL {
         * otherway would lead to Polygon and PolyhedralSurface
         */
        //std::auto_ptr< Geometry > envelope() const = 0 ;
+       BoundingBox envelope() const;
 
        /**
         * [OGC/SFA]Return the boundary of the geometry
@@ -199,6 +201,13 @@ namespace SFCGAL {
     protected:
        Geometry();
        Geometry( Geometry const& other );
+
+       // dirty flag, set to true when the geometry changes
+       mutable bool dirty_;
+       // computed bounding box
+       mutable BoundingBox bbox_;
+
+       virtual void computeBoundingBox() const;
     };
 
 }

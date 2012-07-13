@@ -10,21 +10,21 @@ namespace detail {
 	/**
 	 * Get the list of points from a Geometry
 	 */
-	class GetPointsVisitor : public GeometryVisitor {
+	class GetPointsVisitor : public ConstGeometryVisitor {
 	public:
-		virtual void visit( Point & g ) ;
-		virtual void visit( LineString & g ) ;
-		virtual void visit( Polygon & g ) ;
-		virtual void visit( Triangle & g ) ;
-		virtual void visit( Solid & g ) ;
-		virtual void visit( MultiPoint & g ) ;
-		virtual void visit( MultiLineString & g ) ;
-		virtual void visit( MultiPolygon & g ) ;
-		virtual void visit( GeometryCollection & g ) ;
-		virtual void visit( PolyhedralSurface & g ) ;
-		virtual void visit( TriangulatedSurface & g ) ;
+		virtual void visit( const Point & g ) ;
+		virtual void visit( const LineString & g ) ;
+		virtual void visit( const Polygon & g ) ;
+		virtual void visit( const Triangle & g ) ;
+		virtual void visit( const Solid & g ) ;
+		virtual void visit( const MultiPoint & g ) ;
+		virtual void visit( const MultiLineString & g ) ;
+		virtual void visit( const MultiPolygon & g ) ;
+		virtual void visit( const GeometryCollection & g ) ;
+		virtual void visit( const PolyhedralSurface & g ) ;
+		virtual void visit( const TriangulatedSurface & g ) ;
 	public:
-		std::vector< Point * > points ;
+		std::vector< const Point * > points ;
 	};
 
 

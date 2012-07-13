@@ -6,7 +6,8 @@ namespace SFCGAL {
 ///
 ///
 ///
-Solid::Solid()
+Solid::Solid() :
+	Geometry()
 {
 
 }
@@ -15,6 +16,7 @@ Solid::Solid()
 ///
 ///
 Solid::Solid( const std::vector< PolyhedralSurface > & shells ):
+	Geometry(),
 	_shells(shells)
 {
 	if ( _shells.empty() ){
@@ -26,6 +28,7 @@ Solid::Solid( const std::vector< PolyhedralSurface > & shells ):
 ///
 ///
 Solid::Solid( Solid const& other ):
+	Geometry(),
 	_shells(other._shells)
 {
 

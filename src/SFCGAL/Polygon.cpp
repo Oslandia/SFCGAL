@@ -126,6 +126,11 @@ void Polygon::accept( ConstGeometryVisitor & visitor ) const
 	return visitor.visit(*this);
 }
 
+void Polygon::computeBoundingBox() const
+{
+	// compute bounding box only on the exterior ring
+	bbox_ = exteriorRing().envelope();
+}
 
 }//SFCGAL
 

@@ -10,6 +10,7 @@ namespace SFCGAL {
 ///
 ///
 Point::Point():
+	Geometry(),
 	_coordinate()
 {
 }
@@ -18,6 +19,7 @@ Point::Point():
 ///
 ///
 Point::Point( const double & x, const double & y, const double & z ):
+	Geometry(),
 	_coordinate(x,y,z)
 {
 
@@ -28,6 +30,7 @@ Point::Point( const double & x, const double & y, const double & z ):
 ///
 ///
 Point::Point( const Point & other ):
+	Geometry(),
 	_coordinate(other._coordinate)
 {
 

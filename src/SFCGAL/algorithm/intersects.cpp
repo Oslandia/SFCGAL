@@ -54,48 +54,6 @@ namespace algorithm
 		}
 	}
 
-	CGAL::Bbox_2 get_bbox( const Polygon& poly )
-	{
-		double minf = std::numeric_limits<double>::infinity();
-		double xmin = +minf;
-		double ymin = +minf;
-		double xmax = -minf;
-		double ymax = -minf;
-		for ( size_t i = 0; i < poly.exteriorRing().numPoints(); ++i ) {
-			const Point& pt = poly.exteriorRing().pointN(i);
-			if ( pt.x() > xmax )
-				xmax = pt.x();
-			if ( pt.x() < xmin )
-				xmin = pt.x();
-			if ( pt.y() > ymax )
-				ymax = pt.y();
-			if ( pt.y() < ymin )
-				ymin = pt.y();
-		}
-		return CGAL::Bbox_2( xmin, ymin, xmax, ymax );
-	}
-
-	CGAL::Bbox_2 get_bbox( const Triangle& tri )
-	{
-		double minf = std::numeric_limits<double>::infinity();
-		double xmin = +minf;
-		double ymin = +minf;
-		double xmax = -minf;
-		double ymax = -minf;
-		for ( size_t i = 0; i < 3; ++i ) {
-			const Point& pt = tri.vertex(i);
-			if ( pt.x() > xmax )
-				xmax = pt.x();
-			if ( pt.x() < xmin )
-				xmin = pt.x();
-			if ( pt.y() > ymax )
-				ymax = pt.y();
-			if ( pt.y() < ymin )
-				ymin = pt.y();
-		}
-		return CGAL::Bbox_2( xmin, ymin, xmax, ymax );
-	}
-
 	typedef std::vector<Segment_2> Segments;
 	typedef const Segment_2* SegmentIterator;
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, SegmentIterator> SegmentBox;
@@ -297,8 +255,8 @@ namespace algorithm
 	bool intersects_( const Polygon& pa, const Polygon& pb )
 	{
 		// first compute the bbox of the two polygons
-		CGAL::Bbox_2 gbboxa = get_bbox( pa );
-		CGAL::Bbox_2 gbboxb = get_bbox( pb );
+		CGAL::Bbox_2 gbboxa = pa.envelope().toBbox_2();
+		CGAL::Bbox_2 gbboxb = pb.envelope().toBbox_2();
 		if ( CGAL::do_overlap( gbboxa, gbboxb ) ) {
 			// test intersections between each rings
 			std::vector<SegmentBox> aboxes, bboxes;
