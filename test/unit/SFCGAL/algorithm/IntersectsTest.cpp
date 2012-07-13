@@ -52,9 +52,10 @@ BOOST_AUTO_TEST_CASE( testPointTriangleIntersects )
 {
     Point pta( 0.0, 0.0, 0.0 );
     Point ptb( 0.5, 0.0, 0.0 );
-    Point ptc( 0.0, 0.0, 1.0 );
+    Point ptc( 2.0, 0.0, 1.0 );
     Point ptd( 0.8, 0.2, 0.0 );
     Point pte( 2.8, 2.2, 0.0 );
+    // WARNING : must be oriented counter clockwise
     Triangle tri( Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
     // point on a vertex
     BOOST_CHECK_EQUAL( algorithm::intersects( pta, tri ), true );
@@ -72,6 +73,29 @@ BOOST_AUTO_TEST_CASE( testPointTriangleIntersects )
     BOOST_CHECK_EQUAL( algorithm::intersects( pte, tri ), false );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( pte, tri ), false );
 }
+
+BOOST_AUTO_TEST_CASE( testLineStringTriangleIntersects )
+{
+    std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(0 0, 0 1)" );
+    std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 1, 1 0.4)" );
+    std::auto_ptr<Geometry> ls3 = io::readWkt( "LINESTRING(0.4 0.2,0.5 0.3)" );
+    std::auto_ptr<Geometry> ls4 = io::readWkt( "LINESTRING(-1 0.5,2 0.5)" );
+    std::auto_ptr<Geometry> ls5 = io::readWkt( "LINESTRING(-1 1.5,2 1.5)" );
+    // WARNING : must be oriented counter clockwise
+    Triangle tri( Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
+
+    // line that shares a vertex
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls1, tri ), true );
+    // line crossing an edge
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls2, tri ), true );
+    // line inside the triangle
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls3, tri ), true );
+    // line traversing the triangle
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls4, tri ), true );
+    // line outside
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls5, tri ), false );
+}
+
 
 BOOST_AUTO_TEST_CASE( testPointPolygonIntersects )
 {
