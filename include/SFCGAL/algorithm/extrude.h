@@ -8,7 +8,7 @@ namespace algorithm {
 
 	/**
 	 * extrude a Geometry with a direction
-	 * @todo PolyhedralSurface, GeometryCollection, TriangulatedSurface
+	 * @todo GeometryCollection, PolyhedralSurface, TriangulatedSurface (require boundary)
 	 */
 	Geometry * extrude( const Geometry & g, double dx, double dy, double dz ) ;
 
