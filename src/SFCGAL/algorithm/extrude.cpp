@@ -26,9 +26,16 @@ Geometry * extrude( const Geometry & g, double dx, double dy, double dz )
 		return extrude( g.as< LineString >(), dx, dy, dz );
 	case TYPE_POLYGON:
 		return extrude( g.as< Polygon >(), dx, dy, dz );
-	default:
-		BOOST_THROW_EXCEPTION( Exception("unexpected GeometryType in extrude") );
+	case TYPE_MULTIPOINT:
+		return extrude( g.as< MultiPoint >(), dx, dy, dz );
+	case TYPE_MULTILINESTRING:
+		return extrude( g.as< MultiLineString >(), dx, dy, dz );
+	case TYPE_MULTIPOLYGON:
+		return extrude( g.as< MultiPolygon >(), dx, dy, dz );
 	}
+	BOOST_THROW_EXCEPTION( Exception(
+		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
+	));
 }
 
 ///
@@ -125,6 +132,61 @@ Solid * extrude( const Polygon & g, double dx, double dy, double dz )
 
 	return new Solid( polyhedralSurface );
 }
+
+
+///
+///
+///
+Solid *  extrude( const Triangle & g, double dx, double dy, double dz )
+{
+	BOOST_ASSERT( ! g.isEmpty() );
+	BOOST_ASSERT( g.is3D() );
+	return extrude( g.toPolygon(), dx, dy, dz );
+}
+
+///
+///
+///
+MultiLineString *     extrude( const MultiPoint & g, double dx, double dy, double dz )
+{
+	std::auto_ptr< MultiLineString > result( new MultiLineString() );
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		result->addGeometry( extrude( g.pointN(i), dx, dy, dz ) );
+	}
+	return result.release() ;
+}
+
+
+///
+///
+///
+PolyhedralSurface *   extrude( const MultiLineString & g, double dx, double dy, double dz )
+{
+	std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		std::auto_ptr< PolyhedralSurface > extruded( extrude( g.lineStringN(i), dx, dy, dz ) );
+		for ( size_t j = 0; j < extruded->numPolygons(); j++ ){
+			result->addPolygon( extruded->polygonN(j) );
+		}
+	}
+	return result.release() ;
+}
+
+
+///
+///
+///
+MultiSolid *          extrude( const MultiPolygon & g, double dx, double dy, double dz )
+{
+	std::auto_ptr< MultiSolid > result( new MultiSolid() );
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		result->addGeometry( extrude( g.polygonN(i), dx, dy, dz ) );
+	}
+	return result.release() ;
+}
+
+
+
 
 }//algorithm
 }//SFCGAL

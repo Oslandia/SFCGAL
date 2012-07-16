@@ -57,6 +57,12 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
 
+
+		/**
+		 * convert a triangle to a polygon
+		 */
+		Polygon               toPolygon() const ;
+
 		/**
 		 * returns the i-th vertex
 		 */
