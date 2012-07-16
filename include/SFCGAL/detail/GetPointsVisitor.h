@@ -20,6 +20,7 @@ namespace detail {
 		virtual void visit( MultiPoint & g ) ;
 		virtual void visit( MultiLineString & g ) ;
 		virtual void visit( MultiPolygon & g ) ;
+		virtual void visit( MultiSolid & g ) ;
 		virtual void visit( GeometryCollection & g ) ;
 		virtual void visit( PolyhedralSurface & g ) ;
 		virtual void visit( TriangulatedSurface & g ) ;

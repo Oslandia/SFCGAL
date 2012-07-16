@@ -86,6 +86,16 @@ void GetPointsVisitor::visit( MultiPolygon & g )
 ///
 ///
 ///
+void GetPointsVisitor::visit( MultiSolid & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.solidN(i) );
+	}
+}
+
+///
+///
+///
 void GetPointsVisitor::visit( GeometryCollection & g )
 {
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){

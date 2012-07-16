@@ -25,6 +25,7 @@ namespace SFCGAL {
 		virtual void visit( MultiPoint & g ) = 0 ;
 		virtual void visit( MultiLineString & g ) = 0 ;
 		virtual void visit( MultiPolygon & g ) = 0 ;
+		virtual void visit( MultiSolid & g ) = 0 ;
 		virtual void visit( GeometryCollection & g ) = 0 ;
 		virtual void visit( PolyhedralSurface & g ) = 0 ;
 		virtual void visit( TriangulatedSurface & g ) = 0 ;
@@ -51,6 +52,7 @@ namespace SFCGAL {
 		virtual void visit( const MultiPoint & g ) = 0 ;
 		virtual void visit( const MultiLineString & g ) = 0 ;
 		virtual void visit( const MultiPolygon & g ) = 0 ;
+		virtual void visit( const MultiSolid & g ) = 0 ;
 		virtual void visit( const GeometryCollection & g ) = 0 ;
 		virtual void visit( const PolyhedralSurface & g ) = 0 ;
 		virtual void visit( const TriangulatedSurface & g ) = 0 ;
