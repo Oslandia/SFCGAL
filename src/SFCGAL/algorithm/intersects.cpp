@@ -312,7 +312,8 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
-		//		Logger::get()->log( Logger::Debug, "ga: " + ga.geometryType() + " gb: " + gb.geometryType() );
+		LOG_DEBUG( "ga: " << ga.geometryType() << " gb: " << gb.geometryType() );
+
 		// deal with geometry collection
 		// call intersects on each geometry of the collection
 		const GeometryCollection* coll;

@@ -4,27 +4,42 @@
 
 namespace SFCGAL
 {
-	void Logger::log( int level, const std::string& msg )
+	LogSink::LogSink( std::ostream& str ) :
+		str_(str),
+		autoflush_( true ) {}
+	
+	std::streamsize LogSink::write(const char* s, std::streamsize n)
 	{
 		if ( autoflush_ ) {
-			std::cout << msg << std::endl;
+			str_.write( s, n );
 		}
-		else {
-			lines_.push_back( msg );
+		return n;
+	}
+	
+	void LogSink::autoflush( bool state )
+	{
+		if ( state == true ) {
+			flush();
 		}
+		autoflush_ = state;
+	}
+	
+	void LogSink::flush()
+	{
+		str_.write( buffer_.c_str(), buffer_.size() );
+		buffer_.clear();
+		str_.flush();
+	}
+	
+	std::string& LogSink::buffer()
+	{
+		return buffer_;
+	}
+	
+	SFCGAL::Log& Logger::get()
+	{
+		static Log log( std::cout );
+		return log;
 	}
 
-	void Logger::flush()
-	{
-		while ( lines_.size() > 0 ) {
-			std::cout << lines_.front() << std::endl;
-			lines_.pop_front();
-		}
-	}
-
-	Logger::~Logger()
-	{
-		// flush on destruction if needed
-		flush();
-	}
 }
