@@ -45,6 +45,7 @@ double area3D( const Geometry & g )
 	case TYPE_MULTIPOINT:
 	case TYPE_MULTILINESTRING:
 	case TYPE_SOLID:
+	case TYPE_MULTISOLID:
 		BOOST_THROW_EXCEPTION(
 			Exception(
 				( boost::format("can't compute area3D for %1% type") % g.geometryType() ).str()

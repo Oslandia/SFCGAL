@@ -85,8 +85,6 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquareWithHole )
 	BOOST_CHECK( ext->is< Solid >() );
 	BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
 	BOOST_CHECK_EQUAL( ext->as< Solid >().exteriorShell().numPolygons(), 10U );
-
-	std::cout << ext->asText(1) << std::endl;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

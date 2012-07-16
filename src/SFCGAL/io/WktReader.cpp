@@ -89,6 +89,12 @@ Geometry*    WktReader::readGeometry()
 		readInnerSolid( *g );
 		return g.release() ;
 	}
+	case TYPE_MULTISOLID :
+	{
+		std::auto_ptr< MultiSolid > g( new MultiSolid() );
+		readInnerMultiSolid( *g );
+		return g.release() ;
+	}
 	}
 	BOOST_THROW_EXCEPTION( Exception("unexpected geometry") );
 }
@@ -122,6 +128,9 @@ GeometryType WktReader::readGeometryType()
 	}else if ( _reader.match("SOLID") ){
 		//not official
 		return TYPE_SOLID ;
+	}else if ( _reader.match("MULTISOLID") ){
+		//not official
+		return TYPE_MULTISOLID ;
 	}
 
 	std::ostringstream oss;
@@ -484,6 +493,36 @@ void WktReader::readInnerSolid( Solid & g )
 
 	g = Solid( shells );
 }
+
+///
+///
+///
+void WktReader::readInnerMultiSolid( MultiSolid & g )
+{
+	if ( _reader.match("EMPTY") ){
+		return ;
+	}
+
+	if ( ! _reader.match('(') ){
+		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+	}
+
+	while( ! _reader.eof() ){
+		std::auto_ptr< Solid > solid( new Solid() );
+		readInnerSolid( *solid );
+		g.addGeometry( solid.release() );
+
+		//break if not followed by another points
+		if ( ! _reader.match(',') ){
+			break ;
+		}
+	}
+
+	if ( ! _reader.match(')') ){
+		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+	}
+}
+
 
 ///
 ///

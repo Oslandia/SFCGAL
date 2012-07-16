@@ -24,6 +24,9 @@ namespace SFCGAL {
 
     //not SFA, appears in GML/CityGML
     class Solid ;
+    //not SFA, appears in GML/CityGML
+    class MultiSolid ;
+
 
     class GeometryVisitor ;
     class ConstGeometryVisitor ;
@@ -58,7 +61,8 @@ namespace SFCGAL {
 
        //-- not official codes
        TYPE_TRIANGLE            = 100, //17 in Wikipedia???
-       TYPE_SOLID               = 101
+       TYPE_SOLID               = 101,
+       TYPE_MULTISOLID          = 102
     } GeometryType ;
 
 

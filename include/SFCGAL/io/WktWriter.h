@@ -39,7 +39,7 @@ namespace io {
 		void write( const MultiPoint & g ) ;
 		void write( const MultiLineString & g ) ;
 		void write( const MultiPolygon & g ) ;
-
+		void write( const MultiSolid & g ) ;
 
 		void write( const Triangle & g );
 		void writeInner( const Triangle & g ) ;
@@ -50,7 +50,7 @@ namespace io {
 		void writeInner( const PolyhedralSurface & g );
 
 		void write( const Solid & g );
-
+		void writeInner( const Solid & g );
 	private:
 		std::ostream & _s ;
 	};
