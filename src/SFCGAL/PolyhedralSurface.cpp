@@ -115,6 +115,14 @@ bool  PolyhedralSurface::is3D() const
 ///
 ///
 ///
+void  PolyhedralSurface::addPolygon( const Polygon & polygon )
+{
+	_polygons.push_back( polygon );
+}
+
+///
+///
+///
 void PolyhedralSurface::accept( GeometryVisitor & visitor )
 {
 	return visitor.visit(*this);

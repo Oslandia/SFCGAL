@@ -61,6 +61,10 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
 
+		/**
+		 * reverse LineString orientation
+		 */
+		void reverse() ;
 
 		/**
 		 * [SFA/OGC]Returns the number of points

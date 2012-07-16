@@ -14,6 +14,15 @@ Solid::Solid()
 ///
 ///
 ///
+Solid::Solid( const PolyhedralSurface & exteriorShell ):
+	_shells(1,exteriorShell)
+{
+
+}
+
+///
+///
+///
 Solid::Solid( const std::vector< PolyhedralSurface > & shells ):
 	_shells(shells)
 {

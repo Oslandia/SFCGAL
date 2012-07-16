@@ -66,18 +66,21 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Polygon  &   polygonN( size_t const& n ) const { return _polygons[n]; }
+		inline const Polygon  &   polygonN( size_t const& n ) const {
+			BOOST_ASSERT( n < _polygons.size() );
+			return _polygons[n];
+		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Polygon &          polygonN( size_t const& n ) { return _polygons[n]; }
+		inline Polygon &          polygonN( size_t const& n ) {
+			BOOST_ASSERT( n < _polygons.size() );
+			return _polygons[n];
+		}
 		/**
 		 * add a polygon to the PolyhedralSurface
 		 */
-		inline void               addPolygon( const Polygon & polygon )
-		{
-			_polygons.push_back( polygon );
-		}
+		void                      addPolygon( const Polygon & polygon ) ;
 
 		/**
 		 * Convert to CGAL::Polyhedron_3

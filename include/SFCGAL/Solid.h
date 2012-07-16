@@ -27,6 +27,10 @@ namespace SFCGAL {
 		 */
 		Solid() ;
 		/**
+		 * Constructor with an exterior shell
+		 */
+		Solid( const PolyhedralSurface & exteriorShell ) ;
+		/**
 		 * Constructor with a vector of shells (PolyhedralSurface)
 		 */
 		Solid( const std::vector< PolyhedralSurface > & shells ) ;

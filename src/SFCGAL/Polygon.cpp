@@ -17,6 +17,7 @@ Polygon::Polygon():
 ///
 ///
 Polygon::Polygon( const std::vector< LineString > & rings ):
+	Surface(),
 	_rings(rings)
 {
 	if ( _rings.empty() ){
@@ -105,10 +106,21 @@ bool   Polygon::isEmpty() const
 ///
 ///
 ///
-bool   Polygon:: is3D() const
+bool   Polygon::is3D() const
 {
 	return exteriorRing().is3D() ;
 }
+
+///
+///
+///
+void Polygon::reverse()
+{
+	for ( size_t i = 0; i < numRings(); i++ ){
+		ringN(i).reverse();
+	}
+}
+
 
 ///
 ///

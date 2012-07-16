@@ -57,6 +57,11 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
 
+		/**
+		 * reverse Polygon orientation
+		 */
+		void reverse() ;
+
 
 		/**
 		 * [OGC/SFA]returns the exterior ring
@@ -101,6 +106,7 @@ namespace SFCGAL {
 		 * @warning not standard, avoid conditionnal to access rings
 		 */
 		inline const LineString &    ringN( const size_t & n ) const {
+			BOOST_ASSERT( n < _rings.size() );
 			return _rings[n];
 		}
 		/**
@@ -108,6 +114,7 @@ namespace SFCGAL {
 		 * @warning not standard, avoid conditionnal to access rings
 		 */
 		inline LineString &          ringN( const size_t & n ) {
+			BOOST_ASSERT( n < _rings.size() );
 			return _rings[n];
 		}
 
@@ -115,8 +122,12 @@ namespace SFCGAL {
 		 * Rings (both interior and exterior) accessors
 		 * @todo expose only the exterior subset, through iterators ?
 		 */
-		const std::vector< LineString > & rings() const { return _rings; }
-		std::vector< LineString > &       rings() { return _rings; }
+		const std::vector< LineString > & rings() const {
+			return _rings;
+		}
+		std::vector< LineString > &       rings() {
+			return _rings;
+		}
 
 		//-- visitors
 
