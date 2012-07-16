@@ -133,11 +133,17 @@ namespace io {
 		 */
 		void   addGeometry( const MultiPolygon & polygon ) ;
 		/**
-		 * add a triangulated surface
+		 * add a TriangulatedSurface
 		 */
 		void   addGeometry( const TriangulatedSurface & triangulatedSurface ) ;
-
-
+		/**
+		 * add a PolyhedralSurface
+		 */
+		void   addGeometry( const PolyhedralSurface & polyhedralSurface ) ;
+		/**
+		 * add a Solid
+		 */
+		void   addGeometry( const Solid & solid ) ;
 	private:
 		/**
 		 * vertices in the wavefront obj file

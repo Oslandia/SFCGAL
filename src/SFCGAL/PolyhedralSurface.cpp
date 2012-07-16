@@ -112,6 +112,17 @@ bool  PolyhedralSurface::is3D() const
 	}
 }
 
+
+///
+///
+///
+TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
+{
+	TriangulatedSurface result ;
+	algorithm::triangulate( *this, result );
+	return result ;
+}
+
 ///
 ///
 ///

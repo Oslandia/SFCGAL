@@ -60,6 +60,12 @@ namespace SFCGAL {
 
 
 		/**
+		 * Convert PolyhedralSurface to TriangulatedSurface
+		 */
+		TriangulatedSurface       toTriangulatedSurface() const ;
+
+
+		/**
 		 * [SFA/OGC]Returns the number of points
 		 */
 		inline size_t             numPolygons() const { return _polygons.size(); }

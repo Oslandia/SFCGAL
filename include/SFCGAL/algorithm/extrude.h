@@ -12,12 +12,12 @@ namespace algorithm {
 
 	LineString *          extrude( const Point & g, double dx, double dy, double dz ) ;
 	PolyhedralSurface *   extrude( const LineString & g, double dx, double dy, double dz ) ;
-
-	/**
-	 * @todo manage top/bottom orientation according to the extrusion direction and the polygon
-	 * normal. (0,0,-1) would lead to bad orientation.
-	 */
 	Solid *               extrude( const Polygon & g, double dx, double dy, double dz ) ;
+
+
+//	LineString *          extrude( const MultiPoint & g, double dx, double dy, double dz ) ;
+//	PolyhedralSurface *   extrude( const MultiLineString & g, double dx, double dy, double dz ) ;
+//	MultiSolid *          extrude( const MultiPolygon & g, double dx, double dy, double dz ) ;
 
 }//algorithm
 }//SFCGAL
