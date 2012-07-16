@@ -23,7 +23,7 @@ namespace SFCGAL {
 	 *
 	 * @warning CGAL::Triangulation_3 contains tetrahedron
 	 */
-	class TriangulatedSurface : public Geometry {
+	class TriangulatedSurface : public Surface {
 	public:
 		/**
 		 * Empty TriangulatedSurface constructor

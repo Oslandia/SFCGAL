@@ -96,7 +96,7 @@ Solid * extrude( const Polygon & g, double dx, double dy, double dz )
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
 
-	bool reverseOrientation = ( Vector_3( dx, dy, dz ) * normal3D< Kernel >( g ) ) < 0 ;
+	bool reverseOrientation = ( Vector_3( dx, dy, dz ) * normal3D< Kernel >( g ) ) > 0 ;
 
 	//resulting shell
 	PolyhedralSurface polyhedralSurface ;
@@ -118,6 +118,7 @@ Solid * extrude( const Polygon & g, double dx, double dy, double dz )
 	for ( size_t i = 0; i < bottom.numRings(); i++ ){
 		std::auto_ptr< PolyhedralSurface > boundaryExtruded( extrude( bottom.ringN(i), dx, dy, dz ) );
 		for ( size_t j = 0; j < boundaryExtruded->numPolygons(); j++ ){
+			boundaryExtruded->polygonN(j).reverse() ;
 			polyhedralSurface.addPolygon( boundaryExtruded->polygonN(j) ) ;
 		}
 	}
