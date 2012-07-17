@@ -144,6 +144,10 @@ namespace io {
 		 * add a Solid
 		 */
 		void   addGeometry( const Solid & solid ) ;
+		/**
+		 * add a MultiSolid
+		 */
+		void   addGeometry( const MultiSolid & multiSolid ) ;
 	private:
 		/**
 		 * vertices in the wavefront obj file

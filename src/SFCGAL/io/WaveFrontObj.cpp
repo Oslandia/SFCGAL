@@ -140,6 +140,8 @@ void WaveFrontObj::addGeometry( const Geometry & g )
 		return addGeometry( g.as< PolyhedralSurface >() );
 	case TYPE_SOLID:
 		return addGeometry( g.as< Solid >() );
+	case TYPE_MULTISOLID:
+		return addGeometry( g.as< MultiSolid >() );
 	}
 	BOOST_THROW_EXCEPTION(
 		Exception(
@@ -217,6 +219,15 @@ void WaveFrontObj::addGeometry( const Solid & solid )
 	}
 }
 
+///
+///
+///
+void WaveFrontObj::addGeometry( const MultiSolid & multiSolid )
+{
+	for ( size_t i = 0; i < multiSolid.numGeometries(); i++ ){
+		addGeometry( multiSolid.solidN(i) );
+	}
+}
 ///
 ///
 ///
