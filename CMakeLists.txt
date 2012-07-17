@@ -115,7 +115,11 @@ if( ${SFCGAL_BUILD_TOOLS} )
 	add_subdirectory( tools )
 endif()
 
-
+#-- viewer 
+option( SFCGAL_BUILD_VIEWER "build viewer" ON )
+if( ${SFCGAL_BUILD_VIEWER} )
+	add_subdirectory( viewer )
+endif()
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)
