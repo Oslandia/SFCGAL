@@ -11,7 +11,6 @@ include_directories(
 file( GLOB_RECURSE VIEWER_SFCGAL_HEADERS ./*.h )
 file( GLOB_RECURSE VIEWER_SFCGAL_SOURCES ./*.cpp )
 
-
 QT4_WRAP_CPP(VIEWER_SFCGAL_HEADERS_MOC ${VIEWER_SFCGAL_HEADERS})
 
 add_executable( viewer-SFCGAL 
@@ -30,3 +29,5 @@ target_link_libraries( viewer-SFCGAL
 	${GMP_LIBRARIES}
 )
 install( TARGETS viewer-SFCGAL DESTINATION bin )
+
+

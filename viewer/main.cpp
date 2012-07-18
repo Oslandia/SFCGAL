@@ -9,21 +9,19 @@
 
 #include <SFCGAL/all.h>
 
-#include <SFCGAL/viewer/ViewerWidget.h>
-#include <SFCGAL/viewer/ViewerWindow.h>
-
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/OsgFactory.h>
-
-
 #include <SFCGAL/algorithm/extrude.h>
+
+#include <SFCGAL/viewer/ViewerWidget.h>
+#include <SFCGAL/viewer/ViewerWindow.h>
+#include <SFCGAL/viewer/plugins/DemoPlugin.h>
+
 
 #include <QtGui/QFileDialog>
 
 using namespace SFCGAL ;
 using namespace SFCGAL::viewer ;
-
-
 
 
 int main(int argc, char** argv)
@@ -74,6 +72,7 @@ int main(int argc, char** argv)
 
 
 	ViewerWindow window( viewer );
+	window.addPlugin( new plugins::DemoPlugin );
 	window.show();
 
 	return app.exec();

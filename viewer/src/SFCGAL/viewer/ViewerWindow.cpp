@@ -1,5 +1,6 @@
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/ViewerWidget.h>
+#include <SFCGAL/viewer/ViewerPlugin.h>
 
 #include <iostream>
 
@@ -63,6 +64,17 @@ void ViewerWindow::setViewer( ViewerWidget * viewer )
 }
 
 
+///
+///
+///
+void   ViewerWindow::addPlugin( ViewerPlugin * plugin )
+{
+	_plugins.push_back( plugin );
+	plugin->_viewerWindow = this ;
+	plugin->init() ;
+}
+
+
 
 ///
 ///
@@ -86,6 +98,20 @@ void ViewerWindow::screenShot()
 	viewer()->startAnimation();
 }
 
+///
+///
+///
+void ViewerWindow::displayDataInfo()
+{
+	std::cout << "--- viewer ---" << std::endl;
+
+	osg::Group * scene = viewer()->getScene() ;
+	for ( size_t i = 0; i < scene->getNumChildren(); i++ ){
+		osg::Node* node = scene->getChild(i) ;
+		std::cout << "[" << i << "]" << node->getName() << std::endl ;
+	}
+}
+
 
 ///
 ///
@@ -102,7 +128,6 @@ void ViewerWindow::loadFile()
 {
 	viewer()->stopAnimation();
 
-	std::cout << QDir::currentPath().toStdString() << std::endl;
 	QString filename = QFileDialog::getOpenFileName( NULL,"select a file to open", QDir::currentPath() ) ;
 
 	osg::Node* node = osgDB::readNodeFile( filename.toStdString() );
@@ -124,10 +149,10 @@ void ViewerWindow::saveFile()
 {
 	viewer()->stopAnimation();
 
-	std::cout << "save as osgt" << std::endl;
-	osgDB::writeNodeFile( *viewer()->getScene(), "scene.osgb" );
-
-
+	QString filename = QFileDialog::getOpenFileName( NULL,"select save file name", QDir::currentPath() ) ;
+	if ( ! filename.isEmpty() ){
+		osgDB::writeNodeFile( *viewer()->getScene(), filename.toStdString() );
+	}
 	viewer()->startAnimation();
 }
 
@@ -159,6 +184,13 @@ void ViewerWindow::createMenus()
 	QAction *actionExit = _menuFile->addAction("&Exit");
 	connect( actionExit, SIGNAL(triggered()), qApp, SLOT( quit() ) );
 
+	/*
+	 * data menu
+	 */
+	_menuData = menuBar()->addMenu("&Data") ;
+
+	QAction *actionDataInfo = _menuData->addAction("&display data info...");
+	connect( actionDataInfo, SIGNAL(triggered()), this, SLOT( displayDataInfo() ) );
 
 	/*
 	 * Help menu

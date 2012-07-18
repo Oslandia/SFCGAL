@@ -7,6 +7,7 @@
 namespace SFCGAL {
 namespace viewer {
 
+	class ViewerPlugin ;
 	class ViewerWidget ;
 
 	/**
@@ -30,6 +31,11 @@ namespace viewer {
 		void           setViewer( ViewerWidget * viewer ) ;
 
 
+		/**
+		 * add a plugin to the window
+		 */
+		void           addPlugin( ViewerPlugin * plugin ) ;
+
 	public slots:
 
 		/**
@@ -51,6 +57,11 @@ namespace viewer {
 		 */
 		void screenShot() ;
 
+		/**
+		 * print info
+		 */
+		void displayDataInfo() ;
+
 	protected:
 		/**
 		 * create default menus
@@ -61,7 +72,10 @@ namespace viewer {
 		ViewerWidget * _viewer ;
 
 		QMenu * _menuFile ;
+		QMenu * _menuData ;
 		QMenu * _menuHelp ;
+
+		std::vector< ViewerPlugin * > _plugins ;
 	};
 
 }//viewer
