@@ -21,7 +21,12 @@ add_executable( viewer-SFCGAL
 )
 set_target_properties( viewer-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 target_link_libraries( viewer-SFCGAL
+	SFCGAL
 	${OPENSCENEGRAPH_LIBRARIES}  
 	${QT_LIBRARIES}
+	${CGAL_LIBRARIES}
+	${Boost_LIBRARIES}
+	${MPFR_LIBRARIES}
+	${GMP_LIBRARIES}
 )
 install( TARGETS viewer-SFCGAL DESTINATION bin )

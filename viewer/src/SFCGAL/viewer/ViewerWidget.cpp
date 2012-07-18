@@ -249,6 +249,9 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 	// any option left unread are converted into errors to write out later.
 	arguments.reportRemainingOptionsAsUnrecognized();
 
+
+	/// TODO remove
+	viewer->setThreadingModel( osgViewer::Viewer::SingleThreaded ) ;
 	return viewer.release() ;
 }
 
