@@ -47,8 +47,18 @@ namespace viewer {
 		/**
 		 * Save image to file
 		 */
-		void saveImageToFile( QString filename ) ;
+		void saveImageToFile() ;
 
+
+	public slots :
+		/**
+		 * start animation
+		 */
+		void startAnimation() ;
+	    /**
+		 * stop animation
+		 */
+		void stopAnimation() ;
 
 	protected:
 		QTimer       _timer;

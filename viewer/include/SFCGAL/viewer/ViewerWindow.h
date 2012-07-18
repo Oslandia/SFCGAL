@@ -32,6 +32,18 @@ namespace viewer {
 
 	public slots:
 
+		/**
+		 * load a file
+		 */
+		void loadFile() ;
+		/**
+		 * save to a file
+		 */
+		void saveFile() ;
+
+		/**
+		 * display about message
+		 */
 		void about() ;
 
 		/**

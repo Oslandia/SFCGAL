@@ -6,18 +6,22 @@
 #include <QtGui/QApplication>
 #include <QtGui/QVBoxLayout>
 
+#include <QtGui/QFileDialog>
+
 
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPixmap>
 #include <QtGui/QPainter>
 #include <QtGui/QImage>
+#include <QtGui/QMessageBox>
+
 
 #include <QtOpenGL/QGLFramebufferObject>
 #include <QtOpenGL/QGLWidget>
 
-
-
+#include <osgDB/ReadFile.h>
+#include <osgDB/WriteFile.h>
 
 namespace SFCGAL {
 namespace viewer {
@@ -77,7 +81,9 @@ void ViewerWindow::setViewer( ViewerWidget * viewer )
 ///
 void ViewerWindow::screenShot()
 {
-	viewer()->saveImageToFile( QString("test.png") );
+	viewer()->stopAnimation();
+	viewer()->saveImageToFile();
+	viewer()->startAnimation();
 }
 
 
@@ -92,12 +98,57 @@ void ViewerWindow::about()
 ///
 ///
 ///
+void ViewerWindow::loadFile()
+{
+	viewer()->stopAnimation();
+
+	std::cout << QDir::currentPath().toStdString() << std::endl;
+	QString filename = QFileDialog::getOpenFileName( NULL,"select a file to open", QDir::currentPath() ) ;
+
+	osg::Node* node = osgDB::readNodeFile( filename.toStdString() );
+	if ( ! node ){
+		QMessageBox::warning( this, "load file error", QString("can't read file...") );
+	}else{
+		node->setName( filename.toStdString() );
+		viewer()->getScene()->addChild( node );
+	}
+
+	viewer()->startAnimation();
+}
+
+
+///
+///
+///
+void ViewerWindow::saveFile()
+{
+	viewer()->stopAnimation();
+
+	std::cout << "save as osgt" << std::endl;
+	osgDB::writeNodeFile( *viewer()->getScene(), "scene.osgb" );
+
+
+	viewer()->startAnimation();
+}
+
+///
+///
+///
 void ViewerWindow::createMenus()
 {
 	/*
 	 * File menu
 	 */
 	_menuFile = menuBar()->addMenu("&File") ;
+
+	//-- load a file
+	QAction *actionLoadFile = _menuFile->addAction("&Load a file...");
+	connect( actionLoadFile, SIGNAL(triggered()), this, SLOT( loadFile() ) );
+
+	//-- save as file
+	QAction *actionSaveFile = _menuFile->addAction("&save to file...");
+	connect( actionSaveFile, SIGNAL(triggered()), this, SLOT( saveFile() ) );
+
 
 	//-- screenshot
 	QAction *actionSaveAsImage = _menuFile->addAction("&Save as image...");

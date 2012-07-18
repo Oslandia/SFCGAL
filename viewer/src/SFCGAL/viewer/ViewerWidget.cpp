@@ -79,7 +79,7 @@ void ViewerWidget::initViewer()
 	setMinimumSize(300,300);
 
 	connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
-	_timer.start( 10 );
+	startAnimation();
 }
 
 
@@ -252,6 +252,9 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 
 	/// TODO remove
 	viewer->setThreadingModel( osgViewer::Viewer::SingleThreaded ) ;
+	//viewer->setThreadingModel( osgViewer::Viewer::ThreadPerCamera );
+	//viewer->setThreadingModel( osgViewer::Viewer::DrawThreadPerContext ) ;
+
 	return viewer.release() ;
 }
 
@@ -259,18 +262,33 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 ///
 ///
 ///
-void ViewerWidget::saveImageToFile( QString filename )
+void ViewerWidget::saveImageToFile()
 {
 	osgViewer::ScreenCaptureHandler::WriteToFile * writeToFileOperation = new osgViewer::ScreenCaptureHandler::WriteToFile(
-		filename.toStdString(),
-		"PNG",
-		osgViewer::ScreenCaptureHandler::WriteToFile::OVERWRITE
+		"screenshot",
+		"png",
+		osgViewer::ScreenCaptureHandler::WriteToFile::SEQUENTIAL_NUMBER
 	);
 
 	osgViewer::ScreenCaptureHandler * captureHandler = new osgViewer::ScreenCaptureHandler( writeToFileOperation );
 	captureHandler->captureNextFrame( *this );
 }
 
+///
+///
+///
+void ViewerWidget::startAnimation()
+{
+	_timer.start( 20 ) ;
+}
+
+///
+///
+///
+void ViewerWidget::stopAnimation()
+{
+	_timer.stop();
+}
 
 }//viewer
 }//SFCGAL
