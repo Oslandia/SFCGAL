@@ -1,9 +1,9 @@
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
 #include <SFCGAL/all.h>
 
-#include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/graph/GeometryGraphBuilder.h>
-
+#include <set>
+#include <complex>
+#include <SFCGAL/detail/ComplexComparator.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -26,10 +26,14 @@ void BoundaryVisitor::visit( const LineString & g )
 		return ;
 	}
 
-	std::auto_ptr< MultiPoint > boundary( new MultiPoint );
-	boundary->addGeometry( g.startPoint() );
-	boundary->addGeometry( g.endPoint() );
-	_boundary.reset( boundary.release() );
+	if ( g.startPoint().coordinate() == g.endPoint().coordinate() ){
+		_boundary.reset() ;
+	}else{
+		std::auto_ptr< MultiPoint > boundary( new MultiPoint );
+		boundary->addGeometry( g.startPoint() );
+		boundary->addGeometry( g.endPoint() );
+		_boundary.reset( boundary.release() );
+	}
 }
 
 ///
@@ -106,33 +110,7 @@ void BoundaryVisitor::visit( const MultiLineString & g )
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		graphBuilder.addLineString( g.lineStringN(i) );
 	}
-
-	typedef graph::GeometryGraph::vertex_descriptor vertex_descriptor ;
-	typedef graph::GeometryGraph::vertex_iterator   vertex_iterator ;
-
-
-	std::vector< vertex_descriptor > vertices ;
-
-	vertex_iterator it,end ;
-	for ( boost::tie(it,end) = graph.vertices(); it != end; ++it ){
-		vertex_descriptor vertex = *it ;
-		if ( graph.degree(vertex) == 1 ){
-			vertices.push_back( vertex );
-		}
-	}
-
-	if ( vertices.empty() ){
-		_boundary.reset() ;
-	}else if ( vertices.size() == 1 ){
-		_boundary.reset( new Point( graph[ vertices[0] ].coordinate ) );
-	}else{
-		std::auto_ptr< MultiPoint > boundary( new MultiPoint );
-		for ( size_t i = 0; i < vertices.size(); i++ ){
-			boundary->addGeometry( new Point( graph[ vertices[i] ].coordinate ) ) ;
-		}
-		_boundary.reset( boundary.release() );
-	}
-
+	getBoundaryFromLineStrings( graph ) ;
 }
 
 ///
@@ -140,9 +118,13 @@ void BoundaryVisitor::visit( const MultiLineString & g )
 ///
 void BoundaryVisitor::visit( const MultiPolygon & g )
 {
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("unsupported type %1% in boundary operation") % g.geometryType() ).str()
-	));
+	graph::GeometryGraph        graph ;
+	graph::GeometryGraphBuilder graphBuilder( graph ) ;
+
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		graphBuilder.addPolygon(g.polygonN(i));
+	}
+	getBoundaryFromPolygons( graph ) ;
 }
 
 ///
@@ -170,9 +152,11 @@ void BoundaryVisitor::visit( const GeometryCollection & g )
 ///
 void BoundaryVisitor::visit( const PolyhedralSurface & g )
 {
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("unsupported type %1% in boundary operation") % g.geometryType() ).str()
-	));
+	graph::GeometryGraph        graph ;
+	graph::GeometryGraphBuilder graphBuilder( graph ) ;
+
+	graphBuilder.addPolyhedralSurface( g );
+	getBoundaryFromPolygons( graph ) ;
 }
 
 ///
@@ -180,9 +164,11 @@ void BoundaryVisitor::visit( const PolyhedralSurface & g )
 ///
 void BoundaryVisitor::visit( const TriangulatedSurface & g )
 {
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("unsupported type %1% in boundary operation") % g.geometryType() ).str()
-	));
+	graph::GeometryGraph        graph ;
+	graph::GeometryGraphBuilder graphBuilder( graph ) ;
+
+	graphBuilder.addTriangulatedSurface( g );
+	getBoundaryFromPolygons( graph ) ;
 }
 
 
@@ -197,6 +183,51 @@ Geometry* BoundaryVisitor::releaseBoundary()
 		return new GeometryCollection() ;
 	}
 }
+
+
+///
+///
+///
+void BoundaryVisitor::getBoundaryFromLineStrings( const graph::GeometryGraph & graph )
+{
+	typedef graph::GeometryGraph::vertex_descriptor vertex_descriptor ;
+	typedef graph::GeometryGraph::vertex_iterator   vertex_iterator ;
+
+
+	std::vector< vertex_descriptor > vertices ;
+
+	vertex_iterator it,end ;
+	for ( boost::tie(it,end) = graph.vertices(); it != end; ++it ){
+		vertex_descriptor vertex = *it ;
+		if ( graph.degree(vertex) == 1 ){
+			vertices.push_back( vertex );
+		}
+	}
+
+	if ( vertices.empty() ){
+		_boundary.reset() ;
+	}else if ( vertices.size() == 1 ){
+		_boundary.reset( new Point( graph[ vertices[0] ].coordinate ) );
+	}else{
+		std::auto_ptr< MultiPoint > boundary( new MultiPoint );
+		for ( size_t i = 0; i < vertices.size(); i++ ){
+			boundary->addGeometry( new Point( graph[ vertices[i] ].coordinate ) ) ;
+		}
+		_boundary.reset( boundary.release() );
+	}
+}
+
+
+///
+///
+///
+void BoundaryVisitor::getBoundaryFromPolygons( const graph::GeometryGraph & g )
+{
+	BOOST_THROW_EXCEPTION(Exception(
+		"!!!!!!! BoundaryVisitor::getBoundaryFromPolygons not implemented"
+	));
+}
+
 
 
 

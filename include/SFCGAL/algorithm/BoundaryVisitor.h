@@ -3,6 +3,10 @@
 
 #include <SFCGAL/GeometryVisitor.h>
 
+#include <SFCGAL/graph/GeometryGraph.h>
+#include <SFCGAL/graph/GeometryGraphBuilder.h>
+
+
 namespace SFCGAL {
 namespace algorithm {
 
@@ -50,6 +54,16 @@ namespace algorithm {
 		 */
 		Geometry* releaseBoundary() ;
 
+	protected:
+
+		/**
+		 * get the boundary vertices for a set of LineString in a GeometryGraph
+		 */
+		void getBoundaryFromLineStrings( const graph::GeometryGraph & g );
+		/**
+		 * get the boundary edges for a set of Polygons in a GeometryGraph
+		 */
+		void getBoundaryFromPolygons( const graph::GeometryGraph & g );
 	private:
 		std::auto_ptr< Geometry > _boundary ;
 	};
