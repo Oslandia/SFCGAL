@@ -100,6 +100,15 @@ namespace SFCGAL {
 		inline Point &         endPoint() { return _points.back(); }
 
 
+		/**
+		 * append a point to the LineString
+		 */
+		inline void            addPoint( const Point & p ) {
+			_points.push_back( p ) ;
+		}
+
+
+
 		const std::vector< Point > & points() const { return _points; }
 		std::vector< Point > &       points() { return _points; }
 

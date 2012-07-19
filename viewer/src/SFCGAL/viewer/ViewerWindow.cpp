@@ -2,6 +2,8 @@
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
+#include <SFCGAL/tools/Log.h>
+
 #include <iostream>
 
 #include <QtGui/QApplication>
@@ -81,6 +83,10 @@ void ViewerWindow::setViewer( ViewerWidget * viewer )
 ///
 void   ViewerWindow::addPlugin( ViewerPlugin * plugin )
 {
+	BOOST_ASSERT( plugin != NULL );
+
+	SFCGAL_INFO( boost::format( "loading ViewerPlugin %1%..." ) % plugin->pluginName().toStdString() );
+
 	_plugins.push_back( plugin );
 	plugin->_viewerWindow = this ;
 	plugin->load() ;

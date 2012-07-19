@@ -3,6 +3,8 @@
 #include <SFCGAL/GeometryVisitor.h>
 #include <SFCGAL/io/WktWriter.h>
 
+#include <SFCGAL/algorithm/BoundaryVisitor.h>
+
 namespace SFCGAL {
 
 ///
@@ -28,6 +30,15 @@ std::string Geometry::asText( const int & numDecimals ) const
 	return oss.str();
 }
 
+///
+///
+///
+Geometry* Geometry::boundary() const
+{
+	algorithm::BoundaryVisitor visitor ;
+	accept(visitor);
+	return visitor.releaseBoundary() ;
+}
 
 
 ///

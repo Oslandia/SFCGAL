@@ -7,10 +7,17 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * Compute the boundary for a Geometry
-	 * @todo implement
+	 * Compute the boundary for a Point
 	 */
-	Geometry* boundary( const Geometry & g ) ;
+	Geometry* boundary( const Point & g ) ;
+	/**
+	 * Compute the boundary for a Point
+	 */
+	Geometry* boundary( const LineString & g ) ;
+	/**
+	 * Compute the boundary for a Point
+	 */
+	Geometry* boundary( const LineString & g ) ;
 
 
 }//algorithm

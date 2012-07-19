@@ -2,19 +2,73 @@
 #define _SFCGAL_LOG_H_
 
 #include <string>
-#include <deque>
-#include <vector>
+#include <boost/format.hpp>
 
-namespace SFCGAL
-{
+/**
+ *
+ * Helper method to log debug message
+ *
+ * \code
+ * SFCGAL_DEBUG( "start new method" ) ;
+ * \endcode
+ */
+#define SFCGAL_DEBUG( message ) SFCGAL::Logger::get()->log( SFCGAL::Logger::Debug, message, __FILE__, __LINE__ )
+/**
+ *
+ * Helper method to log information message
+ *
+ * \code
+ * SFCGAL_INFO( "start new method" ) ;
+ * \endcode
+ */
+#define SFCGAL_INFO( message ) SFCGAL::Logger::get()->log( SFCGAL::Logger::Info, message, __FILE__, __LINE__ )
+/**
+ *
+ * Helper method to log warning message
+ *
+ * \code
+ * SFCGAL_WARNING( "start new method" ) ;
+ * \endcode
+ */
+#define SFCGAL_WARNING( message ) SFCGAL::Logger::get()->log( SFCGAL::Logger::Warning, message, __FILE__, __LINE__ )
+/**
+ *
+ * Helper method to log error message
+ *
+ * \code
+ * SFCGAL_ERROR( "invalid geometry" ) ;
+ * \endcode
+ */
+#define SFCGAL_ERROR( message ) SFCGAL::Logger::get()->log( SFCGAL::Logger::Info, message, __FILE__, __LINE__ )
+/**
+ *
+ * Helper method to log critical message
+ *
+ * \code
+ * SFCGAL_ERROR( "unexpected behavior in triangulate" ) ;
+ * \endcode
+ */
+#define SFCGAL_CRITICAL( message ) SFCGAL::Logger::get()->log( SFCGAL::Logger::Critical, message, __FILE__, __LINE__ )
 
-	//
-	// Yet-to-enhance logger class
+
+namespace SFCGAL {
+
+	/**
+	 * [Singleton]Logger class
+	 *
+	 * @warning saved_lines and co removed (dangerous for memory and could be done in a LogWriter).
+	 */
 	class Logger
 	{
 	public:
+		/**
+		 * destructor
+		 */
 		~Logger();
 
+		/**
+		 * log level
+		 */
 		enum Level
 		{
 			Debug,
@@ -24,27 +78,87 @@ namespace SFCGAL
 			Critical
 		};
 
-		// singleton accessor
-		static Logger* get()
-		{
-			static Logger log;
-			return &log;
-		}
+		/**
+		 * singleton accessor
+		 */
+		static Logger* get() ;
 
-		void log( int level, const std::string& msg );
+		/**
+		 * log a message using boost format
+		 * @param level the log level
+		 * @param message the message to log
+		 * @param filename the filename (optional)
+		 * @param lineNumber the line number in the file (optional)
+		 */
+		void log(
+			const Level & level,
+			const boost::format& message,
+			const std::string & filename = "",
+			const int & lineNumber = -1
+		);
 
+		/**
+		 * log a message
+		 * @param level the log level
+		 * @param message the message to log
+		 * @param filename the filename (optional)
+		 * @param lineNumber the line number in the file (optional)
+		 */
+		void log(
+			const Level & level,
+			const std::string& message,
+			const std::string & filename = "",
+			const int & lineNumber = -1
+		);
+
+		/**
+		 * flush log outputs (actualy std::cout.flush())
+		 */
 		void flush();
-		void enable_autoflush() { autoflush_ = true; }
-		void disable_autoflush() { autoflush_ = false; }
+		/**
+		 * indicates if each log output may be flushed
+		 */
+		void setAutoflush( bool autoflush ) ;
 
-		std::vector<std::string> saved_lines() const { return std::vector<std::string>(lines_.begin(), lines_.end()); }
+		/**
+		 * get the current log level
+		 */
+		const Level & logLevel() const ;
+		/**
+		 * set the log level
+		 */
+		void setLogLevel( const Level & logLevel ) ;
+
 	private:
-		// private constructor
-	Logger() : autoflush_(true) {}
+		/**
+		 * current log level
+		 */
+		Level _logLevel ;
+		/**
+		 * automatic call to flush() after each log?
+		 */
+		bool _autoflush ;
+		/**
+		 * display file position?
+		 */
+		bool _displayFilePosition ;
 
-		std::deque<std::string> lines_;
-		bool autoflush_;
+		/**
+		 * private constructor
+		 */
+		Logger();
+		/**
+		 * no copy constructor
+		 */
+		Logger( const Logger & other );
 	};
-}
+
+
+}//SFCGAL
+
+
+
+
+
 
 #endif

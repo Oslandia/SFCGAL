@@ -207,6 +207,13 @@ namespace graph {
 			return result ;
 		}
 
+		/**
+		 * returns the degree of a vertex
+		 */
+		inline size_t degree( const vertex_descriptor & vertex ) const {
+			return boost::degree(vertex,_graph);
+		}
+
 
 		/**
 		 * [adjacency]get in edges

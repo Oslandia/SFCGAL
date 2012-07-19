@@ -117,7 +117,6 @@ bool Point::is3D() const
 	return _coordinate.is3D() ;
 }
 
-
 ///
 ///
 ///

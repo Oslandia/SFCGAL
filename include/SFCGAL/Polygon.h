@@ -76,6 +76,14 @@ namespace SFCGAL {
 			return _rings[0];
 		}
 
+
+		/**
+		 * Test if the polygon has interior rings
+		 */
+		inline bool                  hasInteriorRings() const {
+			return _rings.size() == 1 ;
+		}
+
 		/**
 		 * [OGC/SFA]returns the exterior ring
 		 */
