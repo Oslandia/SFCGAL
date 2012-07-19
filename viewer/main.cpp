@@ -13,7 +13,7 @@
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/plugins/DemoPlugin.h>
-
+#include <SFCGAL/viewer/plugins/DataPlugin.h>
 
 #include <QtGui/QFileDialog>
 
@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 
 
 	ViewerWindow window( viewer );
+	window.addPlugin( new plugins::DataPlugin );
 	window.addPlugin( new plugins::DemoPlugin );
 	window.show();
 

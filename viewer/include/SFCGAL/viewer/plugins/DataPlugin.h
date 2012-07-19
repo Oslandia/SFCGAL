@@ -3,6 +3,9 @@
 
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
+namespace osg {
+	class Node ;
+}
 
 namespace SFCGAL {
 namespace viewer {
@@ -23,6 +26,9 @@ namespace plugins {
 		 * Returns the plugin name
 		 */
 		virtual QString pluginName() const ;
+
+
+		static void displayNodeInformation( osg::Node* node, std::ostream & s, const size_t & depth = 0 ) ;
 
 	public slots :
 		/**

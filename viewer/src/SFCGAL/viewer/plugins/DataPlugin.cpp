@@ -32,16 +32,34 @@ QString DataPlugin::pluginName() const
 ///
 ///
 ///
+void DataPlugin::displayNodeInformation( osg::Node* node, std::ostream & s, const size_t & depth )
+{
+	std::string indent ;
+	for ( size_t i = 0; i < depth; i++ ){
+		indent += ' ';
+	}
+
+	s << indent << "Node[" << node->getName() << "]" << std::endl;
+	osg::Group * group = node->asGroup() ;
+	if ( group ){
+		for ( size_t i = 0; i < group->getNumChildren(); i++ ){
+			s << indent << "child[" << i << "]" << std::endl;
+			displayNodeInformation( group->getChild(i), s, depth + 1 ) ;
+		}
+	}else{
+		osg::Geode* geode = dynamic_cast< osg::Geode* >( node ) ;
+		s << indent << "Geode[" << geode->getBoundingBox().xMin() << " " << geode->getBoundingBox().xMax() << " " ;
+		s << geode->getBoundingBox().yMin() << " " << geode->getBoundingBox().yMax() << " " ;
+		s << geode->getBoundingBox().zMin() << " " << geode->getBoundingBox().zMax() << "]" << std::endl;
+	}
+}
+
+///
+///
+///
 void DataPlugin::displayInformations()
 {
-	osg::Group * scene = viewerWindow()->viewer()->getScene() ;
-	std::cout << "num children : " << scene->getNumChildren() << std::endl;
-	for ( size_t i = 0; i < scene->getNumChildren(); i++ ){
-		osg::Node* node = scene->getChild(i) ;
-		if ( ! node )
-			continue ;
-		std::cout << "[" << i << "]" << node->getName() << std::endl; //<< node->getName() << std::endl ;
-	}
+	displayNodeInformation( viewerWindow()->viewer()->getScene(), std::cout );
 }
 
 ///
