@@ -22,6 +22,11 @@ namespace viewer {
 		ViewerWindow( ViewerWidget * viewer = 0 );
 
 		/**
+		 * destructor
+		 */
+		~ViewerWindow() ;
+
+		/**
 		 * get viewer
 		 */
 		ViewerWidget * viewer() ;
@@ -29,7 +34,6 @@ namespace viewer {
 		 * get viewer
 		 */
 		void           setViewer( ViewerWidget * viewer ) ;
-
 
 		/**
 		 * add a plugin to the window
@@ -56,11 +60,6 @@ namespace viewer {
 		 * take a screen shot
 		 */
 		void screenShot() ;
-
-		/**
-		 * print info
-		 */
-		void displayDataInfo() ;
 
 	protected:
 		/**

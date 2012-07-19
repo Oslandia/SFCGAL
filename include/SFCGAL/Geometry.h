@@ -153,7 +153,7 @@ namespace SFCGAL {
        /**
         * [OGC/SFA]Return the boundary of the geometry
         */
-       //virtual std::auto_ptr< Geometry > boundary() const = 0 ;
+       //virtual Geometry*    boundary() const = 0 ;
 
        /**
         * [OGC/SFA]Returns the identifier of the spatial reference

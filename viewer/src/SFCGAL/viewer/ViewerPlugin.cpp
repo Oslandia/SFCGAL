@@ -1,5 +1,7 @@
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
+#include <iostream>
+
 namespace SFCGAL {
 namespace viewer {
 
@@ -19,6 +21,14 @@ ViewerPlugin::ViewerPlugin():
 ViewerWindow * ViewerPlugin::viewerWindow()
 {
 	return _viewerWindow ;
+}
+
+///
+///
+///
+void ViewerPlugin::unload()
+{
+
 }
 
 

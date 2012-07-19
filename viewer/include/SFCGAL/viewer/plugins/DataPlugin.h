@@ -1,5 +1,5 @@
-#ifndef _SFCGAL_VIEWER_PLUGINS_DEMOPLUGIN_H_
-#define _SFCGAL_VIEWER_PLUGINS_DEMOPLUGIN_H_
+#ifndef _SFCGAL_VIEWER_PLUGINS_DATAPLUGIN_H_
+#define _SFCGAL_VIEWER_PLUGINS_DATAPLUGIN_H_
 
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
@@ -9,15 +9,15 @@ namespace viewer {
 namespace plugins {
 
 	/**
-	 * demo plugin
+	 * data management plugin
 	 */
-	class DemoPlugin : public ViewerPlugin {
+	class DataPlugin : public ViewerPlugin {
 		Q_OBJECT
 	public:
 		/**
 		 * Default constructor
 		 */
-		DemoPlugin() ;
+		DataPlugin() ;
 
 		/**
 		 * Returns the plugin name
@@ -26,17 +26,9 @@ namespace plugins {
 
 	public slots :
 		/**
-		 * demo extrude
-		*/
-		void demoSpiral();
-		/**
-		 * demo extrude
+		 * display data information
 		 */
-		void demoWkt();
-		/**
-		 * demo extrude
-		 */
-		void demoExtrude();
+		void displayInformations();
 	protected:
 		/**
 		 * init plugin

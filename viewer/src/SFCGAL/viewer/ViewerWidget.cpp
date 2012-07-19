@@ -239,22 +239,34 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 
 	// load the data
 	osg::ref_ptr<osg::Node> loadedModel = osgDB::readNodeFiles(arguments);
-	// optimize the scene graph, remove redundant nodes and state etc.
-	if ( loadedModel.get() ){
+	if (!loadedModel)
+	{
+		std::cout << arguments.getApplicationName() << ": No data loaded" << std::endl;
+	}else{
 		osgUtil::Optimizer optimizer;
-		optimizer.optimize( loadedModel.get() ) ;
-		viewer->getScene()->addChild( loadedModel.get() );
+		optimizer.optimize(loadedModel.get());
+		viewer->setSceneData( loadedModel.get() );
 	}
 
 	// any option left unread are converted into errors to write out later.
 	arguments.reportRemainingOptionsAsUnrecognized();
 
+	// report any errors if they have occurred when parsing the program arguments.
+	if (arguments.errors())
+	{
+		arguments.writeErrorMessages(std::cerr);
+	}
+
 
 	/// TODO remove
 	viewer->setThreadingModel( osgViewer::Viewer::SingleThreaded ) ;
+	viewer->realize();
+
+
 	//viewer->setThreadingModel( osgViewer::Viewer::ThreadPerCamera );
 	//viewer->setThreadingModel( osgViewer::Viewer::DrawThreadPerContext ) ;
 
+	//viewer->run();
 	return viewer.release() ;
 }
 

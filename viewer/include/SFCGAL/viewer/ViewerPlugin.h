@@ -33,9 +33,13 @@ namespace viewer {
 
 	protected:
 		/**
-		 * init plugin
+		 * Load plugin
 		 */
-		virtual void init() = 0 ;
+		virtual void load() = 0 ;
+		/**
+		 * Unload plugin
+		 */
+		virtual void unload() ;
 	private:
 		ViewerWindow * _viewerWindow ;
 	};

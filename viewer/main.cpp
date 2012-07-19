@@ -6,12 +6,9 @@
 #include <osgUtil/SmoothingVisitor>
 
 #include <osg/Material>
+#include <osgDB/Registry>
 
 #include <SFCGAL/all.h>
-
-#include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/OsgFactory.h>
-#include <SFCGAL/algorithm/extrude.h>
 
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
@@ -19,6 +16,8 @@
 
 
 #include <QtGui/QFileDialog>
+
+
 
 using namespace SFCGAL ;
 using namespace SFCGAL::viewer ;
@@ -32,11 +31,6 @@ int main(int argc, char** argv)
     QApplication app(argc, argv);
 
     ViewerWidget * viewer = ViewerWidget::createFromArguments( arguments );
-
-    //osg::Node* cow = osgDB::readNodeFile("/home/eplu/3RDPARTY/OpenSceneGraph-Data-3.0.0/cow.osgt") ;
-    //cow->setName("cow node");
-    //viewer->scene()->addChild( cow  );
-
 //    osg::Geode* geode = new osg::Geode;
 //    //osg::StateSet* status = geode->getOrCreateStateSet();
 //    //status->setMode(GL_LIGHTING, osg::StateAttribute::ON);
@@ -50,12 +44,7 @@ int main(int argc, char** argv)
 //
 //	osg::Geometry * osgGeometry = factory.createGeometry( *ext ) ;
 //
-//	/*
-//	 * provide a color
-//	osg::Vec3Array * colors = new osg::Vec3Array();
-//	colors->push_back( osg::Vec3(1.0f,0.0f,0.0f) );
-//	osgGeometry->setColorArray( colors );
-//	osgGeometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+
 // */
 //
 //	/*

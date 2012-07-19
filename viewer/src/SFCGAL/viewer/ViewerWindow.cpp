@@ -21,8 +21,8 @@
 #include <QtOpenGL/QGLFramebufferObject>
 #include <QtOpenGL/QGLWidget>
 
-#include <osgDB/ReadFile.h>
-#include <osgDB/WriteFile.h>
+#include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 
 namespace SFCGAL {
 namespace viewer {
@@ -35,6 +35,18 @@ ViewerWindow::ViewerWindow( ViewerWidget * viewer )
 	setViewer(viewer);
 
 	createMenus();
+}
+
+///
+///
+///
+ViewerWindow::~ViewerWindow()
+{
+	for ( std::vector< ViewerPlugin * >::iterator it = _plugins.begin(); it != _plugins.end(); ++it ){
+		(*it)->unload();
+		delete *it ;
+	}
+	_plugins.clear();
 }
 
 ///
@@ -71,7 +83,7 @@ void   ViewerWindow::addPlugin( ViewerPlugin * plugin )
 {
 	_plugins.push_back( plugin );
 	plugin->_viewerWindow = this ;
-	plugin->init() ;
+	plugin->load() ;
 }
 
 
@@ -98,19 +110,6 @@ void ViewerWindow::screenShot()
 	viewer()->startAnimation();
 }
 
-///
-///
-///
-void ViewerWindow::displayDataInfo()
-{
-	std::cout << "--- viewer ---" << std::endl;
-
-	osg::Group * scene = viewer()->getScene() ;
-	for ( size_t i = 0; i < scene->getNumChildren(); i++ ){
-		osg::Node* node = scene->getChild(i) ;
-		std::cout << "[" << i << "]" << node->getName() << std::endl ;
-	}
-}
 
 
 ///
@@ -184,13 +183,6 @@ void ViewerWindow::createMenus()
 	QAction *actionExit = _menuFile->addAction("&Exit");
 	connect( actionExit, SIGNAL(triggered()), qApp, SLOT( quit() ) );
 
-	/*
-	 * data menu
-	 */
-	_menuData = menuBar()->addMenu("&Data") ;
-
-	QAction *actionDataInfo = _menuData->addAction("&display data info...");
-	connect( actionDataInfo, SIGNAL(triggered()), this, SLOT( displayDataInfo() ) );
 
 	/*
 	 * Help menu
