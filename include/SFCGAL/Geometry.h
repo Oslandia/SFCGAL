@@ -5,6 +5,8 @@
 #include <string>
 #include <sstream>
 
+#include <boost/assert.hpp>
+
 
 namespace SFCGAL {
 
@@ -179,14 +181,16 @@ namespace SFCGAL {
         */
        template < typename Derived >
        inline const Derived &  as() const {
-              return *static_cast< Derived const * >( this );
+            BOOST_ASSERT( is< Derived >() );
+            return *static_cast< Derived const * >( this );
        }
        /**
         * Downcast helper
         */
        template < typename Derived >
        inline Derived &        as() {
-              return *static_cast< Derived * >( this );
+            BOOST_ASSERT( is< Derived >() );
+            return *static_cast< Derived * >( this );
        }
 
 

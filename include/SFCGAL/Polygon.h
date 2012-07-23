@@ -10,6 +10,8 @@
 
 namespace SFCGAL {
 
+	class Triangle ;
+
 	/**
 	 * A Polygon in SFA with holes
 	 */
@@ -27,7 +29,10 @@ namespace SFCGAL {
 		 * Constructor with an exterior ring
 		 */
 		Polygon( const LineString & exteriorRing ) ;
-
+		/**
+		 * Constructor with a Triangle
+		 */
+		Polygon( const Triangle & triangle ) ;
 		/**
 		 * Copy constructor
 		 */

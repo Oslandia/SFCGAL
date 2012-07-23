@@ -113,6 +113,14 @@ bool  Triangle::is3D() const
 	return _vertices[0].is3D() ;
 }
 
+///
+///
+///
+void  Triangle::reverse()
+{
+	std::reverse( _vertices, _vertices + 3 );
+}
+
 
 ///
 ///

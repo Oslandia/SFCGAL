@@ -134,6 +134,16 @@ void  PolyhedralSurface::addPolygon( const Polygon & polygon )
 ///
 ///
 ///
+void  PolyhedralSurface::addPolygons( const PolyhedralSurface & polyhedralSurface )
+{
+	for ( size_t i = 0; i < polyhedralSurface.numPolygons(); i++ ){
+		_polygons.push_back( polyhedralSurface.polygonN(i) );
+	}
+}
+
+///
+///
+///
 void PolyhedralSurface::accept( GeometryVisitor & visitor )
 {
 	return visitor.visit(*this);

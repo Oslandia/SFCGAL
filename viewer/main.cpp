@@ -9,6 +9,7 @@
 #include <osgDB/Registry>
 
 #include <SFCGAL/all.h>
+#include <SFCGAL/tools/Log.h>
 
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
@@ -25,6 +26,8 @@ using namespace SFCGAL::viewer ;
 
 int main(int argc, char** argv)
 {
+	Logger::get()->setLogLevel( Logger::Debug );
+
     // use an ArgumentParser object to manage the program arguments.
     osg::ArgumentParser arguments(&argc,argv);
 

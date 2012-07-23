@@ -6,7 +6,8 @@ namespace SFCGAL {
 ///
 ///
 ///
-Solid::Solid()
+Solid::Solid():
+	_shells(1,PolyhedralSurface())
 {
 
 }

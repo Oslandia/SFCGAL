@@ -87,6 +87,12 @@ namespace SFCGAL {
 		 * add a polygon to the PolyhedralSurface
 		 */
 		void                      addPolygon( const Polygon & polygon ) ;
+		/**
+		 * add polygons from an other PolyhedralSurface
+		 */
+		void                      addPolygons( const PolyhedralSurface & polyhedralSurface ) ;
+
+
 
 		/**
 		 * Convert to CGAL::Polyhedron_3

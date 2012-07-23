@@ -62,8 +62,11 @@ namespace algorithm {
 		void getBoundaryFromLineStrings( const graph::GeometryGraph & g );
 		/**
 		 * get the boundary edges for a set of Polygons in a GeometryGraph
+		 * @warning not optimal (edges could be counted using complex< vertex_descriptor >)
+		 * @todo merge resulting edges
 		 */
 		void getBoundaryFromPolygons( const graph::GeometryGraph & g );
+
 	private:
 		std::auto_ptr< Geometry > _boundary ;
 	};

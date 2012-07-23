@@ -57,6 +57,11 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
 
+		/**
+		 * reverse Triangle orientation
+		 */
+		void                   reverse() ;
+
 
 		/**
 		 * convert a triangle to a polygon

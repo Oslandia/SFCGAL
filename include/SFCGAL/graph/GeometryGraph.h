@@ -14,9 +14,18 @@ namespace graph {
 	 *
 	 */
 	typedef enum {
-		DIRECT,
-		REVERSE
+		DIRECT  = 0,
+		REVERSE = 1
 	} EdgeDirection ;
+
+
+	/**
+	 * reverse EdgeDirection (DIRECT=>REVERSE, REVERSE=>DIRECT)
+	 */
+	inline EdgeDirection reverse( const EdgeDirection & direction ) {
+		return (EdgeDirection)( 1 - direction ) ;
+	}
+
 
 	/**
 	 *
@@ -168,7 +177,7 @@ namespace graph {
 		 * [edge]get the target vertex for an edge with a direction
 		 */
 		vertex_descriptor target( const directed_edge_descriptor & edge ) const {
-			return target( edge.second, edge.first );
+			return target( edge.first, edge.second );
 		}
 		/**
 		 * [edge]Remove an edge
@@ -178,7 +187,7 @@ namespace graph {
 		}
 
 		/**
-		 * [edge]Get edges from a to b
+		 * [edge]Get edges from a to b and from b to a
 		 */
 		std::vector< directed_edge_descriptor > edges( const vertex_descriptor & a, const vertex_descriptor & b ) const
 		{
@@ -194,11 +203,11 @@ namespace graph {
 					result.push_back( std::make_pair( *it, DIRECT ) );
 				}
 			}
-			//in_edges from b sourcing a
+			//out_edges from b targeting a
 			{
-				in_edge_iterator it, end ;
-				for ( boost::tie(it,end) = boost::in_edges(b,_graph); it != end; ++it ){
-					if ( source( *it ) != a )
+				out_edge_iterator it, end ;
+				for ( boost::tie(it,end) = boost::out_edges(b,_graph); it != end; ++it ){
+					if ( target( *it ) != a )
 						continue ;
 
 					result.push_back( std::make_pair( *it, REVERSE ) );

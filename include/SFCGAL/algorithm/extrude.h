@@ -23,6 +23,17 @@ namespace algorithm {
 	PolyhedralSurface *   extrude( const MultiLineString & g, double dx, double dy, double dz ) ;
 	MultiSolid *          extrude( const MultiPolygon & g, double dx, double dy, double dz ) ;
 
+	/**
+	 * @warning suppose that the TriangulatedSurface is connected
+	 * @todo take orientation in account
+	 */
+	Solid *               extrude( const TriangulatedSurface & g, double dx, double dy, double dz ) ;
+	/**
+	 * @warning doesn't take orientation in account
+	 * @todo take orientation in account
+	 */
+	Solid *               extrude( const PolyhedralSurface & g, double dx, double dy, double dz ) ;
+
 }//algorithm
 }//SFCGAL
 

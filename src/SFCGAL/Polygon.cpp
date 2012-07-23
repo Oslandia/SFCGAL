@@ -1,6 +1,8 @@
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/GeometryVisitor.h>
 
+#include <SFCGAL/Triangle.h>
+
 namespace SFCGAL {
 
 ///
@@ -33,6 +35,20 @@ Polygon::Polygon( const LineString & exteriorRing ):
 	_rings(1,exteriorRing)
 {
 
+}
+
+///
+///
+///
+Polygon::Polygon( const Triangle & triangle ):
+	Surface(),
+	_rings(1,LineString())
+{
+	if ( ! triangle.isEmpty() ){
+		for ( size_t i = 0; i < 4; i++ ){
+			exteriorRing().addPoint( triangle.vertex(i) );
+		}
+	}
 }
 
 ///

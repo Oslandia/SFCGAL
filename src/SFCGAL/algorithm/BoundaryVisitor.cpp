@@ -1,7 +1,7 @@
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
 #include <SFCGAL/all.h>
 
-#include <set>
+#include <map>
 #include <complex>
 #include <SFCGAL/detail/ComplexComparator.h>
 
@@ -223,9 +223,41 @@ void BoundaryVisitor::getBoundaryFromLineStrings( const graph::GeometryGraph & g
 ///
 void BoundaryVisitor::getBoundaryFromPolygons( const graph::GeometryGraph & g )
 {
-	BOOST_THROW_EXCEPTION(Exception(
-		"!!!!!!! BoundaryVisitor::getBoundaryFromPolygons not implemented"
-	));
+	typedef graph::GeometryGraph::vertex_descriptor vertex_descriptor ;
+	typedef graph::GeometryGraph::vertex_iterator   vertex_iterator ;
+	typedef graph::GeometryGraph::edge_descriptor   edge_descriptor ;
+	typedef graph::GeometryGraph::edge_iterator     edge_iterator ;
+
+
+	std::vector< edge_descriptor > boundaryEdges ;
+
+	edge_iterator it, end ;
+	for ( boost::tie( it, end ) = g.edges(); it != end ; ++it ){
+		if ( g.edges( g.source(*it), g.target(*it) ).size() == 1U ){
+			boundaryEdges.push_back( *it ) ;
+		}
+	}
+
+	if ( boundaryEdges.empty() ){
+		_boundary.reset() ;
+	}else{
+		//TODO merge Line Segments into LineString
+		std::auto_ptr< MultiLineString > boundary( new MultiLineString );
+		for ( size_t i = 0; i < boundaryEdges.size(); i++ ){
+			const edge_descriptor & edge = boundaryEdges[i] ;
+
+			vertex_descriptor source = g.source( edge );
+			vertex_descriptor target = g.target( edge );
+
+			boundary->addGeometry(
+				new LineString(
+					Point( g[ source ].coordinate ),
+					Point( g[ target ].coordinate )
+				)
+			) ;
+		}
+		_boundary.reset( boundary.release() );
+	}
 }
 
 

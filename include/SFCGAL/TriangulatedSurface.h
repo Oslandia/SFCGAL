@@ -70,11 +70,17 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Triangle  &  triangleN( size_t const& n ) const { return _triangles[n]; }
+		inline const Triangle  &  triangleN( size_t const& n ) const {
+			BOOST_ASSERT( n < _triangles.size() );
+			return _triangles[n];
+		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Triangle &         triangleN( size_t const& n ) { return _triangles[n]; }
+		inline Triangle &         triangleN( size_t const& n ) {
+			BOOST_ASSERT( n < _triangles.size() );
+			return _triangles[n];
+		}
 		/**
 		* add a Triangle to the TriangulatedSurface
 		*/
