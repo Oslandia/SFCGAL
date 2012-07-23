@@ -14,6 +14,8 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/OsgFactory.h>
 #include <SFCGAL/algorithm/extrude.h>
+#include <SFCGAL/algorithm/convexHull.h>
+
 
 namespace SFCGAL {
 namespace viewer {
@@ -60,7 +62,32 @@ void DemoPlugin::demoExtrude()
 	geode->addDrawable( osgGeometry );
 
 	viewerWindow()->viewer()->getScene()->addChild( geode );
+}
 
+
+///
+///
+///
+void DemoPlugin::demoConvexhull()
+{
+	QString wkt = QInputDialog::getText( NULL, QString("Read WKT"), QString("Type WKT") );
+	if ( wkt.isEmpty() )
+		return ;
+
+	//parse wkt
+	std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
+
+	//build convexhull
+	std::auto_ptr< Geometry > hull( algorithm::convexHull3D(*g) );
+
+	//create osg::Geode
+	io::OsgFactory factory ;
+	osg::Geometry * osgGeometry = factory.createGeometry( *hull );
+	osg::Geode* geode = new osg::Geode;
+	geode->setName( wkt.toStdString() );
+	geode->addDrawable( osgGeometry );
+
+	viewerWindow()->viewer()->getScene()->addChild( geode );
 }
 
 ///
@@ -145,8 +172,12 @@ void DemoPlugin::load()
 
 	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("DemoPlugin") ;
 
-	QAction * actionExtrude = pluginMenu->addAction( QString("&extrude wkt") );
+	QAction * actionExtrude = pluginMenu->addAction( QString("&extrude") );
 	connect( actionExtrude, SIGNAL(triggered()), this, SLOT( demoExtrude() ) );
+
+	QAction * actionConvexhull = pluginMenu->addAction( QString("&convexhull") );
+	connect( actionConvexhull, SIGNAL(triggered()), this, SLOT( demoConvexhull() ) );
+
 
 	QAction * actionReadWkt = pluginMenu->addAction( QString("&read wkt") );
 	connect( actionReadWkt, SIGNAL(triggered()), this, SLOT( demoWkt() ) );

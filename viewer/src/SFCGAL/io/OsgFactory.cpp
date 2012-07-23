@@ -151,7 +151,7 @@ osg::Geometry* OsgFactory::createGeometry( const TriangulatedSurface & g )
 	geometry->setVertexArray( vertices );
 
 
-	osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
+	size_t start = vertices->size() ;
 	for ( size_t i = 0; i < g.numTriangles(); i++ ){
 		const Triangle & triangle = g.triangleN( i );
 
@@ -160,9 +160,9 @@ osg::Geometry* OsgFactory::createGeometry( const TriangulatedSurface & g )
 		osg::Vec3 c = createVec3( triangle.vertex( 2 ) );
 
 		//vertices
-		primitiveSet->push_back( createVertex( vertices, a ) );
-		primitiveSet->push_back( createVertex( vertices, b ) );
-		primitiveSet->push_back( createVertex( vertices, c ) );
+		createVertex( vertices, a ) ;
+		createVertex( vertices, b ) ;
+		createVertex( vertices, c ) ;
 
 		//normal
 		osg::Vec3 normal = ( c - b ) ^ ( a - b ) ;
@@ -176,7 +176,7 @@ osg::Geometry* OsgFactory::createGeometry( const TriangulatedSurface & g )
 	geometry->setNormalArray( normals );
 	geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
 
-	geometry->addPrimitiveSet( primitiveSet );
+	geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, vertices->size() ) );
 	return geometry.release();
 }
 

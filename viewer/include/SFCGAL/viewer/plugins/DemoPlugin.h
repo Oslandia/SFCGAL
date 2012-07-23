@@ -37,6 +37,10 @@ namespace plugins {
 		 * demo extrude
 		 */
 		void demoExtrude();
+		/**
+		 * demo convexHull
+		 */
+		void demoConvexhull();
 	protected:
 		/**
 		 * init plugin
