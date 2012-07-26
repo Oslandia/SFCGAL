@@ -4,6 +4,7 @@
 #include <SFCGAL/io/WktWriter.h>
 
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
+#include <SFCGAL/detail/EnvelopeVisitor.h>
 
 namespace SFCGAL {
 
@@ -28,6 +29,17 @@ std::string Geometry::asText( const int & numDecimals ) const
 	io::WktWriter writer( oss );
 	writer.write( *this );
 	return oss.str();
+}
+
+///
+///
+///
+Envelope   Geometry::envelope() const
+{
+	Envelope box ;
+	detail::EnvelopeVisitor envelopeVisitor( box );
+	accept(envelopeVisitor);
+	return box ;
 }
 
 ///

@@ -29,6 +29,7 @@ namespace SFCGAL {
     //not SFA, appears in GML/CityGML
     class MultiSolid ;
 
+    class Envelope ;
 
     class GeometryVisitor ;
     class ConstGeometryVisitor ;
@@ -69,7 +70,7 @@ namespace SFCGAL {
 
 
     /**
-     * Declare coordinate types
+     * EnvelopeDeclare coordinate types
      * @see SFA 2.8.3 LineStringZ = 1003 ( coordinateType + geometryType)
      */
     typedef enum {
@@ -151,6 +152,8 @@ namespace SFCGAL {
         * otherway would lead to Polygon and PolyhedralSurface
         */
        //std::auto_ptr< Geometry > envelope() const = 0 ;
+       Envelope             envelope() const ;
+
 
        /**
         * [OGC/SFA]Return the boundary of the geometry

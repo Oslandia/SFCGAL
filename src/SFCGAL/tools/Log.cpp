@@ -106,7 +106,7 @@ void Logger::setLogLevel( const Level & logLevel )
 ///
 ///
 Logger::Logger():
-	_logLevel( Info ),
+	_logLevel( Warning ),
 	_autoflush(true),
 	_displayFilePosition(false)
 {
