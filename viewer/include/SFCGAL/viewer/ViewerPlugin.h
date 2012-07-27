@@ -7,6 +7,7 @@ namespace SFCGAL {
 namespace viewer {
 
 	class ViewerWindow ;
+	class ViewerWidget ;
 
 	/**
 	 * osgViewer::Viewer wrapped in a QWidget
@@ -30,7 +31,10 @@ namespace viewer {
 		 * returns the window
 		 */
 		ViewerWindow * viewerWindow() ;
-
+		/**
+		 * returns the window
+		 */
+		ViewerWidget * viewer() ;
 	protected:
 		/**
 		 * Load plugin

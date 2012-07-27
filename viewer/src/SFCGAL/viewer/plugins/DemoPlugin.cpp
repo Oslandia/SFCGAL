@@ -168,8 +168,6 @@ void DemoPlugin::demoWkt()
 ///
 void DemoPlugin::load()
 {
-	std::cout << "init DemoPlugin" << std::endl;
-
 	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("DemoPlugin") ;
 
 	QAction * actionExtrude = pluginMenu->addAction( QString("&extrude") );

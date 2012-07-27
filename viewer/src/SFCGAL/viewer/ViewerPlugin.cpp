@@ -1,4 +1,6 @@
 #include <SFCGAL/viewer/ViewerPlugin.h>
+#include <SFCGAL/viewer/ViewerWidget.h>
+#include <SFCGAL/viewer/ViewerWindow.h>
 
 #include <iostream>
 
@@ -21,6 +23,14 @@ ViewerPlugin::ViewerPlugin():
 ViewerWindow * ViewerPlugin::viewerWindow()
 {
 	return _viewerWindow ;
+}
+
+///
+///
+///
+ViewerWidget * ViewerPlugin::viewer()
+{
+	return _viewerWindow->viewer() ;
 }
 
 ///
