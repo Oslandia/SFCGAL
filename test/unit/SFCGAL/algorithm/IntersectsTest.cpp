@@ -97,6 +97,34 @@ BOOST_AUTO_TEST_CASE( testLineStringTriangleIntersects )
 }
 
 
+BOOST_AUTO_TEST_CASE( testLineStringTinIntersects )
+{
+    std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(0 0, 0 1)" );
+    std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 1, 1 0.4)" );
+    std::auto_ptr<Geometry> ls3 = io::readWkt( "LINESTRING(0.4 0.2,0.5 0.3)" );
+    std::auto_ptr<Geometry> ls4 = io::readWkt( "LINESTRING(-1 0.5,2 0.5)" );
+    std::auto_ptr<Geometry> ls5 = io::readWkt( "LINESTRING(-1 1.5,2 1.5)" );
+    // WARNING : must be oriented counter clockwise
+    Triangle tri( Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
+    Triangle tri2( Point(1.0, 0.0, 0.0), Point(2.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
+    Triangle tri3( Point(2.0, 0.0, 0.0), Point(2.0, 1.0, 0.0), Point(1.0, 1.0, 0.0) );
+    TriangulatedSurface surf;
+    surf.addTriangle(tri);
+    surf.addTriangle(tri2);
+    surf.addTriangle(tri3);
+
+    // line that shares a vertex
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls1, surf ), true );
+    // line crossing an edge
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls2, surf ), true );
+    // line inside the triangle
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls3, surf ), true );
+    // line traversing the triangle
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls4, surf ), true );
+    // line outside
+    BOOST_CHECK_EQUAL( algorithm::intersects( *ls5, surf ), false );
+}
+
 BOOST_AUTO_TEST_CASE( testPointPolygonIntersects )
 {
     Point pta( 0.0, 0.0 );
@@ -199,20 +227,6 @@ BOOST_AUTO_TEST_CASE( testLineStringLineStringIntersects )
 	BOOST_CHECK_EQUAL( algorithm::intersects( *lsc, *ls ), false );
     }
 }
-
-#if STILL_BUGGY
-BOOST_AUTO_TEST_CASE( testLineStringTriangleIntersects )
-{
-    Triangle tri( Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(1.0, 1.0, 0.0) );
-    std::auto_ptr<Geometry> ls = io::readWkt( "LINESTRING(0 0 0, 1 0 0, 1 1 0)" );
-    std::auto_ptr<Geometry> lsb = io::readWkt( "LINESTRING(0 0 0, 1 0 1, 1 4 0)" );
-    std::auto_ptr<Geometry> lsc = io::readWkt( "LINESTRING(10 0 0, 11 0 0, 11 1 0)" );
-    
-    BOOST_CHECK_EQUAL( algorithm::intersects( *ls, tri ), false );
-    BOOST_CHECK_EQUAL( algorithm::intersects( *lsb, tri ), true );
-    BOOST_CHECK_EQUAL( algorithm::intersects( *lsc, tri ), false );
-}
-#endif
 
 BOOST_AUTO_TEST_CASE( intersects3DSolid )
 {

@@ -58,6 +58,9 @@ namespace algorithm
 	typedef const Segment_2* SegmentIterator;
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, SegmentIterator> SegmentBox;
 	
+	///
+	/// Box_d_intersection callback for linestring / linestring intersection test
+	///
 	struct intersects_segment_segment_tag {};
 	void intersects_segment_segment_cb( const SegmentBox& a, const SegmentBox& b )
 	{
@@ -66,6 +69,37 @@ namespace algorithm
 		}
 	}
 
+	///
+	/// Auxiliary function used to test intersection between a Segment_2 and a Triangle_2
+	///
+	bool intersects_( const Segment_2& segment, const Triangle_2& tri )
+	{
+		// A segment intersects a triangle if
+		// - its start point is inside the triangle
+		// - or its end point is inside the triangle
+		// - or it intersects one of the triangle's edge
+		
+		CGAL::Bounded_side b1 = tri.bounded_side( segment.source() );
+		CGAL::Bounded_side b2 = tri.bounded_side( segment.target() );
+		if ( b1 == CGAL::ON_BOUNDED_SIDE || b1 == CGAL::ON_BOUNDARY ) {
+			return true;
+		}
+		if ( b2 == CGAL::ON_BOUNDED_SIDE || b2 == CGAL::ON_BOUNDARY ) {
+			return true;
+		}
+		
+		for ( size_t i = 0; i < 3; ++i ) {
+			Segment_2 seg( tri.vertex(i), tri.vertex((i+1)%3) );
+			if ( CGAL::do_intersect( seg, segment )) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	///
+	/// Box_d_intersection callback for linestring / triangle intersection test
+	///
 	struct intersects_segment_triangle_tag {};
 	struct intersects_segment_triangle
 	{
@@ -75,26 +109,31 @@ namespace algorithm
 		void operator() ( const SegmentBox& a, SegmentBox& b )
 		{
 			const Segment_2* segment = a.handle();
-			
-			// A segment intersects a triangle if
-			// - its start point is inside the triangle
-			// - or its end point is inside the triangle
-			// - or it intersects one of the triangle's edge
-			
-			CGAL::Bounded_side b1 = tri.bounded_side( segment->source() );
-			CGAL::Bounded_side b2 = tri.bounded_side( segment->target() );
-			if ( b1 == CGAL::ON_BOUNDED_SIDE || b1 == CGAL::ON_BOUNDARY ) {
+			if ( intersects_( *segment, tri )) {
 				throw intersects_segment_triangle_tag();
 			}
-			if ( b2 == CGAL::ON_BOUNDED_SIDE || b2 == CGAL::ON_BOUNDARY ) {
-				throw intersects_segment_triangle_tag();
-			}
-			
-			for ( size_t i = 0; i < 3; ++i ) {
-				Segment_2 seg( tri.vertex(i), tri.vertex((i+1)%3) );
-				if ( CGAL::do_intersect( seg, *segment )) {
-					throw intersects_segment_triangle_tag();
-				}
+		}
+	};
+
+	///
+	/// Box_d_intersection callback for linestring / triangulatedsurface intersection test
+	///
+	struct intersects_segment_tin_tag {};
+	struct intersects_segment_tin
+	{
+		const std::vector<Triangle>& tris;
+		const std::map<const Segment_2*, size_t> segment_map;
+		intersects_segment_tin( const std::vector<Triangle>& tris, const std::map<const Segment_2*, size_t>& segment_map ) :
+			tris(tris), segment_map(segment_map) {}
+
+		void operator() ( const SegmentBox& a, SegmentBox& b )
+		{
+			const Segment_2* segment = a.handle();
+			std::map<const Segment_2*, size_t>::const_iterator it = segment_map.find( b.handle() );
+			const Triangle& tri = tris[ it->second ];
+			Triangle_2 tri2( tri.toTriangle_2<Kernel>() );
+			if ( intersects_( *segment, tri2 )) {
+				throw intersects_segment_tin_tag();
 			}
 		}
 	};
@@ -186,44 +225,37 @@ namespace algorithm
 	// accelerator for LineString x TriangulatedSurface
 	bool intersects_( const LineString& la, const TriangulatedSurface& surf )
 	{
-		typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
-		typedef Traits_2::Curve_2 Segment_2;
-		typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
+		std::vector<SegmentBox> boxes;
+		Segments segs;
+		to_segments( la, segs );
 
-		Arrangement_2 arr;
-		for ( size_t i = 0; i < la.points().size() ; i++ ) {
-			Segment_2 seg( la.pointN(i).toPoint_2<Kernel>(), la.pointN( (i+1)%la.points().size() ).toPoint_2<Kernel>() );
-			CGAL::insert( arr, seg );
+		for ( Segments::const_iterator it = segs.begin(); it != segs.end(); ++it ) {
+			boxes.push_back( SegmentBox( it->bbox(), &*(it) ));
 		}
 
-		// count number of vertices, faces and holes before inserting the triangle
-		size_t n_vertices = arr.number_of_vertices();
-		size_t n_faces = arr.number_of_vertices();
-		size_t n_holes = 0;
-		Arrangement_2::Face_iterator it;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			n_holes += std::distance( it->holes_begin(), it->holes_end() );
-		}
+		// maps segment to a triangle index
+		std::map< const Segment_2*, size_t > segmentMap;
+		std::vector<Segment_2> tinsegs;
+		std::vector<SegmentBox> tboxes;
 
-		for ( size_t j = 0; j < surf.numTriangles(); j++ ) {
-			CGAL::Triangle_2<Kernel> ctri = surf.triangleN(j).toTriangle_2<Kernel>();
-			for ( size_t i = 0; i < 3; i++ ) {
-				Segment_2 seg ( ctri[i], ctri[(i+1)%3] );
-				CGAL::insert( arr, seg );
+		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+			Triangle_2 tri2 ( surf.triangleN(i).toTriangle_2<Kernel>() );
+			for ( size_t j = 0; j < 3; ++j ) {
+				tinsegs.push_back( Segment_2( tri2.vertex(j), tri2.vertex((j+1)%3) ) );
+				segmentMap[&tinsegs.back()] = i;
+				tboxes.push_back( SegmentBox( tinsegs.back().bbox(), &tinsegs.back() ));
 			}
 		}
-		size_t new_n_holes = 0;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			new_n_holes += std::distance( it->holes_begin(), it->holes_end() );
-		}
 
-		// they intersect if there are new vertices
-		// or new faces
-		// or new holes
-		// in the arrangement
-		return arr.number_of_vertices() > (n_vertices + 3) ||
-			arr.number_of_faces() > (n_faces + 1) ||
-			new_n_holes > n_holes;
+		try {
+			CGAL::box_intersection_d( boxes.begin(), boxes.end(),
+						  tboxes.begin(), tboxes.end(),
+						  intersects_segment_tin( surf.triangles(), segmentMap ) );
+		}
+		catch ( intersects_segment_tin_tag& e ) {
+			return true;
+		}
+		return false;
 	}
 
 	bool intersects_( const Point& pt, const Polygon& poly )
