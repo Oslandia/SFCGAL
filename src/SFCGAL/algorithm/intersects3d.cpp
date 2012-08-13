@@ -30,6 +30,7 @@
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/algorithm/detail/intersects.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
@@ -66,11 +67,34 @@ namespace algorithm
 		}
 	}
 
+	// ----------------------------------------------------------
+	//
+	// Intersections between primitives
+	//
+	// ----------------------------------------------------------
+	
 	bool intersects3D_( const Point& pa, const Point& pb )
 	{
 		return pa == pb;
 	}
 
+	bool intersects3D_( const Point& pta, const Triangle& tri )
+	{
+		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
+	}
+
+	bool intersects3D_( const Triangle& tri1, const Triangle& tri2 )
+	{
+		return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
+	}
+
+	// ----------------------------------------------------------
+	//
+	// Intersections involving more complex objects
+	// ( linestrings, tin, etc.)
+	//
+	// ----------------------------------------------------------
+	
 	bool intersects3D_( const Point& pta, const LineString& ls )
 	{
 		// build a CGAL::Segment for each line string element and call CGAL::has_on
@@ -85,42 +109,31 @@ namespace algorithm
 		return false;
 	}
 
-	bool intersects3D_( const Point& pta, const Triangle& tri )
-	{
-		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
-	}
-
 	///
-	/// Box_d_intersection callback for linestring / linestring intersection test
+	/// Auxiliary function used to fill up vectors of handle and boxes for segments
 	///
-	struct found_intersection_segment_segment {};
-	void segment_intersect_callback( const SegmentBox& a, const SegmentBox& b )
+	void segments_to_boxes( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object3Box>& boxes )
 	{
-		if ( CGAL::do_intersect( *(a.handle()), *(b.handle()))) {
-			throw found_intersection_segment_segment();
+		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
+			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
+			boxes.push_back( detail::Object3Box( handles.back().bbox_3(), &handles.back() ));
 		}
 	}
 
 	bool intersects3D_( const LineString& la, const LineString& lb )
 	{
-		Segments segsa, segsb;
-		to_segments( la, segsa );
-		to_segments( lb, segsb );
+		std::vector<detail::Object3Box> aboxes, bboxes;
+		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		std::vector<SegmentBox> boxa, boxb;
-		for ( Segments::const_iterator it = segsa.begin(); it != segsa.end(); ++it ) {
-			boxa.push_back( SegmentBox( it->bbox(), it ));
-		}
-		for ( Segments::const_iterator it = segsb.begin(); it != segsb.end(); ++it ) {
-			boxb.push_back( SegmentBox( it->bbox(), it ));
-		}
+		segments_to_boxes( la, ahandles, aboxes );
+		segments_to_boxes( lb, bhandles, bboxes );
 		
 		try {
-			CGAL::box_intersection_d( boxa.begin(), boxa.end(),
-						  boxb.begin(), boxb.end(),
-						  segment_intersect_callback );
+			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
+						  bboxes.begin(), bboxes.end(),
+						  detail::intersects3_cb<Kernel> );
 		}
-		catch ( found_intersection_segment_segment& e ) {
+		catch ( detail::found_segment_segment_intersection& e ) {
 			return true;
 		}
 		return false;
@@ -128,102 +141,106 @@ namespace algorithm
 
 	bool intersects3D_( const LineString& la, const Triangle& tri )
 	{
-		typedef std::vector<Segment_3>::const_iterator Iterator;
-		typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
-		typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
-		typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
+		std::vector<detail::Object3Box> aboxes;
+		std::list<detail::ObjectHandle> ahandles;
 
-		std::vector<Segment_3> segsa;
-		to_segments( la, segsa );
+		segments_to_boxes( la, ahandles, aboxes );
 
-		Tree tree( segsa.begin(), segsa.end() );
+		detail::ObjectHandle triangleHandle( &tri );
+		detail::Object3Box triangleBox( tri.envelope().toBbox_3(), &triangleHandle );
 
-		Triangle_3 request_tri = tri.toTriangle_3<Kernel>();
-		return tree.do_intersect( request_tri );
-	}
-
-	bool intersects3D_( const Triangle& tri1, const Triangle& tri2 )
-	{
-		return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
+		try {
+		 	CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+		 				  &triangleBox, &triangleBox + 1,
+		 				  detail::intersects3_cb<Kernel> );
+		}
+		catch ( detail::found_segment_triangle_intersection& e ) {
+		 	return true;
+		}
+		return false;
 	}
 
 	// accelerator for LineString x TriangulatedSurface
 	bool intersects3D_( const LineString& la, const TriangulatedSurface& surf )
 	{
-		typedef std::list<Triangle_3>::const_iterator Iterator;
-		typedef CGAL::AABB_triangle_primitive<Kernel,Iterator> Primitive;
-		typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-		typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+		std::vector<detail::Object3Box> aboxes, bboxes;
+		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		std::list<Triangle_3> tris;
-		to_triangles( surf, tris );
-		// Construct an AABB Tree
-		Tree tree( tris.begin(), tris.end() );
+		segments_to_boxes( la, ahandles, aboxes );
 
-		std::vector<Segment_3> segs;
-		to_segments( la, segs );
-		for ( size_t i = 0; i < segs.size(); i++ ) {
-			if ( tree.do_intersect( segs[i] ) ) {
-				return true;
-			}
+		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+			bhandles.push_back( &surf.triangleN(i));
+			bboxes.push_back( detail::Object3Box( bhandles.back().bbox_3(), &bhandles.back() ));
+		}
+
+		try {
+			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
+						  bboxes.begin(), bboxes.end(),
+						  detail::intersects3_cb<Kernel> );
+		}
+		catch ( detail::found_segment_triangle_intersection& e ) {
+			return true;
 		}
 		return false;
 	}
 
-	// accelerator for Triangle x TriangulatedSurface
-	bool intersects3D_( const Triangle& la, const TriangulatedSurface& surf )
+	bool intersects3D_( const Triangle& tria, const TriangulatedSurface& surfb )
 	{
-		typedef std::list<Triangle_3>::const_iterator Iterator;
-		typedef CGAL::AABB_triangle_primitive<Kernel,Iterator> Primitive;
-		typedef CGAL::AABB_traits<Kernel, Primitive> AABB_triangle_traits;
-		typedef CGAL::AABB_tree<AABB_triangle_traits> Tree;
+		std::vector<detail::Object3Box> bboxes;
+		std::list<detail::ObjectHandle> bhandles;
+		detail::ObjectHandle triangleHandle( &tria );
+		detail::Object3Box triangleBox( triangleHandle.bbox_3(), &triangleHandle );
+		
+		for ( size_t i = 0; i < surfb.numTriangles(); ++i ) {
+			bhandles.push_back( &surfb.triangleN(i));
+			bboxes.push_back( detail::Object3Box( bhandles.back().bbox_3(), &bhandles.back() ));
+		}
 
-		std::list<Triangle_3> tris;
-		to_triangles( surf, tris );
-		// Construct an AABB Tree
-		Tree tree( tris.begin(), tris.end() );
-
-		Triangle_3 request_tri = la.toTriangle_3<Kernel>();
-		bool r;
 		try {
-			r = tree.do_intersect( request_tri );
+			CGAL::box_intersection_d( &triangleBox, &triangleBox + 1,
+						  bboxes.begin(), bboxes.end(),
+						  detail::intersects3_cb<Kernel> );
 		}
-		catch ( std::exception& e ) {
-			std::cout << surf.asText() << " does not have a good AABB tree" << std::endl;
-			return false;
+		catch ( detail::found_triangle_triangle_intersection& e ) {
+			return true;
 		}
-		return r;
+		return false;
 	}
 
-	typedef std::list<Triangle_3>::const_iterator TIterator;
-	typedef CGAL::AABB_triangle_primitive<Kernel,TIterator> TPrimitive;
-	typedef CGAL::AABB_traits<Kernel, TPrimitive> AABB_triangle_traits;
-	typedef CGAL::AABB_tree<AABB_triangle_traits> TriangleTree;
-
-	// accelerator for TriangulatedSurface x TriangulatedSurface
+	// accelerator for LineString x TriangulatedSurface
 	bool intersects3D_( const TriangulatedSurface& surfa, const TriangulatedSurface& surfb )
 	{
-		std::list<Triangle_3> tris;
-		to_triangles( surfa, tris );
-		// Construct an AABB Tree
-		TriangleTree tree( tris.begin(), tris.end() );
+		std::vector<detail::Object3Box> aboxes, bboxes;
+		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		bool r = false;
-		for ( size_t i = 0; i < surfb.numTriangles(); i++ ) {
-			Triangle_3 request_tri = surfb.triangleN(i).toTriangle_3<Kernel>();
-			try {
-				r = tree.do_intersect( request_tri );
-			}
-			catch ( std::exception& e ) {
-				std::cout << surfa.asText() << " does not have a good AABB tree" << std::endl;
-				return false;
-			}
-			if ( r )
-				return r;
+		for ( size_t i = 0; i < surfa.numTriangles(); ++i ) {
+			ahandles.push_back( &surfa.triangleN(i));
+			aboxes.push_back( detail::Object3Box( ahandles.back().bbox_3(), &ahandles.back() ));
 		}
-		return r;
+
+		for ( size_t i = 0; i < surfb.numTriangles(); ++i ) {
+			bhandles.push_back( &surfb.triangleN(i));
+			bboxes.push_back( detail::Object3Box( bhandles.back().bbox_3(), &bhandles.back() ));
+		}
+
+		try {
+			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
+						  bboxes.begin(), bboxes.end(),
+						  detail::intersects3_cb<Kernel> );
+		}
+		catch ( detail::found_triangle_triangle_intersection& e ) {
+			return true;
+		}
+		return false;
 	}
 
+	// ----------------------------------------------------------
+	//
+	// Intersections involving solids
+	//
+	// ----------------------------------------------------------
+	
+#if 0
 	typedef CGAL::Nef_polyhedron_3<ExactKernel> Nef;
 
 	//
@@ -290,6 +307,7 @@ namespace algorithm
 	{
 	    //		Nef nef( solid.toNef_polyhedron_3<ExactKernel>());
 	    //		return intersects3D_( pta, nef );
+		return true;
 	}
 
 	// helper function that fills a TriangleTree with triangles from a Nef_polyhedron
@@ -394,7 +412,7 @@ namespace algorithm
 		Nef N = nef1 * nef2;
 		return ! N.is_empty();
 	}
-
+#endif
 #ifdef CACHE_TRIANGULATION
 	typedef std::map<const Geometry*, boost::shared_ptr<TriangulatedSurface> > TriangulationCache;
 	TriangulationCache triangulation_cache;
@@ -446,7 +464,8 @@ namespace algorithm
 			case TYPE_TIN:
 				break;
 			case TYPE_SOLID:
-				return intersects3D_( pta, static_cast<const Solid&>(gb) );
+				//				return intersects3D_( pta, static_cast<const Solid&>(gb) );
+				return true;
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -465,7 +484,8 @@ namespace algorithm
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
-				return intersects3D_( ls, static_cast<const Solid&>( gb ));
+				//				return intersects3D_( ls, static_cast<const Solid&>( gb ));
+				return true;
 			case TYPE_TIN:
 				// call the proper accelerator
 				return intersects3D_( ls, static_cast<const TriangulatedSurface&>( gb ));
@@ -484,7 +504,8 @@ namespace algorithm
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
-				return intersects3D_( tri, static_cast<const Solid&>( gb ));
+				//				return intersects3D_( tri, static_cast<const Solid&>( gb ));
+				return true;
 			case TYPE_TIN:
 				// call the proper accelerator
 				return intersects3D_( tri, static_cast<const TriangulatedSurface&>( gb ));
@@ -500,6 +521,7 @@ namespace algorithm
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_TIN:
 			case TYPE_SOLID:
+				return true;
 				break;
 			default:
 				// symmetric call
@@ -512,6 +534,7 @@ namespace algorithm
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_TIN:
 			case TYPE_SOLID:
+				return true;
 				break;
 			default:
 				// symmetric call
@@ -525,8 +548,9 @@ namespace algorithm
 				return intersects3D_( static_cast<const TriangulatedSurface&>(ga),
 						      static_cast<const TriangulatedSurface&>(gb) );
 			case TYPE_SOLID:
-				return intersects3D_( static_cast<const TriangulatedSurface&>(ga),
-						      static_cast<const Solid&>(gb) );
+				//				return intersects3D_( static_cast<const TriangulatedSurface&>(ga),
+				//						      static_cast<const Solid&>(gb) );
+				return true;
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -536,8 +560,9 @@ namespace algorithm
 		case TYPE_SOLID: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_SOLID:
-				return intersects3D_( static_cast<const Solid&>(ga),
-						      static_cast<const Solid&>(gb) );
+				//				return intersects3D_( static_cast<const Solid&>(ga),
+				//						      static_cast<const Solid&>(gb) );
+				return true;
 			default:
 				// symmetric call
 				return intersects( gb, ga );

@@ -56,36 +56,7 @@ namespace detail {
 	struct found_triangle_triangle_intersection {};
 
 	///
-	/// Auxiliary function used to test intersection between a Segment_2 and a Triangle_2
-	///
-	template <typename Kernel>
-	bool intersects_( const CGAL::Segment_2<Kernel>& segment, const CGAL::Triangle_2<Kernel>& tri )
-	{
-		// A segment intersects a triangle if
-		// - its start point is inside the triangle
-		// - or its end point is inside the triangle
-		// - or it intersects one of the triangle's edge
-		
-		CGAL::Bounded_side b1 = tri.bounded_side( segment.source() );
-		CGAL::Bounded_side b2 = tri.bounded_side( segment.target() );
-		if ( b1 == CGAL::ON_BOUNDED_SIDE || b1 == CGAL::ON_BOUNDARY ) {
-			return true;
-		}
-		if ( b2 == CGAL::ON_BOUNDED_SIDE || b2 == CGAL::ON_BOUNDARY ) {
-			return true;
-		}
-		
-		for ( size_t i = 0; i < 3; ++i ) {
-			CGAL::Segment_2<Kernel> seg( tri.vertex(i), tri.vertex((i+1)%3) );
-			if ( CGAL::do_intersect( seg, segment )) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	///
-	/// Callback function used with box_intersection_d
+	/// Callback function used with box_intersection_d for 2d intersections
 	/// Throws an exception if a intersection has been found
 	///
 	template <typename Kernel>
@@ -104,7 +75,7 @@ namespace detail {
 			} else {
 				// Segment x Triangle
 				CGAL::Triangle_2<Kernel> tri2( b.handle()->triangle->toTriangle_2<Kernel>() );
-				if ( intersects_( sega, tri2 )) {
+				if ( CGAL::do_intersect( sega, tri2 )) {
 				 	throw found_segment_triangle_intersection();
 				}
 			}
@@ -112,6 +83,40 @@ namespace detail {
 			// Triangle x Triangle intersection
 			CGAL::Triangle_2<Kernel> tria( a.handle()->triangle->toTriangle_2<Kernel>() );
 			CGAL::Triangle_2<Kernel> trib( b.handle()->triangle->toTriangle_2<Kernel>() );
+			if (CGAL::do_intersect( tria, trib )) {
+				throw found_triangle_triangle_intersection();
+			}
+		}
+	}
+
+	///
+	/// Callback function used with box_intersection_d for 3d intersections
+	/// Throws an exception if a intersection has been found
+	///
+	template <typename Kernel>
+	void intersects3_cb( const Object3Box& a, const Object3Box& b )
+	{
+		if ( a.handle()->type == ObjectHandle::Segment ) {
+			CGAL::Segment_3<Kernel> sega( a.handle()->segment.start_point->toPoint_3<Kernel>(),
+						      a.handle()->segment.end_point->toPoint_3<Kernel>());
+			if ( b.handle()->type == ObjectHandle::Segment ) {
+				CGAL::Segment_3<Kernel> segb( b.handle()->segment.start_point->toPoint_3<Kernel>(),
+							      b.handle()->segment.end_point->toPoint_3<Kernel>());
+				
+				if ( CGAL::do_intersect( sega, segb )) {
+					throw found_segment_segment_intersection();
+				}
+			} else {
+				// Segment x Triangle
+				CGAL::Triangle_3<Kernel> tri3( b.handle()->triangle->toTriangle_3<Kernel>() );
+				if ( CGAL::do_intersect( sega, tri3 )) {
+				 	throw found_segment_triangle_intersection();
+				}
+			}
+		} else {
+			// Triangle x Triangle intersection
+			CGAL::Triangle_3<Kernel> tria( a.handle()->triangle->toTriangle_3<Kernel>() );
+			CGAL::Triangle_3<Kernel> trib( b.handle()->triangle->toTriangle_3<Kernel>() );
 			if (CGAL::do_intersect( tria, trib )) {
 				throw found_triangle_triangle_intersection();
 			}
