@@ -4,7 +4,6 @@
 #include <SFCGAL/algorithm/intersects.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Point_2.h>
 #include <CGAL/Point_3.h>
 #include <CGAL/Segment_2.h>
@@ -28,7 +27,6 @@
 #include <SFCGAL/tools/Log.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Point_3<Kernel> Point_3;
@@ -61,11 +59,11 @@ namespace algorithm
 	///
 	/// Box_d_intersection callback for linestring / linestring intersection test
 	///
-	struct intersects_segment_segment_tag {};
+	struct found_intersection_segment_segment {};
 	void intersects_segment_segment_cb( const SegmentBox& a, const SegmentBox& b )
 	{
 		if ( CGAL::do_intersect( *(a.handle()), *(b.handle()) )) {
-			throw intersects_segment_segment_tag();
+			throw found_intersection_segment_segment();
 		}
 	}
 
@@ -100,7 +98,7 @@ namespace algorithm
 	///
 	/// Box_d_intersection callback for linestring / triangle intersection test
 	///
-	struct intersects_segment_triangle_tag {};
+	struct found_intersection_segment_triangle {};
 	struct intersects_segment_triangle
 	{
 		Triangle_2 tri;
@@ -110,7 +108,7 @@ namespace algorithm
 		{
 			const Segment_2* segment = a.handle();
 			if ( intersects_( *segment, tri )) {
-				throw intersects_segment_triangle_tag();
+				throw found_intersection_segment_triangle();
 			}
 		}
 	};
@@ -118,7 +116,7 @@ namespace algorithm
 	///
 	/// Box_d_intersection callback for linestring / triangulatedsurface intersection test
 	///
-	struct intersects_segment_tin_tag {};
+	struct found_intersection_segment_tin {};
 	struct intersects_segment_tin
 	{
 		const std::vector<Triangle>& tris;
@@ -133,7 +131,7 @@ namespace algorithm
 			const Triangle& tri = tris[ it->second ];
 			Triangle_2 tri2( tri.toTriangle_2<Kernel>() );
 			if ( intersects_( *segment, tri2 )) {
-				throw intersects_segment_tin_tag();
+				throw found_intersection_segment_tin();
 			}
 		}
 	};
@@ -182,39 +180,79 @@ namespace algorithm
 						  bboxes.begin(), bboxes.end(),
 						  intersects_segment_segment_cb );
 		}
-		catch ( intersects_segment_segment_tag& e ) {
+		catch ( found_intersection_segment_segment& e ) {
 			return true;
 		}
 		return false;
 	}
 
+	typedef std::vector<Segment_2> Segments;
+	struct ObjectIterator
+	{
+		enum
+		{
+			ObjectSegment,
+			ObjectTriangle
+		} ObjectType;
+		int type;
+
+		union
+		{
+			struct
+			{
+				const SFCGAL::Point* start_point;
+				const SFCGAL::Point* end_point;
+			} segment;
+
+			const SFCGAL::Triangle* triangle;
+		};
+
+		///
+		/// Constructors
+		ObjectIterator( const SFGCAL::Point* spoint, const SFCAL::Point* epoint ) :
+			type(ObjectSegment), start_point(spoint), end_point(epoint) {}
+		ObjectIterator( const SFGCAL::Triangle* triangle ) :
+			type(ObjectTriangle), triangle(triangle) {}
+
+		///
+		/// Bounding box computation (call to envelope() )
+	};
+	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, ObjectIterator> Object2Box;
+
 	bool intersects_( const LineString& la, const Triangle& tri )
 	{
-		std::vector<SegmentBox> boxes;
-		Segments segs;
-		to_segments( la, segs );
+		ObjectBox aboxes;
 
-		for ( Segments::const_iterator it = segs.begin(); it != segs.end(); ++it ) {
-			boxes.push_back( SegmentBox( it->bbox(), &*(it) ));
+		for ( size_t i = 0; i < la.points().size(); ++i ) {
+			aboxes.push_back( ObjectBox( 
 		}
+		// std::vector<SegmentBox> boxes;
+		// Segments segs;
+		// to_segments( la, segs );
 
-		SegmentBox tboxes[3];
-		Triangle_2 tri2 ( tri.toTriangle_2<Kernel>() );
-		Segment_2 trisegs[3];
-		for ( size_t i = 0; i < 3; ++i ) {
-			trisegs[i] = Segment_2( tri2.vertex(i), tri2.vertex((i+1)%3) );
-			tboxes[i] = SegmentBox( trisegs[i].bbox(), &trisegs[i] );
-		}
+		// for ( Segments::const_iterator it = segs.begin(); it != segs.end(); ++it ) {
+		// 	boxes.push_back( SegmentBox( it->bbox(), &*(it) ));
+		// }
 
-		try {
-			CGAL::box_intersection_d( boxes.begin(), boxes.end(),
-						  tboxes, tboxes + 3,
-						  intersects_segment_triangle( tri2 ) );
-		}
-		catch ( intersects_segment_triangle_tag& e ) {
-			return true;
-		}
-		return false;
+		// SegmentBox tboxes[3];
+		// Triangle_2 tri2 ( tri.toTriangle_2<Kernel>() );
+		// Segment_2 trisegs[3];
+		// for ( size_t i = 0; i < 3; ++i ) {
+		// 	trisegs[i] = Segment_2( tri2.vertex(i), tri2.vertex((i+1)%3) );
+		// 	tboxes[i] = SegmentBox( trisegs[i].bbox(), &trisegs[i] );
+		// }
+
+		// try {
+		// 	CGAL::box_intersection_d( boxes.begin(), boxes.end(),
+		// 				  tboxes, tboxes + 3,
+		// 				  intersects_segment_triangle( tri2 ) );
+		// }
+		// catch ( found_intersection_segment_triangle& e ) {
+		// 	return true;
+		// }
+		// return false;
+		std::vector<TriangleBox> triboxes;
+		
 	}
 
 	bool intersects_( const Triangle& tri1, const Triangle& tri2 )
@@ -252,7 +290,7 @@ namespace algorithm
 						  tboxes.begin(), tboxes.end(),
 						  intersects_segment_tin( surf.triangles(), segmentMap ) );
 		}
-		catch ( intersects_segment_tin_tag& e ) {
+		catch ( found_intersection_segment_tin& e ) {
 			return true;
 		}
 		return false;
@@ -314,7 +352,7 @@ namespace algorithm
 							  bboxes.begin(), bboxes.end(),
 							  intersects_segment_segment_cb );
 			}
-			catch ( intersects_segment_segment_tag& e ) {
+			catch ( found_intersection_segment_segment& e ) {
 				return true;
 			}
 		}

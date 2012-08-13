@@ -87,38 +87,22 @@ namespace algorithm
 
 	bool intersects3D_( const Point& pta, const Triangle& tri )
 	{
-		// FIXME : project on the triangle plane and call intersects2D()
 		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
 	}
 
-	struct found_intersection_segments {};
+	///
+	/// Box_d_intersection callback for linestring / linestring intersection test
+	///
+	struct found_intersection_segment_segment {};
 	void segment_intersect_callback( const SegmentBox& a, const SegmentBox& b )
 	{
 		if ( CGAL::do_intersect( *(a.handle()), *(b.handle()))) {
-			throw found_intersection_segments();
+			throw found_intersection_segment_segment();
 		}
 	}
 
 	bool intersects3D_( const LineString& la, const LineString& lb )
 	{
-	    
-		// typedef std::vector<Segment_3>::const_iterator Iterator;
-		// typedef CGAL::AABB_segment_primitive<Kernel,Iterator> Primitive;
-		// typedef CGAL::AABB_traits<Kernel, Primitive> AABB_segment_traits;
-		// typedef CGAL::AABB_tree<AABB_segment_traits> Tree;
-
-		// std::vector<Segment_3> segsa, segsb;
-		// to_segments( la, segsa );
-		// to_segments( lb, segsb );
-
-		// Tree tree( segsa.begin(), segsa.end() );
-
-		// for ( size_t i = 0; i < segsb.size(); i++ ) {
-		// 	if ( tree.do_intersect( segsb[i] ) ) {
-		// 		return true;
-		// 	}
-		// }
-		// return false;
 		Segments segsa, segsb;
 		to_segments( la, segsa );
 		to_segments( lb, segsb );
@@ -136,7 +120,7 @@ namespace algorithm
 						  boxb.begin(), boxb.end(),
 						  segment_intersect_callback );
 		}
-		catch ( found_intersection_segments& e ) {
+		catch ( found_intersection_segment_segment& e ) {
 			return true;
 		}
 		return false;
