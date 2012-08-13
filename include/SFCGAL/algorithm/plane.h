@@ -8,9 +8,6 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/Polygon.h>
 
-
-
-
 namespace SFCGAL {
 namespace algorithm {
 

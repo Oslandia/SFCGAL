@@ -9,6 +9,34 @@ namespace graph {
 namespace algorithm {
 
 	/**
+	 * Study orientation between two EdgeStrings
+	 * @return true on success
+	 */
+	template < typename Graph >
+	void studyOrientation(
+		Graph & graph,
+		std::vector< typename Graph::edge_descriptor > & reference,
+		std::vector< typename Graph::edge_descriptor > & target,
+		bool & hasOppositeEdge,
+		bool & hasParallelEdge
+	){
+		/*
+		 * look for opposite or parallel edges in reference and target
+		 */
+		hasOppositeEdge = false ;
+		hasParallelEdge = false ;
+		for ( size_t i = 0; i < reference.size(); i++ ){
+			for ( size_t j = 0; j < target.size(); j++ ){
+				if ( graph.areOpposite( reference[i], target[j] ) )
+					hasOppositeEdge = true ;
+				if ( graph.areParallel( reference[i], target[j] ) )
+					hasParallelEdge = true ;
+			}
+		}
+	}
+
+
+	/**
 	 * Try to build consistent orientation between two edge string
 	 * @return true on success
 	 */
@@ -21,16 +49,8 @@ namespace algorithm {
 		/*
 		 * look for opposite or parallel edges in reference and target
 		 */
-		bool hasOppositeEdge = false ;
-		bool hasParallelEdge = false ;
-		for ( size_t i = 0; i < reference.size(); i++ ){
-			for ( size_t j = 0; j < target.size(); j++ ){
-				if ( graph.areOpposite( reference[i], target[j] ) )
-					hasOppositeEdge = true ;
-				if ( graph.areParallel( reference[i], target[j] ) )
-					hasParallelEdge = true ;
-			}
-		}
+		bool hasOppositeEdge, hasParallelEdge ;
+		studyOrientation(graph,reference,target,hasOppositeEdge,hasParallelEdge);
 
 		/*
 		 * if both opposite and parallel edge are found, there is no possible

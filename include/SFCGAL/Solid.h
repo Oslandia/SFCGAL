@@ -27,6 +27,10 @@ namespace SFCGAL {
 		 */
 		Solid() ;
 		/**
+		 * Constructor with an exterior shell
+		 */
+		Solid( const PolyhedralSurface & exteriorShell ) ;
+		/**
 		 * Constructor with a vector of shells (PolyhedralSurface)
 		 */
 		Solid( const std::vector< PolyhedralSurface > & shells ) ;
@@ -99,6 +103,7 @@ namespace SFCGAL {
 		 * @warning not standard, avoid conditionnal to access rings
 		 */
 		inline const PolyhedralSurface &  shellN( const size_t & n ) const {
+			BOOST_ASSERT( n < numShells() );
 			return _shells[n];
 		}
 		/**
@@ -106,6 +111,7 @@ namespace SFCGAL {
 		 * @warning not standard, avoid conditionnal to access rings
 		 */
 		inline PolyhedralSurface &        shellN( const size_t & n ) {
+			BOOST_ASSERT( n < numShells() );
 			return _shells[n];
 		}
 

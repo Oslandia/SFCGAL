@@ -1,7 +1,7 @@
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/all.h>
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
@@ -47,8 +47,8 @@ struct VertexInfo2 {
 
 
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel                           Kernel;
-typedef CGAL::Triangulation_vertex_base_with_info_2< VertexInfo2, Kernel >           triangulation_vertex_base ;
+typedef CGAL::Exact_predicates_exact_constructions_kernel                             Kernel;
+typedef CGAL::Triangulation_vertex_base_with_info_2< VertexInfo2, Kernel >            triangulation_vertex_base ;
 typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo2, Kernel>                  triangulation_face_base;
 typedef CGAL::Constrained_triangulation_face_base_2<Kernel, triangulation_face_base>  constrained_triangulation_face_base;
 typedef CGAL::Triangulation_data_structure_2<

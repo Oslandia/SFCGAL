@@ -136,6 +136,12 @@ void WaveFrontObj::addGeometry( const Geometry & g )
 		return addGeometry( g.as< MultiPolygon >() );
 	case TYPE_TIN:
 		return addGeometry( g.as< TriangulatedSurface >() );
+	case TYPE_POLYHEDRALSURFACE:
+		return addGeometry( g.as< PolyhedralSurface >() );
+	case TYPE_SOLID:
+		return addGeometry( g.as< Solid >() );
+	case TYPE_MULTISOLID:
+		return addGeometry( g.as< MultiSolid >() );
 	}
 	BOOST_THROW_EXCEPTION(
 		Exception(
@@ -194,6 +200,34 @@ void WaveFrontObj::addGeometry( const TriangulatedSurface & triangulatedSurface 
 	}
 }
 
+
+///
+///
+///
+void WaveFrontObj::addGeometry( const PolyhedralSurface & polyhedralSurface )
+{
+	addGeometry( polyhedralSurface.toTriangulatedSurface() );
+}
+
+///
+///
+///
+void WaveFrontObj::addGeometry( const Solid & solid )
+{
+	for ( size_t i = 0; i < solid.numShells(); i++ ){
+		addGeometry( solid.shellN( i ) );
+	}
+}
+
+///
+///
+///
+void WaveFrontObj::addGeometry( const MultiSolid & multiSolid )
+{
+	for ( size_t i = 0; i < multiSolid.numGeometries(); i++ ){
+		addGeometry( multiSolid.solidN(i) );
+	}
+}
 ///
 ///
 ///

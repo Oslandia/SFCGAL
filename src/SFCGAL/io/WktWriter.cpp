@@ -56,6 +56,9 @@ void WktWriter::write( const Geometry& g )
 	case TYPE_SOLID:
 		write( g.as< Solid >() );
 		return ;
+	case TYPE_MULTISOLID:
+		write( g.as< MultiSolid >() );
+		return ;
 	}
 
 	std::ostringstream oss;
@@ -234,6 +237,27 @@ void WktWriter::write( const MultiPolygon & g )
 	_s << ")";
 }
 
+
+///
+///
+///
+void WktWriter::write( const MultiSolid & g )
+{
+	_s << "MULTISOLID" ;
+	if ( g.isEmpty() ){
+		_s << " EMPTY" ;
+		return ;
+	}
+
+	_s << "(";
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		if ( i != 0 )
+			_s << "," ;
+		writeInner( g.geometryN(i).as< Solid >() );
+	}
+	_s << ")";
+}
+
 ///
 ///
 ///
@@ -325,6 +349,14 @@ void WktWriter::write( const Solid & g )
 		_s << " EMPTY" ;
 		return ;
 	}
+	writeInner( g );
+}
+
+///
+///
+///
+void WktWriter::writeInner( const Solid & g )
+{
 	_s << "(" ; //begin SOLID
 	writeInner(g.exteriorShell());
 	for ( size_t i = 0; i < g.numInteriorShells(); i++ ){

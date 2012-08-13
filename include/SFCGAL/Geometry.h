@@ -5,7 +5,7 @@
 #include <string>
 #include <sstream>
 
-#include <SFCGAL/BoundingBox.h>
+#include <boost/assert.hpp>
 
 namespace SFCGAL {
 
@@ -25,6 +25,12 @@ namespace SFCGAL {
 
     //not SFA, appears in GML/CityGML
     class Solid ;
+    //not SFA, appears in GML/CityGML
+    class MultiSolid ;
+    //not SFA, appears in GML/CityGML
+    class Grid ;
+
+    class Envelope ;
 
     class GeometryVisitor ;
     class ConstGeometryVisitor ;
@@ -59,12 +65,13 @@ namespace SFCGAL {
 
        //-- not official codes
        TYPE_TRIANGLE            = 100, //17 in Wikipedia???
-       TYPE_SOLID               = 101
+       TYPE_SOLID               = 101,
+       TYPE_MULTISOLID          = 102
     } GeometryType ;
 
 
     /**
-     * Declare coordinate types
+     * EnvelopeDeclare coordinate types
      * @see SFA 2.8.3 LineStringZ = 1003 ( coordinateType + geometryType)
      */
     typedef enum {
@@ -146,12 +153,12 @@ namespace SFCGAL {
         * otherway would lead to Polygon and PolyhedralSurface
         */
        //std::auto_ptr< Geometry > envelope() const = 0 ;
-       BoundingBox envelope() const;
+       Envelope             envelope() const ;
 
        /**
         * [OGC/SFA]Return the boundary of the geometry
         */
-       //virtual std::auto_ptr< Geometry > boundary() const = 0 ;
+       virtual Geometry*    boundary() const ;
 
        /**
         * [OGC/SFA]Returns the identifier of the spatial reference
@@ -177,14 +184,16 @@ namespace SFCGAL {
         */
        template < typename Derived >
        inline const Derived &  as() const {
-              return *static_cast< Derived const * >( this );
+            BOOST_ASSERT( is< Derived >() );
+            return *static_cast< Derived const * >( this );
        }
        /**
         * Downcast helper
         */
        template < typename Derived >
        inline Derived &        as() {
-              return *static_cast< Derived * >( this );
+            BOOST_ASSERT( is< Derived >() );
+            return *static_cast< Derived * >( this );
        }
 
 
@@ -201,13 +210,6 @@ namespace SFCGAL {
     protected:
        Geometry();
        Geometry( Geometry const& other );
-
-       // dirty flag, set to true when the geometry changes
-       mutable bool dirty_;
-       // computed bounding box
-       mutable BoundingBox bbox_;
-
-       virtual void computeBoundingBox() const;
     };
 
 }

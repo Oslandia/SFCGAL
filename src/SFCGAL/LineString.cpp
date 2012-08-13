@@ -117,6 +117,14 @@ bool  LineString::is3D() const
 	return ! isEmpty() && startPoint().is3D() ;
 }
 
+///
+///
+///
+void LineString::reverse()
+{
+	std::reverse( _points.begin(), _points.end() );
+}
+
 
 
 

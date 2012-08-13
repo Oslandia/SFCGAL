@@ -26,6 +26,10 @@ namespace SFCGAL {
 		 */
 		Point() ;
 		/**
+		 * Constructor with Coordinate
+		 */
+		Point( const Coordinate & coordinate ) ;
+		/**
 		 * XY[Z] constructor
 		 */
 		Point( const double & x, const double & y, const double & z = NaN() ) ;

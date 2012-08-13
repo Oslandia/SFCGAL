@@ -7,7 +7,7 @@ namespace SFCGAL {
 ///
 ///
 PolyhedralSurface::PolyhedralSurface():
-	Geometry(),
+	Surface(),
 	_polygons()
 {
 
@@ -17,7 +17,7 @@ PolyhedralSurface::PolyhedralSurface():
 ///
 ///
 PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) :
-	Geometry(),
+	Surface(),
 	_polygons(polygons)
 {
 
@@ -27,7 +27,7 @@ PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) 
 ///
 ///
 PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
-	Geometry(),
+	Surface(),
 	_polygons(other._polygons)
 {
 
@@ -112,6 +112,35 @@ bool  PolyhedralSurface::is3D() const
 		return false ;
 	}else{
 		return _polygons.front().is3D() ;
+	}
+}
+
+
+///
+///
+///
+TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
+{
+	TriangulatedSurface result ;
+	algorithm::triangulate( *this, result );
+	return result ;
+}
+
+///
+///
+///
+void  PolyhedralSurface::addPolygon( const Polygon & polygon )
+{
+	_polygons.push_back( polygon );
+}
+
+///
+///
+///
+void  PolyhedralSurface::addPolygons( const PolyhedralSurface & polyhedralSurface )
+{
+	for ( size_t i = 0; i < polyhedralSurface.numPolygons(); i++ ){
+		_polygons.push_back( polyhedralSurface.polygonN(i) );
 	}
 }
 

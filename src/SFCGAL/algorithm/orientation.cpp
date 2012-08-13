@@ -1,7 +1,12 @@
 #include <SFCGAL/algorithm/orientation.h>
 
+#include <SFCGAL/algorithm/ConsistentOrientationBuilder.h>
+
 #include <SFCGAL/graph/GeometryGraph.h>
 #include <SFCGAL/graph/GeometryGraphBuilder.h>
+#include <SFCGAL/graph/algorithm/isHalfEdge.h>
+
+#include <SFCGAL/graph/algorithm/orientation.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -9,28 +14,46 @@ namespace algorithm {
 ///
 ///
 ///
-void makeConsistentOrientation( TriangulatedSurface & g )
+bool hasConsistentOrientation3D( const TriangulatedSurface & g )
 {
 	using namespace graph ;
 
-	typedef GeometryGraph::edge_descriptor edge_descriptor ;
+	if ( g.isEmpty() )
+		return true ;
 
-
-	/*
-	 * build a graph with the polygons of the PolyhedralSurface
-	 */
-
-	//the list of polygons
-	std::vector< Triangle* >                         triangles ;
-	//the list of shared polygons
-	std::vector< std::vector< edge_descriptor > >    sharedTriangles ;
 
 	GeometryGraph graph ;
-	GeometryGraphBuilder<Vertex, Edge> graphBuilder( graph ) ;
-	//	sharedTriangles = graphBuilder.addTriangulatedSurface( g );
+	GeometryGraphBuilder graphBuilder( graph ) ;
+	graphBuilder.addTriangulatedSurface( g );
+	return graph::algorithm::isHalfEdge( graph ) ;
+}
 
-	std::cout << "sharedTriangles.size() " << sharedTriangles.size() << std::endl;
 
+///
+///
+///
+bool hasConsistentOrientation3D( const PolyhedralSurface & g )
+{
+	using namespace graph ;
+
+	if ( g.isEmpty() )
+		return true ;
+
+	GeometryGraph graph ;
+	GeometryGraphBuilder graphBuilder( graph ) ;
+	graphBuilder.addPolyhedralSurface( g );
+	return graph::algorithm::isHalfEdge( graph ) ;
+}
+
+
+///
+///
+///
+void makeConsistentOrientation3D( TriangulatedSurface & g )
+{
+	ConsistentOrientationBuilder builder ;
+	builder.addTriangulatedSurface(g);
+	g = builder.buildTriangulatedSurface() ;
 }
 
 

@@ -58,6 +58,17 @@ namespace SFCGAL {
 		virtual bool           is3D() const ;
 
 		/**
+		 * reverse Triangle orientation
+		 */
+		void                   reverse() ;
+
+
+		/**
+		 * convert a triangle to a polygon
+		 */
+		Polygon               toPolygon() const ;
+
+		/**
 		 * returns the i-th vertex
 		 */
 		inline const Point & vertex( const int & i ) const

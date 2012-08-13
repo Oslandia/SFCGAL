@@ -18,6 +18,15 @@ Point::Point():
 ///
 ///
 ///
+Point::Point( const Coordinate & coordinate ):
+	_coordinate(coordinate)
+{
+
+}
+
+///
+///
+///
 Point::Point( const double & x, const double & y, const double & z ):
 	Geometry(),
 	_coordinate(x,y,z)
@@ -110,7 +119,6 @@ bool Point::is3D() const
 {
 	return _coordinate.is3D() ;
 }
-
 
 ///
 ///

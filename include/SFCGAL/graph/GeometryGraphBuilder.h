@@ -1,10 +1,8 @@
 #ifndef _SFCGAL_GRAPH_GEOMETRYGRAPHBUILDER_H_
 #define _SFCGAL_GRAPH_GEOMETRYGRAPHBUILDER_H_
 
+#include <SFCGAL/all.h>
 #include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
 namespace graph {
@@ -12,13 +10,19 @@ namespace graph {
 	/**
 	 * Convert Geometries to a GeometryGraph. Identifier in the Graph are returned in order to
 	 * allow the user to keep identify the geometry.
+	 *
+	 * @todo wrap vertex_descriptor, std::vector< edge_descriptor >, etc. in SharedPoint, SharedLineString, SharedPolygon, etc.
+	 * and add utility method on the Graph?
 	 */
-	template < typename V, typename E >
-	class GeometryGraphBuilder {
+	template < typename Graph >
+	class GeometryGraphBuilderT {
 	public:
-		typedef GeometryGraphT< V, E >                                    graph_t ;
-		typedef typename GeometryGraphT< V, E >::vertex_descriptor        vertex_descriptor ;
-		typedef typename GeometryGraphT< V, E >::edge_descriptor          edge_descriptor ;
+		typedef Graph                                      graph_t ;
+
+		typedef typename graph_t::vertex_properties        vertex_properties ;
+		typedef typename graph_t::edge_properties          edge_properties ;
+		typedef typename graph_t::vertex_descriptor        vertex_descriptor ;
+		typedef typename graph_t::edge_descriptor          edge_descriptor ;
 
 		/**
 		 * allows to match duplicates
@@ -28,7 +32,7 @@ namespace graph {
 		/**
 		 * default constructor
 		 */
-		GeometryGraphBuilder( graph_t & graph ):
+		GeometryGraphBuilderT( graph_t & graph ):
 			_graph(graph)
 		{
 
@@ -37,7 +41,7 @@ namespace graph {
 		/**
 		 * destructor
 		 */
-		~GeometryGraphBuilder()
+		~GeometryGraphBuilderT()
 		{
 
 		}
@@ -53,7 +57,7 @@ namespace graph {
 			if ( it != _vertices.end() ){
 				return it->second ;
 			}else{
-				vertex_descriptor vertex = _graph.addVertex( V( point.coordinate() ) );
+				vertex_descriptor vertex = _graph.addVertex( vertex_properties( point.coordinate() ) );
 				_vertices.insert( std::make_pair( point.coordinate(), vertex ) );
 				return vertex ;
 			}
@@ -63,13 +67,18 @@ namespace graph {
 		 * add a Point to the Graph
 		 * @return the edge inserted into the graph
 		 */
-		edge_descriptor   addLineSegment( const Point & a, const Point & b ) {
+		edge_descriptor   addLineSegment(
+			const Point & a,
+			const Point & b,
+			const edge_properties& edgeProperties = edge_properties()
+		) {
 			BOOST_ASSERT( ! a.isEmpty() );
 			BOOST_ASSERT( ! b.isEmpty() );
 
 			return _graph.addEdge(
 				addPoint(a),
-				addPoint(b)
+				addPoint(b),
+				edgeProperties
 			);
 		}
 
@@ -77,30 +86,96 @@ namespace graph {
 		 * add a LineString to the graph
 		 * @return the list of edges inserted into the graph
 		 */
-		std::vector< edge_descriptor > addLineString( const LineString & lineString )
+		std::vector< edge_descriptor > addLineString(
+			const LineString & lineString,
+			const edge_properties& edgeProperties = edge_properties()
+		)
 		{
 			BOOST_ASSERT( ! lineString.isEmpty() );
 
 			std::vector< edge_descriptor > edges ;
 			for ( size_t i = 0; i < lineString.numPoints() - 1; i++ ){
-				edges.push_back( addLineSegment( lineString.pointN(i), lineString.pointN(i+1) ) );
+				edges.push_back( addLineSegment( lineString.pointN(i), lineString.pointN(i+1), edgeProperties ) );
 			}
 			return edges ;
 		}
 
 		/**
+		 * add a Triangle to the graph
+		 * @return the list of edges inserted into the graph
+		 */
+		std::vector< edge_descriptor > addTriangle(
+			const Triangle & triangle,
+			const edge_properties& edgeProperties = edge_properties()
+		)
+		{
+			BOOST_ASSERT( ! triangle.isEmpty() );
+
+			std::vector< edge_descriptor > edges ;
+			for ( size_t i = 0; i < 3; i++ ){
+				edges.push_back( addLineSegment(
+					triangle.vertex(i),
+					triangle.vertex(i+1),
+					edgeProperties
+				) );
+			}
+			return edges ;
+		}
+
+
+		/**
 		 * add a Polygon to the graph
 		 * @returns the list of rings inserted into the graph
 		 */
-		std::vector< std::vector< edge_descriptor > >   addPolygon( const Polygon & polygon )
+		std::vector< std::vector< edge_descriptor > >   addPolygon(
+			const Polygon & polygon,
+			const edge_properties& edgeProperties = edge_properties()
+		)
 		{
 			BOOST_ASSERT( ! polygon.isEmpty() );
 
 			std::vector< std::vector< edge_descriptor > > rings ;
 			for ( size_t i = 0; i < polygon.numRings(); i++ ){
-				rings.push_back( addLineString( polygon.ringN(i) ) );
+				rings.push_back( addLineString( polygon.ringN(i), edgeProperties ) );
 			}
 			return rings ;
+		}
+
+		/**
+		 * add a TriangulatedSurface to the graph
+		 * @returns the list of rings inserted into the graph
+		 */
+		std::vector< std::vector< edge_descriptor > >  addTriangulatedSurface(
+			const TriangulatedSurface & triangulatedSurface,
+			const edge_properties& edgeProperties = edge_properties()
+		)
+		{
+			BOOST_ASSERT( ! triangulatedSurface.isEmpty() );
+
+			std::vector< std::vector< edge_descriptor > > triangles ;
+			for ( size_t i = 0; i < triangulatedSurface.numTriangles(); i++ ){
+				triangles.push_back( addTriangle( triangulatedSurface.triangleN(i), edgeProperties ) );
+			}
+			return triangles ;
+		}
+
+
+		/**
+		 * add a PolyhedralSurface to the graph
+		 * @returns the list of rings inserted into the graph
+		 */
+		std::vector< std::vector< std::vector< edge_descriptor > > >  addPolyhedralSurface(
+			const PolyhedralSurface & polyhedralSurface,
+			const edge_properties& edgeProperties = edge_properties()
+		)
+		{
+			BOOST_ASSERT( ! polyhedralSurface.isEmpty() );
+
+			std::vector< std::vector< std::vector< edge_descriptor > > > polygons ;
+			for ( size_t i = 0; i < polyhedralSurface.numPolygons(); i++ ){
+				polygons.push_back( addPolygon( polyhedralSurface.polygonN(i), edgeProperties ) );
+			}
+			return polygons ;
 		}
 
 
@@ -111,9 +186,11 @@ namespace graph {
 		/**
 		 * no copy constructor
 		 */
-		GeometryGraphBuilder( const GeometryGraphBuilder & other ) ;
+		GeometryGraphBuilderT( const GeometryGraphBuilderT & other ) ;
 	};
 
+
+	typedef GeometryGraphBuilderT< GeometryGraph > GeometryGraphBuilder ;
 
 }//topology
 }//SFCGAL

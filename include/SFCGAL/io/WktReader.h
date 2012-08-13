@@ -100,6 +100,11 @@ namespace io {
 		void                     readInnerSolid( Solid & g ) ;
 
 		/**
+		 * Read MultiSolid content from wkt
+		 */
+		void                     readInnerMultiSolid( MultiSolid & g ) ;
+
+		/**
 		 * Read coordinate from WKT
 		 * @todo ZM management
 		 */

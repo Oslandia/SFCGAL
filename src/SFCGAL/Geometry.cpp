@@ -5,6 +5,9 @@
 #include <SFCGAL/io/WktWriter.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 
+#include <SFCGAL/algorithm/BoundaryVisitor.h>
+#include <SFCGAL/detail/EnvelopeVisitor.h>
+
 namespace SFCGAL {
 
 ///
@@ -30,12 +33,31 @@ std::string Geometry::asText( const int & numDecimals ) const
 	return oss.str();
 }
 
+///
+///
+///
+Envelope   Geometry::envelope() const
+{
+	Envelope box ;
+	detail::EnvelopeVisitor envelopeVisitor( box );
+	accept(envelopeVisitor);
+	return box ;
+}
 
+///
+///
+///
+Geometry* Geometry::boundary() const
+{
+	algorithm::BoundaryVisitor visitor ;
+	accept(visitor);
+	return visitor.releaseBoundary() ;
+}
 
 ///
 ///
 ///
-Geometry::Geometry() : dirty_(true)
+Geometry::Geometry()
 {
 
 }
@@ -43,77 +65,9 @@ Geometry::Geometry() : dirty_(true)
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& other ) : dirty_(true)
+Geometry::Geometry( Geometry const& other )
 {
 
-}
-
-BoundingBox Geometry::envelope() const
-{
-	if ( dirty_ ) {
-		computeBoundingBox();
-		dirty_ = false;
-	}
-	return bbox_;
-}
-
-void Geometry::computeBoundingBox() const
-{
-	// default behaviour for the bounding box computation
-
-	double minf = std::numeric_limits<double>::infinity();
-	double xmin = +minf;
-	double ymin = +minf;
-	double zmin = +minf;
-	double xmax = -minf;
-	double ymax = -minf;
-	double zmax = -minf;
-
-	detail::GetPointsVisitor pointVisitor;
-	accept( pointVisitor );
-
-	if ( is3D() ) {
-		for ( size_t i = 0; i < pointVisitor.points.size(); ++i ) {
-			const Point& p = *(pointVisitor.points[i]);
-			if ( p.x() < xmin ) {
-				xmin = p.x();
-			}
-			if ( p.x() > xmax ) {
-				xmax = p.x();
-			}
-			if ( p.y() < ymin ) {
-				ymin = p.y();
-			}
-			if ( p.y() > ymax ) {
-				ymax = p.y();
-			}
-		}
-		bbox_ = BoundingBox( xmin, xmax, ymin, ymax );
-	}
-	else {
-		for ( size_t i = 0; i < pointVisitor.points.size(); ++i ) {
-			const Point& p = *(pointVisitor.points[i]);
-			if ( p.x() < xmin ) {
-				xmin = p.x();
-			}
-			if ( p.x() > xmax ) {
-				xmax = p.x();
-			}
-			if ( p.y() < ymin ) {
-				ymin = p.y();
-			}
-			if ( p.y() > ymax ) {
-				ymax = p.y();
-			}
-			if ( p.z() < zmin ) {
-				zmin = p.z();
-			}
-			if ( p.z() > zmax ) {
-				zmax = p.z();
-			}
-		}
-		bbox_ = BoundingBox( xmin, xmax, ymin, ymax, zmin, zmax );
-	}
 }
 
 }//SFCGAL

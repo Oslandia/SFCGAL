@@ -1,6 +1,7 @@
 #ifndef _SFCGAL_GRAPH_EDGE_H_
 #define _SFCGAL_GRAPH_EDGE_H_
 
+
 namespace SFCGAL {
 namespace graph {
 
@@ -9,7 +10,9 @@ namespace graph {
 	 * more informations)
 	 */
 	struct Edge {
-	    Edge();
+		Edge( const int & face_ = -1 );
+
+		int face ;
 	};
 
 }//graph

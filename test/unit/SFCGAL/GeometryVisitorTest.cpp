@@ -32,42 +32,27 @@ public:
 	virtual void visit( const Solid & g ) {
 		type = "Solid";
 	}
-
-	/**
-	 * invoke visit(Point) for each point
-	 */
 	virtual void visit( const MultiPoint & g ) {
 		type = "MultiPoint";
 	}
-	/**
-	 * invoke visit(LineString) for each lineString
-	 */
 	virtual void visit( const MultiLineString & g ){
 		type = "MultiLineString";
 	}
-	/**
-	 * invoke visit(Polygon) for each polygon
-	 */
 	virtual void visit( const MultiPolygon & g ){
 		type = "MultiPolygon";
 	}
+	virtual void visit( const MultiSolid & g ){
+		type = "MultiSolid";
+	}
 
-	/**
-	 * invoke g.accept(geometry) for each sub geometry
-	 */
 	virtual void visit( const GeometryCollection & g ){
 		type = "GeometryCollection";
 	}
 
-	/**
-	 * invoke g.accept(polygon) for each polygon
-	 */
 	virtual void visit( const PolyhedralSurface & g ) {
 		type = "PolyhedralSurface";
 	}
-	/**
-	 * invoke g.accept(triangle) for each triangle
-	 */
+
 	virtual void visit( const TriangulatedSurface & g ) {
 		type = "TriangulatedSurface";
 	}
@@ -114,7 +99,9 @@ BOOST_AUTO_TEST_CASE( testVisitMultiLineString ){
 BOOST_AUTO_TEST_CASE( testVisitMultiPolygon ){
 	BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiPolygon >(), "MultiPolygon" );
 }
-
+BOOST_AUTO_TEST_CASE( testVisitMultiSolid ){
+	BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiSolid >(), "MultiSolid" );
+}
 BOOST_AUTO_TEST_CASE( testVisitGeometryCollection ){
 	BOOST_CHECK_EQUAL( getTypeWithVisitor< GeometryCollection >(), "GeometryCollection" );
 }

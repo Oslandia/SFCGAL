@@ -6,8 +6,17 @@ namespace SFCGAL {
 ///
 ///
 ///
-Solid::Solid() :
-	Geometry()
+Solid::Solid():
+	_shells(1,PolyhedralSurface())
+{
+
+}
+
+///
+///
+///
+Solid::Solid( const PolyhedralSurface & exteriorShell ):
+	_shells(1,exteriorShell)
 {
 
 }

@@ -9,7 +9,7 @@ using namespace SFCGAL ;
 using namespace SFCGAL::graph ;
 
 
-BOOST_AUTO_TEST_SUITE( SFCGAL_IsConnectedTest )
+BOOST_AUTO_TEST_SUITE( SFCGAL_graph_algorithm_IsConnectedTest )
 
 BOOST_AUTO_TEST_CASE( trivialConnected )
 {

@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( testTeaPot )
 		const io::WaveFrontFace & face = obj.faceN(i);
 		for ( size_t j = 0; j < face.size(); j++ ){
 			BOOST_CHECK_GE( face[j].v, 0 );
-			BOOST_CHECK_LT( face[j].v, obj.numVertices() );
+			BOOST_CHECK_LT( face[j].v, (int)obj.numVertices() );
 		}
 	}
 }

@@ -1,6 +1,8 @@
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/GeometryVisitor.h>
 
+#include <SFCGAL/Triangle.h>
+
 namespace SFCGAL {
 
 ///
@@ -17,6 +19,7 @@ Polygon::Polygon():
 ///
 ///
 Polygon::Polygon( const std::vector< LineString > & rings ):
+	Surface(),
 	_rings(rings)
 {
 	if ( _rings.empty() ){
@@ -32,6 +35,20 @@ Polygon::Polygon( const LineString & exteriorRing ):
 	_rings(1,exteriorRing)
 {
 
+}
+
+///
+///
+///
+Polygon::Polygon( const Triangle & triangle ):
+	Surface(),
+	_rings(1,LineString())
+{
+	if ( ! triangle.isEmpty() ){
+		for ( size_t i = 0; i < 4; i++ ){
+			exteriorRing().addPoint( triangle.vertex(i) );
+		}
+	}
 }
 
 ///
@@ -105,10 +122,21 @@ bool   Polygon::isEmpty() const
 ///
 ///
 ///
-bool   Polygon:: is3D() const
+bool   Polygon::is3D() const
 {
 	return exteriorRing().is3D() ;
 }
+
+///
+///
+///
+void Polygon::reverse()
+{
+	for ( size_t i = 0; i < numRings(); i++ ){
+		ringN(i).reverse();
+	}
+}
+
 
 ///
 ///
@@ -124,12 +152,6 @@ void Polygon::accept( GeometryVisitor & visitor )
 void Polygon::accept( ConstGeometryVisitor & visitor ) const
 {
 	return visitor.visit(*this);
-}
-
-void Polygon::computeBoundingBox() const
-{
-	// compute bounding box only on the exterior ring
-	bbox_ = exteriorRing().envelope();
 }
 
 }//SFCGAL

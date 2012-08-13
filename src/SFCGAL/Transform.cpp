@@ -91,6 +91,16 @@ void Transform::visit( MultiPolygon & g )
 	}
 }
 
+///
+///
+///
+void Transform::visit( MultiSolid & g )
+{
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		visit( g.solidN(i) );
+	}
+}
+
 
 ///
 ///

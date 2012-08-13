@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( solidConversionTest )
 	const Solid& solid = static_cast<const Solid&>( *g );
 	CGAL::Nef_polyhedron_3<ExactKernel> nef( solid.toNef_polyhedron_3<ExactKernel>());
 	// Here a Nef_polyhedron merges adjacent triangles
-	BOOST_CHECK_EQUAL( nef.number_of_facets(), 9 );
+	BOOST_CHECK_EQUAL( nef.number_of_facets(), 9U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

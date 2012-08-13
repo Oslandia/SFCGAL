@@ -26,7 +26,7 @@ else()
 	add_definitions( "-DBOOST_TEST_DYN_LINK" )
 endif()
 
-find_package( Boost COMPONENTS chrono program_options unit_test_framework filesystem system thread REQUIRED )
+find_package( Boost COMPONENTS chrono program_options unit_test_framework filesystem date_time system thread REQUIRED )
 
 
 #-- GMP (facultative)  -------------------------------------
@@ -115,7 +115,11 @@ if( ${SFCGAL_BUILD_TOOLS} )
 	add_subdirectory( tools )
 endif()
 
-
+#-- viewer 
+option( SFCGAL_BUILD_VIEWER "build viewer" ON )
+if( ${SFCGAL_BUILD_VIEWER} )
+	add_subdirectory( viewer )
+endif()
 
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)

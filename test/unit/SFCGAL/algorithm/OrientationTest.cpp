@@ -17,7 +17,6 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_OrientationTest )
 
 //-- hasConsistentOrientation
 
-#if 0
 BOOST_AUTO_TEST_CASE( hasConsistentOrientation3D_basicTriangles )
 {
 	Triangle triangle( Point(0.0,0.0,0.0), Point(0.0,0.0,1.0), Point(0.0,1.0, 0.0) );
@@ -49,7 +48,7 @@ BOOST_AUTO_TEST_CASE( hasConsistentOrientation3D_basicTriangles )
 	);
 	BOOST_CHECK( ! algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 }
-#endif
+
 
 
 
