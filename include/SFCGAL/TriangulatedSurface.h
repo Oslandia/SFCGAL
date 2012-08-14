@@ -143,7 +143,6 @@ namespace SFCGAL {
 				// second pass: adjacent triangles must be built with compliant orientations
 				// the two halfedges of a shared edge must be of opposite orientation
 
-				// FIXME:
 				// Extract from CGAL's documentation
 				// "The convention is that the halfedges are oriented counterclockwise
 				// around facets as seen from the outside of the polyhedron"
@@ -155,14 +154,12 @@ namespace SFCGAL {
 					CGAL::Point_3<K> pb( tri[1] );
 					CGAL::Point_3<K> pc( tri[2] );
 					
-					if ( edges.find( std::make_pair(pa, pb)) != edges.end()) {
-						// we already have an halfedge from pa to pb, swap them
-						std::swap( pa, pb );
-					}
-					if ( edges.find( std::make_pair(pb, pc)) != edges.end() ||
+					if ( edges.find( std::make_pair(pa, pb)) != edges.end() ||
+					     edges.find( std::make_pair(pb, pc)) != edges.end() ||
 					     edges.find( std::make_pair(pc, pa)) != edges.end() ) {
 						BOOST_THROW_EXCEPTION(Exception( "When trying to build a CGAL::Polyhedron_3 from a TriangulatedSurface: bad orientation for "
-										 + surf.triangleN(i).asText()));
+										 + surf.triangleN(i).asText()
+										 + " consider using ConsistentOrientationBuilder first"));
 					}
 					B.add_vertex_to_facet( points[pa] );
 					B.add_vertex_to_facet( points[pb] );

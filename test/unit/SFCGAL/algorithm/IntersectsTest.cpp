@@ -243,12 +243,15 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
 
 	const Solid& solid = static_cast<const Solid&>( *g );
+
 	// intersection with a point
 	{
 		// point on a vertex
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.0, 0.0), solid ), true );
 		// point on an edge
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.0, 0.5, 0.0), solid ), true );
+		// point on a face
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.5, 0.5, 0.0), solid ), true );
 		// point outside the volume
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(1.5, 0.5, 0.5), solid ), false );
 		// point inside the volume

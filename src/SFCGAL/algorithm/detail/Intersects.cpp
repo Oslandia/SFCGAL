@@ -63,7 +63,7 @@ namespace detail {
 				zmin = segment.end_point->z();
 				zmax = segment.start_point->z();
 			}
-			return CGAL::Bbox_3( xmin, ymin, xmax, ymax, zmin, zmax );
+			return CGAL::Bbox_3( xmin, ymin, zmin, xmax, ymax, zmax );
 		}
 		// else
 		return triangle->envelope().toBbox_3();
