@@ -69,125 +69,64 @@ namespace algorithm
 	}
 
 	///
-	/// Auxiliary function used to fill up vectors of handle and boxes for segments
+	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
 	///
-	void segments_to_boxes( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	void to_boxes( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
 	{
 		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
 			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
 			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 		}
 	}
-
-	bool intersects_( const LineString& la, const LineString& lb )
+	void to_boxes( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
 	{
-		std::vector<detail::Object2Box> aboxes, bboxes;
-		std::list<detail::ObjectHandle> ahandles, bhandles;
-
-		segments_to_boxes( la, ahandles, aboxes );
-		segments_to_boxes( lb, bhandles, bboxes );
-		
-		try {
-			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
-						  bboxes.begin(), bboxes.end(),
-						  detail::intersects2_cb<Kernel> );
-		}
-		catch ( detail::found_segment_segment_intersection& e ) {
-			return true;
-		}
-		return false;
+		handles.push_back( detail::ObjectHandle( &tri ));
+		boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 	}
-
-	bool intersects_( const LineString& la, const Triangle& tri )
+	void to_boxes( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
 	{
-		std::vector<detail::Object2Box> aboxes;
-		std::list<detail::ObjectHandle> ahandles;
-
-		segments_to_boxes( la, ahandles, aboxes );
-
-		detail::ObjectHandle triangleHandle( &tri );
-		detail::Object2Box triangleBox( tri.envelope().toBbox_2(), &triangleHandle );
-
-		try {
-		 	CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
-		 				  &triangleBox, &triangleBox + 1,
-		 				  detail::intersects2_cb<Kernel> );
-		}
-		catch ( detail::found_segment_triangle_intersection& e ) {
-		 	return true;
-		}
-		return false;
-	}
-
-	// accelerator for LineString x TriangulatedSurface
-	bool intersects_( const LineString& la, const TriangulatedSurface& surf )
-	{
-		std::vector<detail::Object2Box> aboxes, bboxes;
-		std::list<detail::ObjectHandle> ahandles, bhandles;
-
-		segments_to_boxes( la, ahandles, aboxes );
-
 		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
-			bhandles.push_back( &surf.triangleN(i));
-			bboxes.push_back( detail::Object2Box( bhandles.back().bbox_2(), &bhandles.back() ));
+			handles.push_back( &surf.triangleN(i));
+			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 		}
-
-		try {
-			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
-						  bboxes.begin(), bboxes.end(),
-						  detail::intersects2_cb<Kernel> );
-		}
-		catch ( detail::found_segment_triangle_intersection& e ) {
-			return true;
-		}
-		return false;
 	}
 
-	// accelerator for LineString x TriangulatedSurface
-	bool intersects_( const TriangulatedSurface& surfa, const TriangulatedSurface& surfb )
+	///
+	/// Generic function
+	void to_boxes_g( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	{
+		switch ( g.geometryTypeId() ){
+		case TYPE_LINESTRING:
+			to_boxes( static_cast<const LineString&>(g), handles, boxes );
+			break;
+		case TYPE_TRIANGLE:
+			to_boxes( static_cast<const Triangle&>(g), handles, boxes );
+			break;
+		case TYPE_TIN:
+			to_boxes( static_cast<const TriangulatedSurface&>(g), handles, boxes );
+			break;
+		default:
+			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type" ));
+		}
+	}
+
+	///
+	/// intersection test using CGAL::box_intersection_d
+	///
+	bool intersects_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
 		std::vector<detail::Object2Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		for ( size_t i = 0; i < surfa.numTriangles(); ++i ) {
-			ahandles.push_back( &surfa.triangleN(i));
-			aboxes.push_back( detail::Object2Box( ahandles.back().bbox_2(), &ahandles.back() ));
-		}
-
-		for ( size_t i = 0; i < surfb.numTriangles(); ++i ) {
-			bhandles.push_back( &surfb.triangleN(i));
-			bboxes.push_back( detail::Object2Box( bhandles.back().bbox_2(), &bhandles.back() ));
-		}
-
+		to_boxes_g( ga, ahandles, aboxes );
+		to_boxes_g( gb, bhandles, bboxes );
+		
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
 						  detail::intersects2_cb<Kernel> );
 		}
-		catch ( detail::found_triangle_triangle_intersection& e ) {
-			return true;
-		}
-		return false;
-	}
-
-	bool intersects_( const Triangle& tria, const TriangulatedSurface& surfb )
-	{
-		std::vector<detail::Object2Box> bboxes;
-		std::list<detail::ObjectHandle> bhandles;
-		detail::ObjectHandle triangleHandle( &tria );
-		detail::Object2Box triangleBox( triangleHandle.bbox_2(), &triangleHandle );
-		
-		for ( size_t i = 0; i < surfb.numTriangles(); ++i ) {
-			bhandles.push_back( &surfb.triangleN(i));
-			bboxes.push_back( detail::Object2Box( bhandles.back().bbox_2(), &bhandles.back() ));
-		}
-
-		try {
-			CGAL::box_intersection_d( &triangleBox, &triangleBox + 1,
-						  bboxes.begin(), bboxes.end(),
-						  detail::intersects2_cb<Kernel> );
-		}
-		catch ( detail::found_triangle_triangle_intersection& e ) {
+		catch ( detail::found_intersection& e ) {
 			return true;
 		}
 		return false;
@@ -229,13 +168,13 @@ namespace algorithm
 			std::vector<detail::Object2Box> aboxes, bboxes;
 			std::list<detail::ObjectHandle> ahandles, bhandles;
 
-			segments_to_boxes( pa.exteriorRing(), ahandles, aboxes );
+			to_boxes( pa.exteriorRing(), ahandles, aboxes );
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
-				segments_to_boxes( pa.interiorRingN( i ), ahandles, aboxes );
+				to_boxes( pa.interiorRingN( i ), ahandles, aboxes );
 			}
-			segments_to_boxes( pb.exteriorRing(), bhandles, bboxes );
+			to_boxes( pb.exteriorRing(), bhandles, bboxes );
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
-				segments_to_boxes( pb.interiorRingN( i ), bhandles, bboxes );
+				to_boxes( pb.interiorRingN( i ), bhandles, bboxes );
 			}
 
 			try {
@@ -327,20 +266,18 @@ namespace algorithm
 			break;
 		} // TYPE_POINT
 		case TYPE_LINESTRING: {
-			const LineString& ls = static_cast<const LineString&>( ga );
-	    
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
-				return intersects_( ls, static_cast<const LineString&>( gb ) );
+				return intersects_bbox_d( ga, gb );
 			case TYPE_TRIANGLE:
-				return intersects_( ls, static_cast<const Triangle&>( gb ));
+				return intersects_bbox_d( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
 			case TYPE_TIN:
 				// call the proper accelerator
-				return intersects_( ls, static_cast<const TriangulatedSurface&>( gb ));
+				return intersects_bbox_d( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -358,7 +295,7 @@ namespace algorithm
 			case TYPE_SOLID:
 				break;
 			case TYPE_TIN:
-				return intersects_( tri, static_cast<const TriangulatedSurface&>( gb ));
+				return intersects_bbox_d( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -394,8 +331,7 @@ namespace algorithm
 		case TYPE_TIN: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TIN:
-				return intersects_( static_cast<const TriangulatedSurface&>(ga),
-						    static_cast<const TriangulatedSurface&>(gb) );
+				return intersects_bbox_d( ga, gb );
 			case TYPE_SOLID:
 				break;
 			default:

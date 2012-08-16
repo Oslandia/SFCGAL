@@ -51,9 +51,10 @@ namespace detail {
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, ObjectHandle*> Object2Box;
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, ObjectHandle*> Object3Box;
 
-	struct found_segment_segment_intersection {};
-	struct found_segment_triangle_intersection {};
-	struct found_triangle_triangle_intersection {};
+	struct found_intersection {};
+	struct found_segment_segment_intersection : public found_intersection {};
+	struct found_segment_triangle_intersection : public found_intersection {};
+	struct found_triangle_triangle_intersection : public found_intersection {};
 
 	///
 	/// Callback function used with box_intersection_d for 2d intersections
