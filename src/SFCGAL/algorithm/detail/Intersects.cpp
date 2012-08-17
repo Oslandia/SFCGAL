@@ -69,6 +69,48 @@ namespace detail {
 		return triangle->envelope().toBbox_3();
 	}
 
+	///
+	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
+	///
+	void to_boxes_( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	{
+		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
+			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
+			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
+		}
+	}
+	void to_boxes_( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	{
+		handles.push_back( detail::ObjectHandle( &tri ));
+		boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
+	}
+	void to_boxes_( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	{
+		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+			handles.push_back( &surf.triangleN(i));
+			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
+		}
+	}
+
+	///
+	/// Generic function
+	void to_boxes( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+	{
+		switch ( g.geometryTypeId() ){
+		case TYPE_LINESTRING:
+			to_boxes_( static_cast<const LineString&>(g), handles, boxes );
+			break;
+		case TYPE_TRIANGLE:
+			to_boxes_( static_cast<const Triangle&>(g), handles, boxes );
+			break;
+		case TYPE_TIN:
+			to_boxes_( static_cast<const TriangulatedSurface&>(g), handles, boxes );
+			break;
+		default:
+			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type" ));
+		}
+	}
+
 } // detail
 } // algorithm
 } // SFCGAL

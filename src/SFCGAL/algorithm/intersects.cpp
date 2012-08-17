@@ -69,48 +69,6 @@ namespace algorithm
 	}
 
 	///
-	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
-	///
-	void to_boxes( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
-	{
-		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
-			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
-			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
-		}
-	}
-	void to_boxes( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
-	{
-		handles.push_back( detail::ObjectHandle( &tri ));
-		boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
-	}
-	void to_boxes( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
-	{
-		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
-			handles.push_back( &surf.triangleN(i));
-			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
-		}
-	}
-
-	///
-	/// Generic function
-	void to_boxes_g( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
-	{
-		switch ( g.geometryTypeId() ){
-		case TYPE_LINESTRING:
-			to_boxes( static_cast<const LineString&>(g), handles, boxes );
-			break;
-		case TYPE_TRIANGLE:
-			to_boxes( static_cast<const Triangle&>(g), handles, boxes );
-			break;
-		case TYPE_TIN:
-			to_boxes( static_cast<const TriangulatedSurface&>(g), handles, boxes );
-			break;
-		default:
-			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type" ));
-		}
-	}
-
-	///
 	/// intersection test using CGAL::box_intersection_d
 	///
 	bool intersects_bbox_d( const Geometry& ga, const Geometry& gb )
@@ -118,8 +76,8 @@ namespace algorithm
 		std::vector<detail::Object2Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		to_boxes_g( ga, ahandles, aboxes );
-		to_boxes_g( gb, bhandles, bboxes );
+		detail::to_boxes( ga, ahandles, aboxes );
+		detail::to_boxes( gb, bhandles, bboxes );
 		
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
@@ -168,13 +126,13 @@ namespace algorithm
 			std::vector<detail::Object2Box> aboxes, bboxes;
 			std::list<detail::ObjectHandle> ahandles, bhandles;
 
-			to_boxes( pa.exteriorRing(), ahandles, aboxes );
+			detail::to_boxes( pa.exteriorRing(), ahandles, aboxes );
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
-				to_boxes( pa.interiorRingN( i ), ahandles, aboxes );
+				detail::to_boxes( pa.interiorRingN( i ), ahandles, aboxes );
 			}
-			to_boxes( pb.exteriorRing(), bhandles, bboxes );
+			detail::to_boxes( pb.exteriorRing(), bhandles, bboxes );
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
-				to_boxes( pb.interiorRingN( i ), bhandles, bboxes );
+				detail::to_boxes( pb.interiorRingN( i ), bhandles, bboxes );
 			}
 
 			try {

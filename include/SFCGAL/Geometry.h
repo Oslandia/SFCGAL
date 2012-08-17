@@ -7,6 +7,10 @@
 
 #include <boost/assert.hpp>
 
+namespace CGAL {
+    class Object;
+}
+
 namespace SFCGAL {
 
     class Point ;
@@ -97,6 +101,12 @@ namespace SFCGAL {
         * returns a deep copy of the geometry
         */
        virtual Geometry *  clone() const = 0 ;
+
+       /**
+	* Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
+	*/
+       template <typename Kernel>
+       static Geometry* fromCGAL( const CGAL::Object& obj );
 
        /**
         * [OGC/SFA]returns the geometry type
@@ -195,7 +205,6 @@ namespace SFCGAL {
             BOOST_ASSERT( is< Derived >() );
             return *static_cast< Derived * >( this );
        }
-
 
        /**
         * [visitor]dispatch visitor
