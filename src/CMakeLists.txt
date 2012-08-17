@@ -21,6 +21,12 @@ if( ${SFCGAL_WITH_GMP} )
   target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_GMP} )
 
+include( PrecompiledHeader )
+add_precompiled_header(SFCGAL
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/CGAL/all.h
+    "-fPIC"
+)
+
 # install library
 install(
 	TARGETS
