@@ -79,11 +79,25 @@ namespace detail {
 			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 		}
 	}
+	void to_boxes_( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object3Box>& boxes )
+	{
+		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
+			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
+			boxes.push_back( detail::Object3Box( handles.back().bbox_3(), &handles.back() ));
+		}
+	}
+
 	void to_boxes_( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
 	{
 		handles.push_back( detail::ObjectHandle( &tri ));
 		boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 	}
+	void to_boxes_( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object3Box>& boxes )
+	{
+		handles.push_back( detail::ObjectHandle( &tri ));
+		boxes.push_back( detail::Object3Box( handles.back().bbox_3(), &handles.back() ));
+	}
+
 	void to_boxes_( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
 	{
 		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
@@ -91,10 +105,18 @@ namespace detail {
 			boxes.push_back( detail::Object2Box( handles.back().bbox_2(), &handles.back() ));
 		}
 	}
+	void to_boxes_( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object3Box>& boxes )
+	{
+		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+			handles.push_back( &surf.triangleN(i));
+			boxes.push_back( detail::Object3Box( handles.back().bbox_3(), &handles.back() ));
+		}
+	}
 
 	///
 	/// Generic function
-	void to_boxes( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes )
+        template <typename ObjectBox>
+	void to_boxes( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<ObjectBox>& boxes )
 	{
 		switch ( g.geometryTypeId() ){
 		case TYPE_LINESTRING:
@@ -110,6 +132,9 @@ namespace detail {
 			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type" ));
 		}
 	}
+	// instanciation of templates
+	template void to_boxes<detail::Object2Box>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object2Box>& boxes );
+	template void to_boxes<detail::Object3Box>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<detail::Object3Box>& boxes );
 
 } // detail
 } // algorithm

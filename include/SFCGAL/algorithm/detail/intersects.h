@@ -60,7 +60,8 @@ namespace detail {
 	///
 	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
 	///
-	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<Object2Box>& boxes );
+	template <typename ObjectBox> // (Object2Box or Object3Box)
+	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<ObjectBox>& boxes );
 
 	struct found_intersection {};
 	struct found_segment_segment_intersection : public found_intersection {};
