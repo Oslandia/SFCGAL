@@ -113,6 +113,7 @@ namespace SFCGAL {
 		std::vector< Point > &       points() { return _points; }
 
 
+		// TODO: replace by boost::tranform_iterator ?
 		/**
 		 * Const iterator to 2D points
 		 */
@@ -121,7 +122,7 @@ namespace SFCGAL {
 			public boost::iterator_facade<
 			Point_2_const_iterator<K>,
 			CGAL::Point_2<K> const,
-			boost::forward_traversal_tag >
+			boost::bidirectional_traversal_tag >
 		{
 		public:
 			Point_2_const_iterator() {}
@@ -130,6 +131,7 @@ namespace SFCGAL {
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
+			void decrement() { it_--; }
 			bool equal( const Point_2_const_iterator<K>& other ) const { return this->it_ == other.it_; }
 			const CGAL::Point_2<K>& dereference() const { p_ = it_->toPoint_2<K>(); return p_; }
 			mutable CGAL::Point_2<K> p_;
@@ -159,7 +161,7 @@ namespace SFCGAL {
 			public boost::iterator_facade<
 			Point_3_const_iterator<K>,
 			CGAL::Point_3<K> const,
-			boost::forward_traversal_tag >
+			boost::bidirectional_traversal_tag >
 		{
 		public:
 			Point_3_const_iterator() {}
@@ -168,6 +170,7 @@ namespace SFCGAL {
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
+			void decrement() { it_--; }
 			bool equal( const Point_3_const_iterator<K>& other ) const { return this->it_ == other.it_; }
 			const CGAL::Point_3<K>& dereference() const { p_ = it_->toPoint_3<K>(); return p_; }
 			mutable CGAL::Point_3<K> p_;
@@ -196,7 +199,10 @@ namespace SFCGAL {
 		template < typename K >
 		CGAL::Polygon_2<K> toPolygon_2() const
 		{
-			return CGAL::Polygon_2<K>( points_2_begin<K>(), points_2_end<K>() );
+			Point_2_const_iterator<K> pend = points_2_end<K>();
+			// skip the last point
+			pend--;
+			return CGAL::Polygon_2<K>( points_2_begin<K>(), pend );
 		}
 		//-- visitors
 

@@ -4,15 +4,18 @@
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
 
+#include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 //
 // Intersection kernel
-typedef CGAL::Exact_predicates_inexact_constructions_kernel IKernel;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel ExactKernel;
 
-typedef CGAL::Point_2<IKernel> Point_2;
-typedef CGAL::Segment_2<IKernel> Segment_2;
-typedef CGAL::Triangle_2<IKernel> Triangle_2;
+typedef CGAL::Point_2<Kernel> Point_2;
+typedef CGAL::Segment_2<Kernel> Segment_2;
+typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace SFCGAL {
 namespace algorithm
@@ -27,11 +30,33 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
 	{
-		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2<IKernel>(), trib.toTriangle_2<IKernel>() );
+		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2<Kernel>(), trib.toTriangle_2<Kernel>() );
 		if (obj.empty()) {
 			return std::auto_ptr<Geometry>(new GeometryCollection());
 		}
-		return std::auto_ptr<Geometry>(Geometry::fromCGAL<IKernel>( obj ));
+		return std::auto_ptr<Geometry>(Geometry::fromCGAL<Kernel>( obj ));
+	}
+
+	std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
+	{
+		// FIXME:
+		// Unknown location(0): fatal error in "testIntersectionPolygon": std::logic_error: CGAL ERROR: precondition violation!
+		// Expr: ! is_degen
+		// File: /usr/local/include/CGAL/Arr_segment_traits_2.h
+		// Line: 127
+
+		MultiPolygon* mp = new MultiPolygon();
+		std::list<CGAL::Polygon_with_holes_2<ExactKernel> > opolys;
+		CGAL::Polygon_with_holes_2<ExactKernel> pa = polya.toPolygon_with_holes_2<ExactKernel>();
+		CGAL::Polygon_with_holes_2<ExactKernel> pb = polyb.toPolygon_with_holes_2<ExactKernel>();
+		CGAL::intersection( pa,
+				    pb,
+				    std::back_inserter(opolys) );
+		std::list<CGAL::Polygon_with_holes_2<ExactKernel> >::const_iterator it;
+		for ( it = opolys.begin(); it != opolys.end(); ++it ) {
+			mp->addGeometry( new Polygon( *it));
+		}
+		return std::auto_ptr<Geometry>(mp);
 	}
 
 	///
@@ -45,7 +70,7 @@ namespace algorithm
 		detail::to_boxes<2>( ga, ahandles, aboxes );
 		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
-		detail::intersection2_cb<IKernel> cb;
+		detail::intersection2_cb<Kernel> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );
@@ -61,6 +86,24 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
+		// deal with geometry collection
+		// call intersection on each geometry of the collection
+		const GeometryCollection* coll;
+		if ( (coll = dynamic_cast<const GeometryCollection*>( &ga )) ) {
+			GeometryCollection *ret = new GeometryCollection();
+			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
+				ret->addGeometry(intersection( coll->geometryN( i ), gb).release());
+			}
+			return std::auto_ptr<Geometry>( ret );
+		}
+		if ( (coll = dynamic_cast<const GeometryCollection*>( &gb )) ) {
+			GeometryCollection *ret = new GeometryCollection();
+			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
+				ret->addGeometry(intersection( coll->geometryN( i ), ga).release());
+			}
+			return std::auto_ptr<Geometry>( ret );
+		}
+
 		switch ( ga.geometryTypeId() ) {
 		case TYPE_POINT:
 			return intersection_point_x_( static_cast<const Point&>(ga), gb );
@@ -70,9 +113,14 @@ namespace algorithm
 			case TYPE_TRIANGLE:
 			case TYPE_TIN:
 				return intersection_box_d_( ga, gb );
-			default:
-				// TODO
+			case TYPE_POLYGON:
+			case TYPE_POLYHEDRALSURFACE:
+			case TYPE_SOLID:
+				// generic processing
 				break;
+			default:
+				// symmetric call
+				return intersection( gb, ga );
 			}
 			break;
 		case TYPE_TRIANGLE:
@@ -81,23 +129,43 @@ namespace algorithm
 				return intersection_triangles_( static_cast<const Triangle&>(ga), static_cast<const Triangle&>(gb) );
 			case TYPE_TIN:
 				return intersection_box_d_( ga, gb );
-			default:
-				// TODO
+			case TYPE_POLYGON:
+			case TYPE_POLYHEDRALSURFACE:
+			case TYPE_SOLID:
 				break;
+			default:
+				// symmetric call
+				return intersection( gb, ga );
+			}
+		case TYPE_POLYGON:
+			switch ( gb.geometryTypeId() ) {
+			case TYPE_POLYGON:
+				return intersection_polygons_( static_cast<const Polygon&>(ga), static_cast<const Polygon&>(gb) );
+			case TYPE_TIN:
+			case TYPE_POLYHEDRALSURFACE:
+			case TYPE_SOLID:
+				break;
+			default:
+				// symmetric call
+				return intersection( gb, ga );
 			}
 		case TYPE_TIN:
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TIN:
 				return intersection_box_d_( ga, gb );
-			default:
-				// TODO
+			case TYPE_POLYHEDRALSURFACE:
+			case TYPE_SOLID:
 				break;
+			default:
+				// symmetric call
+				return intersection( gb, ga );
 			}
 		default:
 			// TODO
 			break;
 		}
 
+		
 		// null object
 		return std::auto_ptr<Geometry>();
 	}
