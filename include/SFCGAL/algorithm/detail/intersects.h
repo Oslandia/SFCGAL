@@ -6,6 +6,7 @@
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/DimensionTraits.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -52,16 +53,37 @@ namespace detail {
 		///
 		/// 3D Bounding box conversion
 		CGAL::Bbox_3 bbox_3() const;
+
+		///
+		/// Generic way to call bbox_2 or bbox_3
+		template <int Dim>
+		typename TypeForDimension<Dim>::Bbox bbox_d() const;
 	};
 
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, ObjectHandle*> Object2Box;
 	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, ObjectHandle*> Object3Box;
 
+	template <int Dim>
+	struct ObjectBox
+	{
+		typedef void Type;
+	};
+	template <>
+	struct ObjectBox<2>
+	{
+		typedef detail::Object2Box Type;
+	};
+	template <>
+	struct ObjectBox<3>
+	{
+		typedef detail::Object3Box Type;
+	};
+
 	///
 	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
 	///
-	template <typename ObjectBox> // (Object2Box or Object3Box)
-	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<ObjectBox>& boxes );
+	template <int Dim> // 2 or 3
+	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes );
 
 	struct found_intersection {};
 	struct found_segment_segment_intersection : public found_intersection {};
@@ -69,73 +91,11 @@ namespace detail {
 	struct found_triangle_triangle_intersection : public found_intersection {};
 	
 	///
-	/// Callback function used with box_intersection_d for 2d intersections
-	/// Throws an exception if a intersection has been found
+	/// Callback function used with box_intersection_d for 2d and 3d intersections
+	/// Throws an exception if an intersection has been found
 	///
-	template <typename Kernel>
-	void intersects2_cb( const Object2Box& a, const Object2Box& b )
-	{
-		if ( a.handle()->type == ObjectHandle::Segment ) {
-			CGAL::Segment_2<Kernel> sega( a.handle()->segment.start_point->toPoint_2<Kernel>(),
-						      a.handle()->segment.end_point->toPoint_2<Kernel>());
-			if ( b.handle()->type == ObjectHandle::Segment ) {
-				CGAL::Segment_2<Kernel> segb( b.handle()->segment.start_point->toPoint_2<Kernel>(),
-							      b.handle()->segment.end_point->toPoint_2<Kernel>());
-				
-				if ( CGAL::do_intersect( sega, segb )) {
-					throw found_segment_segment_intersection();
-				}
-			} else {
-				// Segment x Triangle
-				CGAL::Triangle_2<Kernel> tri2( b.handle()->triangle->toTriangle_2<Kernel>() );
-				if ( CGAL::do_intersect( sega, tri2 )) {
-				 	throw found_segment_triangle_intersection();
-				}
-			}
-		} else {
-			// Triangle x Triangle intersection
-			CGAL::Triangle_2<Kernel> tria( a.handle()->triangle->toTriangle_2<Kernel>() );
-			CGAL::Triangle_2<Kernel> trib( b.handle()->triangle->toTriangle_2<Kernel>() );
-			if (CGAL::do_intersect( tria, trib )) {
-				throw found_triangle_triangle_intersection();
-			}
-		}
-	}
-
-	///
-	/// Callback function used with box_intersection_d for 3d intersections
-	/// Throws an exception if a intersection has been found
-	///
-	template <typename Kernel>
-	void intersects3_cb( const Object3Box& a, const Object3Box& b )
-	{
-		if ( a.handle()->type == ObjectHandle::Segment ) {
-			CGAL::Segment_3<Kernel> sega( a.handle()->segment.start_point->toPoint_3<Kernel>(),
-						      a.handle()->segment.end_point->toPoint_3<Kernel>());
-			if ( b.handle()->type == ObjectHandle::Segment ) {
-				CGAL::Segment_3<Kernel> segb( b.handle()->segment.start_point->toPoint_3<Kernel>(),
-							      b.handle()->segment.end_point->toPoint_3<Kernel>());
-				
-				if ( CGAL::do_intersect( sega, segb )) {
-					throw found_segment_segment_intersection();
-				}
-			} else {
-				// Segment x Triangle
-				CGAL::Triangle_3<Kernel> tri3( b.handle()->triangle->toTriangle_3<Kernel>() );
-				if ( CGAL::do_intersect( sega, tri3 )) {
-				 	throw found_segment_triangle_intersection();
-				}
-			}
-		} else {
-			// Triangle x Triangle intersection
-			CGAL::Triangle_3<Kernel> tria( a.handle()->triangle->toTriangle_3<Kernel>() );
-			CGAL::Triangle_3<Kernel> trib( b.handle()->triangle->toTriangle_3<Kernel>() );
-			if (CGAL::do_intersect( tria, trib )) {
-				throw found_triangle_triangle_intersection();
-			}
-		}
-	}
-
+	template <typename Kernel, int Dim>
+	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );
 
 	template <typename Kernel>
 	struct intersection2_cb
@@ -147,47 +107,7 @@ namespace detail {
 			geometries = new GeometryCollection();
 		}
 		
-		void operator() ( const Object2Box& a, const Object2Box& b )
-		{
-			typedef CGAL::Point_2<Kernel> Point_2;
-			typedef CGAL::Segment_2<Kernel> Segment_2;
-			typedef CGAL::Triangle_2<Kernel> Triangle_2;
-
-			if ( a.handle()->type == ObjectHandle::Segment ) {
-				Segment_2 sega( a.handle()->segment.start_point->toPoint_2<Kernel>(),
-						a.handle()->segment.end_point->toPoint_2<Kernel>());
-				if ( b.handle()->type == ObjectHandle::Segment ) {
-					Segment_2 segb( b.handle()->segment.start_point->toPoint_2<Kernel>(),
-							b.handle()->segment.end_point->toPoint_2<Kernel>());
-					
-					CGAL::Object obj = CGAL::intersection( sega, segb );
-					if ( !obj.empty()) {
-						Geometry* g = Geometry::fromCGAL<Kernel>(obj);
-						BOOST_ASSERT( g != 0 );
-						geometries->addGeometry(g);
-					}
-				} else {
-					// Segment x Triangle
-					Triangle_2 tri2( b.handle()->triangle->toTriangle_2<Kernel>() );
-					CGAL::Object obj = CGAL::intersection( sega, tri2 );
-					if ( !obj.empty()) {
-						Geometry* g = Geometry::fromCGAL<Kernel>(obj);
-						BOOST_ASSERT( g != 0 );
-						geometries->addGeometry(g);
-					}
-				}
-			} else {
-				// Triangle x Triangle intersection
-				Triangle_2 tria( a.handle()->triangle->toTriangle_2<Kernel>() );
-				Triangle_2 trib( b.handle()->triangle->toTriangle_2<Kernel>() );
-				CGAL::Object obj = CGAL::intersection( tria, trib );
-				if ( !obj.empty()) {
-					Geometry* g = Geometry::fromCGAL<Kernel>(obj);
-					BOOST_ASSERT( g != 0 );
-					geometries->addGeometry(g);
-				}
-			}
-		}
+		void operator() ( const Object2Box& a, const Object2Box& b );
 	};
 
 } // detail

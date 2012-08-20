@@ -128,7 +128,7 @@ namespace SFCGAL {
 				// thanks to a binary tree (PointMap)
 				for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
 					for ( size_t j = 0; j < 3; j++ ) {
-						Point p = surf.triangleN(i).vertex(j).toPoint_3<K>();
+						Point p = surf.triangleN(i).vertex(j).template toPoint_3<K>();
 						size_t v;
 						if ( points.find(p) == points.end() ) {
 							B.add_vertex( p );
@@ -149,7 +149,7 @@ namespace SFCGAL {
 
 				for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
 					B.begin_facet();
-					CGAL::Triangle_3<K> tri( surf.triangleN(i).toTriangle_3<K>());
+					CGAL::Triangle_3<K> tri( surf.triangleN(i).template toTriangle_3<K>());
 					CGAL::Point_3<K> pa( tri[0] );
 					CGAL::Point_3<K> pb( tri[1] );
 					CGAL::Point_3<K> pc( tri[2] );

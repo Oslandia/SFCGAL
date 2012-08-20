@@ -19,9 +19,9 @@ namespace SFCGAL {
 	{
 	    GeometryIterator it;
 	    // FIXME: optimize type. For instance, if all the given geometries are points, return a MultiPoint instead of a GeometryCollection
-	    GeometryCollection coll;
+	    GeometryCollection *coll = new GeometryCollection();
 	    for ( it = begin; it != end; ++it ) {
-		coll.addGeometry( *it );
+		coll->addGeometry( *it );
 	    }
 	    return std::auto_ptr<Geometry>(coll);
 	}

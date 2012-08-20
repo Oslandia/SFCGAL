@@ -111,13 +111,13 @@ namespace algorithm
 		std::vector<detail::Object3Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		detail::to_boxes( ga, ahandles, aboxes );
-		detail::to_boxes( gb, bhandles, bboxes );
+		detail::to_boxes<3>( ga, ahandles, aboxes );
+		detail::to_boxes<3>( gb, bhandles, bboxes );
 		
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
-						  detail::intersects3_cb<Kernel> );
+						  detail::intersects_cb<Kernel,3> );
 		}
 		catch ( detail::found_intersection& e ) {
 			return true;

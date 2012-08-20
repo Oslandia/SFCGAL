@@ -76,13 +76,13 @@ namespace algorithm
 		std::vector<detail::Object2Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		detail::to_boxes( ga, ahandles, aboxes );
-		detail::to_boxes( gb, bhandles, bboxes );
+		detail::to_boxes<2>( ga, ahandles, aboxes );
+		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
-						  detail::intersects2_cb<Kernel> );
+						  detail::intersects_cb<Kernel,2> );
 		}
 		catch ( detail::found_intersection& e ) {
 			return true;
@@ -126,19 +126,19 @@ namespace algorithm
 			std::vector<detail::Object2Box> aboxes, bboxes;
 			std::list<detail::ObjectHandle> ahandles, bhandles;
 
-			detail::to_boxes( pa.exteriorRing(), ahandles, aboxes );
+			detail::to_boxes<2>( pa.exteriorRing(), ahandles, aboxes );
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
-				detail::to_boxes( pa.interiorRingN( i ), ahandles, aboxes );
+				detail::to_boxes<2>( pa.interiorRingN( i ), ahandles, aboxes );
 			}
-			detail::to_boxes( pb.exteriorRing(), bhandles, bboxes );
+			detail::to_boxes<2>( pb.exteriorRing(), bhandles, bboxes );
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
-				detail::to_boxes( pb.interiorRingN( i ), bhandles, bboxes );
+				detail::to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
 			}
 
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
-							  detail::intersects2_cb<Kernel> );
+							  detail::intersects_cb<Kernel,2> );
 			}
 			catch ( detail::found_segment_segment_intersection& e ) {
 				return true;

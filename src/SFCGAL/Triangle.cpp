@@ -156,9 +156,6 @@ void Triangle::accept( ConstGeometryVisitor & visitor ) const
 	return visitor.visit(*this);
 }
 
-
-
-
 }//SFCGAL
 
 

@@ -42,8 +42,8 @@ namespace algorithm
 		std::vector<detail::Object2Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		detail::to_boxes( ga, ahandles, aboxes );
-		detail::to_boxes( gb, bhandles, bboxes );
+		detail::to_boxes<2>( ga, ahandles, aboxes );
+		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
 		detail::intersection2_cb<IKernel> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
