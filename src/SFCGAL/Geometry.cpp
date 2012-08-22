@@ -30,17 +30,40 @@ Geometry* Geometry::fromCGAL( const CGAL::Object& obj )
 	typedef CGAL::Point_2<Kernel> Point_2;
 	typedef CGAL::Segment_2<Kernel> Segment_2;
 	typedef CGAL::Triangle_2<Kernel> Triangle_2;
+	typedef CGAL::Point_3<Kernel> Point_3;
+	typedef CGAL::Segment_3<Kernel> Segment_3;
+	typedef CGAL::Triangle_3<Kernel> Triangle_3;
 	
+	if ( obj.empty() ) {
+	    return 0;
+	}
+
 	if ( const Point_2* p = CGAL::object_cast<Point_2>(&obj) ) {
+		return new Point(*p);
+	}
+	if ( const Point_3* p = CGAL::object_cast<Point_3>(&obj) ) {
 		return new Point(*p);
 	}
 	else if ( const Segment_2* s = CGAL::object_cast<Segment_2>(&obj) ) {
 		return new LineString( s->source(), s->target() );
 	}
+	else if ( const Segment_3* s = CGAL::object_cast<Segment_3>(&obj) ) {
+		return new LineString( s->source(), s->target() );
+	}
 	else if ( const Triangle_2* t = CGAL::object_cast<Triangle_2>(&obj) ) {
 		return new Triangle( t->vertex(0), t->vertex(1), t->vertex(2) );
 	}
+	else if ( const Triangle_3* t = CGAL::object_cast<Triangle_3>(&obj) ) {
+		return new Triangle( t->vertex(0), t->vertex(1), t->vertex(2) );
+	}
 	else if ( const std::vector<Point_2>* v = CGAL::object_cast<std::vector<Point_2> >(&obj)) {
+		MultiPoint* mp = new MultiPoint();
+		for ( size_t i = 0; i < v->size(); ++i ) {
+			mp->addGeometry( Point((*v)[i]) );
+		}
+		return mp;
+	}
+	else if ( const std::vector<Point_3>* v = CGAL::object_cast<std::vector<Point_3> >(&obj)) {
 		MultiPoint* mp = new MultiPoint();
 		for ( size_t i = 0; i < v->size(); ++i ) {
 			mp->addGeometry( Point((*v)[i]) );

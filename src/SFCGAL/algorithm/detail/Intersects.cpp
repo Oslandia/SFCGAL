@@ -173,19 +173,19 @@ namespace detail {
 	template void intersects_cb<Kernel, 3>( const Object3Box& a, const Object3Box& b );
 	template void intersects_cb<ExactKernel, 3>( const Object3Box& a, const Object3Box& b );
 
-	template <typename K>
-	void intersection2_cb<K>::operator() ( const Object2Box& a, const Object2Box& b )
+    template <typename K, int Dim>
+    void intersection_cb<K, Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
-		typedef CGAL::Point_2<K> Point_2;
-		typedef CGAL::Segment_2<K> Segment_2;
-		typedef CGAL::Triangle_2<K> Triangle_2;
+		typedef typename TypeForKernel<K,Dim>::Point Point_d;
+		typedef typename TypeForKernel<K,Dim>::Segment Segment_d;
+		typedef typename TypeForKernel<K,Dim>::Triangle Triangle_d;
 		
 		if ( a.handle()->type == ObjectHandle::Segment ) {
-			Segment_2 sega( a.handle()->segment.start_point->toPoint_2<K>(),
-					a.handle()->segment.end_point->toPoint_2<K>());
+			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<K,Dim>(),
+					a.handle()->segment.end_point->template toPoint_d<K, Dim>());
 			if ( b.handle()->type == ObjectHandle::Segment ) {
-				Segment_2 segb( b.handle()->segment.start_point->toPoint_2<K>(),
-						b.handle()->segment.end_point->toPoint_2<K>());
+				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<K, Dim>(),
+						b.handle()->segment.end_point->template toPoint_d<K, Dim>());
 				
 				CGAL::Object obj = CGAL::intersection( sega, segb );
 				if ( !obj.empty()) {
@@ -195,7 +195,7 @@ namespace detail {
 				}
 			} else {
 				// Segment x Triangle
-				Triangle_2 tri2( b.handle()->triangle->toTriangle_2<K>() );
+				Triangle_d tri2( b.handle()->triangle->template toTriangle_d<K, Dim>() );
 				CGAL::Object obj = CGAL::intersection( sega, tri2 );
 				if ( !obj.empty()) {
 					Geometry* g = Geometry::fromCGAL<K>(obj);
@@ -205,8 +205,8 @@ namespace detail {
 			}
 		} else {
 			// Triangle x Triangle intersection
-			Triangle_2 tria( a.handle()->triangle->toTriangle_2<K>() );
-			Triangle_2 trib( b.handle()->triangle->toTriangle_2<K>() );
+			Triangle_d tria( a.handle()->triangle->template toTriangle_d<K,Dim>() );
+			Triangle_d trib( b.handle()->triangle->template toTriangle_d<K,Dim>() );
 			CGAL::Object obj = CGAL::intersection( tria, trib );
 			if ( !obj.empty()) {
 				Geometry* g = Geometry::fromCGAL<K>(obj);
@@ -216,8 +216,10 @@ namespace detail {
 		}
 	}
 	/// template instanciations
-	template struct intersection2_cb<Kernel>;
-	template struct intersection2_cb<ExactKernel>;
+	template struct intersection_cb<Kernel,2>;
+	template struct intersection_cb<Kernel,3>;
+	template struct intersection_cb<ExactKernel,2>;
+	template struct intersection_cb<ExactKernel,3>;
 } // detail
 } // algorithm
 } // SFCGAL

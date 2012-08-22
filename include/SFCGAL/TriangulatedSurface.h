@@ -180,17 +180,15 @@ namespace SFCGAL {
 	public:
 		///
 		/// Converts a TriangulatedSurface to a CGAL::Polyhedron_3
-		template < typename K >
-		CGAL::Polyhedron_3<K> toPolyhedron_3() const
+		template < typename K, typename Polyhedron >
+		std::auto_ptr<Polyhedron> toPolyhedron_3() const
 		{
-			CGAL::Polyhedron_3<K> poly;
-			Triangulated2Polyhedron<typename CGAL::Polyhedron_3<K>::HalfedgeDS> converter( *this );
-			poly.delegate( converter);
-			return poly;
+			Polyhedron *poly = new Polyhedron();
+			Triangulated2Polyhedron<typename Polyhedron::HalfedgeDS> converter( *this );
+			poly->delegate( converter);
+			return std::auto_ptr<Polyhedron>( poly );
 		}
 	};
-
-
 }
 
 #endif

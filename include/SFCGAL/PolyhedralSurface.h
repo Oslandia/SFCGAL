@@ -97,12 +97,12 @@ namespace SFCGAL {
 		/**
 		 * Convert to CGAL::Polyhedron_3
 		 */
-		template < typename K >
-		CGAL::Polyhedron_3<K> toPolyhedron_3() const
+		template < typename K, typename Polyhedron >
+		std::auto_ptr<Polyhedron> toPolyhedron_3() const
 		{
 			TriangulatedSurface tri;
 			algorithm::triangulate( *this, tri );
-			return tri.toPolyhedron_3<K>();
+			return tri.toPolyhedron_3<K, Polyhedron>();
 		}
 
 		const std::vector< Polygon > & polygons() const { return _polygons; }
@@ -117,8 +117,6 @@ namespace SFCGAL {
 	private:
 		std::vector< Polygon > _polygons ;
 	};
-
-
 }
 
 #endif

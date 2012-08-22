@@ -39,12 +39,6 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
 	{
-		// FIXME:
-		// Unknown location(0): fatal error in "testIntersectionPolygon": std::logic_error: CGAL ERROR: precondition violation!
-		// Expr: ! is_degen
-		// File: /usr/local/include/CGAL/Arr_segment_traits_2.h
-		// Line: 127
-
 		MultiPolygon* mp = new MultiPolygon();
 		std::list<CGAL::Polygon_with_holes_2<ExactKernel> > opolys;
 		CGAL::Polygon_with_holes_2<ExactKernel> pa = polya.toPolygon_with_holes_2<ExactKernel>();
@@ -70,7 +64,7 @@ namespace algorithm
 		detail::to_boxes<2>( ga, ahandles, aboxes );
 		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
-		detail::intersection2_cb<Kernel> cb;
+		detail::intersection_cb<Kernel,2> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );
@@ -144,7 +138,11 @@ namespace algorithm
 			case TYPE_TIN:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
-				break;
+				{
+					TriangulatedSurface surf;
+					algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
+					return intersection( ga, surf );
+				} break;
 			default:
 				// symmetric call
 				return intersection( gb, ga );
@@ -160,12 +158,24 @@ namespace algorithm
 				// symmetric call
 				return intersection( gb, ga );
 			}
+		case TYPE_POLYHEDRALSURFACE:
+			{
+				TriangulatedSurface surf;
+				algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
+				return intersection( surf, gb );
+			} break;
 		default:
 			// TODO
 			break;
 		}
 
+		if ( gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE || gb.geometryTypeId() == TYPE_POLYGON ) {
+			TriangulatedSurface surf;
+			algorithm::triangulate( static_cast<const PolyhedralSurface&>(gb), surf);
+			return intersection( ga, surf );
+		}
 		
+		throw std::runtime_error( "intersection() not supported on " + ga.geometryType() + " x " + gb.geometryType() );
 		// null object
 		return std::auto_ptr<Geometry>();
 	}

@@ -17,17 +17,17 @@ namespace algorithm
 		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
 		
 		bool is_inside = false;
-		Polyhedron ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel>();
+		std::auto_ptr<Polyhedron> ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel, Polyhedron>();
 		
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( ext_shell_poly );
+		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
 		if ( point_inside_ext( pta.toPoint_3<Kernel>() )) {
 			is_inside = true;
 			//
 			// test whether the point is inside interior shells or not
 			//
 			for ( size_t i = 0; i < solid.numInteriorShells(); ++i ) {
-				Polyhedron shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel>();
-				CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( shell_poly );
+				std::auto_ptr<Polyhedron> shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel, Polyhedron>();
+				CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
 				if ( point_inside( pta.toPoint_3<Kernel>() )) {
 					// FIXME : process nested holes
 					is_inside = false;
@@ -46,9 +46,9 @@ namespace algorithm
 	{
 		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
 		
-		Polyhedron ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel>();
+		std::auto_ptr<Polyhedron> ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel, Polyhedron>();
 		
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( ext_shell_poly );
+		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
 		for ( size_t j = 0; j < pts.size(); ++j ) {
 			if ( !point_inside_ext( pts[j]->toPoint_3<Kernel>() )) {
 				return false;
@@ -59,8 +59,8 @@ namespace algorithm
 		// test whether points are inside interior shells or not
 		//
 		for ( size_t i = 0; i < solid.numInteriorShells(); ++i ) {
-			Polyhedron shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel>();
-			CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( shell_poly );
+			std::auto_ptr<Polyhedron> shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel, Polyhedron>();
+			CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
 			for ( size_t j = 0; j < pts.size(); ++j ) {
 				if ( point_inside( pts[j]->toPoint_3<Kernel>() )) {
 					// FIXME : process nested holes

@@ -91,23 +91,28 @@ namespace detail {
 	struct found_triangle_triangle_intersection : public found_intersection {};
 	
 	///
-	/// Callback function used with box_intersection_d for 2d and 3d intersections
+	/// Callback function used with box_intersection_d for 2d and 3d intersection test
 	/// Throws an exception if an intersection has been found
 	///
 	template <typename Kernel, int Dim>
 	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );
 
-	template <typename Kernel>
-	struct intersection2_cb
+	///
+	/// Callback functor used with box_intersection_d for 2d and 3d intersections
+	///
+	template <typename Kernel, int Dim>
+	struct intersection_cb
 	{
+		///
+		/// The resulting intersection geometry
 		GeometryCollection* geometries;
 		
-		intersection2_cb()
+		intersection_cb()
 		{
 			geometries = new GeometryCollection();
 		}
 		
-		void operator() ( const Object2Box& a, const Object2Box& b );
+		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );
 	};
 
 } // detail
