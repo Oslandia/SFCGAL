@@ -10,6 +10,10 @@
 # Macro:
 #   ADD_PRECOMPILED_HEADER
 
+if (CMAKE_CXX_COMPILER MATCHES ".*clang.*")
+    set(CMAKE_COMPILER_IS_CLANGXX TRUE)
+endif ()
+
 IF(CMAKE_COMPILER_IS_GNUCXX)
   EXEC_PROGRAM(
     ${CMAKE_CXX_COMPILER} 
@@ -25,10 +29,23 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
       SET(PCHSupport_FOUND TRUE)
     ENDIF(gcc_compiler_version MATCHES "3\\.4\\.[0-9]")
   ENDIF(gcc_compiler_version MATCHES "4\\.[0-9]\\.[0-9]")
+
+  IF (PCHSupport_FOUND)
+    SET( PCH_Generate_cmd -x c++-header)
+    SET( PCH_Include_cmd "-Winvalid-pch -include" )
+    SET( PCH_Include_file _name )
+  ENDIF(PCHSupport_FOUND)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
+IF(CMAKE_COMPILER_IS_CLANGXX)
+  set(PCHSupport_FOUND TRUE)
+  SET( PCH_Generate_cmd "")
+  SET( PCH_Include_cmd "-include-pch" )
+  SET( PCH_Include_file _output )
+ENDIF(CMAKE_COMPILER_IS_CLANGXX)
+
 MACRO(ADD_PRECOMPILED_HEADER _targetName _input )
-  
+
   IF(NOT CMAKE_BUILD_TYPE)
     MESSAGE(FATAL_ERROR 
       "This is the ADD_PRECOMPILED_HEADER macro. " 
@@ -39,7 +56,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input )
   GET_FILENAME_COMPONENT(_name ${_input} NAME)
   GET_FILENAME_COMPONENT(_path ${_input} PATH)
   SET(_outdir "${CMAKE_CURRENT_BINARY_DIR}/${_name}.gch")
-  SET(_output "${_outdir}/${CMAKE_BUILD_TYPE}.c++")
+  SET(_output "${_outdir}/${CMAKE_BUILD_TYPE}.pch")
   
   ADD_CUSTOM_COMMAND(
     OUTPUT ${_outdir}
@@ -89,7 +106,7 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input )
     OUTPUT ${_output} 	
     COMMAND ${CMAKE_CXX_COMPILER}
     ${_compile_FLAGS}
-    -x c++-header
+    ${PCH_Generate_cmd}
     -o ${_output} 
     ${_input}
     DEPENDS ${_input} ${_outdir} ${CMAKE_CURRENT_BINARY_DIR}/${_name}	
@@ -100,8 +117,9 @@ MACRO(ADD_PRECOMPILED_HEADER _targetName _input )
   ADD_DEPENDENCIES(${_targetName} ${_targetName}_gch )
   SET_TARGET_PROPERTIES(${_targetName} 
     PROPERTIES	
-    COMPILE_FLAGS "-include ${_name} -Winvalid-pch"
+#    COMPILE_FLAGS "${PCH_Include_cmd} ${_name}"
+#    COMPILE_FLAGS "${PCH_Include_cmd} ${_output}"
+    COMPILE_FLAGS "${PCH_Include_cmd} ${${PCH_Include_file}}"
     )
-  
   
 ENDMACRO(ADD_PRECOMPILED_HEADER)
