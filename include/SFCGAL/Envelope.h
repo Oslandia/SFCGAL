@@ -122,13 +122,33 @@ namespace SFCGAL {
 
 
 
-	private:
+		/**
+		 * Global binary operator on Envelopes. Test if A's bounding box contains B's
+		 * FIXME: consider moving that outside of the class
+		 */
+		static bool contains( const Envelope& a, const Envelope& b );
+
+		/**
+		 * Global binary operator on Envelopes. Test if A's bounding box overlaps B's
+		 */
+		// static bool overlaps( const Envelope& a, const Envelope& b );
+
+		/*
+		 * Display method
+		 */
+		std::ostream& print( std::ostream& ) const;
+
+		private:
 		/**
 		 * bounds of the interval ((xmin,xmax),(ymin,ymax),(zmin,zmax))
 		 */
 		detail::Interval _bounds[3] ;
 	};
-
+	
+	/**
+	 * Global comparison operator on Envelope
+	 */
+	bool operator==( const Envelope&, const Envelope& );
 
 }//SFCGAL
 

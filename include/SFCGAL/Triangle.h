@@ -5,6 +5,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
+#include <SFCGAL/DimensionTraits.h>
 
 #include <CGAL/Triangle_2.h>
 #include <CGAL/Triangle_3.h>
@@ -92,13 +93,22 @@ namespace SFCGAL {
 			return CGAL::Triangle_2<K>( vertex(0).toPoint_2<K>(), vertex(1).toPoint_2<K>(), vertex(2).toPoint_2<K>() );
 		}
 
-		/**
+ 		/**
 		 * Convert to CGAL::Triangle_3
 		 */
 		template < typename K >
 		inline CGAL::Triangle_3<K> toTriangle_3() const
 		{
 			return CGAL::Triangle_3<K>( vertex(0).toPoint_3<K>(), vertex(1).toPoint_3<K>(), vertex(2).toPoint_3<K>() );
+		}
+
+ 		/**
+		 * Convert to CGAL::Triangle_2 or CGAL::Triangle_2
+		 */
+		template < typename K, int D >
+		inline typename TypeForKernel<K,D>::Triangle toTriangle_d() const
+		{
+		    return typename TypeForKernel<K,D>::Triangle( vertex(0).toPoint_d<K,D>(), vertex(1).toPoint_d<K,D>(), vertex(2).toPoint_d<K,D>() );
 		}
 
 		//-- visitors

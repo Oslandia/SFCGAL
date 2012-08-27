@@ -7,6 +7,9 @@
 
 #include <boost/assert.hpp>
 
+namespace CGAL {
+    class Object;
+}
 
 namespace SFCGAL {
 
@@ -100,6 +103,12 @@ namespace SFCGAL {
        virtual Geometry *  clone() const = 0 ;
 
        /**
+	* Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
+	*/
+       template <typename Kernel>
+       static Geometry* fromCGAL( const CGAL::Object& obj );
+
+       /**
         * [OGC/SFA]returns the geometry type
         * @warning use CamelCase (LineString, not LINESTRING)
         */
@@ -156,7 +165,6 @@ namespace SFCGAL {
        //std::auto_ptr< Geometry > envelope() const = 0 ;
        Envelope             envelope() const ;
 
-
        /**
         * [OGC/SFA]Return the boundary of the geometry
         */
@@ -197,7 +205,6 @@ namespace SFCGAL {
             BOOST_ASSERT( is< Derived >() );
             return *static_cast< Derived * >( this );
        }
-
 
        /**
         * [visitor]dispatch visitor

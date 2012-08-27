@@ -1,5 +1,5 @@
 find_package( Qt4 COMPONENTS QtGui QtCore REQUIRED )
-find_package( OpenSceneGraph COMPONENTS osgQt REQUIRED )
+find_package( OpenSceneGraph COMPONENTS osgQt osgViewer osgGA osgDB osgUtil REQUIRED )
 
 
 include_directories(

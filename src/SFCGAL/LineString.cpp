@@ -7,6 +7,7 @@ namespace SFCGAL {
 ///
 ///
 LineString::LineString():
+	Geometry(),
 	_points()
 {
 
@@ -16,6 +17,7 @@ LineString::LineString():
 ///
 ///
 LineString::LineString( const std::vector< Point > & points ):
+	Geometry(),
 	_points(points)
 {
 
@@ -25,6 +27,7 @@ LineString::LineString( const std::vector< Point > & points ):
 ///
 ///
 LineString::LineString( const Point & startPoint, const Point & endPoint ):
+	Geometry(),
 	_points(2)
 {
 	_points[0] = startPoint ;
@@ -35,6 +38,7 @@ LineString::LineString( const Point & startPoint, const Point & endPoint ):
 ///
 ///
 LineString::LineString( LineString const& other ):
+	Geometry(),
 	_points(other._points)
 {
 

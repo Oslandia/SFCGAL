@@ -32,8 +32,8 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_2< K > & other ):
-			_x(other.x()),
-			_y(other.y()),
+			_x(CGAL::to_double(other.x())),
+			_y(CGAL::to_double(other.y())),
 			_z(NaN())
 		{
 
@@ -44,9 +44,9 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_3< K > & other ):
-			_x(other.x()),
-			_y(other.y()),
-			_z(other.z())
+			_x(CGAL::to_double(other.x())),
+			_y(CGAL::to_double(other.y())),
+			_z(CGAL::to_double(other.z()))
 		{
 
 		}

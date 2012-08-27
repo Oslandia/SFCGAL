@@ -16,6 +16,22 @@ namespace algorithm {
 namespace detail {
 
 	/**
+	 * Returns 2D area for a Triangle
+	 */
+	template < typename Kernel >
+	double area(
+		const Triangle & g
+	)
+	{
+		CGAL::Triangle_2< Kernel > triangle(
+			g.vertex(0).toPoint_2< Kernel >(),
+			g.vertex(1).toPoint_2< Kernel >(),
+			g.vertex(2).toPoint_2< Kernel >()
+		);
+		return CGAL::abs( triangle.area() );
+	}
+
+	/**
 	 * Returns 2D area for a Polygon
 	 */
 	template < typename Kernel >
@@ -45,6 +61,21 @@ namespace detail {
 		return CGAL::to_double( area ) ;
 	}
 
+	/**
+	 * Returns the 2D area for a MultiPolygon
+	 * @todo kahnan sum?
+	 */
+	template < typename Kernel >
+	double area(
+		const MultiPolygon & g
+	)
+	{
+		double area = 0.0 ;
+		for ( size_t i = 0; i < g.numGeometries(); i++ ){
+			area += detail::area< Kernel >( g.polygonN(i) ) ;
+		}
+		return area ;
+	}
 
 	/**
 	 * Returns 3D area for a Polygon

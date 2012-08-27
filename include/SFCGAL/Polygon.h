@@ -4,6 +4,8 @@
 #include <vector>
 #include <boost/assert.hpp>
 
+#include <CGAL/Polygon_with_holes_2.h>
+
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Surface.h>
 
@@ -37,6 +39,27 @@ namespace SFCGAL {
 		 * Copy constructor
 		 */
 		Polygon( Polygon const& other ) ;
+
+		/**
+		 * Constructor from CGAL::Polygon_with_holes_2<K>
+		 */
+		template < typename K >
+		Polygon( const CGAL::Polygon_with_holes_2<K>& poly )
+		{
+			_rings.push_back(LineString());
+			CGAL::Polygon_2<K> outer = poly.outer_boundary();
+			typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
+			for ( ei = outer.edges_begin(); ei != outer.edges_end(); ++ei ) {
+				_rings.back().addPoint( ei->source() );
+			}
+			for ( typename CGAL::Polygon_with_holes_2<K>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
+				_rings.push_back(LineString());
+				typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
+				for ( ei = hit->edges_begin(); ei != hit->edges_end(); ++ei ) {
+					_rings.back().addPoint( ei->source() );
+				}
+			}
+		}
 
 		/**
 		 * assign operator
@@ -140,6 +163,30 @@ namespace SFCGAL {
 		}
 		std::vector< LineString > &       rings() {
 			return _rings;
+		}
+
+		/*
+		 * Convert to CGAL::Polygon_2. Does not consider holes, if any
+		 */
+		template < typename K >
+		CGAL::Polygon_2<K> toPolygon_2() const
+		{
+			return exteriorRing().toPolygon_2<K>();
+		}
+
+		/*
+		 * Convert to CGAL::Polygon_with_holes_2.
+		 */
+		template < typename K >
+		CGAL::Polygon_with_holes_2<K> toPolygon_with_holes_2() const
+		{
+			std::list<CGAL::Polygon_2<K> > holes;
+			for ( size_t i = 0; i < numInteriorRings(); ++i ) {
+				holes.push_back( interiorRingN(i).toPolygon_2<K>() );
+			}
+			return CGAL::Polygon_with_holes_2<K>( exteriorRing().toPolygon_2<K>(),
+							      holes.begin(),
+							      holes.end());
 		}
 
 		//-- visitors

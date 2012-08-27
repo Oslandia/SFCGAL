@@ -4,7 +4,6 @@
 #include <SFCGAL/algorithm/intersects.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Point_2.h>
 #include <CGAL/Point_3.h>
 #include <CGAL/Segment_2.h>
@@ -14,11 +13,6 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polygon_with_holes_2.h>
 
-#include <CGAL/Arr_segment_traits_2.h>
-#include <CGAL/Sweep_line_2_algorithms.h>
-#include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Arr_naive_point_location.h>
-
 #include <CGAL/box_intersection_d.h>
 #include <CGAL/Bbox_2.h>
 
@@ -26,9 +20,9 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/WktWriter.h>
 #include <SFCGAL/tools/Log.h>
+#include <SFCGAL/algorithm/detail/intersects.h>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Point_3<Kernel> Point_3;
@@ -44,16 +38,6 @@ typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
 namespace SFCGAL {
 namespace algorithm
 {
-	void to_segments( const LineString& ls, std::vector< Segment_2 >& segs )
-	{
-		for ( size_t i = 1; i < ls.numPoints(); i++ ) {
-			const Point& prev = ls.pointN( i - 1 );
-			const Point& curr = ls.pointN( i );
-			segs.push_back(Segment_2( Point_2( prev.x(), prev.y() ),
-						  Point_2( curr.x(), curr.y() ) ));
-		}
-	}
-
 	bool intersects_( const Point& pa, const Point& pb )
 	{
 		return pa == pb;
@@ -61,15 +45,13 @@ namespace algorithm
 
 	bool intersects_( const Point& pta, const LineString& ls )
 	{
-		// TODO : use point location with arrangements ?
-
 		// build a CGAL::Segment for each line string element and call CGAL::has_on
 		Point_2 p = pta.toPoint_2<Kernel>();
 
-		std::vector< Segment_2 > segs;
-		to_segments( ls, segs );
-		for ( size_t i = 0; i < segs.size(); i++ ) {
-			if ( segs[i].has_on( p ) )
+		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
+			Segment_2 seg( ls.pointN(i).toPoint_2<Kernel>(), ls.pointN(i+1).toPoint_2<Kernel>() );
+
+			if ( seg.has_on( p ) )
 				return true;
 		}
 		return false;
@@ -77,247 +59,105 @@ namespace algorithm
 
 	bool intersects_( const Point& pta, const Triangle& tri )
 	{
-		// compute an arrangement of the triangle and the isolated point
-		// they intersect if the face where the point lies in is the triangle's face
-		typedef CGAL::Arr_segment_traits_2<ExactKernel> Traits_2;
-		typedef Traits_2::Curve_2 Segment_2;
-		typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
-		typedef CGAL::Arr_naive_point_location<Arrangement_2> PointLocation;
-
-		Arrangement_2 arr;
-		for ( size_t i = 0; i < 3 ; i++ ) {
-			CGAL::Point_2<ExactKernel> p1( tri.vertex(i).toPoint_2<ExactKernel>() );
-			CGAL::Point_2<ExactKernel> p2( tri.vertex( (i+1)%3 ).toPoint_2<ExactKernel>() );
-			Segment_2 seg( p1, p2 );
-			std::string msg = (boost::format( "Insert (%1%,%2%)-(%3%,%4%)") % p1.x() % p1.y() % p2.x() % p2.y()).str();
-			SFCGAL_DEBUG( msg );
-			CGAL::insert( arr, seg );
-		}
-
-		Arrangement_2::Face_const_handle f;
-		Arrangement_2::Vertex_const_handle v;
-		Arrangement_2::Halfedge_const_handle e;
-
-		PointLocation pl(arr);
-		CGAL::Object obj = pl.locate( pta.toPoint_2<ExactKernel>() );
-		if ( CGAL::assign( f, obj ) ) {
-			// it intersects if it is the bounded face
-			return !f->is_unbounded();
-		}
-		else if ( CGAL::assign( e, obj )) {
-			// point on an edge
-			for ( size_t i = 0; i < 3; ++i ) {
-				// point on an edge ?
-				CGAL::Point_2<ExactKernel> p = tri.vertex(i).toPoint_2<ExactKernel>();
-				if ( p == e->source()->point() || p == e->target()->point() ) {
-					return true;
-				}
-			}
-		}
-		else if ( CGAL::assign( v, obj )) {
-			for ( size_t i = 0; i < 3; ++i ) {
-				// point on vertex ?
-				if ( pta == tri.vertex(i) ) {
-					return true;
-				}
-			}
-		}
-		return false;
+		CGAL::Bounded_side b = tri.toTriangle_2<Kernel>().bounded_side( pta.toPoint_2<Kernel>() );
+		return b == CGAL::ON_BOUNDED_SIDE || b == CGAL::ON_BOUNDARY;
 	}
     
-	typedef std::vector<Segment_2> Segments;
-	typedef Segments::const_iterator EdgeIterator;
-	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, EdgeIterator> SegmentEdgeBox;
-	
-	struct intersects_segment_segment_tag {};
-	void intersects_segment_segment_cb( const SegmentEdgeBox& a, const SegmentEdgeBox& b )
-	{
-		if ( CGAL::do_intersect( *(a.handle()), *(b.handle()) )) {
-			throw intersects_segment_segment_tag();
-		}
-	}
-	bool intersects_( const LineString& la, const LineString& lb )
-	{
-		std::vector<SegmentEdgeBox> aboxes, bboxes;
-		Segments segsa, segsb;
-		to_segments( la, segsa );
-		to_segments( lb, segsb );
-		
-		for ( Segments::const_iterator it = segsa.begin(); it != segsa.end(); ++it ) {
-			aboxes.push_back( SegmentEdgeBox( it->bbox(), it ));
-		}
-		for ( Segments::const_iterator it = segsb.begin(); it != segsb.end(); ++it ) {
-			bboxes.push_back( SegmentEdgeBox( it->bbox(), it ));
-		}
-		
-		try {
-			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
-						  bboxes.begin(), bboxes.end(),
-						  intersects_segment_segment_cb );
-		}
-		catch ( intersects_segment_segment_tag& e ) {
-			return true;
-		}
-		return false;
-	}
-
-	bool intersects_( const LineString& la, const Triangle& tri )
-	{
-		typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
-		typedef Traits_2::Curve_2 Segment_2;
-		typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
-
-		Arrangement_2 arr;
-		for ( size_t i = 0; i < la.points().size() ; i++ ) {
-			Segment_2 seg( la.pointN(i).toPoint_2<Kernel>(), la.pointN( (i+1)%la.points().size() ).toPoint_2<Kernel>() );
-			CGAL::insert( arr, seg );
-		}
-
-		// count number of vertices, faces and holes before inserting the triangle
-		size_t n_vertices = arr.number_of_vertices();
-		size_t n_faces = arr.number_of_vertices();
-		size_t n_holes = 0;
-		Arrangement_2::Face_iterator it;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			n_holes += std::distance( it->holes_begin(), it->holes_end() );
-		}
-
-		CGAL::Triangle_2<Kernel> ctri = tri.toTriangle_2<Kernel>();
-		for ( size_t i = 0; i < 3; i++ ) {
-			Segment_2 seg ( ctri[i], ctri[(i+1)%3] );
-			CGAL::insert( arr, seg );
-		}
-		size_t new_n_holes = 0;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			new_n_holes += std::distance( it->holes_begin(), it->holes_end() );
-		}
-
-		// they intersect if there are new vertices
-		// or new faces
-		// or new holes
-		// in the arrangement
-		return arr.number_of_vertices() > (n_vertices + 3) ||
-			arr.number_of_faces() > (n_faces + 1) ||
-			new_n_holes > n_holes;
-	}
-
 	bool intersects_( const Triangle& tri1, const Triangle& tri2 )
 	{
 		return CGAL::do_intersect( tri1.toTriangle_2<Kernel>(), tri2.toTriangle_2<Kernel>() );
 	}
 
-	// accelerator for LineString x TriangulatedSurface
-	bool intersects_( const LineString& la, const TriangulatedSurface& surf )
+	///
+	/// intersection test using CGAL::box_intersection_d
+	///
+	bool intersects_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
-		typedef CGAL::Arr_segment_traits_2<Kernel> Traits_2;
-		typedef Traits_2::Curve_2 Segment_2;
-		typedef CGAL::Arrangement_2<Traits_2> Arrangement_2;
+		std::vector<detail::Object2Box> aboxes, bboxes;
+		std::list<detail::ObjectHandle> ahandles, bhandles;
 
-		Arrangement_2 arr;
-		for ( size_t i = 0; i < la.points().size() ; i++ ) {
-			Segment_2 seg( la.pointN(i).toPoint_2<Kernel>(), la.pointN( (i+1)%la.points().size() ).toPoint_2<Kernel>() );
-			CGAL::insert( arr, seg );
+		detail::to_boxes<2>( ga, ahandles, aboxes );
+		detail::to_boxes<2>( gb, bhandles, bboxes );
+		
+		try {
+			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
+						  bboxes.begin(), bboxes.end(),
+						  detail::intersects_cb<Kernel,2> );
 		}
-
-		// count number of vertices, faces and holes before inserting the triangle
-		size_t n_vertices = arr.number_of_vertices();
-		size_t n_faces = arr.number_of_vertices();
-		size_t n_holes = 0;
-		Arrangement_2::Face_iterator it;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			n_holes += std::distance( it->holes_begin(), it->holes_end() );
+		catch ( detail::found_intersection& e ) {
+			return true;
 		}
-
-		for ( size_t j = 0; j < surf.numTriangles(); j++ ) {
-			CGAL::Triangle_2<Kernel> ctri = surf.triangleN(j).toTriangle_2<Kernel>();
-			for ( size_t i = 0; i < 3; i++ ) {
-				Segment_2 seg ( ctri[i], ctri[(i+1)%3] );
-				CGAL::insert( arr, seg );
-			}
-		}
-		size_t new_n_holes = 0;
-		for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
-			new_n_holes += std::distance( it->holes_begin(), it->holes_end() );
-		}
-
-		// they intersect if there are new vertices
-		// or new faces
-		// or new holes
-		// in the arrangement
-		return arr.number_of_vertices() > (n_vertices + 3) ||
-			arr.number_of_faces() > (n_faces + 1) ||
-			new_n_holes > n_holes;
+		return false;
 	}
 
-	CGAL::Bbox_2 get_bbox( const Polygon& poly )
+	bool intersects_( const Point& pt, const Polygon& poly )
 	{
-		double minf = std::numeric_limits<double>::infinity();
-		double xmin = +minf;
-		double ymin = +minf;
-		double xmax = -minf;
-		double ymax = -minf;
-		for ( size_t i = 0; i < poly.exteriorRing().numPoints(); ++i ) {
-			const Point& pt = poly.exteriorRing().pointN(i);
-			if ( pt.x() > xmax )
-				xmax = pt.x();
-			if ( pt.x() < xmin )
-				xmin = pt.x();
-			if ( pt.y() > ymax )
-				ymax = pt.y();
-			if ( pt.y() < ymin )
-				ymin = pt.y();
+		CGAL::Bounded_side b1 = CGAL::bounded_side_2( poly.exteriorRing().points_2_begin<Kernel>(),
+							      poly.exteriorRing().points_2_end<Kernel>(),
+							      pt.toPoint_2<Kernel>() );
+		if ( b1 == CGAL::ON_BOUNDARY ) {
+			return true;
 		}
-		return CGAL::Bbox_2( xmin, ymin, xmax, ymax );
+		if ( b1 == CGAL::ON_BOUNDED_SIDE ) {
+			// might be in a hole
+			for ( size_t i = 0; i < poly.numInteriorRings(); ++i ) {
+				const LineString& ring = poly.interiorRingN(i);
+				CGAL::Bounded_side b = CGAL::bounded_side_2( ring.points_2_begin<Kernel>(),
+									     ring.points_2_end<Kernel>(),
+									     pt.toPoint_2<Kernel>() );
+				if ( b == CGAL::ON_BOUNDED_SIDE ) {
+					return false;
+				}
+			}
+		}
+		else {
+			return false;
+		}
+		return true;
 	}
 
 	bool intersects_( const Polygon& pa, const Polygon& pb )
 	{
 		// first compute the bbox of the two polygons
-		CGAL::Bbox_2 gbboxa = get_bbox( pa );
-		CGAL::Bbox_2 gbboxb = get_bbox( pb );
+		CGAL::Bbox_2 gbboxa = pa.envelope().toBbox_2();
+		CGAL::Bbox_2 gbboxb = pb.envelope().toBbox_2();
 		if ( CGAL::do_overlap( gbboxa, gbboxb ) ) {
 			// test intersections between each rings
-			std::vector<SegmentEdgeBox> aboxes, bboxes;
-			Segments segsa, segsb;
-			to_segments( pa.exteriorRing(), segsa );
+			std::vector<detail::Object2Box> aboxes, bboxes;
+			std::list<detail::ObjectHandle> ahandles, bhandles;
+
+			detail::to_boxes<2>( pa.exteriorRing(), ahandles, aboxes );
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
-				to_segments( pa.interiorRingN( i ), segsa );
+				detail::to_boxes<2>( pa.interiorRingN( i ), ahandles, aboxes );
 			}
-			to_segments( pb.exteriorRing(), segsb );
+			detail::to_boxes<2>( pb.exteriorRing(), bhandles, bboxes );
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
-				to_segments( pb.interiorRingN( i ), segsb );
+				detail::to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
 			}
-			
-			for ( Segments::const_iterator it = segsa.begin(); it != segsa.end(); ++it ) {
-				aboxes.push_back( SegmentEdgeBox( it->bbox(), it ));
-			}
-			for ( Segments::const_iterator it = segsb.begin(); it != segsb.end(); ++it ) {
-				bboxes.push_back( SegmentEdgeBox( it->bbox(), it ));
-			}
-			
+
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
-							  intersects_segment_segment_cb );
+							  detail::intersects_cb<Kernel,2> );
 			}
-			catch ( intersects_segment_segment_tag& e ) {
+			catch ( detail::found_segment_segment_intersection& e ) {
 				return true;
 			}
 		}
 		// rings do not intersect, check if one polygon is inside another
 
 		// is pa inside pb ?
-		if ( CGAL::bounded_side_2( pb.exteriorRing().points_2_begin<Kernel>(),
-					   pb.exteriorRing().points_2_end<Kernel>(),
-					   pa.exteriorRing().startPoint().toPoint_2<Kernel>() )
-		     == CGAL::ON_BOUNDED_SIDE ) {
+		CGAL::Bounded_side b1 = CGAL::bounded_side_2( pb.exteriorRing().points_2_begin<Kernel>(),
+							      pb.exteriorRing().points_2_end<Kernel>(),
+							      pa.exteriorRing().startPoint().toPoint_2<Kernel>() );
+		if ( b1 == CGAL::ON_BOUNDED_SIDE ) {
 		    return true;
 		}
 		// is pb inside pa ?
-		if ( CGAL::bounded_side_2( pa.exteriorRing().points_2_begin<Kernel>(),
-					   pa.exteriorRing().points_2_end<Kernel>(),
-					   pb.exteriorRing().startPoint().toPoint_2<Kernel>() )
-		     == CGAL::ON_BOUNDED_SIDE ) {
+		CGAL::Bounded_side b2 = CGAL::bounded_side_2( pa.exteriorRing().points_2_begin<Kernel>(),
+							      pa.exteriorRing().points_2_end<Kernel>(),
+							      pb.exteriorRing().startPoint().toPoint_2<Kernel>() );
+		if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
 		    return true;
 		}
 		return false;
@@ -371,6 +211,7 @@ namespace algorithm
 			case TYPE_TRIANGLE:
 				return intersects_( pta, static_cast<const Triangle&>( gb ));
 			case TYPE_POLYGON:
+				return intersects_( pta, static_cast<const Polygon&>( gb ));
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_TIN:
 			case TYPE_SOLID:
@@ -383,20 +224,18 @@ namespace algorithm
 			break;
 		} // TYPE_POINT
 		case TYPE_LINESTRING: {
-			const LineString& ls = static_cast<const LineString&>( ga );
-	    
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
-				return intersects_( ls, static_cast<const LineString&>( gb ) );
+				return intersects_bbox_d( ga, gb );
 			case TYPE_TRIANGLE:
-				return intersects_( ls, static_cast<const Triangle&>( gb ));
+				return intersects_bbox_d( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
 			case TYPE_TIN:
 				// call the proper accelerator
-				return intersects_( ls, static_cast<const TriangulatedSurface&>( gb ));
+				return intersects_bbox_d( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -412,8 +251,9 @@ namespace algorithm
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
-			case TYPE_TIN:
 				break;
+			case TYPE_TIN:
+				return intersects_bbox_d( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -449,6 +289,7 @@ namespace algorithm
 		case TYPE_TIN: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TIN:
+				return intersects_bbox_d( ga, gb );
 			case TYPE_SOLID:
 				break;
 			default:

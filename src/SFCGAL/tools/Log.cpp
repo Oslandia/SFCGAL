@@ -1,9 +1,46 @@
 #include <iostream>
+#include <boost/date_time.hpp>
 
 #include <SFCGAL/tools/Log.h>
 
-#include <boost/date_time.hpp>
-
+// namespace SFCGAL
+// {
+// 	LogSink::LogSink( std::ostream& str ) :
+// 		str_(str),
+// 		autoflush_( true ) {}
+	
+// 	std::streamsize LogSink::write(const char* s, std::streamsize n)
+// 	{
+// 		if ( autoflush_ ) {
+// 			str_.write( s, n );
+// 		}
+// 		return n;
+// 	}
+	
+// 	void LogSink::autoflush( bool state )
+// 	{
+// 		if ( state == true ) {
+// 			flush();
+// 		}
+// 		autoflush_ = state;
+// 	}
+	
+// 	void LogSink::flush()
+// 	{
+// 		str_.write( buffer_.c_str(), buffer_.size() );
+// 		buffer_.clear();
+// 		str_.flush();
+// 	}
+	
+// 	std::string& LogSink::buffer()
+// 	{
+// 		return buffer_;
+// 	}
+	
+// 	SFCGAL::Log& Logger::get()
+// 	{
+// 		static Log log( std::cout );
+// 		return log;
 
 namespace SFCGAL {
 
@@ -67,6 +104,7 @@ void Logger::log(
 	if ( _autoflush ){
 		flush();
 	}
+
 }
 
 
