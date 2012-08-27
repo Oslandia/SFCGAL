@@ -112,6 +112,55 @@ void Envelope::expandToInclude( const Coordinate & coordinate )
 	_bounds[2].expandToInclude( coordinate.z() );
 }
 
+///
+///
+///
+bool Envelope::contains( const Envelope& a, const Envelope& b )
+{
+	if ( a.is3D() ) {
+		return b.xMin() <= a.xMin() && 
+			b.xMax() >= a.xMax() &&
+			b.yMin() <= a.yMin() &&
+			b.yMax() >= a.yMax() &&
+			b.zMin() <= a.zMin() &&
+			b.zMax() >= a.zMax();
+	}
+	return b.xMin() <= a.xMin() && 
+		b.xMax() >= a.xMax() &&
+		b.yMin() <= a.yMin() &&
+		b.yMax() >= a.yMax();
+}
 
+///
+///
+///
+std::ostream& Envelope::print( std::ostream& ostr ) const
+{
+	ostr << "[ " << xMin();
+	ostr << ", " << xMax();
+	ostr << ", " << yMin();
+	ostr << ", " << yMax();
+	if ( is3D() ) {
+		ostr << ", " << zMin() << ", " << zMax();
+	}
+	ostr << " ]";
+	return ostr;
+}
+
+bool operator==( const Envelope& a, const Envelope& b)
+{
+	if ( a.is3D()) {
+		return a.xMin() == b.xMin() &&
+			a.yMin() == b.yMin() &&
+			a.zMin() == b.zMin() &&
+			a.xMax() == b.xMax() &&
+			a.yMax() == b.yMax() &&
+			a.zMax() == b.zMax();
+	}
+	return a.xMin() == b.xMin() &&
+		a.yMin() == b.yMin() &&
+		a.xMax() == b.xMax() &&
+		a.yMax() == b.yMax();
+}
 }//SFCGAL
 

@@ -1,4 +1,5 @@
 #include <SFCGAL/algorithm/covers.h>
+#include <SFCGAL/detail/GetPointsVisitor.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polyhedron_3.h>
@@ -7,38 +8,13 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/all.h>
 
+#include <SFCGAL/io/GeometryStreams.h>
+
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 
 namespace SFCGAL {
 namespace algorithm
 {
-	bool covers3D_( const Point& pta, const Solid& solid )
-	{
-		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
-		
-		bool is_inside = false;
-		std::auto_ptr<Polyhedron> ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel, Polyhedron>();
-		
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
-		if ( point_inside_ext( pta.toPoint_3<Kernel>() )) {
-			is_inside = true;
-			//
-			// test whether the point is inside interior shells or not
-			//
-			for ( size_t i = 0; i < solid.numInteriorShells(); ++i ) {
-				std::auto_ptr<Polyhedron> shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel, Polyhedron>();
-				CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
-				if ( point_inside( pta.toPoint_3<Kernel>() )) {
-					// FIXME : process nested holes
-					is_inside = false;
-					break;
-				}
-			}
-		}
-		
-		return is_inside;
-	}
-
 	//
 	// Test points inside a volume. Optimisation preventing recomputing of AABB trees needed by point_inside_polyhedron
 	//
@@ -47,6 +23,7 @@ namespace algorithm
 		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
 		
 		std::auto_ptr<Polyhedron> ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel, Polyhedron>();
+		BOOST_ASSERT( ext_shell_poly.get() != 0 );
 		
 		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
 		for ( size_t j = 0; j < pts.size(); ++j ) {
@@ -72,6 +49,15 @@ namespace algorithm
 		return true;
 	}
 
+	static bool covers3D_x_solid_( const Geometry& ga, const Solid& solid )
+	{
+		//
+		// Now consider the geometry as a bunch of points
+		detail::GetPointsVisitor visitor;
+		ga.accept( visitor );
+		return covers3D( visitor.points, solid );
+	}
+
 	bool covers3D( const Geometry& ga, const Geometry& gb )
 	{
 		// deal with geometry collection
@@ -94,11 +80,21 @@ namespace algorithm
 			return false;
 		}
 
-		if ( ga.geometryTypeId() == TYPE_POINT && gb.geometryTypeId() == TYPE_SOLID ) {
-		    return covers3D_( static_cast<const Point&>(ga), static_cast<const Solid&>(gb) );
+		//
+		// first test if bounding boxes are compliants
+		if ( !Envelope::contains( ga.envelope(), gb.envelope() )) {
+			return false;
 		}
-		else if ( ga.geometryTypeId() == TYPE_SOLID && gb.geometryTypeId() == TYPE_POINT ) {
-		    return covers3D_( static_cast<const Point&>(gb), static_cast<const Solid&>(ga) );
+
+		if ( ga.geometryTypeId() == TYPE_SOLID ) {
+		    // Only another solid can be covered by a solid
+		    if ( gb.geometryTypeId() != TYPE_SOLID ) {
+			return false;
+		    }
+		    return covers3D_x_solid_( static_cast<const Solid&>(ga), static_cast<const Solid&>(gb) );
+		}
+		else if ( gb.geometryTypeId() == TYPE_SOLID ) {
+			return covers3D_x_solid_( ga, static_cast<const Solid&>(gb) );
 		}
 
 		// default behaviour: calls intersects (NOT VALID !)

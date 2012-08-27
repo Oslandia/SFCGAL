@@ -17,6 +17,10 @@
 #include <CGAL/Sweep_line_2_algorithms.h>
 #include <CGAL/Boolean_set_operations_2.h>
 
+#include <CGAL/AABB_tree.h>
+#include <CGAL/AABB_traits.h>
+#include <CGAL/AABB_polyhedron_triangle_primitive.h>
+
 #include <CGAL/Point_inside_polyhedron_3.h>
 
 #include <CGAL/box_intersection_d.h>
@@ -42,7 +46,7 @@ typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Segments::const_i
 namespace SFCGAL {
 namespace algorithm
 {
-	void to_segments( const LineString& ls, std::vector< Segment_3 >& segs )
+	static void to_segments( const LineString& ls, std::vector< Segment_3 >& segs )
 	{
 		segs.resize( ls.numPoints() - 1 );
 		for ( size_t i = 1; i < ls.numPoints(); i++ ) {
@@ -53,31 +57,23 @@ namespace algorithm
 		}
 	}
 
-	// TODO : replace by an iterator adaptor
-	void to_triangles( const TriangulatedSurface& surf, std::list<Triangle_3>& rtri )
-	{
-		for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
-			rtri.push_back( surf.triangleN(i).toTriangle_3<Kernel>() );
-		}
-	}
-
 	// ----------------------------------------------------------
 	//
 	// Intersections between primitives
 	//
 	// ----------------------------------------------------------
 	
-	bool intersects3D_( const Point& pa, const Point& pb )
+	static bool intersects3D_( const Point& pa, const Point& pb )
 	{
 		return pa == pb;
 	}
 
-	bool intersects3D_( const Point& pta, const Triangle& tri )
+	static bool intersects3D_( const Point& pta, const Triangle& tri )
 	{
 		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
 	}
 
-	bool intersects3D_( const Triangle& tri1, const Triangle& tri2 )
+	static bool intersects3D_( const Triangle& tri1, const Triangle& tri2 )
 	{
 		return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
 	}
@@ -89,7 +85,7 @@ namespace algorithm
 	//
 	// ----------------------------------------------------------
 	
-	bool intersects3D_( const Point& pta, const LineString& ls )
+	static bool intersects3D_( const Point& pta, const LineString& ls )
 	{
 		// build a CGAL::Segment for each line string element and call CGAL::has_on
 		Point_3 p = pta.toPoint_3<Kernel>();
@@ -106,7 +102,7 @@ namespace algorithm
 	///
 	/// intersection test using CGAL::box_intersection_d
 	///
-	bool intersects3D_bbox_d( const Geometry& ga, const Geometry& gb )
+	static bool intersects3D_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
 		std::vector<detail::Object3Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
@@ -131,7 +127,7 @@ namespace algorithm
 	//
 	// ----------------------------------------------------------
 	
-	bool intersects3D_( const Geometry& ga, const Solid& solid )
+	static bool intersects3D_solid_( const Geometry& ga, const Solid& solid )
 	{
 		// intersection between a geometry and a solid
 		// 1. either one of the geometry' point lies inside the solid
@@ -200,7 +196,9 @@ namespace algorithm
 				return intersects3D_( pta, static_cast<const Triangle&>( gb ));
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
+				break;
 			case TYPE_TIN:
+				return intersects3D_bbox_d( static_cast<const Point&>(ga), static_cast<const TriangulatedSurface&>(gb));
 			case TYPE_SOLID:
 				break;
 			default:
@@ -330,7 +328,7 @@ namespace algorithm
 		}
 
 		else if ( gb.geometryTypeId() == TYPE_SOLID ) {
-			return intersects3D_( ga, static_cast<const Solid&>(gb) );
+			return intersects3D_solid_( ga, static_cast<const Solid&>(gb) );
 		}
 
 		// generic processing of a Solid

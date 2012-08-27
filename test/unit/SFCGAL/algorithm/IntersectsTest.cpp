@@ -178,6 +178,7 @@ BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
 	Point ptc( 0.0, 1.5, 0.0 );
 	Point ptd( 0.6, 0.6, 0.0 );
 	Point pte( 0.5, 0.5, 0.0 );
+	Point ptf( 0.5, 0.5, 0.5 );
 
     // a square
     std::vector<Point> ring;
@@ -198,6 +199,7 @@ BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
     // point outside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptc, poly ), false );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptc, poly ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptf, poly ), false );
     // point inside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptd, poly ), true );
     BOOST_CHECK_EQUAL( algorithm::intersects3D( ptd, poly ), true );

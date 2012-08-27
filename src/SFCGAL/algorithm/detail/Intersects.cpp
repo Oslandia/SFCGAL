@@ -89,6 +89,13 @@ namespace detail {
 	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
 	///
 	template <int Dim>
+	void to_boxes_( const Point& pt, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
+	{
+		handles.push_back( detail::ObjectHandle( &pt ));
+		boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
+	}
+
+	template <int Dim>
 	void to_boxes_( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
 	{
 		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
@@ -119,6 +126,9 @@ namespace detail {
 	void to_boxes( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
 	{
 		switch ( g.geometryTypeId() ){
+		case TYPE_POINT:
+			to_boxes_<Dim>( static_cast<const Point&>(g), handles, boxes );
+			break;
 		case TYPE_LINESTRING:
 			to_boxes_<Dim>( static_cast<const LineString&>(g), handles, boxes );
 			break;
@@ -129,7 +139,7 @@ namespace detail {
 			to_boxes_<Dim>( static_cast<const TriangulatedSurface&>(g), handles, boxes );
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type" ));
+			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type " + g.geometryType() ));
 		}
 	}
 	// instanciation of templates
@@ -137,12 +147,27 @@ namespace detail {
 	template void to_boxes<3>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<Object3Box>& boxes );
 
 
+	//
+	// FIXME
+	// There is no need to test the dynamic type here.
+	// We should rely on a strongly-typed implementation.
+	// i.e. intersects_cb<Point, Triangle>, intersects_cb<Segment, Segment>, etc.
 	template <typename K, int Dim>
 	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
+		typedef typename TypeForKernel<K, Dim>::Point Point_d;
 		typedef typename TypeForKernel<K, Dim>::Segment Segment_d;
 		typedef typename TypeForKernel<K, Dim>::Triangle Triangle_d;
-		if ( a.handle()->type == ObjectHandle::Segment ) {
+		if ( a.handle()->type == ObjectHandle::Point ) {
+			if ( b.handle()->type == ObjectHandle::Triangle ) {
+				Point_d point = a.handle()->point->template toPoint_d<K,Dim>();
+				Triangle_d tri = b.handle()->triangle->template toTriangle_d<K,Dim>();
+				if ( CGAL::do_intersect( point, tri )) {
+					throw found_point_triangle_intersection();
+				}
+			}
+		}
+		else if ( a.handle()->type == ObjectHandle::Segment ) {
 			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<K,Dim>(),
 					a.handle()->segment.end_point->template toPoint_d<K,Dim>() );
 			if ( b.handle()->type == ObjectHandle::Segment ) {
@@ -173,8 +198,20 @@ namespace detail {
 	template void intersects_cb<Kernel, 3>( const Object3Box& a, const Object3Box& b );
 	template void intersects_cb<ExactKernel, 3>( const Object3Box& a, const Object3Box& b );
 
-    template <typename K, int Dim>
-    void intersection_cb<K, Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
+
+	template <typename K, int Dim>
+	intersection_cb<K,Dim>::intersection_cb()
+	{
+		geometries = new GeometryCollection();
+	}
+
+	//
+	// FIXME
+	// There is no need to test the dynamic type here.
+	// We should rely on a strongly-typed implementation.
+	// i.e. intersects_cb<Point, Triangle>, intersects_cb<Segment, Segment>, etc.
+	template <typename K, int Dim>
+	void intersection_cb<K, Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
 		typedef typename TypeForKernel<K,Dim>::Point Point_d;
 		typedef typename TypeForKernel<K,Dim>::Segment Segment_d;

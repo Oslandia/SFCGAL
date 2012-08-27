@@ -19,6 +19,7 @@ namespace detail {
 	{
 		enum
 		{
+			Point,
 			Segment,
 			Triangle
 		} ObjectType;
@@ -26,6 +27,8 @@ namespace detail {
 		
 		union
 		{
+			const SFCGAL::Point* point;
+
 			struct
 			{
 				const SFCGAL::Point* start_point;
@@ -37,12 +40,19 @@ namespace detail {
 
 		///
 		/// Constructors
+		ObjectHandle( const SFCGAL::Point* p ) :
+			type(ObjectHandle::Point)
+		{
+			point = p;
+		}
+
 		ObjectHandle( const SFCGAL::Point* spoint, const SFCGAL::Point* epoint ) :
 			type(ObjectHandle::Segment)
 		{
 			segment.start_point = spoint;
 			segment.end_point = epoint;
 		}
+
 		ObjectHandle( const SFCGAL::Triangle* triangle ) :
 			type(ObjectHandle::Triangle), triangle(triangle) {}
 
@@ -86,6 +96,8 @@ namespace detail {
 	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes );
 
 	struct found_intersection {};
+	struct found_point_triangle_intersection : public found_intersection {};
+	struct found_point_segment_intersection : public found_intersection {};
 	struct found_segment_segment_intersection : public found_intersection {};
 	struct found_segment_triangle_intersection : public found_intersection {};
 	struct found_triangle_triangle_intersection : public found_intersection {};
@@ -107,10 +119,7 @@ namespace detail {
 		/// The resulting intersection geometry
 		GeometryCollection* geometries;
 		
-		intersection_cb()
-		{
-			geometries = new GeometryCollection();
-		}
+		intersection_cb();
 		
 		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );
 	};

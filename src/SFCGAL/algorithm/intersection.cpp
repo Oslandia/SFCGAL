@@ -20,7 +20,7 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 namespace SFCGAL {
 namespace algorithm
 {
-	std::auto_ptr<Geometry> intersection_point_x_( const Point& pt, const Geometry& gb )
+	static std::auto_ptr<Geometry> intersection_point_x_( const Point& pt, const Geometry& gb )
 	{
 		if ( intersects( pt, gb )) {
 			return std::auto_ptr<Geometry>(new Point(pt));
@@ -28,7 +28,7 @@ namespace algorithm
 		return std::auto_ptr<Geometry>(new GeometryCollection());
 	}
 
-	std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
+	static std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
 	{
 		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2<Kernel>(), trib.toTriangle_2<Kernel>() );
 		if (obj.empty()) {
@@ -37,7 +37,7 @@ namespace algorithm
 		return std::auto_ptr<Geometry>(Geometry::fromCGAL<Kernel>( obj ));
 	}
 
-	std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
+	static std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
 	{
 		MultiPolygon* mp = new MultiPolygon();
 		std::list<CGAL::Polygon_with_holes_2<ExactKernel> > opolys;
@@ -56,7 +56,7 @@ namespace algorithm
 	///
 	/// intersections involving Box_d
 	///
-	std::auto_ptr<Geometry> intersection_box_d_( const Geometry& ga, const Geometry& gb )
+	static std::auto_ptr<Geometry> intersection_box_d_( const Geometry& ga, const Geometry& gb )
 	{
 		std::vector<detail::Object2Box> aboxes, bboxes;
 		std::list<detail::ObjectHandle> ahandles, bhandles;
@@ -75,7 +75,7 @@ namespace algorithm
 			delete cb.geometries;
 			return g;
 		}
-		return std::auto_ptr<Geometry>(cb.geometries);
+		return std::auto_ptr<Geometry>( cb.geometries );
 	}
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )

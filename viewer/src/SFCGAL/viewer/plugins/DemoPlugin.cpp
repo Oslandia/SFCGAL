@@ -8,7 +8,7 @@
 #include <QtGui/QMenuBar>
 #include <QtGui/QInputDialog>
 
-#include <osg/Geode.h>
+#include <osg/Geode>
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
