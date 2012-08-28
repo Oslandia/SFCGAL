@@ -99,7 +99,7 @@ namespace SFCGAL {
 		/**
 		 * Convenience function. Convert to CGAL::BBox_2
 		 */
-		inline CGAL::Bbox_2 toBbox_2() {
+		inline CGAL::Bbox_2 toBbox_2() const {
 			BOOST_ASSERT( ! isEmpty() );
 
 			return CGAL::Bbox_2(
@@ -111,7 +111,7 @@ namespace SFCGAL {
 		/**
 		 * Convenience function. Convert to CGAL::BBox_3
 		 */
-		inline CGAL::Bbox_3 toBbox_3() {
+		inline CGAL::Bbox_3 toBbox_3() const {
 			BOOST_ASSERT( is3D() );
 
 			return CGAL::Bbox_3(
@@ -131,7 +131,7 @@ namespace SFCGAL {
 		/**
 		 * Global binary operator on Envelopes. Test if A's bounding box overlaps B's
 		 */
-		// static bool overlaps( const Envelope& a, const Envelope& b );
+		static bool overlaps( const Envelope& a, const Envelope& b );
 
 		/*
 		 * Display method

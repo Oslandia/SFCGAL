@@ -80,6 +80,123 @@ namespace algorithm
 		return std::auto_ptr<Geometry>(Geometry::fromCGAL<Kernel>( obj ));
 	}
 
+	static std::auto_ptr<Geometry> intersection3D_linestring_solid_( const LineString& ls, const Polyhedron& poly, const TriangulatedSurface& surf )
+	{
+		// FIXME : only consider the exteriorShell for now
+
+		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_poly( const_cast<Polyhedron&>(poly) );
+
+		//
+		// Only consider points inside the volume
+
+		GeometryCollection* ret_mls = new GeometryCollection;
+
+		const Point* previous = 0;
+		bool previous_inside = false;
+		bool current_inside = false;
+		std::vector<std::pair<Point, Point> > pts;
+		for ( size_t i = 0; i < ls.numPoints(); ++i ) {
+			const Point* current = &ls.pointN(i);
+			current_inside = point_inside_poly( current->toPoint_3<Kernel>() );
+
+			if ( previous ) {
+				//				std::cout << "previous = " << previous->asText() << " inside = " << previous_inside << std::endl;
+				//				std::cout << "current = " << current->asText() << " inside = " << current_inside << std::endl;
+				if ( !previous_inside && current_inside ) {
+					// compute the intersection between this segment and the surface
+					LineString tmp_ls( *previous, *current );
+					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
+					//					std::cout << "inter_surface = " << g->asText() << std::endl;
+					if ( g->is<Point>() ) {
+						pts.push_back( std::make_pair(g->as<Point>(), *current ));
+					}
+					else if ( g->is<LineString>() ) {
+						const LineString& l = g->as<LineString>();
+						pts.push_back( std::make_pair(l.pointN(0), l.pointN(1)) );
+					}
+				}
+				else if ( previous_inside && current_inside ) {
+					pts.push_back( std::make_pair( *previous, *current ));
+				}
+				else if ( previous_inside && !current_inside ) {
+					// compute the intersection between this segment and the surface
+					LineString tmp_ls( *previous, *current );
+					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
+					//					std::cout << "inter_surface = " << g->asText() << std::endl;
+					if ( g->is<Point>() ) {
+						pts.push_back( std::make_pair(*previous, g->as<Point>()) );
+					}
+					else if ( g->is<LineString>() ) {
+						const LineString& l = g->as<LineString>();
+						pts.push_back( std::make_pair(l.pointN(0), l.pointN(1)) );
+					}
+					else {
+						std::cout << "Bad geometry " << g->geometryType() << std::endl;
+					}
+				}
+				else /* if ( ! previous_inside && ! current_inside ) */ {
+					// we may still have an intersection 
+
+					// compute the intersection between this segment and the surface
+					LineString tmp_ls( *previous, *current );
+					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
+					//					std::cout << "inter_surface = " << g->asText() << std::endl;
+					if ( !g->isEmpty() ) {
+						if ( g->is<Point>() ) {
+							// insert a double point
+							pts.push_back( std::make_pair(g->as<Point>(), g->as<Point>()) );
+						}
+						else if ( g->is<LineString>() ) {
+							const LineString& l = g->as<LineString>();
+							pts.push_back( std::make_pair(l.pointN(0), l.pointN(1)) );
+						}
+						else {
+							std::cout << "Bad geometry 2 " << g->geometryType() << std::endl;
+						}
+					}
+				}
+			}
+			previous = current;
+			previous_inside = current_inside;
+		}
+		// Traverse points and find segments and points
+		Geometry *ret_ls = 0;
+		const Point* last = 0;
+		for ( size_t i = 0; i < pts.size(); ++i ) {
+			const Point& first = pts[i].first;
+			const Point& second = pts[i].second;
+			//			std::cout << "first = " << first.asText() << " second = " << second.asText() << std::endl;
+
+			if ( last == 0 || first != *last ) {
+				if ( ret_ls ) {
+					ret_mls->addGeometry( ret_ls );
+				}
+
+				if ( first == second ) {
+					ret_ls = new Point( first );
+				}
+				else {
+					ret_ls = new LineString( first, second );
+				}
+			}
+			else {
+				ret_ls->as<LineString>().addPoint( second );
+			}
+			last = &second;
+		}
+		if ( ret_ls ) {
+			ret_mls->addGeometry( ret_ls );
+		}
+
+		// unwrap the geometry if its alone
+		if ( ret_mls->numGeometries() == 1 ) {
+			Geometry* g = ret_mls->geometryN(0).clone();
+			delete ret_mls;
+			return std::auto_ptr<Geometry>(g);
+		}
+		return std::auto_ptr<Geometry>( ret_mls );
+	}
+
 	///
 	/// intersections involving Box_d
 	///
@@ -323,8 +440,7 @@ namespace algorithm
 
 		switch ( ga.geometryTypeId() ) {
 		case TYPE_LINESTRING:
-			// TODO
-			break;
+			return intersection3D_linestring_solid_( ga.as<LineString>(), *polyb, exTri );
 		case TYPE_TRIANGLE: {
 			const Triangle& tri = static_cast<const Triangle&>(ga);
 			TriangulatedSurface surf;
@@ -421,9 +537,10 @@ namespace algorithm
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
-			case TYPE_SOLID:
 				// generic processing
 				break;
+			case TYPE_SOLID:
+				return intersection3D_solid_( ga, static_cast<const Solid&>(gb) );
 			default:
 				// symmetric call
 				return intersection3D( gb, ga );
@@ -486,7 +603,7 @@ namespace algorithm
 
 		if ( gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE || gb.geometryTypeId() == TYPE_POLYGON ) {
 			TriangulatedSurface surf;
-			algorithm::triangulate( static_cast<const PolyhedralSurface&>(gb), surf);
+			algorithm::triangulate( gb, surf);
 			return intersection3D( ga, surf );
 		}
 		

@@ -221,6 +221,11 @@ namespace SFCGAL {
        Geometry( Geometry const& other );
     };
 
+    /**
+     * Equality operator
+     */
+    bool operator==( const Geometry&, const Geometry& );
+
 }
 
 #endif

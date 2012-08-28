@@ -19,37 +19,6 @@ typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
-///
-/// Function used to compare geometries
-/// Since we do not have (yet) a real "equals" operator, we only compare points coordinates
-bool operator == ( const Geometry& ga, const Geometry& gb )
-{
-    BOOST_ASSERT( &ga != 0 );
-    BOOST_ASSERT( &gb != 0 );
-    detail::GetPointsVisitor get_points_a, get_points_b;
-    ga.accept( get_points_a );
-    gb.accept( get_points_b );
-
-    if ( get_points_a.points.size() != get_points_b.points.size() )
-	return false;
-
-    for ( size_t i = 0; i < get_points_a.points.size(); ++i ) {
-	bool found = false;
-	for ( size_t j = 0; j < get_points_b.points.size(); ++j ) {
-	    const Point& pta = *(get_points_a.points[i]);
-	    const Point& ptb = *(get_points_b.points[j]);
-	    if ( pta == ptb ) {
-		found = true;
-		break;
-	    }
-	}
-	if (! found) {
-	    return false;
-	}
-    }
-    return true;
-}
-
 BOOST_AUTO_TEST_CASE( testIntersectionPoint )
 {
     // The same point
@@ -135,6 +104,18 @@ BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
     BOOST_CHECK( *inter_1 == *(io::readWkt("POLYGON((2 2,1 2,1 1,2 1),(1.7 1.7,1.7 1.3,1.3 1.3,1.3 1.7))")) );
 }
 
+BOOST_AUTO_TEST_CASE( testIntersection3DPolygon )
+{
+    std::auto_ptr<Geometry> square(io::readWkt("POLYGON((0 0 0,1 0 0,1 1 0,0 1 0,0 0 0))"));
+
+    // linestring crossing
+    LineString ls( Point(0.5, 0.5, -0.5), Point(0.5, 0.5, 0.5));
+    BOOST_CHECK( *algorithm::intersection3D( ls, *square ) == Point(0.5, 0.5, 0.0) );
+    // linestring on a triangulation edge
+    LineString ls2( Point(0.1, 0.9, 0.0), Point(0.9, 0.1, 0.0));
+    BOOST_CHECK( *algorithm::intersection3D( ls2, *square ) == ls2 );
+}
+
 BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 {
     // 3D intersection with a solid
@@ -168,50 +149,88 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 
     //
     // LineString x cube
+    {
+	// A linestring partly inside
+	LineString ls1;
+	ls1.addPoint( Point(-0.5, 0.5, 0.5 ));
+	ls1.addPoint( Point(0.5, 0.5, 0.5 ));
+	BOOST_CHECK( *algorithm::intersection3D( ls1, *cube ) == LineString(Point(0, 0.5, 0.5), Point(0.5, 0.5, 0.5)) );
 
-    // A linestring partly inside
-    // TODO
+	// A linestring completely inside
+	LineString ls2;
+	ls2.addPoint( Point(0.2, 0.5, 0.5 ));
+	ls2.addPoint( Point(0.8, 0.5, 0.5 ));
+	BOOST_CHECK( *algorithm::intersection3D( ls2, *cube ) == ls2 );
 
-    // A linestring completely inside
-    // TODO
+	// A linestring with more than one segment
+	ls1.addPoint( Point(0.8, 0.5, 0.5));
+	ls1.addPoint( Point(1.5, 0.5, 0.5));
+	BOOST_CHECK( *algorithm::intersection3D( ls1, *cube ) == *io::readWkt("LINESTRING(-0 0.5 0.5,0.5 0.5 0.5,0.8 0.5 0.5,1 0.5 0.5)") );
 
-    // A linestring outside
-    // TODO
+	// A linestring crossing on two vertices
+	LineString ls3;
+	ls3.addPoint( Point(0.0, 0.0, 0.0));
+	ls3.addPoint( Point(0.5, 0.0, -0.5));
+	ls3.addPoint( Point(1.0, 0.0, 0.0));
+	GeometryCollection coll1;
+	coll1.addGeometry( Point( 0, 0, 0 ));
+	coll1.addGeometry( Point( 1, 0, 0 ));
+	BOOST_CHECK( *algorithm::intersection3D( ls3, *cube ) == coll1 );
+	
+	// A linestring crossing on an edge
+	LineString ls4;
+	ls4.addPoint( Point(0.2, 0.0, 0.0));
+	ls4.addPoint( Point(0.8, 0.0, 0.0));
+	ls4.addPoint( Point(0.8, 0.5, 0.5));
+	BOOST_CHECK( *algorithm::intersection3D( ls4, *cube ) == ls4 );
 
-    // A linestring crossing on a vertex / edge / face
-    // TODO
+	// A linestring crossing on a vertex
+	LineString ls5;
+	ls5.addPoint( Point(-0.5, 0.0, 0.5));
+	ls5.addPoint( Point(0.5, 0.0, -0.5));
+	ls5.addPoint( Point(1.0, 0.5, -0.5));
+	BOOST_CHECK( *algorithm::intersection3D( ls5, *cube ) == Point(0, 0, 0));
+
+	// A linestring outside
+	LineString ls6;
+	ls6.addPoint( Point( -0.5, 0.0, 0.5 ));
+	ls6.addPoint( Point( 0.2, 0.0, -0.5 ));
+	BOOST_CHECK( algorithm::intersection3D( ls6, *cube )->isEmpty() );
+    }
 
     // triangle x cube
     //
-
-    // A triangle partly inside
-    Triangle tri1(Point(-0.5, 0.5, 0), Point(0.5, 0.5, 0.5), Point(-0.5, 0.5, 1));
-    BOOST_CHECK( *(algorithm::intersection3D( tri1, *cube )) == *(io::readWkt("POLYGON((0 0.5 0.75,0.5 0.5 0.5,0 0.5 0.25,0 0.5 0.5,0 0.5 0.75))")) );
-    // A triangle completely inside
-    Triangle tri2(Point(0.2, 0.2, 0.2), Point(0.8, 0.2, 0.2), Point(0.8, 0.2, 0.8));
-    BOOST_CHECK( *(algorithm::intersection3D(tri2, *cube)) == tri2 );
-
-    // A triangle completely outside
-    Triangle tri3(Point(-0.5, 1.5, 0), Point(0.5, 1.5, 0.5), Point(-0.5, 1.5, 1));
-    BOOST_CHECK( algorithm::intersection3D(tri3, *cube)->isEmpty());
-
-    // A triangle partly touching a face
-    Triangle tri3b(Point(-0.5, 0.0, 0.0), Point(1.5, 0.0, 0.0), Point(0.0, 1.0, 0.0));
-    std::auto_ptr<Geometry> inter1 = algorithm::intersection3D( tri3b, *cube );
-    //    BOOST_CHECK( algorithm::intersection3D( tri3b, *cube )->geometryTypeId() == TYPE_TRIANGLE );
-
-    // A triangle touching a face
-    Triangle tri4(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(0.0, 1.0, 0.0));
-    BOOST_CHECK( algorithm::intersection3D( tri4, *cube )->envelope() == Envelope( Coordinate(0, 0, 0), Coordinate(1, 1, 0)) );
-
-    // A triangle touching an edge
-    Triangle tri5(Point(0.0, 0.0, 0.0), Point(0.0, 1.0, 0.0), Point(-1.0, 0.0, 0.0));
-    BOOST_CHECK( *algorithm::intersection3D( tri5, *cube ) == LineString(Point(0, 0, 0), Point(0, 1, 0)) );
-
-    // A triangle touching a vertex
-    Triangle tri6(Point(0.0, 0.0, 0.0), Point(-1.0, 1.0, 0.0), Point(-1.0, 0.0, 0.0));
-    BOOST_CHECK( *algorithm::intersection3D( tri6, *cube ) == Point(0, 0, 0) );
-
+    {
+	// A triangle partly inside
+	Triangle tri1(Point(-0.5, 0.5, 0), Point(0.5, 0.5, 0.5), Point(-0.5, 0.5, 1));
+	BOOST_CHECK( *(algorithm::intersection3D( tri1, *cube )) == *(io::readWkt("POLYGON((0 0.5 0.75,0.5 0.5 0.5,0 0.5 0.25,0 0.5 0.5,0 0.5 0.75))")) );
+	// A triangle completely inside
+	Triangle tri2(Point(0.2, 0.2, 0.2), Point(0.8, 0.2, 0.2), Point(0.8, 0.2, 0.8));
+	BOOST_CHECK( *(algorithm::intersection3D(tri2, *cube)) == tri2 );
+	
+	// A triangle completely outside
+	Triangle tri3(Point(-0.5, 1.5, 0), Point(0.5, 1.5, 0.5), Point(-0.5, 1.5, 1));
+	BOOST_CHECK( algorithm::intersection3D(tri3, *cube)->isEmpty());
+	
+	// A triangle partly touching a face
+	Triangle tri3b(Point(-0.5, 0.0, 0.0), Point(1.5, 0.0, 0.0), Point(0.0, 1.0, 0.0));
+	//	std::auto_ptr<Geometry> inter1 = algorithm::intersection3D( tri3b, *cube );
+	//	std::cout << inter1->asText() << std::endl;
+	BOOST_CHECK( algorithm::intersection3D( tri3b, *cube )->geometryTypeId() == TYPE_POLYGON );
+	
+	// A triangle touching a face
+	Triangle tri4(Point(0.0, 0.0, 0.0), Point(1.0, 0.0, 0.0), Point(0.0, 1.0, 0.0));
+	BOOST_CHECK( algorithm::intersection3D( tri4, *cube )->envelope() == Envelope( Coordinate(0, 0, 0), Coordinate(1, 1, 0)) );
+	
+	// A triangle touching an edge
+	Triangle tri5(Point(0.0, 0.0, 0.0), Point(0.0, 1.0, 0.0), Point(-1.0, 0.0, 0.0));
+	BOOST_CHECK( *algorithm::intersection3D( tri5, *cube ) == LineString(Point(0, 0, 0), Point(0, 1, 0)) );
+	
+	// A triangle touching a vertex
+	Triangle tri6(Point(0.0, 0.0, 0.0), Point(-1.0, 1.0, 0.0), Point(-1.0, 0.0, 0.0));
+	BOOST_CHECK( *algorithm::intersection3D( tri6, *cube ) == Point(0, 0, 0) );
+    }
+	
     // Polygon x Solid
     {
 	// special case : when the intersection is a multipoint or a multilinestring

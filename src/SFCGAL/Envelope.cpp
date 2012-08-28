@@ -134,6 +134,22 @@ bool Envelope::contains( const Envelope& a, const Envelope& b )
 ///
 ///
 ///
+bool Envelope::overlaps( const Envelope& a, const Envelope& b )
+{
+	if (a.is3D()) {
+		CGAL::Bbox_3 abox = a.toBbox_3();
+		CGAL::Bbox_3 bbox = b.toBbox_3();
+		return CGAL::do_overlap( abox, bbox );
+	}
+
+	CGAL::Bbox_2 abox = a.toBbox_2();
+	CGAL::Bbox_2 bbox = b.toBbox_2();
+	return CGAL::do_overlap( abox, bbox );
+}
+
+///
+///
+///
 std::ostream& Envelope::print( std::ostream& ostr ) const
 {
 	ostr << "[ " << xMin();

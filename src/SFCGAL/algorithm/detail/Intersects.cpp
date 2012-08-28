@@ -205,6 +205,17 @@ namespace detail {
 		geometries = new GeometryCollection();
 	}
 
+	// FIXME
+	// temporary operator
+	static bool collectionContains( const GeometryCollection& coll, const Geometry& g )
+	{
+		for ( size_t i = 0; i < coll.numGeometries(); ++i ) {
+			if ( g == coll.geometryN(i) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 	//
 	// FIXME
 	// There is no need to test the dynamic type here.
@@ -228,7 +239,9 @@ namespace detail {
 				if ( !obj.empty()) {
 					Geometry* g = Geometry::fromCGAL<K>(obj);
 					BOOST_ASSERT( g != 0 );
-					geometries->addGeometry(g);
+					if ( !collectionContains( *geometries, *g )) {
+						geometries->addGeometry(g);
+					}
 				}
 			} else {
 				// Segment x Triangle
@@ -237,7 +250,9 @@ namespace detail {
 				if ( !obj.empty()) {
 					Geometry* g = Geometry::fromCGAL<K>(obj);
 					BOOST_ASSERT( g != 0 );
-					geometries->addGeometry(g);
+					if ( !collectionContains( *geometries, *g )) {
+						geometries->addGeometry(g);
+					}
 				}
 			}
 		} else {
@@ -248,7 +263,9 @@ namespace detail {
 			if ( !obj.empty()) {
 				Geometry* g = Geometry::fromCGAL<K>(obj);
 				BOOST_ASSERT( g != 0 );
-				geometries->addGeometry(g);
+				if ( !collectionContains( *geometries, *g )) {
+					geometries->addGeometry(g);
+				}
 			}
 		}
 	}
