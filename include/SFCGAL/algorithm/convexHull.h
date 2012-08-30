@@ -7,6 +7,11 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
+	 * Compute the 2D convex hull for a geometry
+	 */
+	Geometry* convexHull( const Geometry & g ) ;
+
+	/**
 	 * Compute the 3D convex hull for a geometry
 	 * @todo improve to handle collinear points and coplanar points
 	 */

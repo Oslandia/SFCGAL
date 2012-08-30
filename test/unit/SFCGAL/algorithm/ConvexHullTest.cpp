@@ -70,5 +70,18 @@ BOOST_AUTO_TEST_CASE( testTetrahedron )
 }
 
 
+BOOST_AUTO_TEST_CASE( testConvexHull2D )
+{
+	std::vector< Point > points ;
+	points.push_back( Point(0.0,0.0) );
+	points.push_back( Point(0.5,0.5) );
+	points.push_back( Point(1.0,0.0) );
+	points.push_back( Point(0.0,1.0) );
+
+	LineString lineString( points ) ;
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
+	BOOST_CHECK( hull->is<Triangle>() );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

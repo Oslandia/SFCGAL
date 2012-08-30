@@ -6,22 +6,73 @@
 #include <boost/format.hpp>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/point_generators_3.h>
 #include <CGAL/algorithm.h>
 #include <CGAL/Polyhedron_3.h>
+#include <CGAL/convex_hull_2.h>
 #include <CGAL/convex_hull_3.h>
 #include <vector>
 
 typedef CGAL::Exact_predicates_inexact_constructions_kernel  Kernel;
+//typedef CGAL::Exact_predicates_exact_constructions_kernel  Kernel;
 
 typedef CGAL::Point_3< Kernel >                              Point_3;
 typedef CGAL::Segment_3< Kernel >                            Segment_3;
 typedef CGAL::Triangle_3< Kernel >                           Triangle_3;
 typedef CGAL::Polyhedron_3< Kernel >                         Polyhedron_3;
 
+typedef CGAL::Point_2< Kernel >                              Point_2;
 
 namespace SFCGAL {
 namespace algorithm {
+
+///
+///
+///
+Geometry* convexHull( const Geometry & g )
+{
+	using CGAL::object_cast ;
+
+
+	SFCGAL::detail::GetPointsVisitor getPointVisitor;
+	const_cast< Geometry & >(g).accept( getPointVisitor );
+
+	// collect points
+
+	std::vector< Point_2 > points ;
+	for ( size_t i = 0; i < getPointVisitor.points.size(); i++ ){
+		points.push_back( getPointVisitor.points[i]->toPoint_2< Kernel >() );
+	}
+
+	// resulting extreme points
+	std::list<Point_2> epoints;
+	CGAL::convex_hull_2( points.begin(), points.end(), std::back_inserter(epoints) ) ;
+
+	if ( epoints.size() == 1 ) {
+	    return new Point( *epoints.begin() );
+	}
+	else if ( epoints.size() == 2 ) {
+	    return new LineString( Point(*epoints.begin()), Point( *epoints.end()) );
+	}
+	else if ( epoints.size() == 3 ) {
+	    std::list<Point_2>::const_iterator it = epoints.begin();
+	    Point_2 p( *it++ );
+	    Point_2 q( *it++ );
+	    Point_2 r( *it++ );
+	    return new Triangle(p, q, r);
+	}
+	else if ( epoints.size() > 3 ) {
+	    Polygon* poly = new Polygon;
+	    for ( std::list<Point_2>::const_iterator it = epoints.begin(); it != epoints.end(); ++it ) {
+		poly->exteriorRing().addPoint( Point(*it) );
+	    }
+	    return poly;
+	}
+	else {
+		BOOST_THROW_EXCEPTION( Exception("unexpected CGAL output type in CGAL::convex_hull_2") );
+	}
+}
 
 ///
 ///
@@ -31,7 +82,7 @@ Geometry* convexHull3D( const Geometry & g )
 	using CGAL::object_cast ;
 
 
-	detail::GetPointsVisitor getPointVisitor;
+	SFCGAL::detail::GetPointsVisitor getPointVisitor;
 	const_cast< Geometry & >(g).accept( getPointVisitor );
 
 	// collect points
