@@ -226,9 +226,6 @@ namespace algorithm
 	///
 	static std::auto_ptr<Geometry> planar_polyhedron_to_geometry( const Polyhedron& poly )
 	{
-		std::ofstream resf("res.off");
-		resf << poly;
-
 		// extract the boundary
 		std::list<Point_3> boundary;
 		for ( Polyhedron::Halfedge_const_iterator it = poly.halfedges_begin(); it != poly.halfedges_end(); ++it ) {
@@ -275,9 +272,6 @@ namespace algorithm
 	/// Builds a Solid if the given Polyhedron is closed.
 	static std::auto_ptr<Geometry> surface_polyhedron_to_geometry( const Polyhedron& poly )
 	{
-		std::ofstream resf("res.off");
-		resf << poly;
-
 		if ( poly.is_pure_triangle() && !poly.is_closed() ) {
 			// Build a TIN
 			TriangulatedSurface* ret_geo = new TriangulatedSurface();
@@ -336,10 +330,10 @@ namespace algorithm
 		}
 		#endif
 
-		std::ofstream pa("polya.off");
-		std::ofstream pb("polyb.off");
-		pa << polya;
-		pb << polyb;
+		//std::ofstream pa("polya.off");
+		//		std::ofstream pb("polyb.off");
+		//		pa << polya;
+		//		pb << polyb;
 
 		if ( polylines.size() == 0 ) {
 			// no intersection
