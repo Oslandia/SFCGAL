@@ -1,4 +1,6 @@
 #include <SFCGAL/io/GeometryStreams.h>
+#include <SFCGAL/Envelope.h>
+#include <SFCGAL/Geometry.h>
 
 namespace SFCGAL
 {

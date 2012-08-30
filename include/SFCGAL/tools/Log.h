@@ -4,42 +4,9 @@
 #include <string>
 #include <boost/format.hpp>
 
-// #include <boost/iostreams/concepts.hpp>
-// #include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/concepts.hpp>
+#include <boost/iostreams/stream.hpp>
 
-// namespace SFCGAL
-// {
-// 	class LogSink {
-// 	public:
-// 		typedef char                       char_type;
-// 		typedef boost::iostreams::sink_tag category;
-		
-// 		LogSink( std::ostream& str );		
-
-// 		std::streamsize write(const char* s, std::streamsize n);
-// 		void autoflush( bool state );
-// 		void flush();
-		
-// 		std::string& buffer();
-
-// 	private:
-// 		std::ostream& str_;
-// 		std::string buffer_;
-// 		bool autoflush_;
-// 	};
-
-
-// 	/// Log class declaration
-// 	typedef boost::iostreams::stream<LogSink> Log;
-	
-// 	///
-// 	/// Log singleton class
-// 	class Logger
-// 	{
-// 	public:
-// 		static Log& get();
-// 	};
-// }
 
 /**
  *
@@ -89,7 +56,7 @@
 
 
 namespace SFCGAL {
-
+	
 	/**
 	 * [Singleton]Logger class
 	 *
@@ -149,15 +116,6 @@ namespace SFCGAL {
 		);
 
 		/**
-		 * flush log outputs (actualy std::cout.flush())
-		 */
-		void flush();
-		/**
-		 * indicates if each log output may be flushed
-		 */
-		void setAutoflush( bool autoflush ) ;
-
-		/**
 		 * get the current log level
 		 */
 		const Level & logLevel() const ;
@@ -172,10 +130,6 @@ namespace SFCGAL {
 		 */
 		Level _logLevel ;
 		/**
-		 * automatic call to flush() after each log?
-		 */
-		bool _autoflush ;
-		/**
 		 * display file position?
 		 */
 		bool _displayFilePosition ;
@@ -183,11 +137,13 @@ namespace SFCGAL {
 		/**
 		 * private constructor
 		 */
-		Logger();
+		Logger( std::ostream& );
 		/**
 		 * no copy constructor
 		 */
 		Logger( const Logger & other );
+
+		std::ostream _out;
 	};
 
 

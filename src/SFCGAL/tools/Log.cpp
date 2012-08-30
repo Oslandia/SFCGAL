@@ -3,45 +3,6 @@
 
 #include <SFCGAL/tools/Log.h>
 
-// namespace SFCGAL
-// {
-// 	LogSink::LogSink( std::ostream& str ) :
-// 		str_(str),
-// 		autoflush_( true ) {}
-	
-// 	std::streamsize LogSink::write(const char* s, std::streamsize n)
-// 	{
-// 		if ( autoflush_ ) {
-// 			str_.write( s, n );
-// 		}
-// 		return n;
-// 	}
-	
-// 	void LogSink::autoflush( bool state )
-// 	{
-// 		if ( state == true ) {
-// 			flush();
-// 		}
-// 		autoflush_ = state;
-// 	}
-	
-// 	void LogSink::flush()
-// 	{
-// 		str_.write( buffer_.c_str(), buffer_.size() );
-// 		buffer_.clear();
-// 		str_.flush();
-// 	}
-	
-// 	std::string& LogSink::buffer()
-// 	{
-// 		return buffer_;
-// 	}
-	
-// 	SFCGAL::Log& Logger::get()
-// 	{
-// 		static Log log( std::cout );
-// 		return log;
-
 namespace SFCGAL {
 
 ///
@@ -57,7 +18,7 @@ Logger::~Logger()
 ///
 Logger* Logger::get()
 {
-	static Logger log;
+    static Logger log( std::cout );
 	return &log;
 }
 
@@ -91,38 +52,18 @@ void Logger::log(
 	}
 
 	ptime now = second_clock::local_time();
-	std::cout << to_iso_string(now) << ":" ;
+	_out << to_iso_string(now) << ":" ;
 
 	if ( _displayFilePosition && ! filename.empty() ){
-		std::cout << filename << ":" ;
+		_out << filename << ":" ;
 	}
 	if ( _displayFilePosition && lineNumber >= 0 ){
-		std::cout << lineNumber <<  ":" ;
+		_out << lineNumber <<  ":" ;
 	}
 	std::cout << message << std::endl ;
 
-	if ( _autoflush ){
-		flush();
-	}
-
 }
 
-
-///
-///
-///
-void Logger::flush()
-{
-	std::cout.flush() ;
-}
-
-///
-///
-///
-void Logger::setAutoflush( bool autoflush )
-{
-	_autoflush = autoflush ;
-}
 
 ///
 ///
@@ -143,10 +84,10 @@ void Logger::setLogLevel( const Level & logLevel )
 ///
 ///
 ///
-Logger::Logger():
+    Logger::Logger( std::ostream& str ):
 	_logLevel( Warning ),
-	_autoflush(true),
-	_displayFilePosition(false)
+	_displayFilePosition(false),
+	_out( str.rdbuf() )
 {
 
 }
