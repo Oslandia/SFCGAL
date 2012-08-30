@@ -102,6 +102,13 @@ BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
     std::auto_ptr<Geometry> poly1(io::readWkt("POLYGON((1 1,3 1,3 3,1 3,1 1))"));
     std::auto_ptr<Geometry> inter_1 = algorithm::intersection( *poly, *poly1 );
     BOOST_CHECK( *inter_1 == *(io::readWkt("POLYGON((2 2,1 2,1 1,2 1),(1.7 1.7,1.7 1.3,1.3 1.3,1.3 1.7))")) );
+
+    {
+	std::auto_ptr<Geometry> p1(io::readWkt("POLYGON((15.3 -7.8,14.1 -2.4,8.7 -1.3,4 0.2,1.8 -4.3,1 -7.8,0.3 -12.3,3.8 -16.5,8.7 -14.4,13.9 -13.1,15.3 -7.8))"));
+	std::auto_ptr<Geometry> p2(io::readWkt("POLYGON((-0.9 4.4,-1.1 9.4,-5.8 11,-10.3 11.6,-16 10.2,-13.1 4.4,-14.7 -0.4,-10.7 -3.9,-5.3 -3.9,-2.8 0.6,-0.9 4.4))"));
+	std::auto_ptr<Geometry> inter = algorithm::intersection( *p1, *p2 );
+	std::cout << "inter = " << inter->asText() << std::endl;
+    }
 }
 
 BOOST_AUTO_TEST_CASE( testIntersection3DPolygon )

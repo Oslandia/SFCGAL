@@ -11,7 +11,7 @@
 //
 // Intersection kernel
 typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_inexact_constructions_kernel ExactKernel;
+typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
@@ -39,13 +39,21 @@ namespace algorithm
 
 	static std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
 	{
-		MultiPolygon* mp = new MultiPolygon();
 		std::list<CGAL::Polygon_with_holes_2<ExactKernel> > opolys;
 		CGAL::Polygon_with_holes_2<ExactKernel> pa = polya.toPolygon_with_holes_2<ExactKernel>();
 		CGAL::Polygon_with_holes_2<ExactKernel> pb = polyb.toPolygon_with_holes_2<ExactKernel>();
 		CGAL::intersection( pa,
 				    pb,
 				    std::back_inserter(opolys) );
+
+		if ( opolys.size() == 0 ) {
+		    return std::auto_ptr<Geometry>( new GeometryCollection() );
+		}
+		if ( opolys.size() == 1 ) {
+		    return std::auto_ptr<Geometry>(new Polygon( *opolys.begin() ));
+		}
+
+		MultiPolygon* mp = new MultiPolygon;
 		std::list<CGAL::Polygon_with_holes_2<ExactKernel> >::const_iterator it;
 		for ( it = opolys.begin(); it != opolys.end(); ++it ) {
 			mp->addGeometry( new Polygon( *it));
@@ -80,6 +88,12 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
+		//
+		// return EMPTY if bboxes do not overlap
+		if ( !Envelope::overlaps( ga.envelope(), gb.envelope() )) {
+		    return std::auto_ptr<Geometry>(new GeometryCollection() );
+		}
+
 		// deal with geometry collection
 		// call intersection on each geometry of the collection
 		const GeometryCollection* coll;

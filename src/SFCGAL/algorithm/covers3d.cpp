@@ -97,8 +97,8 @@ namespace algorithm
 			return covers3D_x_solid_( ga, static_cast<const Solid&>(gb) );
 		}
 
-		// default behaviour: calls intersects (NOT VALID !)
-		return intersects3D( ga, gb );
+		// default behaviour
+		return false;
 	}
 }
 }

@@ -496,6 +496,12 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
 	{
+		//
+		// return EMPTY if bboxes do not overlap
+		if ( !Envelope::overlaps( ga.envelope(), gb.envelope() )) {
+			return std::auto_ptr<Geometry>(new GeometryCollection());
+		}
+
 		// deal with geometry collection
 		// call intersection on each geometry of the collection
 		const GeometryCollection* coll;
@@ -518,7 +524,6 @@ namespace algorithm
 		//
 		// test first if one geometry is covered by the other one.
 		// In this case, the resulting intersection is the geometry covered by the other one.
-		//		std::cout << "covers3D test ..." << std::endl;
 		if ( algorithm::covers3D( ga, gb )) {
 			return std::auto_ptr<Geometry>( ga.clone() );
 		}
