@@ -55,6 +55,8 @@ Geometry* convexHull( const Geometry & g )
 	else if ( epoints.size() == 2 ) {
 	    return new LineString( Point(*epoints.begin()), Point( *epoints.end()) );
 	}
+	#if 0
+	// GEOS does not seem to return triangles
 	else if ( epoints.size() == 3 ) {
 	    std::list<Point_2>::const_iterator it = epoints.begin();
 	    Point_2 p( *it++ );
@@ -62,11 +64,14 @@ Geometry* convexHull( const Geometry & g )
 	    Point_2 r( *it++ );
 	    return new Triangle(p, q, r);
 	}
-	else if ( epoints.size() > 3 ) {
+	#endif
+	else if ( epoints.size() > 2 ) {
 	    Polygon* poly = new Polygon;
 	    for ( std::list<Point_2>::const_iterator it = epoints.begin(); it != epoints.end(); ++it ) {
-		poly->exteriorRing().addPoint( Point(*it) );
+		poly->exteriorRing().addPoint( *it );
 	    }
+	    // add back the first point to close the ring
+	    poly->exteriorRing().addPoint( *epoints.begin() );
 	    return poly;
 	}
 	else {

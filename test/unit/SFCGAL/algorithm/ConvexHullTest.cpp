@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( testConvexHull2D )
 
 	LineString lineString( points ) ;
 	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
-	BOOST_CHECK( hull->is<Triangle>() );
+	BOOST_CHECK( hull->is<Polygon>() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
