@@ -3,7 +3,13 @@
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polyhedron_3.h>
+// unpublished code ...
+#if 0
 #include <CGAL/Point_inside_polyhedron_3.h>
+#else
+// use a non-robust version for now
+#include <CGAL/Polyhedral_mesh_domain_3.h>
+#endif
 
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/all.h>
@@ -21,13 +27,18 @@ namespace algorithm
 	bool covers3D( std::vector<const Point*>& pts, const Solid& solid )
 	{
 		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
+		typedef CGAL::Polyhedral_mesh_domain_3<Polyhedron, Kernel> Mesh_domain;
 		
 		std::auto_ptr<Polyhedron> ext_shell_poly = solid.exteriorShell().toPolyhedron_3<Kernel, Polyhedron>();
 		BOOST_ASSERT( ext_shell_poly.get() != 0 );
+		Mesh_domain ext_domain( *ext_shell_poly );
+		Mesh_domain::Is_in_domain is_in_ext( ext_domain );
 		
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
+		//		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_ext( *ext_shell_poly );
+		
 		for ( size_t j = 0; j < pts.size(); ++j ) {
-			if ( !point_inside_ext( pts[j]->toPoint_3<Kernel>() )) {
+			//			if ( !point_inside_ext( pts[j]->toPoint_3<Kernel>() )) {
+			if ( ! is_in_ext( pts[j]->toPoint_3<Kernel>() )) {
 				return false;
 			}
 		}
@@ -37,9 +48,12 @@ namespace algorithm
 		//
 		for ( size_t i = 0; i < solid.numInteriorShells(); ++i ) {
 			std::auto_ptr<Polyhedron> shell_poly = solid.interiorShellN(i).toPolyhedron_3<Kernel, Polyhedron>();
-			CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
+			Mesh_domain shell_domain( *shell_poly );
+			Mesh_domain::Is_in_domain is_in_shell( shell_domain );
+			//			CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
 			for ( size_t j = 0; j < pts.size(); ++j ) {
-				if ( point_inside( pts[j]->toPoint_3<Kernel>() )) {
+				//if ( point_inside( pts[j]->toPoint_3<Kernel>() )) {
+				if ( is_in_shell( pts[j]->toPoint_3<Kernel>() )) {
 					// FIXME : process nested holes
 					return false;
 				}

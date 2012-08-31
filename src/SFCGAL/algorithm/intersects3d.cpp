@@ -21,8 +21,6 @@
 #include <CGAL/AABB_traits.h>
 #include <CGAL/AABB_polyhedron_triangle_primitive.h>
 
-#include <CGAL/Point_inside_polyhedron_3.h>
-
 #include <CGAL/box_intersection_d.h>
 
 #include <SFCGAL/algorithm/triangulate.h>

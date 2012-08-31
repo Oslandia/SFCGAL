@@ -246,6 +246,17 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 
 	const Solid& solid = static_cast<const Solid&>( *g );
 
+	std::string concave_str = "SOLID(("
+		"((0 0 0,0 1 0,1 1 0,1 0 0,0.5 0.5 0,0 0 0))," // front face
+		"((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0))," // right face
+		"((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))," // top face
+		"((0 0 1,0 1 1,0 1 0,0 0 0,0 0 1))," // left face
+		"((1 0 1,1 1 1,0 1 1,0 0 1,0.5 0.5 1,1 0 1))," // back face
+		"((1 0 0,1 0 1,0.5 0.5 1,0.5 0.5 0,1 0 0))," // bottom face 1
+		"((0 0 0,0.5 0.5 0,0.5 0.5 1,0 0 1,0 0 0))" // bottom face 2
+		"))";
+	std::auto_ptr<Geometry> concave(io::readWkt(concave_str));
+
 	// intersection with a point
 	{
 		// point on a vertex
@@ -258,6 +269,13 @@ BOOST_AUTO_TEST_CASE( intersects3DSolid )
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(1.5, 0.5, 0.5), solid ), false );
 		// point inside the volume
 		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.5, 0.5, 0.5), solid ), true );
+
+		// point inside a concave volume where a ray starting from this point has a chance to intersect more than once
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.1, 0.2, 0.2), *concave ), true );
+		// point on an edge of a concave volume
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.5, 0.5, 0.0), *concave ), true );
+		// point outside a concave volume (but inside the convex hull)
+		BOOST_CHECK_EQUAL( algorithm::intersects3D( Point(0.5, 0, 0.0), *concave ), false );
 	}
 
 	// intersection with a linestring
