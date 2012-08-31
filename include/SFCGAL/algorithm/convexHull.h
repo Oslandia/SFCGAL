@@ -9,13 +9,13 @@ namespace algorithm {
 	/**
 	 * Compute the 2D convex hull for a geometry
 	 */
-	Geometry* convexHull( const Geometry & g ) ;
+	std::auto_ptr<Geometry> convexHull( const Geometry & g ) ;
 
 	/**
 	 * Compute the 3D convex hull for a geometry
 	 * @todo improve to handle collinear points and coplanar points
 	 */
-	Geometry* convexHull3D( const Geometry & g ) ;
+	std::auto_ptr<Geometry> convexHull3D( const Geometry & g ) ;
 
 
 }//algorithm
