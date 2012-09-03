@@ -10,7 +10,7 @@ namespace algorithm {
 	 * extrude a Geometry with a direction
 	 * @todo GeometryCollection, PolyhedralSurface, TriangulatedSurface (require boundary)
 	 */
-	Geometry * extrude( const Geometry & g, double dx, double dy, double dz ) ;
+	std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, double dz ) ;
 
 	void       translate( Geometry & g, double dx, double dy, double dz ) ;
 
