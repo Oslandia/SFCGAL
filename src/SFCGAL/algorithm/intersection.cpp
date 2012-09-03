@@ -185,7 +185,7 @@ namespace algorithm
 
 		if ( gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE || gb.geometryTypeId() == TYPE_POLYGON ) {
 			TriangulatedSurface surf;
-			algorithm::triangulate( static_cast<const PolyhedralSurface&>(gb), surf);
+			algorithm::triangulate( gb, surf);
 			return intersection( ga, surf );
 		}
 		

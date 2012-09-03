@@ -95,20 +95,49 @@ BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
 
 BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
 {
-    // very simple intersection
-    // TODO: complete
-    std::auto_ptr<Geometry> poly(io::readWkt("POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))"));
+	// a square with a hole
+	std::auto_ptr<Geometry> poly(io::readWkt("POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))"));
+	
+	// point x polygon
+	{
+		// a point inside
+		BOOST_CHECK( *(algorithm::intersection( Point(0.1, 0.1), *poly)) == Point(0.1, 0.1));
+		// a point on an edge
+		BOOST_CHECK( *(algorithm::intersection( Point(0.1, 0), *poly)) == Point(0.1, 0));
+		// a point on a vertex
+		BOOST_CHECK( *(algorithm::intersection( Point(0, 0), *poly)) == Point(0, 0));
+		// a point on an interior edge
+		BOOST_CHECK( *(algorithm::intersection( Point(1.5, 1.3), *poly)) == Point(1.5, 1.3));
+		// a point in a hole
+		BOOST_CHECK( (algorithm::intersection( Point(1.5, 1.5), *poly))->isEmpty() );
+		// a point outside
+		BOOST_CHECK( (algorithm::intersection( Point(2.5, 2.5), *poly))->isEmpty() );
+	}
+	// linestring x polygon
+	{
+		LineString ls1( Point(-0.5, 0.5), Point(2.5, 0.5));
+		// a linestring inside
+		BOOST_CHECK(  ! (algorithm::intersection( ls1, *poly ))->isEmpty() );
 
-    std::auto_ptr<Geometry> poly1(io::readWkt("POLYGON((1 1,3 1,3 3,1 3,1 1))"));
-    std::auto_ptr<Geometry> inter_1 = algorithm::intersection( *poly, *poly1 );
-    BOOST_CHECK( *inter_1 == *(io::readWkt("POLYGON((2 2,1 2,1 1,2 1),(1.7 1.7,1.7 1.3,1.3 1.3,1.3 1.7))")) );
+		LineString ls2( Point(0.0, 0.0), Point(1.0, 0.0));
+		// a linestring on an edge
+		BOOST_CHECK(  ! (algorithm::intersection( ls2, *poly ))->isEmpty() );
 
-    {
-	std::auto_ptr<Geometry> p1(io::readWkt("POLYGON((15.3 -7.8,14.1 -2.4,8.7 -1.3,4 0.2,1.8 -4.3,1 -7.8,0.3 -12.3,3.8 -16.5,8.7 -14.4,13.9 -13.1,15.3 -7.8))"));
-	std::auto_ptr<Geometry> p2(io::readWkt("POLYGON((-0.9 4.4,-1.1 9.4,-5.8 11,-10.3 11.6,-16 10.2,-13.1 4.4,-14.7 -0.4,-10.7 -3.9,-5.3 -3.9,-2.8 0.6,-0.9 4.4))"));
-	std::auto_ptr<Geometry> inter = algorithm::intersection( *p1, *p2 );
-	std::cout << "inter = " << inter->asText() << std::endl;
-    }
+		LineString ls3( Point(-0.5, 0.0), Point(1.0, -2.0));
+		// a linestring outside
+		BOOST_CHECK(  (algorithm::intersection( ls3, *poly ))->isEmpty() );
+	}
+	// triangle x polygon
+	// TODO
+
+	// polygon x polygon
+	{
+		std::auto_ptr<Geometry> poly1(io::readWkt("POLYGON((1 1,3 1,3 3,1 3,1 1))"));
+		std::auto_ptr<Geometry> inter_1 = algorithm::intersection( *poly, *poly1 );
+		BOOST_CHECK( *inter_1 == *(io::readWkt("POLYGON((2 2,1 2,1 1,2 1),(1.7 1.7,1.7 1.3,1.3 1.3,1.3 1.7))")) );
+
+		// TODO
+	}
 }
 
 BOOST_AUTO_TEST_CASE( testIntersection3DPolygon )
