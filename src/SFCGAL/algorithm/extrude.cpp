@@ -18,28 +18,28 @@ namespace algorithm {
 ///
 ///
 ///
-Geometry * extrude( const Geometry & g, double dx, double dy, double dz )
+std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, double dz )
 {
 	SFCGAL_INFO( boost::format( "extrude(%1%,%2%,%3%,%4%)" ) % g.asText(1) % dx % dy % dz );
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
-		return extrude( g.as< Point >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< Point >(), dx, dy, dz ));
 	case TYPE_LINESTRING:
-		return extrude( g.as< LineString >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< LineString >(), dx, dy, dz ));
 	case TYPE_POLYGON:
-		return extrude( g.as< Polygon >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< Polygon >(), dx, dy, dz ));
 	case TYPE_TRIANGLE:
-		return extrude( g.as< Triangle >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< Triangle >(), dx, dy, dz ));
 	case TYPE_MULTIPOINT:
-		return extrude( g.as< MultiPoint >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< MultiPoint >(), dx, dy, dz ));
 	case TYPE_MULTILINESTRING:
-		return extrude( g.as< MultiLineString >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< MultiLineString >(), dx, dy, dz ));
 	case TYPE_MULTIPOLYGON:
-		return extrude( g.as< MultiPolygon >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< MultiPolygon >(), dx, dy, dz ));
 	case TYPE_TIN:
-		return extrude( g.as< TriangulatedSurface >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< TriangulatedSurface >(), dx, dy, dz ));
 	case TYPE_POLYHEDRALSURFACE:
-		return extrude( g.as< PolyhedralSurface >(), dx, dy, dz );
+		return std::auto_ptr< Geometry >( extrude( g.as< PolyhedralSurface >(), dx, dy, dz ));
 	}
 	BOOST_THROW_EXCEPTION( Exception(
 		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
