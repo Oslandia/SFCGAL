@@ -23,8 +23,6 @@ osg::Geometry* OsgFactory::createGeometry( const Geometry & g )
 		return createGeometry(g.as< Polygon >() );
 	case TYPE_TRIANGLE:
 		return createGeometry(g.as< Triangle >() );
-	//case TYPE_GEOMETRYCOLLECTION:
-	//	return createGeometry(g.as< GeometryCollection >() );
 	case TYPE_MULTIPOINT:
 		return createGeometry(g.as< MultiPoint >() );
 	case TYPE_MULTILINESTRING:
@@ -39,6 +37,8 @@ osg::Geometry* OsgFactory::createGeometry( const Geometry & g )
 		return createGeometry(g.as< Solid >() );
 	case TYPE_MULTISOLID:
 		return createGeometry(g.as< MultiSolid >() );
+		//	case TYPE_GEOMETRYCOLLECTION:
+		//		return createGeometry(g.as< GeometryCollection >() );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("can't convert %1% to osg::Geometry") % g.geometryType() ).str()
@@ -270,6 +270,18 @@ osg::Geometry* OsgFactory::createGeometry( const MultiSolid & g )
 		}
 	}
 	return createGeometry( triangulatedSurface );
+}
+
+///
+///
+///
+osg::Geometry* OsgFactory::createGeometry( const GeometryCollection & g )
+{
+	if ( g.isEmpty() )
+		return NULL ;
+
+	// TODO
+	return NULL;
 }
 
 ///

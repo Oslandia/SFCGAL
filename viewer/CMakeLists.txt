@@ -4,6 +4,8 @@ find_package( OpenSceneGraph COMPONENTS osgQt osgViewer osgGA osgDB osgUtil REQU
 
 include_directories(
 	include
+	# postgresql
+	/usr/include/postgresql
 	${QT_INCLUDE_DIR} 
 	${OPENSCENEGRAPH_INCLUDE_DIRS} 
 )
@@ -27,6 +29,8 @@ target_link_libraries( viewer-SFCGAL
 	${Boost_LIBRARIES}
 	${MPFR_LIBRARIES}
 	${GMP_LIBRARIES}
+	# Postgresql
+	pq
 )
 install( TARGETS viewer-SFCGAL DESTINATION bin )
 

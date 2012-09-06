@@ -50,6 +50,7 @@ namespace viewer {
 		void saveImageToFile() ;
 
 
+		void setCameraToExtent( double left, double right, double bottom, double top, double near, double far );
 	public slots :
 		/**
 		 * start animation

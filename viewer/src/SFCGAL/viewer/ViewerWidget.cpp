@@ -33,7 +33,7 @@
 #include <osg/Switch>
 #include <osgText/Text>
 
-
+#include <osg/io_utils>
 
 namespace SFCGAL {
 namespace viewer {
@@ -76,7 +76,7 @@ void ViewerWidget::initViewer()
 	layout->addWidget( gw ? gw->getGLWidget() : NULL );
 	setLayout( layout );
 
-	setMinimumSize(300,300);
+	setMinimumSize(500,300);
 
 	connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
 	startAnimation();
@@ -125,16 +125,27 @@ osg::Camera* ViewerWidget::createCamera( int x, int y, int w, int h, const std::
 
 	camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
 	camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
-	camera->setProjectionMatrixAsPerspective(
-		30.0f,
-		static_cast<double>(traits->width)/static_cast<double>(traits->height),
-		1.0f,
-		1000000000.0f
-	);
+
+	osg::Matrixd matrix;
+	osg::Matrixd persp;
+	persp.makePerspective( 30.0f,
+				static_cast<double>(traits->width)/static_cast<double>(traits->height),
+				10.0f,
+				1000000000.0f
+				);
+	matrix.makeLookAt( /*eye*/ osg::Vec3f( 0.0, 100.0, 0.0 ), /*center*/ osg::Vec3f( 0.0, 0.0, 0.0 ), /* up */ osg::Vec3f( 0.0, 0.0, 1.0 ) );
+	matrix = matrix * persp;
+	std::cout << "Matrix = " << matrix << std::endl;
+	camera->setProjectionMatrix( matrix );
+
 	camera->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
 	return camera.release();
 }
 
+	void ViewerWidget::setCameraToExtent( double left, double right, double bottom, double top, double near, double far )
+	{
+		// TODO
+	}
 ///
 ///
 ///
