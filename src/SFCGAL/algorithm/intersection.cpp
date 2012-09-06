@@ -3,6 +3,7 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
+#include <SFCGAL/algorithm/collectionHomogenize.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -83,7 +84,8 @@ namespace algorithm
 			delete cb.geometries;
 			return g;
 		}
-		return std::auto_ptr<Geometry>( cb.geometries );
+
+		return collectionHomogenize( std::auto_ptr<Geometry>(cb.geometries) );
 	}
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
