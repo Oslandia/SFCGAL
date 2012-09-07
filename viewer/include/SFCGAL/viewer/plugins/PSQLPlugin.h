@@ -65,6 +65,7 @@ namespace plugins {
 
 		void saveLayers();
 		void loadLayers();
+		void onRefresh();
 	protected:
 		/**
 		 * init plugin

@@ -123,7 +123,8 @@ namespace plugins {
 
 	LayersWidget::LayersWidget( PSQLPlugin* plugin, SQLConsole* console ) : console_(console), plugin_(plugin)
 	{
-		resize(200, 300);
+		setMinimumSize( QSize( 100, 50 ));
+
 		QWidget* dockWidgetContents = new QWidget();
 		dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
 		QVBoxLayout* verticalLayout = new QVBoxLayout(dockWidgetContents);
@@ -260,7 +261,7 @@ namespace plugins {
 	void PSQLPlugin::launchConsole()
 	{
 		impl_->console = new SQLConsole( this );
-		viewerWindow()->addDockWidget( Qt::RightDockWidgetArea, impl_->console );
+		viewerWindow()->addDockWidget( Qt::BottomDockWidgetArea, impl_->console );
 		impl_->layers = new LayersWidget( this, impl_->console );
 		viewerWindow()->addDockWidget( Qt::LeftDockWidgetArea, impl_->layers );
 	}
@@ -357,6 +358,10 @@ namespace plugins {
 	
 	void PSQLPlugin::display()
 	{
+		if ( impl_->layers == 0 ) {
+			return;
+		}
+
 		osg::Group* root = viewerWindow()->viewer()->getScene();
 		// remove all children
 		root->removeChildren( 0, root->getNumChildren() );
@@ -367,12 +372,17 @@ namespace plugins {
 			QListWidgetItem* item = listWidget->item( i );
 			LayerInfo* linfo = (LayerInfo *)item->data( Qt::UserRole ).value<void *>();
 			bool visible = item->data( Qt::CheckStateRole).toBool();
+			std::cout << "visible = " << visible << std::endl;
 			if ( visible && linfo->geode != 0 ) {
 				root->addChild( linfo->geode );
 			}
 		}
 	}
 
+	void PSQLPlugin::onRefresh()
+	{
+		display();
+	}
 ///
 ///
 ///
@@ -384,7 +394,7 @@ QString PSQLPlugin::pluginName() const
 	void PSQLPlugin::saveLayers()
 	{
 		if ( impl_->layers == 0 ) {
-			return;
+			launchConsole();
 		}
 
 		viewerWindow()->viewer()->stopAnimation();
@@ -417,7 +427,7 @@ QString PSQLPlugin::pluginName() const
 	void PSQLPlugin::loadLayers()
 	{
 		if ( impl_->layers == 0 ) {
-			return;
+			launchConsole();
 		}
 		
 		viewerWindow()->viewer()->stopAnimation();
@@ -451,12 +461,13 @@ QString PSQLPlugin::pluginName() const
 		computeGeometries();
 		display();
 
+		impl_->console->disconnectItem();
 		viewerWindow()->viewer()->startAnimation();
 	}
 
 void PSQLPlugin::load()
 {
-	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("PSQLPlugin") ;
+	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("PostGIS") ;
 
 	QAction * action = pluginMenu->addAction( QString("&SQL console") );
 	QObject::connect( action, SIGNAL(triggered()), this, SLOT( launchConsole() ) );
@@ -466,6 +477,10 @@ void PSQLPlugin::load()
 
 	QAction * loadAction = pluginMenu->addAction( QString("&Load layers") );
 	QObject::connect( loadAction, SIGNAL(triggered()), this, SLOT( loadLayers() ) );
+
+	QAction * refreshAction = pluginMenu->addAction( QString("&Refresh display\tF5") );
+	refreshAction->setShortcut( QKeySequence("F5") );
+	QObject::connect( refreshAction, SIGNAL(triggered()), this, SLOT( onRefresh() ) );
 }
 
 
