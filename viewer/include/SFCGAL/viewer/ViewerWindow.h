@@ -61,6 +61,15 @@ namespace viewer {
 		 */
 		void screenShot() ;
 
+		/**
+		 * switch to a GIS-oriented manipulator
+		 */
+		void toGISView();
+
+		/**
+		 * switch to a free view manipulator
+		 */
+		void toFreeView();
 	protected:
 		/**
 		 * create default menus

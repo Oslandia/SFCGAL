@@ -197,11 +197,11 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 		osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
 
 		keyswitchManipulator->addMatrixManipulator( '0', "GIS", new GISManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '2', "Flight", new osgGA::FlightManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '3', "Drive", new osgGA::DriveManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '4', "Terrain", new osgGA::TerrainManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '5', "Orbit", new osgGA::OrbitManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '1', "Orbit", new osgGA::OrbitManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '2', "Trackball", new osgGA::TrackballManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '3', "Flight", new osgGA::FlightManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '4', "Drive", new osgGA::DriveManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '5', "Terrain", new osgGA::TerrainManipulator() );
 		keyswitchManipulator->addMatrixManipulator( '6', "FirstPerson", new osgGA::FirstPersonManipulator() );
 		keyswitchManipulator->addMatrixManipulator( '7', "Spherical", new osgGA::SphericalManipulator() );
 

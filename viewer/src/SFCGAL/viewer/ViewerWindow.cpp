@@ -26,6 +26,9 @@
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 
+#include <osgGA/OrbitManipulator>
+#include <SFCGAL/viewer/GISManipulator.h>
+
 namespace SFCGAL {
 namespace viewer {
 
@@ -164,6 +167,22 @@ void ViewerWindow::saveFile()
 ///
 ///
 ///
+void ViewerWindow::toGISView()
+{
+	viewer()->setCameraManipulator( new GISManipulator(), /* resetPosition = */ true );
+}
+
+///
+///
+///
+void ViewerWindow::toFreeView()
+{
+	viewer()->setCameraManipulator( new osgGA::OrbitManipulator(), /* resetPosition = */ true );
+}
+
+///
+///
+///
 void ViewerWindow::createMenus()
 {
 	/*
@@ -189,6 +208,15 @@ void ViewerWindow::createMenus()
 	QAction *actionExit = _menuFile->addAction("&Exit");
 	connect( actionExit, SIGNAL(triggered()), qApp, SLOT( quit() ) );
 
+	/*
+	 * Display menu
+	 */
+	QMenu* displayMenu = menuBar()->addMenu( "&Display" );
+	QAction* gisView = displayMenu->addAction("GIS view\t0");
+	connect( gisView, SIGNAL(triggered()), this, SLOT( toGISView() ));
+
+	QAction* freeView = displayMenu->addAction("Free view\t1");
+	connect( freeView, SIGNAL(triggered()), this, SLOT( toFreeView() ));
 
 	/*
 	 * Help menu
