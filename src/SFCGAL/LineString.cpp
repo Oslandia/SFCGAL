@@ -21,7 +21,7 @@ LineString::LineString( const std::vector< Point > & points ):
 	_points(points.size())
 {
 	for ( size_t i = 0; i < points.size(); i++ ){
-		_points[i] = points[i].clone() ;
+		_points[i] = PointPtr( points[i].clone() ) ;
 	}
 }
 
@@ -32,8 +32,8 @@ LineString::LineString( const Point & startPoint, const Point & endPoint ):
 	Geometry(),
 	_points(2)
 {
-	_points[0] = startPoint.clone() ;
-	_points[1] = endPoint.clone() ;
+	_points[0] = PointPtr( startPoint.clone() );
+	_points[1] = PointPtr( endPoint.clone() );
 }
 
 ///
@@ -50,10 +50,9 @@ LineString::LineString( LineString const& other ):
 ///
 LineString& LineString::operator = ( const LineString & other )
 {
-	clear();
 	_points.resize( other.numPoints() );
 	for ( size_t i = 0; i < other.numPoints(); i++ ){
-		_points[i] = other.pointN(i).clone() ;
+		_points[i] = PointPtr( other.pointN(i).clone() );
 	}
 	return *this ;
 }
@@ -63,11 +62,7 @@ LineString& LineString::operator = ( const LineString & other )
 ///
 LineString::~LineString()
 {
-	//clear existing rings
-	for ( iterator it = begin(); it != end(); ++it ){
-		delete *it ;
-		*it = NULL ;
-	}
+
 }
 
 ///
@@ -75,7 +70,7 @@ LineString::~LineString()
 ///
 LineString * LineString::clone() const
 {
-	return new LineString(*this);
+	return new LineString( *this );
 }
 
 
@@ -131,10 +126,6 @@ bool  LineString::is3D() const
 ///
 void LineString::clear()
 {
-	for ( std::vector< Point* >::iterator it = _points.begin(); it != _points.end(); ++it ){
-		delete *it ;
-		*it = NULL ;
-	}
 	_points.clear();
 }
 

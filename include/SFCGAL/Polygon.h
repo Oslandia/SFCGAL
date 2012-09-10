@@ -19,8 +19,8 @@ namespace SFCGAL {
 	 */
 	class Polygon : public Surface {
 	public:
-		typedef std::vector< LineString* >::iterator       iterator ;
-		typedef std::vector< LineString* >::const_iterator const_iterator ;
+		typedef std::vector< LineStringPtr >::iterator       iterator ;
+		typedef std::vector< LineStringPtr >::const_iterator const_iterator ;
 
 		/**
 		 * Empty Polygon constructor
@@ -28,6 +28,7 @@ namespace SFCGAL {
 		Polygon() ;
 		/**
 		 * Constructor with an exterior ring
+		 * @todo replace by Polygon( const std::vector< LineStringPtr > & rings
 		 */
 		Polygon( const std::vector< LineString > & rings ) ;
 		/**
@@ -49,14 +50,14 @@ namespace SFCGAL {
 		template < typename K >
 		Polygon( const CGAL::Polygon_with_holes_2<K>& poly )
 		{
-			_rings.push_back(new LineString());
+			_rings.push_back( LineStringPtr( new LineString() ) );
 			CGAL::Polygon_2<K> outer = poly.outer_boundary();
 			typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
 			for ( ei = outer.edges_begin(); ei != outer.edges_end(); ++ei ) {
 				_rings.back()->addPoint( ei->source() );
 			}
 			for ( typename CGAL::Polygon_with_holes_2<K>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
-				_rings.push_back(new LineString());
+				_rings.push_back(LineStringPtr(new LineString()));
 				typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
 				for ( ei = hit->edges_begin(); ei != hit->edges_end(); ++ei ) {
 					_rings.back()->addPoint( ei->source() );
@@ -169,7 +170,6 @@ namespace SFCGAL {
 		}
 		*/
 
-
 		inline iterator       begin() { return _rings.begin() ; }
 		inline const_iterator begin() const { return _rings.begin() ; }
 
@@ -216,7 +216,7 @@ namespace SFCGAL {
 		 *
 		 * @warning never empty, empty LineString as exteriorRing for empty Polygon
 		 */
-		std::vector< LineString* > _rings ;
+		std::vector< LineStringPtr > _rings ;
 	};
 
 

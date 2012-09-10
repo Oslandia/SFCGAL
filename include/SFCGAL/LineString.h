@@ -11,6 +11,11 @@
 
 namespace SFCGAL {
 
+	class LineString ;
+
+	typedef boost::shared_ptr< LineString >       LineStringPtr ;
+	typedef boost::shared_ptr< const LineString > ConstLineStringPtr ;
+
 	/**
 	 * A LineString in SFA
 	 *
@@ -18,8 +23,8 @@ namespace SFCGAL {
 	 */
 	class LineString : public Geometry {
 	public:
-		typedef std::vector< Point* >::iterator       iterator ;
-		typedef std::vector< Point* >::const_iterator const_iterator ;
+		typedef std::vector< PointPtr >::iterator       iterator ;
+		typedef std::vector< PointPtr >::const_iterator const_iterator ;
 
 		/**
 		 * Empty LineString constructor
@@ -109,10 +114,16 @@ namespace SFCGAL {
 
 
 		/**
-		 * append a point to the LineString
+		 * append a Point to the LineString
 		 */
 		inline void            addPoint( const Point & p ) {
-			_points.push_back( p.clone() ) ;
+			_points.push_back( PointPtr( p.clone() ) ) ;
+		}
+		/**
+		 * append a Point to the LineString
+		 */
+		inline void            addPoint( PointPtr p ) {
+			_points.push_back( p ) ;
 		}
 
 		//remove 20120910 could lead to memory leaks with existing codes on std::vector< Point* >
@@ -225,7 +236,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< Point* > _points ;
+		std::vector< PointPtr > _points ;
 	};
 
 
