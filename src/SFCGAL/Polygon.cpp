@@ -10,7 +10,7 @@ namespace SFCGAL {
 ///
 Polygon::Polygon():
 	Surface(),
-	_rings(1,LineString())
+	_rings(1,new LineString())
 {
 
 }
@@ -19,11 +19,15 @@ Polygon::Polygon():
 ///
 ///
 Polygon::Polygon( const std::vector< LineString > & rings ):
-	Surface(),
-	_rings(rings)
+	Surface()
 {
-	if ( _rings.empty() ){
-		_rings.resize(1,LineString());
+	if ( rings.empty() ){
+		_rings.resize(1,new LineString());
+	}else{
+		_rings.resize(rings.size());
+		for ( size_t i = 0; i < rings.size(); i++ ){
+			_rings[i] = rings[i].clone() ;
+		}
 	}
 }
 
@@ -32,7 +36,7 @@ Polygon::Polygon( const std::vector< LineString > & rings ):
 ///
 Polygon::Polygon( const LineString & exteriorRing ):
 	Surface(),
-	_rings(1,exteriorRing)
+	_rings(1,exteriorRing.clone())
 {
 
 }
@@ -42,7 +46,7 @@ Polygon::Polygon( const LineString & exteriorRing ):
 ///
 Polygon::Polygon( const Triangle & triangle ):
 	Surface(),
-	_rings(1,LineString())
+	_rings(1,new LineString())
 {
 	if ( ! triangle.isEmpty() ){
 		for ( size_t i = 0; i < 4; i++ ){
@@ -55,10 +59,9 @@ Polygon::Polygon( const Triangle & triangle ):
 ///
 ///
 Polygon::Polygon( Polygon const& other ):
-	Surface(other),
-	_rings(other._rings)
+	Surface(other)
 {
-
+	(*this) = other ;
 }
 
 ///
@@ -66,7 +69,20 @@ Polygon::Polygon( Polygon const& other ):
 ///
 Polygon& Polygon::operator = ( const Polygon & other )
 {
-	_rings = other._rings ;
+	//clear existing rings
+	for ( iterator it = begin(); it != end(); ++it ){
+		delete *it ;
+		*it = NULL ;
+	}
+	//copy other rings
+	if ( other.isEmpty() ){
+		_rings.resize(1,new LineString());
+	}else{
+		_rings.resize( other.numRings() );
+		for ( size_t i = 0; i < other.numRings(); i++ ){
+			_rings[i] = other.ringN(i).clone() ;
+		}
+	}
 	return *this ;
 }
 
@@ -75,7 +91,11 @@ Polygon& Polygon::operator = ( const Polygon & other )
 ///
 Polygon::~Polygon()
 {
-
+	//clear existing rings
+	for ( iterator it = begin(); it != end(); ++it ){
+		delete *it ;
+		*it = NULL ;
+	}
 }
 
 ///
@@ -83,7 +103,7 @@ Polygon::~Polygon()
 ///
 int Polygon::coordinateDimension() const
 {
-	return _rings[0].coordinateDimension() ;
+	return _rings[0]->coordinateDimension() ;
 }
 
 

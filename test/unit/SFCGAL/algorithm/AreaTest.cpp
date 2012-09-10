@@ -39,6 +39,7 @@ BOOST_AUTO_TEST_CASE( testArea2D_Triangle )
 BOOST_AUTO_TEST_CASE( testArea3D_Square1x1 )
 {
 	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 1.0,0.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 0.0))" ) );
+	BOOST_CHECK_EQUAL( g->asText(1), "POLYGON((0.0 0.0 0.0,0.0 0.0 1.0,0.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 0.0))" );
 	BOOST_CHECK_EQUAL( algorithm::area3D( *g ), 1.0 );
 }
 

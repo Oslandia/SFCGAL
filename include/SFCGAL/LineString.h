@@ -119,6 +119,12 @@ namespace SFCGAL {
 		//const std::vector< Point > & points() const { return _points; }
 		//std::vector< Point > &       points() { return _points; }
 
+		inline iterator       begin() { return _points.begin() ; }
+		inline const_iterator begin() const { return _points.begin() ; }
+
+		inline iterator       end() { return _points.end() ; }
+		inline const_iterator end() const { return _points.end() ; }
+
 
 		/**
 		 * Const iterator to 2D points
@@ -200,13 +206,6 @@ namespace SFCGAL {
 		{
 			return std::make_pair( points_3_begin<K>(), points_3_end<K>() );
 		}
-
-
-		inline iterator       begin() { return _points.begin() ; }
-		inline const_iterator begin() const { return _points.begin() ; }
-
-		inline iterator       end() { return _points.end() ; }
-		inline const_iterator end() const { return _points.end() ; }
 
 		/*
 		 * Convert to CGAL::Polygon_2

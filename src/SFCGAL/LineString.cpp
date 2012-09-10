@@ -63,7 +63,11 @@ LineString& LineString::operator = ( const LineString & other )
 ///
 LineString::~LineString()
 {
-
+	//clear existing rings
+	for ( iterator it = begin(); it != end(); ++it ){
+		delete *it ;
+		*it = NULL ;
+	}
 }
 
 ///
