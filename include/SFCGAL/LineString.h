@@ -18,6 +18,9 @@ namespace SFCGAL {
 	 */
 	class LineString : public Geometry {
 	public:
+		typedef std::vector< Point* >::iterator       iterator ;
+		typedef std::vector< Point* >::const_iterator const_iterator ;
+
 		/**
 		 * Empty LineString constructor
 		 */
@@ -62,6 +65,11 @@ namespace SFCGAL {
 		virtual bool           is3D() const ;
 
 		/**
+		 * remove all points from the LineString
+		 */
+		void clear() ;
+
+		/**
 		 * reverse LineString orientation
 		 */
 		void reverse() ;
@@ -73,49 +81,48 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Point  &  pointN( size_t const& n ) const { return _points[n]; }
+		inline const Point  &  pointN( size_t const& n ) const { return *_points[n]; }
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Point &         pointN( size_t const& n ) { return _points[n]; }
+		inline Point &         pointN( size_t const& n ) { return *_points[n]; }
 
 
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline const Point &   startPoint() const { return _points.front(); }
+		inline const Point &   startPoint() const { return *_points.front(); }
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline Point &         startPoint() { return _points.front(); }
+		inline Point &         startPoint() { return *_points.front(); }
 
 
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline const Point &   endPoint() const { return _points.back(); }
+		inline const Point &   endPoint() const { return *_points.back(); }
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline Point &         endPoint() { return _points.back(); }
+		inline Point &         endPoint() { return *_points.back(); }
 
 
 		/**
 		 * append a point to the LineString
 		 */
 		inline void            addPoint( const Point & p ) {
-			_points.push_back( p ) ;
+			_points.push_back( p.clone() ) ;
 		}
 
+		//remove 20120910 could lead to memory leaks with existing codes on std::vector< Point* >
+		//const std::vector< Point > & points() const { return _points; }
+		//std::vector< Point > &       points() { return _points; }
 
 
-		const std::vector< Point > & points() const { return _points; }
-		std::vector< Point > &       points() { return _points; }
-
-
-		// TODO: replace by boost::tranform_iterator ?
 		/**
 		 * Const iterator to 2D points
+		 * TODO: replace by boost::tranform_iterator ?
 		 */
 		template < typename K >
 		class Point_2_const_iterator :
@@ -126,35 +133,37 @@ namespace SFCGAL {
 		{
 		public:
 			Point_2_const_iterator() {}
-			explicit Point_2_const_iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
-			Point_2_const_iterator( const Point_2_const_iterator<K>& other ) : it_(other.it_) {}
+			explicit Point_2_const_iterator( const_iterator it ) : it_(it) {}
+			//Point_2_const_iterator( const Point_2_const_iterator<K>& other ) : it_(other.it_) {}
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
 			void decrement() { it_--; }
 			bool equal( const Point_2_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_2<K>& dereference() const { p_ = it_->toPoint_2<K>(); return p_; }
+			const CGAL::Point_2<K>& dereference() const { p_ = (*it_)->toPoint_2<K>(); return p_; }
 			mutable CGAL::Point_2<K> p_;
-			std::vector<Point>::const_iterator it_;
+			const_iterator it_;
 		};
 		template < typename K >
 		Point_2_const_iterator<K> points_2_begin() const
 		{
-			return Point_2_const_iterator<K>(points().begin());
+			return Point_2_const_iterator<K>(begin());
 		}
 		template < typename K >
 		Point_2_const_iterator<K> points_2_end() const
 		{
-			return Point_2_const_iterator<K>(points().end());
+			return Point_2_const_iterator<K>(end());
 		}
 		template < typename K >
 		std::pair< Point_2_const_iterator<K>, Point_2_const_iterator<K> > points_2() const
 		{
 			return std::make_pair( points_2_begin<K>(), points_2_end<K>() );
 		}
-		
+
+
 		/**
 		 * Const iterator to 3D points
+		 * TODO: replace by boost::tranform_iterator ?
 		 */
 		template < typename K >
 		class Point_3_const_iterator :
@@ -165,26 +174,26 @@ namespace SFCGAL {
 		{
 		public:
 			Point_3_const_iterator() {}
-			explicit Point_3_const_iterator( std::vector<Point>::const_iterator it ) : it_(it) {}
+			explicit Point_3_const_iterator( const_iterator it ) : it_(it) {}
 			Point_3_const_iterator( const Point_3_const_iterator<K>& other ) : it_(other.it_) {}
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
 			void decrement() { it_--; }
 			bool equal( const Point_3_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_3<K>& dereference() const { p_ = it_->toPoint_3<K>(); return p_; }
+			const CGAL::Point_3<K>& dereference() const { p_ = (*it_)->toPoint_3<K>(); return p_; }
 			mutable CGAL::Point_3<K> p_;
-			std::vector<Point>::const_iterator it_;
+			const_iterator it_;
 		};
 		template < typename K >
 		Point_3_const_iterator<K> points_3_begin() const
 		{
-			return Point_3_const_iterator<K>(points().begin());
+			return Point_3_const_iterator<K>(begin());
 		}
 		template < typename K >
 		Point_3_const_iterator<K> points_3_end() const
 		{
-			return Point_3_const_iterator<K>(points().end());
+			return Point_3_const_iterator<K>(end());
 		}
 		template < typename K >
 		std::pair< Point_3_const_iterator<K>, Point_3_const_iterator<K> > points_3() const
@@ -192,10 +201,16 @@ namespace SFCGAL {
 			return std::make_pair( points_3_begin<K>(), points_3_end<K>() );
 		}
 
+
+		inline iterator       begin() { return _points.begin() ; }
+		inline const_iterator begin() const { return _points.begin() ; }
+
+		inline iterator       end() { return _points.end() ; }
+		inline const_iterator end() const { return _points.end() ; }
+
 		/*
 		 * Convert to CGAL::Polygon_2
 		 */
-
 		template < typename K >
 		CGAL::Polygon_2<K> toPolygon_2() const
 		{
@@ -211,7 +226,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< Point > _points ;
+		std::vector< Point* > _points ;
 	};
 
 

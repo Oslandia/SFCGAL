@@ -18,11 +18,11 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 BOOST_AUTO_TEST_CASE( testPolygon3d )
 {
 	Polygon g;
-	g.exteriorRing().points().push_back( Point(0.0,0.0,2.0) );
-	g.exteriorRing().points().push_back( Point(1.0,0.0,2.0) );
-	g.exteriorRing().points().push_back( Point(1.0,1.0,2.0) );
-	g.exteriorRing().points().push_back( Point(0.0,1.0,2.0) );
-	g.exteriorRing().points().push_back( Point(0.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(1.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(1.0,1.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,1.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0,2.0) );
 
 	BOOST_CHECK( ! g.isEmpty() );
 	BOOST_CHECK( g.is3D() );
@@ -41,11 +41,11 @@ BOOST_AUTO_TEST_CASE( asTextEmpty )
 BOOST_AUTO_TEST_CASE( asText2d )
 {
 	Polygon g;
-	g.exteriorRing().points().push_back( Point(0.0,0.0) );
-	g.exteriorRing().points().push_back( Point(1.0,0.0) );
-	g.exteriorRing().points().push_back( Point(1.0,1.0) );
-	g.exteriorRing().points().push_back( Point(0.0,1.0) );
-	g.exteriorRing().points().push_back( Point(0.0,0.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0) );
+	g.exteriorRing().addPoint( Point(1.0,0.0) );
+	g.exteriorRing().addPoint( Point(1.0,1.0) );
+	g.exteriorRing().addPoint( Point(0.0,1.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0) );
 
 	BOOST_CHECK_EQUAL( g.asText(1), "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" );
 }
@@ -55,11 +55,11 @@ BOOST_AUTO_TEST_CASE( asText2d )
 BOOST_AUTO_TEST_CASE( asText3d )
 {
 	Polygon g;
-	g.exteriorRing().points().push_back( Point(0.0,0.0,2.0) );
-	g.exteriorRing().points().push_back( Point(1.0,0.0,2.0) );
-	g.exteriorRing().points().push_back( Point(1.0,1.0,2.0) );
-	g.exteriorRing().points().push_back( Point(0.0,1.0,2.0) );
-	g.exteriorRing().points().push_back( Point(0.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(1.0,0.0,2.0) );
+	g.exteriorRing().addPoint( Point(1.0,1.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,1.0,2.0) );
+	g.exteriorRing().addPoint( Point(0.0,0.0,2.0) );
 
 	BOOST_CHECK_EQUAL( g.asText(1), "POLYGON((0.0 0.0 2.0,1.0 0.0 2.0,1.0 1.0 2.0,0.0 1.0 2.0,0.0 0.0 2.0))" );
 }

@@ -33,10 +33,10 @@ BOOST_AUTO_TEST_CASE( testIntersectsTeapot )
 	LineString ext_ring;
 	const io::WaveFrontFace & face = obj.faceN(i);
 	for ( size_t j = 0; j < face.size(); j++ ) {	    
-	    ext_ring.points().push_back( obj.vertexN( face[j].v ) );
+	    ext_ring.addPoint( obj.vertexN( face[j].v ) );
 	}
 	// close the polygon
-	ext_ring.points().push_back( obj.vertexN( face[0].v ) );
+	ext_ring.addPoint( obj.vertexN( face[0].v ) );
 	surf.addPolygon( Polygon(ext_ring) );
     }
 

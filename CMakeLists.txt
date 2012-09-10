@@ -7,7 +7,7 @@ set( CMAKE_DEBUG_POSTFIX "d" )
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
 include( PrecompiledHeader )
-option( Use_precompiled_headers "Use precompiled headers" ON )
+option( Use_precompiled_headers "Use precompiled headers" OFF )
 
 #-----------------------------------------------------------
 # dependencies

@@ -97,7 +97,8 @@ BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
 {
 	// a square with a hole
 	std::auto_ptr<Geometry> poly(io::readWkt("POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))"));
-	
+	BOOST_CHECK_EQUAL( poly->asText(1), "POLYGON((0.0 0.0,2.0 0.0,2.0 2.0,0.0 2.0,0.0 0.0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))" );
+
 	// point x polygon
 	{
 		// a point inside

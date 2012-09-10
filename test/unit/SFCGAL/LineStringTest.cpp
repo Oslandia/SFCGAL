@@ -17,6 +17,14 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	BOOST_CHECK_EQUAL( g.numPoints(), 0U );
 }
 
+BOOST_AUTO_TEST_CASE( twoPointsConstructor )
+{
+	LineString g( Point(0.0,0.0), Point(2.0,3.0) );
+	BOOST_CHECK( ! g.isEmpty() );
+	BOOST_CHECK( ! g.is3D() );
+	BOOST_CHECK_EQUAL( g.asText(1), "LINESTRING(0.0 0.0,2.0 3.0)" );
+}
+
 
 //-- asText
 
@@ -50,6 +58,24 @@ BOOST_AUTO_TEST_CASE( isLineString )
 	BOOST_CHECK( g.is< LineString >() );
 }
 
+BOOST_AUTO_TEST_CASE( simpleIteratorTest )
+{
+	LineString g;
+	g.addPoint( Point( 0.0, 0.0 ) );
+	g.addPoint( Point( 1.0, 1.0 ) );
+	g.addPoint( Point( 2.0, 2.0 ) );
+
+	LineString::const_iterator it  = g.begin() ;
+	LineString::const_iterator end = g.end() ;
+	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(0.000 0.000)" ); ++it ;
+	BOOST_CHECK( it != end );
+	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(1.000 1.000)" ); ++it ;
+	BOOST_CHECK( it != end );
+	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(2.000 2.000)" ); ++it ;
+	BOOST_CHECK( it == end );
+}
+
+
 BOOST_AUTO_TEST_CASE( iteratorTests )
 {
 	std::vector<Point> points;
@@ -64,12 +90,12 @@ BOOST_AUTO_TEST_CASE( iteratorTests )
 	LineString::Point_2_const_iterator<Kernel> pi, pi_end;
 	int i = 0;
 	for ( boost::tie( pi, pi_end ) = g.points_2<Kernel>(); pi != pi_end; pi++, i++ ) {
-		BOOST_CHECK_EQUAL( *pi, g.points()[i].toPoint_2<Kernel>() );
+		BOOST_CHECK_EQUAL( *pi, g.pointN(i).toPoint_2<Kernel>() );
 	}
 	LineString::Point_3_const_iterator<Kernel> ppi, ppi_end;
 	i = 0;
 	for ( boost::tie( ppi, ppi_end ) = g.points_3<Kernel>(); ppi != ppi_end; ppi++, i++ ) {
-		BOOST_CHECK_EQUAL( *ppi, g.points()[i].toPoint_3<Kernel>() );
+		BOOST_CHECK_EQUAL( *ppi, g.pointN(i).toPoint_3<Kernel>() );
 	}
 }
 

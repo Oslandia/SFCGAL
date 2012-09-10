@@ -173,7 +173,7 @@ void   WktReader::readInnerLineString( LineString & g )
 	while ( ! _reader.eof() ){
 		Point p ;
 		if ( readPointCoordinate( p ) ){
-			g.points().push_back( p );
+			g.addPoint( p );
 		}else{
 			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 		}

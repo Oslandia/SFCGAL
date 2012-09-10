@@ -1,4 +1,5 @@
 #include <SFCGAL/algorithm/collectionHomogenize.h>
+#include <SFCGAL/all.h>
 
 namespace SFCGAL {
 namespace algorithm {

@@ -64,9 +64,9 @@ BOOST_AUTO_TEST_CASE( inOutEdges )
 	vertex_descriptor c = graph.addVertex( Coordinate(2.0,2.0) );
 	vertex_descriptor d = graph.addVertex( Coordinate(2.0,2.0) );
 
-	edge_descriptor ab = graph.addEdge( a, b );
-	edge_descriptor bc = graph.addEdge( b, c );
-	edge_descriptor cd = graph.addEdge( c, d );
+	edge_descriptor ab   = graph.addEdge( a, b );
+	edge_descriptor bc   = graph.addEdge( b, c );
+	/*edge_descriptor cd =*/ graph.addEdge( c, d );
 
 	std::vector< edge_descriptor >          inEdges    = graph.inEdges(b);
 	std::vector< edge_descriptor >          outEdges   = graph.outEdges(b);
