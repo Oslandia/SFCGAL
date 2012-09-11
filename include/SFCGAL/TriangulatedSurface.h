@@ -72,26 +72,33 @@ namespace SFCGAL {
 		 */
 		inline const Triangle  &  triangleN( size_t const& n ) const {
 			BOOST_ASSERT( n < _triangles.size() );
-			return _triangles[n];
+			return *_triangles[n];
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
 		inline Triangle &         triangleN( size_t const& n ) {
 			BOOST_ASSERT( n < _triangles.size() );
-			return _triangles[n];
+			return *_triangles[n];
 		}
 		/**
 		* add a Triangle to the TriangulatedSurface
 		*/
 		inline void               addTriangle( const Triangle & triangle )
 		{
+			_triangles.push_back( TrianglePtr(triangle.clone()) );
+		}
+		/**
+		* add a Triangle to the TriangulatedSurface
+		*/
+		inline void               addTriangle( TrianglePtr triangle )
+		{
 			_triangles.push_back( triangle );
 		}
 
 
-		const std::vector< Triangle > & triangles() const { return _triangles; }
-		std::vector< Triangle > &       triangles() { return _triangles; }
+		//const std::vector< Triangle > & triangles() const { return _triangles; }
+		//std::vector< Triangle > &       triangles() { return _triangles; }
 
 
 		//-- visitors
@@ -101,7 +108,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< Triangle > _triangles ;
+		std::vector< TrianglePtr > _triangles ;
 
 		// Private class
 		// A modifier creating triangles from a TriangulatedSurface with the incremental builder.

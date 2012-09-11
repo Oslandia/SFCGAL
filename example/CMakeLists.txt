@@ -6,6 +6,8 @@ set( EXAMPLE_NAMES
 	CGAL-polygon_triangulation2
 	
 	SFCGAL-save_obj_file
+	
+	BOOST-transform-iterator
 )
 foreach( EXAMPLE_NAME ${EXAMPLE_NAMES} )
 	file( GLOB_RECURSE EXAMPLE_SOURCES ${EXAMPLE_NAME}/*.cpp )

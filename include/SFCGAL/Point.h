@@ -1,20 +1,12 @@
 #ifndef _SFCGAL_POINT_H_
 #define _SFCGAL_POINT_H_
 
-#include <boost/shared_ptr.hpp>
-
 #include <SFCGAL/Coordinate.h>
 
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/DimensionTraits.h>
 
 namespace SFCGAL {
-
-	class Point ;
-
-	typedef boost::shared_ptr< Point >       PointPtr ;
-	typedef boost::shared_ptr< const Point > ConstPointPtr ;
-
 
 	/**
 	 * A point in SFA.

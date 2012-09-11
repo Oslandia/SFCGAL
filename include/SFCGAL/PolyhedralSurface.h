@@ -74,19 +74,23 @@ namespace SFCGAL {
 		 */
 		inline const Polygon  &   polygonN( size_t const& n ) const {
 			BOOST_ASSERT( n < _polygons.size() );
-			return _polygons[n];
+			return *_polygons[n];
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
 		inline Polygon &          polygonN( size_t const& n ) {
 			BOOST_ASSERT( n < _polygons.size() );
-			return _polygons[n];
+			return *_polygons[n];
 		}
 		/**
 		 * add a polygon to the PolyhedralSurface
 		 */
 		void                      addPolygon( const Polygon & polygon ) ;
+		/**
+		 * add a polygon to the PolyhedralSurface
+		 */
+		void                      addPolygon( PolygonPtr polygon ) ;
 		/**
 		 * add polygons from an other PolyhedralSurface
 		 */
@@ -105,8 +109,8 @@ namespace SFCGAL {
 			return tri.toPolyhedron_3<K, Polyhedron>();
 		}
 
-		const std::vector< Polygon > & polygons() const { return _polygons; }
-		std::vector< Polygon > &       polygons() { return _polygons; }
+		//const std::vector< Polygon > & polygons() const { return _polygons; }
+		//std::vector< Polygon > &       polygons() { return _polygons; }
 
 		//-- visitors
 
@@ -115,7 +119,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< Polygon > _polygons ;
+		std::vector< PolygonPtr > _polygons ;
 	};
 }
 

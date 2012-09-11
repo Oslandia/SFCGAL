@@ -38,10 +38,7 @@ GeometryCollection& GeometryCollection::operator = ( const GeometryCollection & 
 ///
 GeometryCollection::~GeometryCollection()
 {
-	for ( std::vector< Geometry* >::iterator it = _geometries.begin(); it != _geometries.end(); ++it ){
-		delete *it ;
-		*it = 0 ;
-	}
+
 }
 
 ///
@@ -74,7 +71,7 @@ GeometryType   GeometryCollection::geometryTypeId() const
 int  GeometryCollection::dimension() const
 {
 	int maxDimension = 0 ;
-	for ( std::vector< Geometry* >::const_iterator it = _geometries.begin(); it != _geometries.end(); ++it ){
+	for ( std::vector< GeometryPtr >::const_iterator it = _geometries.begin(); it != _geometries.end(); ++it ){
 		maxDimension = std::max( maxDimension, (*it)->dimension() );
 	}
 	return maxDimension ;
@@ -119,7 +116,7 @@ void    GeometryCollection::addGeometry( Geometry * geometry )
 		oss << "try a add a '" << geometry->geometryType() << "' in a '" << geometryType() << "'";
 		BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
 	}
-	_geometries.push_back( geometry );
+	_geometries.push_back( GeometryPtr( geometry ) );
 }
 
 ///
@@ -144,8 +141,9 @@ bool    GeometryCollection::isAllowed( Geometry const& g )
 ///
 void    GeometryCollection::assign( const GeometryCollection & other )
 {
+	_geometries.clear() ;
 	for ( size_t i = 0; i < other.numGeometries(); i++ ){
-		_geometries.push_back( other.geometryN(i).clone() );
+		addGeometry( other.geometryN(i).clone() );
 	}
 }
 

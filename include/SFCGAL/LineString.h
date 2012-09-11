@@ -2,19 +2,15 @@
 #define _SFCGAL_LINESTRING_H_
 
 #include <vector>
+
 #include <boost/assert.hpp>
-#include <boost/iterator/iterator_facade.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <SFCGAL/Point.h>
 
 #include <CGAL/Polygon_2.h>
 
 namespace SFCGAL {
-
-	class LineString ;
-
-	typedef boost::shared_ptr< LineString >       LineStringPtr ;
-	typedef boost::shared_ptr< const LineString > ConstLineStringPtr ;
 
 	/**
 	 * A LineString in SFA
@@ -23,8 +19,8 @@ namespace SFCGAL {
 	 */
 	class LineString : public Geometry {
 	public:
-		typedef std::vector< PointPtr >::iterator       iterator ;
-		typedef std::vector< PointPtr >::const_iterator const_iterator ;
+		typedef boost::ptr_vector< Point >::iterator       iterator ;
+		typedef boost::ptr_vector< Point >::const_iterator const_iterator ;
 
 		/**
 		 * Empty LineString constructor
@@ -86,55 +82,57 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Point  &  pointN( size_t const& n ) const { return *_points[n]; }
+		inline const Point  &  pointN( size_t const& n ) const { return _points[n]; }
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Point &         pointN( size_t const& n ) { return *_points[n]; }
+		inline Point &         pointN( size_t const& n ) { return _points[n]; }
 
 
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline const Point &   startPoint() const { return *_points.front(); }
+		inline const Point &   startPoint() const { return _points.front(); }
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline Point &         startPoint() { return *_points.front(); }
+		inline Point &         startPoint() { return _points.front(); }
 
 
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline const Point &   endPoint() const { return *_points.back(); }
+		inline const Point &   endPoint() const { return _points.back(); }
 		/**
 		 * [SFA/OGC]Returns the first point
 		 */
-		inline Point &         endPoint() { return *_points.back(); }
+		inline Point &         endPoint() { return _points.back(); }
 
 
 		/**
 		 * append a Point to the LineString
 		 */
 		inline void            addPoint( const Point & p ) {
-			_points.push_back( PointPtr( p.clone() ) ) ;
-		}
-		/**
-		 * append a Point to the LineString
-		 */
-		inline void            addPoint( PointPtr p ) {
-			_points.push_back( p ) ;
+			_points.push_back( p.clone() ) ;
 		}
 
 		//remove 20120910 could lead to memory leaks with existing codes on std::vector< Point* >
 		//const std::vector< Point > & points() const { return _points; }
 		//std::vector< Point > &       points() { return _points; }
 
-		inline iterator       begin() { return _points.begin() ; }
-		inline const_iterator begin() const { return _points.begin() ; }
+		inline iterator       begin() {
+			return _points.begin() ;
+		}
+		inline const_iterator begin() const {
+			return _points.begin() ;
+		}
 
-		inline iterator       end() { return _points.end() ; }
-		inline const_iterator end() const { return _points.end() ; }
+		inline iterator       end() {
+			return _points.end() ;
+		}
+		inline const_iterator end() const {
+			return _points.end() ;
+		}
 
 
 		/**
@@ -157,7 +155,7 @@ namespace SFCGAL {
 			void increment() { it_++; }
 			void decrement() { it_--; }
 			bool equal( const Point_2_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_2<K>& dereference() const { p_ = (*it_)->toPoint_2<K>(); return p_; }
+			const CGAL::Point_2<K>& dereference() const { p_ = it_->toPoint_2<K>(); return p_; }
 			mutable CGAL::Point_2<K> p_;
 			const_iterator it_;
 		};
@@ -198,7 +196,7 @@ namespace SFCGAL {
 			void increment() { it_++; }
 			void decrement() { it_--; }
 			bool equal( const Point_3_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_3<K>& dereference() const { p_ = (*it_)->toPoint_3<K>(); return p_; }
+			const CGAL::Point_3<K>& dereference() const { p_ = it_->toPoint_3<K>(); return p_; }
 			mutable CGAL::Point_3<K> p_;
 			const_iterator it_;
 		};
@@ -236,10 +234,12 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< PointPtr > _points ;
+		boost::ptr_vector< Point > _points ;
 	};
 
 
 }
+
+
 
 #endif

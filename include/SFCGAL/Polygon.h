@@ -12,8 +12,6 @@
 
 namespace SFCGAL {
 
-	class Triangle ;
-
 	/**
 	 * A Polygon in SFA with holes
 	 */

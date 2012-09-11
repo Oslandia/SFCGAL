@@ -18,10 +18,10 @@ LineString::LineString():
 ///
 LineString::LineString( const std::vector< Point > & points ):
 	Geometry(),
-	_points(points.size())
+	_points()
 {
 	for ( size_t i = 0; i < points.size(); i++ ){
-		_points[i] = PointPtr( points[i].clone() ) ;
+		_points.push_back( points[i].clone() ) ;
 	}
 }
 
@@ -30,10 +30,10 @@ LineString::LineString( const std::vector< Point > & points ):
 ///
 LineString::LineString( const Point & startPoint, const Point & endPoint ):
 	Geometry(),
-	_points(2)
+	_points()
 {
-	_points[0] = PointPtr( startPoint.clone() );
-	_points[1] = PointPtr( endPoint.clone() );
+	_points.push_back( startPoint.clone() );
+	_points.push_back( endPoint.clone() );
 }
 
 ///
@@ -52,7 +52,7 @@ LineString& LineString::operator = ( const LineString & other )
 {
 	_points.resize( other.numPoints() );
 	for ( size_t i = 0; i < other.numPoints(); i++ ){
-		_points[i] = PointPtr( other.pointN(i).clone() );
+		_points[i] = other.pointN(i) ;
 	}
 	return *this ;
 }
@@ -102,7 +102,7 @@ int LineString::dimension() const
 ///
 int   LineString::coordinateDimension() const
 {
-	return isEmpty() ? 0 : _points[0]->coordinateDimension() ;
+	return isEmpty() ? 0 : _points[0].coordinateDimension() ;
 }
 
 ///

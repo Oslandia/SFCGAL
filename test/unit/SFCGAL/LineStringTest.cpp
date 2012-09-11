@@ -67,11 +67,11 @@ BOOST_AUTO_TEST_CASE( simpleIteratorTest )
 
 	LineString::const_iterator it  = g.begin() ;
 	LineString::const_iterator end = g.end() ;
-	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(0.000 0.000)" ); ++it ;
+	BOOST_CHECK_EQUAL( it->asText(3), "POINT(0.000 0.000)" ); ++it ;
 	BOOST_CHECK( it != end );
-	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(1.000 1.000)" ); ++it ;
+	BOOST_CHECK_EQUAL( it->asText(3), "POINT(1.000 1.000)" ); ++it ;
 	BOOST_CHECK( it != end );
-	BOOST_CHECK_EQUAL( (*it)->asText(3), "POINT(2.000 2.000)" ); ++it ;
+	BOOST_CHECK_EQUAL( it->asText(3), "POINT(2.000 2.000)" ); ++it ;
 	BOOST_CHECK( it == end );
 }
 

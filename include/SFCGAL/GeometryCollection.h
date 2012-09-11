@@ -78,7 +78,7 @@ namespace SFCGAL {
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
 	private:
-		std::vector< Geometry * > _geometries ;
+		std::vector< GeometryPtr > _geometries ;
 
 	protected:
 		/**
