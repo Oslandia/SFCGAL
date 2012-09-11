@@ -18,60 +18,6 @@ namespace io {
 		osg::Geometry* createGeometry( const Geometry & g ) ;
 
 		/**
-		 * create a osg::Geometry from a Point
-		 */
-		osg::Geometry* createGeometry( const Point & g ) ;
-		/**
-		 * create a osg::Geometry from a LineString
-		 */
-		osg::Geometry* createGeometry( const LineString & g ) ;
-		/**
-		 * create a osg::Geometry from a Polygon
-		 */
-		osg::Geometry* createGeometry( const Polygon & g ) ;
-		/**
-		 * create a osg::Geometry from a Triangle
-		 */
-		osg::Geometry* createGeometry( const Triangle & g ) ;
-		/**
-		 * create a osg::Geometry from a Solid
-		 */
-		osg::Geometry* createGeometry( const Solid & g ) ;
-
-		/**
-		 * create a osg::Geometry from a TriangulatedSurface
-		 * @todo compute normals
-		 */
-		osg::Geometry* createGeometry( const TriangulatedSurface & g ) ;
-		/**
-		 * create a osg::Geometry from a PolyhedralSurface
-		 */
-		osg::Geometry* createGeometry( const PolyhedralSurface & g ) ;
-
-
-		/**
-		 * create a osg::Geometry from a Point
-		 */
-		osg::Geometry* createGeometry( const GeometryCollection & g ) ;
-
-		/**
-		 * create a osg::Geometry from a Point
-		 */
-		osg::Geometry* createGeometry( const MultiPoint & g ) ;
-		/**
-		 * create a osg::Geometry from a LineString
-		 */
-		osg::Geometry* createGeometry( const MultiLineString & g ) ;
-		/**
-		 * create a osg::Geometry from a Polygon
-		 */
-		osg::Geometry* createGeometry( const MultiPolygon & g ) ;
-		/**
-		 * create a osg::Geometry from a Solid
-		 */
-		osg::Geometry* createGeometry( const MultiSolid & g ) ;
-
-		/**
 		 * create a osg::Vec3 from a Point
 		 */
 		osg::Vec3 createVec3( const Point & g ) const ;
@@ -85,6 +31,51 @@ namespace io {
 		 * create a vertex and returns its position in a vertice array
 		 */
 		size_t createVertex( osg::Vec3Array * vertices, const osg::Vec3 & g ) ;
+
+		/**
+		 * add a SFCGAL::Geometry to a osg::Geometry (dispatch method)
+		 */
+		void addToGeometry( osg::Geometry*, const Geometry& );
+
+		/**
+		 * add a Point to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const Point& );
+
+		/**
+		 * add a LineString to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const LineString& );
+
+		/**
+		 * add a Triangle to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const Triangle& );
+
+		/**
+		 * add a Polygon to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const Polygon& );
+
+		/**
+		 * add a TIN to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const TriangulatedSurface& );
+
+		/**
+		 * add a PolyhedralSurface to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const PolyhedralSurface& );
+
+		/**
+		 * add a Solid to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const Solid& );
+
+		/**
+		 * add a GeometryCollection to a osg::Geometry
+		 */
+		void addToGeometry( osg::Geometry*, const GeometryCollection& );
 	};
 
 }//io

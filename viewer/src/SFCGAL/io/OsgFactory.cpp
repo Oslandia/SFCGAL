@@ -9,279 +9,152 @@
 namespace SFCGAL {
 namespace io {
 
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Geometry& g )
+	{
+		if ( g.is<GeometryCollection>() ) {
+			addToGeometry( geometry, g.as<GeometryCollection>() );
+			return;
+		}
+
+		switch ( g.geometryTypeId() ){
+		case TYPE_POINT:
+			addToGeometry( geometry, g.as<Point>() );
+			break;
+		case TYPE_LINESTRING:
+			addToGeometry( geometry, g.as<LineString>() );
+			break;
+		case TYPE_POLYGON:
+			addToGeometry( geometry, g.as<Polygon>() );
+			break;
+		case TYPE_TRIANGLE:
+			addToGeometry( geometry, g.as<Triangle>() );
+			break;
+		case TYPE_TIN:
+			addToGeometry( geometry, g.as<TriangulatedSurface>() );
+			break;
+		case TYPE_POLYHEDRALSURFACE:
+			addToGeometry( geometry, g.as<PolyhedralSurface>() );
+			break;
+		case TYPE_SOLID:
+			addToGeometry( geometry, g.as<Solid>() );
+			break;
+		default:
+			BOOST_THROW_EXCEPTION(Exception(
+							( boost::format("can't convert %1% to osg::Geometry") % g.geometryType() ).str()
+							));
+			break;
+		}
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Point& p )
+	{
+		osg::Vec3Array * vertices = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+
+		size_t start = vertices->size();
+		osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::POINTS, start );
+		primitiveSet->push_back( createVertex( vertices, p ) );
+		geometry->addPrimitiveSet( primitiveSet );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const LineString& g )
+	{
+		osg::Vec3Array * vertices = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+
+		size_t start = vertices->size() ;
+		for ( size_t i = 0; i < g.numPoints(); i++ ){
+			createVertex( vertices, g.pointN( i ) ) ;
+		}
+		geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, start, g.numPoints() ) );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Triangle& g )
+	{
+		osg::Vec3Array * vertices = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+
+		size_t start = vertices->size();
+		osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, start );
+		for ( size_t i = 0; i < 3; i++ ){
+			primitiveSet->push_back( createVertex( vertices, g.vertex( i ) ) );
+		}
+		geometry->addPrimitiveSet( primitiveSet );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const TriangulatedSurface& g )
+	{
+		osg::Vec3Array * vertices = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+		osg::Vec3Array * normals = static_cast<osg::Vec3Array*>(geometry->getNormalArray());
+
+		size_t start = vertices->size() ;
+		for ( size_t i = 0; i < g.numTriangles(); i++ ){
+			const Triangle & triangle = g.triangleN( i );
+			
+			osg::Vec3 a = createVec3( triangle.vertex( 0 ) );
+			osg::Vec3 b = createVec3( triangle.vertex( 1 ) );
+			osg::Vec3 c = createVec3( triangle.vertex( 2 ) );
+			
+			//vertices
+			createVertex( vertices, a ) ;
+			createVertex( vertices, b ) ;
+			createVertex( vertices, c ) ;
+			
+			//normal
+			osg::Vec3 normal = ( c - b ) ^ ( a - b ) ;
+			normal.normalize();
+			
+			normals->push_back( normal ) ;
+			normals->push_back( normal ) ;
+			normals->push_back( normal ) ;
+		}
+		
+		geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
+		geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, vertices->size() ) );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Polygon& g )
+	{
+		TriangulatedSurface surf;
+		algorithm::triangulate( g, surf );
+		addToGeometry( geometry, surf );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const PolyhedralSurface& g )
+	{
+		TriangulatedSurface surf;
+		algorithm::triangulate( g, surf );
+		addToGeometry( geometry, surf );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Solid& g )
+	{
+		TriangulatedSurface triangulatedSurface ;
+		for ( size_t i = 0; i < g.numShells(); i++ ){
+			algorithm::triangulate( g.shellN(i), triangulatedSurface );
+		}
+		addToGeometry( geometry, triangulatedSurface );
+	}
+
+	void OsgFactory::addToGeometry( osg::Geometry* geometry, const GeometryCollection& g )
+	{
+		for ( size_t i = 0; i < g.numGeometries(); ++i ) {
+			// pseudo-recurse call
+			addToGeometry( geometry, g.geometryN( i ) );
+		}
+	}
 ///
 ///
 ///
 osg::Geometry* OsgFactory::createGeometry( const Geometry & g )
 {
-	switch ( g.geometryTypeId() ){
-	case TYPE_POINT:
-		return createGeometry(g.as< Point >() );
-	case TYPE_LINESTRING:
-		return createGeometry(g.as< LineString >() );
-	case TYPE_POLYGON:
-		return createGeometry(g.as< Polygon >() );
-	case TYPE_TRIANGLE:
-		return createGeometry(g.as< Triangle >() );
-	case TYPE_MULTIPOINT:
-		return createGeometry(g.as< MultiPoint >() );
-	case TYPE_MULTILINESTRING:
-		return createGeometry(g.as< MultiLineString >() );
-	case TYPE_MULTIPOLYGON:
-		return createGeometry(g.as< MultiPolygon >() );
-	case TYPE_TIN:
-		return createGeometry(g.as< TriangulatedSurface >() );
-	case TYPE_POLYHEDRALSURFACE:
-		return createGeometry(g.as< PolyhedralSurface >() );
-	case TYPE_SOLID:
-		return createGeometry(g.as< Solid >() );
-	case TYPE_MULTISOLID:
-		return createGeometry(g.as< MultiSolid >() );
-		//	case TYPE_GEOMETRYCOLLECTION:
-		//		return createGeometry(g.as< GeometryCollection >() );
+	if ( g.isEmpty() ) {
+		return NULL;
 	}
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("can't convert %1% to osg::Geometry") % g.geometryType() ).str()
-	));
-}
 
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const Point & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
+	osg::ref_ptr<osg::Geometry> geometry( new osg::Geometry );
+	geometry->setVertexArray( new osg::Vec3Array() );
+	geometry->setNormalArray( new osg::Vec3Array() );
 
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-	osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::POINTS, 0 );
-	primitiveSet->push_back( createVertex( vertices, g ) );
-	geometry->addPrimitiveSet( primitiveSet );
-
-	return geometry.release() ;
-}
-
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const LineString & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-	size_t start = vertices->size() ;
-	for ( size_t i = 0; i < g.numPoints(); i++ ){
-		createVertex( vertices, g.pointN( i ) ) ;
-	}
-	geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, start, g.numPoints() ) );
-
+	addToGeometry( geometry.get(), g );
 	return geometry.release();
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const Polygon & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	TriangulatedSurface triangulatedSurface ;
-	algorithm::triangulate( g, triangulatedSurface );
-	return createGeometry( triangulatedSurface );
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const Triangle & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-	osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::TRIANGLES, 0 );
-	for ( size_t i = 0; i < 3; i++ ){
-		primitiveSet->push_back( createVertex( vertices, g.vertex( i ) ) );
-	}
-	geometry->addPrimitiveSet( primitiveSet );
-
-	return geometry.release();
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const Solid & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	TriangulatedSurface triangulatedSurface ;
-	for ( size_t i = 0; i < g.numShells(); i++ ){
-		algorithm::triangulate( g.shellN(i), triangulatedSurface );
-	}
-	return createGeometry( triangulatedSurface );
-}
-
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const TriangulatedSurface & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	osg::Vec3Array * normals  = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-
-	size_t start = vertices->size() ;
-	for ( size_t i = 0; i < g.numTriangles(); i++ ){
-		const Triangle & triangle = g.triangleN( i );
-
-		osg::Vec3 a = createVec3( triangle.vertex( 0 ) );
-		osg::Vec3 b = createVec3( triangle.vertex( 1 ) );
-		osg::Vec3 c = createVec3( triangle.vertex( 2 ) );
-
-		//vertices
-		createVertex( vertices, a ) ;
-		createVertex( vertices, b ) ;
-		createVertex( vertices, c ) ;
-
-		//normal
-		osg::Vec3 normal = ( c - b ) ^ ( a - b ) ;
-		normal.normalize();
-
-		normals->push_back( normal ) ;
-		normals->push_back( normal ) ;
-		normals->push_back( normal ) ;
-	}
-
-	geometry->setNormalArray( normals );
-	geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-
-	geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, vertices->size() ) );
-	return geometry.release();
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const PolyhedralSurface & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	TriangulatedSurface triangulatedSurface ;
-	algorithm::triangulate( g, triangulatedSurface );
-	return createGeometry( triangulatedSurface );
-}
-
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const MultiPoint & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-	osg::DrawElementsUInt* primitiveSet = new osg::DrawElementsUInt( osg::PrimitiveSet::POINTS, 0 );
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		primitiveSet->push_back( createVertex( vertices, g.pointN(i) ) );
-	}
-	geometry->addPrimitiveSet( primitiveSet );
-
-	return geometry.release() ;
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const MultiLineString & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	osg::ref_ptr< osg::Geometry > geometry( new osg::Geometry );
-	osg::Vec3Array * vertices = new osg::Vec3Array() ;
-	geometry->setVertexArray( vertices );
-
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		const LineString & lineString = g.lineStringN(i) ;
-
-		size_t start = vertices->size() ;
-		for ( size_t j = 0; j < lineString.numPoints(); j++ ){
-			createVertex( vertices, lineString.pointN( j ) ) ;
-		}
-		geometry->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::LINE_STRIP, start, lineString.numPoints() ) );
-	}
-
-	return geometry.release();
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const MultiPolygon & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	TriangulatedSurface triangulatedSurface ;
-	algorithm::triangulate( g, triangulatedSurface );
-	return createGeometry( triangulatedSurface );
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const MultiSolid & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	TriangulatedSurface triangulatedSurface ;
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		const Solid & solid = g.solidN(i) ;
-		for ( size_t j = 0; j < solid.numShells(); j++ ){
-			algorithm::triangulate( solid.shellN(j), triangulatedSurface );
-		}
-	}
-	return createGeometry( triangulatedSurface );
-}
-
-///
-///
-///
-osg::Geometry* OsgFactory::createGeometry( const GeometryCollection & g )
-{
-	if ( g.isEmpty() )
-		return NULL ;
-
-	// TODO
-	return NULL;
 }
 
 ///
