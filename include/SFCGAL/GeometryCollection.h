@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <boost/assert.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <SFCGAL/Geometry.h>
 
@@ -13,6 +14,9 @@ namespace SFCGAL {
 	 */
 	class GeometryCollection : public Geometry {
 	public:
+		typedef boost::ptr_vector< Geometry >::iterator       iterator ;
+		typedef boost::ptr_vector< Geometry >::const_iterator const_iterator ;
+
 		/**
 		 * Empty GeometryCollection constructor
 		 */
@@ -54,11 +58,11 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th geometry
 		 */
-		inline const Geometry  &  geometryN( size_t const& n ) const { return *_geometries[n]; }
+		inline const Geometry  &  geometryN( size_t const& n ) const { return _geometries[n]; }
 		/**
 		 * [SFA/OGC]Returns the n-th geometry
 		 */
-		inline Geometry &         geometryN( size_t const& n ) { return *_geometries[n]; }
+		inline Geometry &         geometryN( size_t const& n ) { return _geometries[n]; }
 
 		/**
 		 * [SFA/OGC]add a geometry to the collection (takes ownership)
@@ -69,6 +73,23 @@ namespace SFCGAL {
 		 */
 		void                      addGeometry( Geometry const& geometry ) ;
 
+		//-- iterators
+
+		inline iterator       begin() {
+			return _geometries.begin() ;
+		}
+		inline const_iterator begin() const {
+			return _geometries.begin() ;
+		}
+
+		inline iterator       end() {
+			return _geometries.end() ;
+		}
+		inline const_iterator end() const {
+			return _geometries.end() ;
+		}
+
+
 
 		//-- visitors
 
@@ -78,7 +99,7 @@ namespace SFCGAL {
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
 	private:
-		std::vector< GeometryPtr > _geometries ;
+		boost::ptr_vector< Geometry > _geometries ;
 
 	protected:
 		/**

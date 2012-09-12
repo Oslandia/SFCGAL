@@ -19,9 +19,8 @@ TriangulatedSurface::TriangulatedSurface():
 TriangulatedSurface::TriangulatedSurface( const std::vector< Triangle > & triangles ):
 	Surface()
 {
-	_triangles.resize( triangles.size() ) ;
 	for ( size_t i = 0; i < triangles.size(); i++ ){
-		_triangles[i] = TrianglePtr( triangles[i].clone() ) ;
+		_triangles.push_back( triangles[i].clone() ) ;
 	}
 }
 
@@ -29,9 +28,10 @@ TriangulatedSurface::TriangulatedSurface( const std::vector< Triangle > & triang
 ///
 ///
 TriangulatedSurface::TriangulatedSurface( TriangulatedSurface const& other ):
-	Surface()
+	Surface(),
+	_triangles(other._triangles)
 {
-	(*this) = other ;
+
 }
 
 ///
@@ -39,10 +39,7 @@ TriangulatedSurface::TriangulatedSurface( TriangulatedSurface const& other ):
 ///
 TriangulatedSurface& TriangulatedSurface::operator = ( const TriangulatedSurface & other )
 {
-	_triangles.resize( other.numTriangles() ) ;
-	for ( size_t i = 0; i < other.numTriangles(); i++ ){
-		_triangles[i] = TrianglePtr( other.triangleN(i).clone() ) ;
-	}
+	_triangles = other._triangles ;
 	return *this ;
 }
 
@@ -95,7 +92,7 @@ int TriangulatedSurface::coordinateDimension() const
 	if ( _triangles.empty() ){
 		return 0 ;
 	}else{
-		return _triangles[0]->coordinateDimension() ;
+		return _triangles[0].coordinateDimension() ;
 	}
 }
 
@@ -112,7 +109,7 @@ bool TriangulatedSurface::isEmpty() const
 ///
 bool TriangulatedSurface::is3D() const
 {
-	return ! _triangles.empty() && _triangles.front()->is3D() ;
+	return ! _triangles.empty() && _triangles.front().is3D() ;
 }
 
 ///

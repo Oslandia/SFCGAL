@@ -407,9 +407,9 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface & g )
 		}
 
 		while( ! _reader.eof() ){
-			TrianglePtr triangle( new Triangle() ) ;
-			g.addTriangle( triangle ) ;
+			std::auto_ptr< Triangle > triangle( new Triangle() ) ;
 			readInnerTriangle( *triangle );
+			g.addTriangle( triangle.release() ) ;
 
 			//break if not Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.followed by another points
 			if ( ! _reader.match(',') ){

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <boost/assert.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <CGAL/Polygon_with_holes_2.h>
 
@@ -17,8 +18,8 @@ namespace SFCGAL {
 	 */
 	class Polygon : public Surface {
 	public:
-		typedef std::vector< LineStringPtr >::iterator       iterator ;
-		typedef std::vector< LineStringPtr >::const_iterator const_iterator ;
+		typedef boost::ptr_vector< LineString >::iterator       iterator ;
+		typedef boost::ptr_vector< LineString >::const_iterator const_iterator ;
 
 		/**
 		 * Empty Polygon constructor
@@ -48,17 +49,17 @@ namespace SFCGAL {
 		template < typename K >
 		Polygon( const CGAL::Polygon_with_holes_2<K>& poly )
 		{
-			_rings.push_back( LineStringPtr( new LineString() ) );
+			_rings.push_back( new LineString() );
 			CGAL::Polygon_2<K> outer = poly.outer_boundary();
 			typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
 			for ( ei = outer.edges_begin(); ei != outer.edges_end(); ++ei ) {
-				_rings.back()->addPoint( ei->source() );
+				_rings.back().addPoint( ei->source() );
 			}
 			for ( typename CGAL::Polygon_with_holes_2<K>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
-				_rings.push_back(LineStringPtr(new LineString()));
+				_rings.push_back( new LineString() );
 				typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
 				for ( ei = hit->edges_begin(); ei != hit->edges_end(); ++ei ) {
-					_rings.back()->addPoint( ei->source() );
+					_rings.back().addPoint( ei->source() );
 				}
 			}
 		}
@@ -97,13 +98,13 @@ namespace SFCGAL {
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline const LineString &    exteriorRing() const {
-			return *_rings[0];
+			return _rings[0];
 		}
 		/**
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline LineString &          exteriorRing() {
-			return *_rings[0];
+			return _rings[0];
 		}
 
 
@@ -124,13 +125,13 @@ namespace SFCGAL {
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline const LineString &    interiorRingN( const size_t & n ) const {
-			return *_rings[n+1];
+			return _rings[n+1];
 		}
 		/**
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline LineString &          interiorRingN( const size_t & n ) {
-			return *_rings[n+1];
+			return _rings[n+1];
 		}
 
 		/**
@@ -145,7 +146,7 @@ namespace SFCGAL {
 		 */
 		inline const LineString &    ringN( const size_t & n ) const {
 			BOOST_ASSERT( n < _rings.size() );
-			return *_rings[n];
+			return _rings[n];
 		}
 		/**
 		 * Returns the n-th ring, 0 is exteriorRing
@@ -153,7 +154,7 @@ namespace SFCGAL {
 		 */
 		inline LineString &          ringN( const size_t & n ) {
 			BOOST_ASSERT( n < _rings.size() );
-			return *_rings[n];
+			return _rings[n];
 		}
 
 		/**
@@ -214,7 +215,7 @@ namespace SFCGAL {
 		 *
 		 * @warning never empty, empty LineString as exteriorRing for empty Polygon
 		 */
-		std::vector< LineStringPtr > _rings ;
+		boost::ptr_vector< LineString > _rings ;
 	};
 
 

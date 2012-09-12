@@ -19,9 +19,8 @@ PolyhedralSurface::PolyhedralSurface():
 PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) :
 	Surface()
 {
-	_polygons.resize(polygons.size());
 	for ( size_t i = 0; i < polygons.size(); i++ ){
-		_polygons[i] = PolygonPtr( polygons[i].clone() ) ;
+		_polygons.push_back( polygons[i].clone() ) ;
 	}
 }
 
@@ -29,9 +28,10 @@ PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) 
 ///
 ///
 PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
-	Surface()
+	Surface(),
+	_polygons(other._polygons)
 {
-	(*this) = other ;
+
 }
 
 ///
@@ -39,10 +39,7 @@ PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
 ///
 PolyhedralSurface& PolyhedralSurface::operator = ( const PolyhedralSurface & other )
 {
-	_polygons.resize(other.numPolygons());
-	for ( size_t i = 0; i < other.numPolygons(); i++ ){
-		_polygons[i] = PolygonPtr( other.polygonN(i).clone() ) ;
-	}
+	_polygons = other._polygons ;
 	return *this ;
 }
 
@@ -95,7 +92,7 @@ int  PolyhedralSurface::coordinateDimension() const
 	if ( isEmpty() ){
 		return 0 ;
 	}else{
-		return _polygons.front()->coordinateDimension() ;
+		return _polygons.front().coordinateDimension() ;
 	}
 }
 
@@ -115,7 +112,7 @@ bool  PolyhedralSurface::is3D() const
 	if ( isEmpty() ){
 		return false ;
 	}else{
-		return _polygons.front()->is3D() ;
+		return _polygons.front().is3D() ;
 	}
 }
 
@@ -135,14 +132,15 @@ TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
 ///
 void  PolyhedralSurface::addPolygon( const Polygon & polygon )
 {
-	addPolygon( PolygonPtr( polygon.clone() ) );
+	addPolygon( polygon.clone() );
 }
 
 ///
 ///
 ///
-void  PolyhedralSurface::addPolygon( PolygonPtr polygon )
+void  PolyhedralSurface::addPolygon( Polygon* polygon )
 {
+	BOOST_ASSERT( polygon != NULL );
 	_polygons.push_back( polygon );
 }
 

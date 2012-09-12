@@ -21,11 +21,12 @@ namespace algorithm {
 		typedef typename GeometryGraphT<V,E>::vertex_descriptor vertex_descriptor ;
 		typedef typename GeometryGraphT<V,E>::vertex_iterator   vertex_iterator ;
 
+		typedef typename GeometryGraphT<V,E>::edge_descriptor edge_descriptor ;
+		typedef typename GeometryGraphT<V,E>::edge_iterator   edge_iterator ;
+
 		typedef typename std::map< vertex_descriptor , size_t >   VertexIndexMap;
 
-		// an undirected is need
-		boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS > undirectedGraph ;
-
+		//assign a number to each vertex
 		std::map< vertex_descriptor, size_t > mapVertexIndex ;
 		{
 			vertex_iterator it, end;
@@ -34,12 +35,19 @@ namespace algorithm {
 			}
 		}
 
-		boost::const_associative_property_map< VertexIndexMap >   pmVertexIndex( mapVertexIndex );
-		boost::copy_graph(
-			graph.graph(),
-			undirectedGraph,
-			vertex_index_map( pmVertexIndex )
-		);
+		// an undirected is need
+		boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS, size_t > undirectedGraph( mapVertexIndex.size() ) ;
+		// copy edges
+		{
+			edge_iterator it,end;
+			for ( boost::tie(it,end) = graph.edges(); it != end; ++it ){
+				boost::add_edge(
+					mapVertexIndex[ graph.source( *it ) ],
+					mapVertexIndex[ graph.target( *it ) ],
+					undirectedGraph
+				);
+			}
+		}
 
 		BOOST_ASSERT( graph.numVertices() == boost::num_vertices( undirectedGraph ) );
 		BOOST_ASSERT( graph.numEdges()    == boost::num_edges( undirectedGraph ) );

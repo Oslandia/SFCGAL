@@ -142,8 +142,8 @@ namespace SFCGAL {
        virtual Geometry *  clone() const = 0 ;
 
        /**
-	* Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
-	*/
+        * Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
+        */
        template <typename Kernel>
        static Geometry* fromCGAL( const CGAL::Object& obj );
 
@@ -179,14 +179,7 @@ namespace SFCGAL {
         */
        virtual bool         is3D() const = 0 ;
 
-
-       /**
-        * [OGC/SFA]Indicate if the geometry is simple (~no self-intersections)
-        */
        //virtual bool         isSimple() const = 0 ;
-       /**
-        * [OGC/SFA]Indicate if the geometry is measured
-        */
        //virtual bool isMeasured() const = 0 ;
 
 
@@ -209,11 +202,7 @@ namespace SFCGAL {
         */
        virtual Geometry*    boundary() const ;
 
-       /**
-        * [OGC/SFA]Returns the identifier of the spatial reference
-        * system (-1 if undefined)
-        * @warning not defined here
-        */
+
        //inline int SRID() const ;
 
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <boost/assert.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Polygon.h>
@@ -21,6 +22,9 @@ namespace SFCGAL {
 	 */
 	class PolyhedralSurface : public Surface {
 	public:
+		typedef boost::ptr_vector< Polygon >::iterator       iterator ;
+		typedef boost::ptr_vector< Polygon >::const_iterator const_iterator ;
+
 		/**
 		 * Empty PolyhedralSurface constructor
 		 */
@@ -74,14 +78,14 @@ namespace SFCGAL {
 		 */
 		inline const Polygon  &   polygonN( size_t const& n ) const {
 			BOOST_ASSERT( n < _polygons.size() );
-			return *_polygons[n];
+			return _polygons[n];
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
 		inline Polygon &          polygonN( size_t const& n ) {
 			BOOST_ASSERT( n < _polygons.size() );
-			return *_polygons[n];
+			return _polygons[n];
 		}
 		/**
 		 * add a polygon to the PolyhedralSurface
@@ -90,7 +94,7 @@ namespace SFCGAL {
 		/**
 		 * add a polygon to the PolyhedralSurface
 		 */
-		void                      addPolygon( PolygonPtr polygon ) ;
+		void                      addPolygon( Polygon* polygon ) ;
 		/**
 		 * add polygons from an other PolyhedralSurface
 		 */
@@ -112,6 +116,22 @@ namespace SFCGAL {
 		//const std::vector< Polygon > & polygons() const { return _polygons; }
 		//std::vector< Polygon > &       polygons() { return _polygons; }
 
+		//-- iterators
+
+		inline iterator       begin() {
+			return _polygons.begin() ;
+		}
+		inline const_iterator begin() const {
+			return _polygons.begin() ;
+		}
+
+		inline iterator       end() {
+			return _polygons.end() ;
+		}
+		inline const_iterator end() const {
+			return _polygons.end() ;
+		}
+
 		//-- visitors
 
 		//-- SFCGAL::Geometry
@@ -119,7 +139,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< PolygonPtr > _polygons ;
+		boost::ptr_vector< Polygon > _polygons ;
 	};
 }
 

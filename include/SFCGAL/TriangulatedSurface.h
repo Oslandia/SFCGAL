@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include <boost/assert.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
@@ -25,6 +26,9 @@ namespace SFCGAL {
 	 */
 	class TriangulatedSurface : public Surface {
 	public:
+		typedef boost::ptr_vector< Triangle >::iterator       iterator ;
+		typedef boost::ptr_vector< Triangle >::const_iterator const_iterator ;
+
 		/**
 		 * Empty TriangulatedSurface constructor
 		 */
@@ -72,26 +76,26 @@ namespace SFCGAL {
 		 */
 		inline const Triangle  &  triangleN( size_t const& n ) const {
 			BOOST_ASSERT( n < _triangles.size() );
-			return *_triangles[n];
+			return _triangles[n];
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
 		inline Triangle &         triangleN( size_t const& n ) {
 			BOOST_ASSERT( n < _triangles.size() );
-			return *_triangles[n];
+			return _triangles[n];
 		}
 		/**
 		* add a Triangle to the TriangulatedSurface
 		*/
 		inline void               addTriangle( const Triangle & triangle )
 		{
-			_triangles.push_back( TrianglePtr(triangle.clone()) );
+			addTriangle( triangle.clone() );
 		}
 		/**
 		* add a Triangle to the TriangulatedSurface
 		*/
-		inline void               addTriangle( TrianglePtr triangle )
+		inline void               addTriangle( Triangle * triangle )
 		{
 			_triangles.push_back( triangle );
 		}
@@ -100,6 +104,21 @@ namespace SFCGAL {
 		//const std::vector< Triangle > & triangles() const { return _triangles; }
 		//std::vector< Triangle > &       triangles() { return _triangles; }
 
+		//-- iterators
+
+		inline iterator       begin() {
+			return _triangles.begin() ;
+		}
+		inline const_iterator begin() const {
+			return _triangles.begin() ;
+		}
+
+		inline iterator       end() {
+			return _triangles.end() ;
+		}
+		inline const_iterator end() const {
+			return _triangles.end() ;
+		}
 
 		//-- visitors
 
@@ -108,7 +127,7 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
-		std::vector< TrianglePtr > _triangles ;
+		boost::ptr_vector< Triangle > _triangles ;
 
 		// Private class
 		// A modifier creating triangles from a TriangulatedSurface with the incremental builder.

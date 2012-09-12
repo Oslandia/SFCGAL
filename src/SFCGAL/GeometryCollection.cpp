@@ -71,8 +71,8 @@ GeometryType   GeometryCollection::geometryTypeId() const
 int  GeometryCollection::dimension() const
 {
 	int maxDimension = 0 ;
-	for ( std::vector< GeometryPtr >::const_iterator it = _geometries.begin(); it != _geometries.end(); ++it ){
-		maxDimension = std::max( maxDimension, (*it)->dimension() );
+	for ( boost::ptr_vector< Geometry >::const_iterator it = _geometries.begin(); it != _geometries.end(); ++it ){
+		maxDimension = std::max( maxDimension, it->dimension() );
 	}
 	return maxDimension ;
 }
@@ -85,7 +85,7 @@ int   GeometryCollection::coordinateDimension() const
 	if ( isEmpty() ){
 		return 0 ;
 	}else{
-		return _geometries.front()->coordinateDimension() ;
+		return _geometries.front().coordinateDimension() ;
 	}
 }
 
@@ -102,7 +102,7 @@ bool   GeometryCollection::isEmpty() const
 ///
 bool   GeometryCollection::is3D() const
 {
-	return ! isEmpty() && _geometries.front()->is3D() ;
+	return ! isEmpty() && _geometries.front().is3D() ;
 }
 
 ///
@@ -116,7 +116,7 @@ void    GeometryCollection::addGeometry( Geometry * geometry )
 		oss << "try a add a '" << geometry->geometryType() << "' in a '" << geometryType() << "'";
 		BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
 	}
-	_geometries.push_back( GeometryPtr( geometry ) );
+	_geometries.push_back( geometry );
 }
 
 ///

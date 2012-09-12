@@ -9,10 +9,9 @@ namespace SFCGAL {
 ///
 ///
 Polygon::Polygon():
-	Surface(),
-	_rings(1, LineStringPtr( new LineString() ) )
+	Surface()
 {
-
+	_rings.push_back( new LineString()  );
 }
 
 ///
@@ -22,11 +21,10 @@ Polygon::Polygon( const std::vector< LineString > & rings ):
 	Surface()
 {
 	if ( rings.empty() ){
-		_rings.resize(1, LineStringPtr( new LineString() ) );
+		_rings.resize(1, new LineString() );
 	}else{
-		_rings.resize(rings.size());
 		for ( size_t i = 0; i < rings.size(); i++ ){
-			_rings[i] = LineStringPtr( rings[i].clone() ) ;
+			_rings.push_back( rings[i].clone() ) ;
 		}
 	}
 }
@@ -35,19 +33,18 @@ Polygon::Polygon( const std::vector< LineString > & rings ):
 ///
 ///
 Polygon::Polygon( const LineString & exteriorRing ):
-	Surface(),
-	_rings(1,LineStringPtr(exteriorRing.clone()))
+	Surface()
 {
-
+	_rings.push_back( exteriorRing.clone() );
 }
 
 ///
 ///
 ///
 Polygon::Polygon( const Triangle & triangle ):
-	Surface(),
-	_rings(1,LineStringPtr(new LineString()))
+	Surface()
 {
+	_rings.push_back( new LineString() );
 	if ( ! triangle.isEmpty() ){
 		for ( size_t i = 0; i < 4; i++ ){
 			exteriorRing().addPoint( triangle.vertex(i) );
@@ -69,9 +66,9 @@ Polygon::Polygon( Polygon const& other ):
 ///
 Polygon& Polygon::operator = ( const Polygon & other )
 {
-	_rings.resize( other.numRings() );
+	_rings.clear() ;
 	for ( size_t i = 0; i < other.numRings(); i++ ){
-		_rings[i] = LineStringPtr( other.ringN(i).clone() );
+		_rings.push_back( other.ringN(i).clone() );
 	}
 	return *this ;
 }
@@ -89,7 +86,7 @@ Polygon::~Polygon()
 ///
 int Polygon::coordinateDimension() const
 {
-	return _rings[0]->coordinateDimension() ;
+	return _rings[0].coordinateDimension() ;
 }
 
 
