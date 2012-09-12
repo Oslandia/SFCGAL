@@ -107,7 +107,7 @@ namespace io {
 		}
 		
 		geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-		geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, vertices->size() ) );
+		geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, g.numTriangles() * 3 ) );
 	}
 
 	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Polygon& g )

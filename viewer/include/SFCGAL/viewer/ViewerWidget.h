@@ -50,7 +50,7 @@ namespace viewer {
 		void saveImageToFile() ;
 
 
-		void setCameraToExtent( double left, double right, double bottom, double top, double near, double far );
+		void setCameraToExtent( const osg::BoundingBox& );
 	public slots :
 		/**
 		 * start animation

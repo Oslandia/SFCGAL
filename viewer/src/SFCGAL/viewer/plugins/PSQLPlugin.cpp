@@ -44,8 +44,14 @@ namespace plugins {
 		QLabel* lbl1 = new QLabel("DB options");
 		verticalLayout_2->addWidget( lbl1 );
 
+		QHBoxLayout* hbox2 = new QHBoxLayout();
 		dbOptions_ = new QLineEdit( dockWidgetContents );
-		verticalLayout_2->addWidget( dbOptions_ );
+		hbox2->addWidget( dbOptions_ );
+
+		connectBtn_ = new QPushButton( dockWidgetContents );
+		connectBtn_->setText("&Connect");
+		hbox2->addWidget( connectBtn_ );
+		verticalLayout_2->addItem( hbox2 );
 
 		QLabel* lbl2 = new QLabel("SQL");
 		verticalLayout_2->addWidget( lbl2 );
@@ -78,12 +84,14 @@ namespace plugins {
 
 		// connect signal
 		connect( okBtn_, SIGNAL( clicked()), this, SLOT( onQuery() ));
+		connect( connectBtn_, SIGNAL( clicked()), this, SLOT( onReconnect() ));
 	}
 	
 	void SQLConsole::connectItem( QListWidgetItem* item )
 	{
 		item_ = item;
 		dbOptions_->setEnabled( true );
+		connectBtn_->setEnabled( true );
 		sqlEdit_->setEnabled( true );
 		okBtn_->setText( "&Ok" );
 		okBtn_->setEnabled( true );
@@ -104,6 +112,13 @@ namespace plugins {
 		sqlEdit_->setEnabled( false );
 		okBtn_->setText( "&Edit" );
 		okBtn_->setEnabled( false );
+		connectBtn_->setEnabled( false );
+	}
+
+	void SQLConsole::onReconnect()
+	{
+		plugin_->disconnect();
+		plugin_->connect( dbOptions_->text().toStdString() );
 	}
 
 	void SQLConsole::onQuery()
@@ -175,8 +190,9 @@ namespace plugins {
 		if ( QApplication::mouseButtons() & Qt::RightButton ) {
 			QMenu* menu = new QMenu;
 			QAction* removeAction = menu->addAction("&Remove");
-			
 			connect( removeAction, SIGNAL( triggered() ), this, SLOT( onRemove() ) );
+			QAction* zoomAction = menu->addAction("&Zoom to layer extent");
+			connect( zoomAction, SIGNAL( triggered() ), this, SLOT( onZoomToLayer() ) );
 
 			menu->popup( QCursor::pos() );
 		}
@@ -200,6 +216,19 @@ namespace plugins {
 		QListWidgetItem* widget = listWidget_->item( current );
 		listWidget_->removeItemWidget( widget );
 		delete widget;
+	}
+
+	void LayersWidget::onZoomToLayer()
+	{
+		int current = listWidget_->currentRow();
+		QListWidgetItem* item = listWidget_->item( current );
+		LayerInfo* linfo = (LayerInfo *)item->data( Qt::UserRole ).value<void *>();
+		if ( linfo->geode ) {
+			const osg::BoundingBox& bbox = linfo->geode->getBoundingBox();
+			std::cout << bbox.xMin() << " ; " << bbox.xMax() << " " << bbox.yMin() << " ; " << bbox.yMax() << " " << bbox.zMin() << " ; " << bbox.zMax() << std::endl;
+			std::cout << bbox.center()[0] << " " << bbox.center()[1] << " " << bbox.center()[2] << std::endl;
+			plugin_->viewerWindow()->viewer()->setCameraToExtent( bbox );
+		}
 	}
 
 	std::string wkbToWkt( const std::string& wkb, const Db::Connection& db )

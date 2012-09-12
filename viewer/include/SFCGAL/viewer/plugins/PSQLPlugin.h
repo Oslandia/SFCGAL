@@ -95,9 +95,11 @@ namespace plugins {
 
 	public slots:
 		void onQuery();
+		void onReconnect();
 	private:
 		QPlainTextEdit* sqlEdit_;
 		QPushButton* okBtn_;
+		QPushButton* connectBtn_;
 		QLineEdit* dbOptions_;
 
 		QListWidgetItem* item_;
@@ -120,6 +122,7 @@ namespace plugins {
 
 		void onEdit();
 		void onRemove();
+		void onZoomToLayer();
 	private:
 		QListWidget* listWidget_;
 		QPushButton* addBtn_;

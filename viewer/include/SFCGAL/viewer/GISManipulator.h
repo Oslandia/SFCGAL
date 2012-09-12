@@ -17,8 +17,6 @@ namespace viewer {
 		bool performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy );
 
 		bool handleMouseWheel( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
-
-		double altitude_;
 	};
 
 }//viewer

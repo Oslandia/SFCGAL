@@ -7,6 +7,7 @@
 
 
 #include <osgViewer/ViewerEventHandlers>
+#include <osgGA/CameraManipulator>
 #include <osgGA/TrackballManipulator>
 
 
@@ -33,6 +34,8 @@
 
 #include <osg/Switch>
 #include <osgText/Text>
+
+#include <osg/io_utils>
 
 #include <SFCGAL/viewer/GISManipulator.h>
 
@@ -138,9 +141,21 @@ osg::Camera* ViewerWidget::createCamera( int x, int y, int w, int h, const std::
 	return camera.release();
 }
 
-	void ViewerWidget::setCameraToExtent( double left, double right, double bottom, double top, double near, double far )
+	void ViewerWidget::setCameraToExtent( const osg::BoundingBox& bbox )
 	{
-		// TODO
+		// translate to the center of the bbox
+		osgGA::CameraManipulator* manip = getCameraManipulator();
+		osg::Vec3d eye, center, up;
+		osg::Matrixd m = manip->getMatrix();
+		m.getLookAt( eye, center, up );
+		center[0] = bbox.center()[0];
+		center[1] = bbox.center()[1];
+		eye = center;
+		eye[2] = center[2] + 1.0;
+		m.makeLookAt( eye, center, up );
+		manip->setByMatrix( m );
+
+		// TODO: compute the right amount of zoom (use the inverse projection matrix ?)
 	}
 ///
 ///
