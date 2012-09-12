@@ -9,7 +9,8 @@ triangulation2.obj
 polygon_triangulation2.obj
 
 /test/test_config.h
-
+/doc/html
+/doc/latex
 
 /triangulation3d_in_plane.obj
 
