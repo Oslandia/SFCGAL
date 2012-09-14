@@ -7,6 +7,7 @@
 
 
 #include <osgViewer/ViewerEventHandlers>
+#include <osgGA/CameraManipulator>
 #include <osgGA/TrackballManipulator>
 
 
@@ -25,6 +26,7 @@
 #include <osgGA/AnimationPathManipulator>
 #include <osgGA/TerrainManipulator>
 #include <osgGA/SphericalManipulator>
+#include <osgGA/FirstPersonManipulator>
 
 
 #include <osgUtil/Optimizer>
@@ -33,11 +35,12 @@
 #include <osg/Switch>
 #include <osgText/Text>
 
+#include <osg/io_utils>
 
+#include <SFCGAL/viewer/GISManipulator.h>
 
 namespace SFCGAL {
 namespace viewer {
-
 
 ///
 ///
@@ -76,7 +79,7 @@ void ViewerWidget::initViewer()
 	layout->addWidget( gw ? gw->getGLWidget() : NULL );
 	setLayout( layout );
 
-	setMinimumSize(300,300);
+	setMinimumSize(700,300);
 
 	connect( &_timer, SIGNAL(timeout()), this, SLOT(update()) );
 	startAnimation();
@@ -125,16 +128,35 @@ osg::Camera* ViewerWidget::createCamera( int x, int y, int w, int h, const std::
 
 	camera->setClearColor( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
 	camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
-	camera->setProjectionMatrixAsPerspective(
-		30.0f,
-		static_cast<double>(traits->width)/static_cast<double>(traits->height),
-		1.0f,
-		1000000000.0f
-	);
+
+	osg::Matrixd persp;
+	persp.makePerspective( 30.0f,
+				static_cast<double>(traits->width)/static_cast<double>(traits->height),
+				1.0f,
+				1000000000.0f
+				);
+	camera->setProjectionMatrix( persp );
+
 	camera->setComputeNearFarMode( osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR );
 	return camera.release();
 }
 
+	void ViewerWidget::setCameraToExtent( const osg::BoundingBox& bbox )
+	{
+		// translate to the center of the bbox
+		osgGA::CameraManipulator* manip = getCameraManipulator();
+		osg::Vec3d eye, center, up;
+		osg::Matrixd m = manip->getMatrix();
+		m.getLookAt( eye, center, up );
+		center[0] = bbox.center()[0];
+		center[1] = bbox.center()[1];
+		eye = center;
+		eye[2] = center[2] + 1.0;
+		m.makeLookAt( eye, center, up );
+		manip->setByMatrix( m );
+
+		// TODO: compute the right amount of zoom (use the inverse projection matrix ?)
+	}
 ///
 ///
 ///
@@ -189,18 +211,19 @@ ViewerWidget* ViewerWidget::createFromArguments( osg::ArgumentParser & arguments
 	{
 		osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator = new osgGA::KeySwitchMatrixManipulator;
 
-		keyswitchManipulator->addMatrixManipulator( '1', "Trackball", new osgGA::TrackballManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '2', "Flight", new osgGA::FlightManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '3', "Drive", new osgGA::DriveManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '4', "Terrain", new osgGA::TerrainManipulator() );
-		keyswitchManipulator->addMatrixManipulator( '5', "Orbit", new osgGA::OrbitManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '0', "GIS", new GISManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '1', "Orbit", new osgGA::OrbitManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '2', "Trackball", new osgGA::TrackballManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '3', "Flight", new osgGA::FlightManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '4', "Drive", new osgGA::DriveManipulator() );
+		keyswitchManipulator->addMatrixManipulator( '5', "Terrain", new osgGA::TerrainManipulator() );
 		keyswitchManipulator->addMatrixManipulator( '6', "FirstPerson", new osgGA::FirstPersonManipulator() );
 		keyswitchManipulator->addMatrixManipulator( '7', "Spherical", new osgGA::SphericalManipulator() );
 
 		std::string pathfile;
 		double animationSpeed = 1.0;
 		while(arguments.read("--speed",animationSpeed) ) {}
-		char keyForAnimationPath = '8';
+		char keyForAnimationPath = '9';
 		while (arguments.read("-p",pathfile))
 		{
 			osgGA::AnimationPathManipulator* apm = new osgGA::AnimationPathManipulator(pathfile);

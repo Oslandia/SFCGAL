@@ -299,6 +299,8 @@ namespace algorithm
 			do {
 				ls.addPoint(Point( hit->vertex()->point() ));
 			} while ( ++hit != fit->facet_begin());
+			// Do not forget to repeat the last point !
+			ls.addPoint(Point( hit->vertex()->point() ));
 			
 			polyhedral->addPolygon( Polygon(ls ));
 		}

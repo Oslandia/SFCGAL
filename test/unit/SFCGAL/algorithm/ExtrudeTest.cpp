@@ -54,6 +54,34 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquare )
 	BOOST_CHECK_EQUAL( ext->as< Solid >().exteriorShell().numPolygons(), 6U );
 }
 
+BOOST_AUTO_TEST_CASE( testExtrudeMultiPolygon )
+{
+	std::vector< Point > points;
+	points.push_back( Point(0.0,0.0,0.0) );
+	points.push_back( Point(1.0,0.0,0.0) );
+	points.push_back( Point(1.0,1.0,0.0) );
+	points.push_back( Point(0.0,1.0,0.0) );
+	points.push_back( Point(0.0,0.0,0.0) );
+
+	std::vector< Point > points2;
+	points2.push_back( Point(1.0,0.0,0.0) );
+	points2.push_back( Point(2.0,0.0,0.0) );
+	points2.push_back( Point(2.0,1.0,0.0) );
+	points2.push_back( Point(1.0,1.0,0.0) );
+	points2.push_back( Point(1.0,0.0,0.0) );
+
+	LineString exteriorRing( points ) ;
+	LineString exteriorRing2( points2 ) ;
+	Polygon g1( exteriorRing );
+	Polygon g2( exteriorRing2 );
+	MultiPolygon mp;
+	mp.addGeometry( g1 );
+	mp.addGeometry( g2 );
+
+	std::auto_ptr< Geometry > ext( algorithm::extrude( mp, 0.0, 0.0, 1.0 ) );
+	BOOST_CHECK( ext->is< MultiSolid >() );
+	BOOST_CHECK_EQUAL( ext->as<MultiSolid>().numGeometries(), 2U );
+}
 
 
 BOOST_AUTO_TEST_CASE( testExtrudeSquareWithHole )

@@ -16,6 +16,7 @@
 #include <SFCGAL/viewer/plugins/DemoPlugin.h>
 #include <SFCGAL/viewer/plugins/DataPlugin.h>
 #include <SFCGAL/viewer/plugins/GridPlugin.h>
+#include <SFCGAL/viewer/plugins/PSQLPlugin.h>
 #include <QtGui/QFileDialog>
 
 
@@ -67,6 +68,7 @@ int main(int argc, char** argv)
 	window.addPlugin( new plugins::DataPlugin ) ;
 	window.addPlugin( new plugins::DemoPlugin ) ;
 	window.addPlugin( new plugins::GridPlugin ) ;
+	window.addPlugin( new plugins::PSQLPlugin ) ;
 	window.show();
 
 	return app.exec();
