@@ -93,7 +93,7 @@ namespace Db
 	/// Access to a value by column number
 	Value operator [] ( size_t fn )
 	{
-	    BOOST_ASSERT( fn < PQnfields( res_ ) );
+	    BOOST_ASSERT( fn < (size_t)PQnfields( res_ ) );
 	    return Value( PQgetvalue( res_, nrow_, fn ),
 			  PQgetlength( res_, nrow_, fn ),
 			  PQgetisnull( res_, nrow_, fn ) != 0 ? true : false
