@@ -47,7 +47,7 @@ void WktWriter::write( const Geometry& g )
 	case TYPE_TRIANGLE:
 		write( g.as< Triangle >() );
 		return ;
-	case TYPE_TIN:
+	case TYPE_TRIANGULATEDSURFACE:
 		write( g.as< TriangulatedSurface >() );
 		return ;
 	case TYPE_POLYHEDRALSURFACE:

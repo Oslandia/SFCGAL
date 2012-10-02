@@ -72,7 +72,7 @@ std::string  TriangulatedSurface::geometryType() const
 ///
 GeometryType TriangulatedSurface::geometryTypeId() const
 {
-	return TYPE_TIN ;
+	return TYPE_TRIANGULATEDSURFACE ;
 }
 
 ///

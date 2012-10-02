@@ -134,7 +134,7 @@ void WaveFrontObj::addGeometry( const Geometry & g )
 		return addGeometry( g.as< Polygon >() );
 	case TYPE_MULTIPOLYGON:
 		return addGeometry( g.as< MultiPolygon >() );
-	case TYPE_TIN:
+	case TYPE_TRIANGULATEDSURFACE:
 		return addGeometry( g.as< TriangulatedSurface >() );
 	case TYPE_POLYHEDRALSURFACE:
 		return addGeometry( g.as< PolyhedralSurface >() );

@@ -29,7 +29,7 @@ namespace io {
 		case TYPE_TRIANGLE:
 			addToGeometry( geometry, g.as<Triangle>() );
 			break;
-		case TYPE_TIN:
+		case TYPE_TRIANGULATEDSURFACE:
 			addToGeometry( geometry, g.as<TriangulatedSurface>() );
 			break;
 		case TYPE_POLYHEDRALSURFACE:

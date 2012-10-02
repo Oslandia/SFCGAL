@@ -112,7 +112,7 @@ if( ${SFCGAL_BUILD_EXAMPLES} )
 endif()
 
 #-- build tools
-option( SFCGAL_BUILD_TOOLS "build tools" OFF )
+option( SFCGAL_BUILD_TOOLS "build tools" ON )
 if( ${SFCGAL_BUILD_TOOLS} )
 	add_subdirectory( tools )
 endif()

@@ -104,7 +104,7 @@ namespace SFCGAL {
 //     TYPE_CURVE               = 13, //abstract
 //     TYPE_SURFACE             = 14, //abstract
        TYPE_POLYHEDRALSURFACE   = 15,
-       TYPE_TIN                 = 16,
+       TYPE_TRIANGULATEDSURFACE = 16,
 
        //-- not official codes
        TYPE_TRIANGLE            = 100, //17 in Wikipedia???

@@ -195,7 +195,7 @@ namespace algorithm
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 				break;
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersects3D_bbox_d( static_cast<const Point&>(ga), static_cast<const TriangulatedSurface&>(gb));
 			case TYPE_SOLID:
 				break;
@@ -215,7 +215,7 @@ namespace algorithm
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
 				return intersects3D_bbox_d( ga, gb );
 			default:
@@ -234,7 +234,7 @@ namespace algorithm
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
 				return intersects3D_bbox_d( ga, gb );
 			default:
@@ -247,7 +247,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 			case TYPE_SOLID:
 				break;
 			default:
@@ -259,7 +259,7 @@ namespace algorithm
 		case TYPE_POLYHEDRALSURFACE: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_POLYHEDRALSURFACE:
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 			case TYPE_SOLID:
 				break;
 			default:
@@ -268,9 +268,9 @@ namespace algorithm
 			} // switch( gb.geometryTypeId() )
 			break;
 		} // TYPE_POLYHEDRALSURFACE
-		case TYPE_TIN: {
+		case TYPE_TRIANGULATEDSURFACE: {
 			switch ( gb.geometryTypeId() ) {
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersects3D_bbox_d( ga, gb );
 			case TYPE_SOLID:
 				break;
@@ -316,7 +316,7 @@ namespace algorithm
 		}
 
 		// Generic processing of a TIN : apply on each triangle
-		else if ( gb.geometryTypeId() == TYPE_TIN ) {
+		else if ( gb.geometryTypeId() == TYPE_TRIANGULATEDSURFACE ) {
 			const TriangulatedSurface& tri = static_cast< const TriangulatedSurface& >( gb );
 			for ( size_t i = 0; i < tri.numTriangles(); i++ ) {
 				if ( intersects3D(ga, tri.triangleN(i)) )

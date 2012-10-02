@@ -135,7 +135,7 @@ namespace detail {
 		case TYPE_TRIANGLE:
 			to_boxes_<Dim>( static_cast<const Triangle&>(g), handles, boxes );
 			break;
-		case TYPE_TIN:
+		case TYPE_TRIANGULATEDSURFACE:
 			to_boxes_<Dim>( static_cast<const TriangulatedSurface&>(g), handles, boxes );
 			break;
 		default:

@@ -36,7 +36,7 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, dou
 		return std::auto_ptr< Geometry >( extrude( g.as< MultiLineString >(), dx, dy, dz ));
 	case TYPE_MULTIPOLYGON:
 		return std::auto_ptr< Geometry >( extrude( g.as< MultiPolygon >(), dx, dy, dz ));
-	case TYPE_TIN:
+	case TYPE_TRIANGULATEDSURFACE:
 		return std::auto_ptr< Geometry >( extrude( g.as< TriangulatedSurface >(), dx, dy, dz ));
 	case TYPE_POLYHEDRALSURFACE:
 		return std::auto_ptr< Geometry >( extrude( g.as< PolyhedralSurface >(), dx, dy, dz ));
