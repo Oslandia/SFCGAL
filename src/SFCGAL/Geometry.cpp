@@ -6,7 +6,10 @@
 #include <SFCGAL/detail/GetPointsVisitor.h>
 
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
+#include <SFCGAL/algorithm/distance.h>
+
 #include <SFCGAL/detail/EnvelopeVisitor.h>
+
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
@@ -114,6 +117,16 @@ Geometry* Geometry::boundary() const
 	accept(visitor);
 	return visitor.releaseBoundary() ;
 }
+
+
+///
+///
+///
+double Geometry::distance( const Geometry & other ) const
+{
+	return algorithm::distance( *this, other ) ;
+}
+
 
 ///
 ///

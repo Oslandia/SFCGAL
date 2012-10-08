@@ -205,6 +205,12 @@ namespace SFCGAL {
 
        //inline int SRID() const ;
 
+       /**
+        * returns the distance to an other geometry
+        */
+       double distance( const Geometry & other ) const ;
+
+
 
        /**
         * Test if geometry is of "Derived" type given as template parameter
