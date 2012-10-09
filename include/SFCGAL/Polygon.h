@@ -169,6 +169,21 @@ namespace SFCGAL {
 		}
 		*/
 
+		/**
+		 * append a ring to the Polygon
+		 */
+		inline void            addRing( const LineString & ls ) {
+			_rings.push_back( ls.clone() ) ;
+		}
+
+		/**
+		 * append a ring to the Polygon (take ownership)
+		 */
+		inline void            addRing( LineString* ls ) {
+			BOOST_ASSERT( ls != NULL );
+			_rings.push_back( ls ) ;
+		}
+
 		inline iterator       begin() { return _rings.begin() ; }
 		inline const_iterator begin() const { return _rings.begin() ; }
 

@@ -562,6 +562,7 @@ namespace algorithm
 				// symmetric call
 				return intersection3D( gb, ga );
 			}
+			break;
 		case TYPE_POLYGON:
 			{
 				TriangulatedSurface surf;
@@ -581,10 +582,11 @@ namespace algorithm
 				// symmetric call
 				return intersection3D( gb, ga );
 			}
+			break;
 		case TYPE_POLYHEDRALSURFACE:
 			{
 				TriangulatedSurface surf;
-				algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
+ 				algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
 				return intersection3D( surf, gb );
 			} break;
 		case TYPE_SOLID:

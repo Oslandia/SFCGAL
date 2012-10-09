@@ -147,6 +147,7 @@ namespace algorithm
 				// symmetric call
 				return intersection( gb, ga );
 			}
+			break;
 		case TYPE_POLYGON:
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_POLYGON:
@@ -163,6 +164,7 @@ namespace algorithm
 				// symmetric call
 				return intersection( gb, ga );
 			}
+			break;
 		case TYPE_TIN:
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TIN:
@@ -174,6 +176,7 @@ namespace algorithm
 				// symmetric call
 				return intersection( gb, ga );
 			}
+			break;
 		case TYPE_POLYHEDRALSURFACE:
 			{
 				TriangulatedSurface surf;
