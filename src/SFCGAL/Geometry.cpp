@@ -127,6 +127,32 @@ double Geometry::distance( const Geometry & other ) const
 	return algorithm::distance( *this, other ) ;
 }
 
+///
+///
+///
+size_t Geometry::numGeometries() const
+{
+	return 1 ;
+}
+
+///
+///
+///
+const Geometry  &  Geometry::geometryN( size_t const& n ) const
+{
+	BOOST_ASSERT( n == 0 );
+	return *this ;
+}
+
+///
+///
+///
+Geometry &  Geometry::geometryN( size_t const& n )
+{
+	BOOST_ASSERT( n == 0 );
+	return *this ;
+}
+
 
 ///
 ///

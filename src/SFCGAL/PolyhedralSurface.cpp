@@ -157,6 +157,31 @@ void  PolyhedralSurface::addPolygons( const PolyhedralSurface & polyhedralSurfac
 ///
 ///
 ///
+size_t   PolyhedralSurface::numGeometries() const
+{
+	return _polygons.size() ;
+}
+
+
+///
+///
+///
+const Polygon  &   PolyhedralSurface::geometryN( size_t const& n ) const
+{
+	return _polygons[n] ;
+}
+
+///
+///
+///
+Polygon & PolyhedralSurface::geometryN( size_t const& n )
+{
+	return _polygons[n];
+}
+
+///
+///
+///
 void PolyhedralSurface::accept( GeometryVisitor & visitor )
 {
 	return visitor.visit(*this);

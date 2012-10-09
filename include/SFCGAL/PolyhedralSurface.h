@@ -71,10 +71,12 @@ namespace SFCGAL {
 
 		/**
 		 * [SFA/OGC]Returns the number of points
+		 * @deprecated see numGeometries
 		 */
 		inline size_t             numPolygons() const { return _polygons.size(); }
 		/**
 		 * [SFA/OGC]Returns the n-th point
+		 * @deprecated see geometryN()
 		 */
 		inline const Polygon  &   polygonN( size_t const& n ) const {
 			BOOST_ASSERT( n < _polygons.size() );
@@ -82,6 +84,7 @@ namespace SFCGAL {
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
+		 * @deprecated see geometryN()
 		 */
 		inline Polygon &          polygonN( size_t const& n ) {
 			BOOST_ASSERT( n < _polygons.size() );
@@ -100,7 +103,12 @@ namespace SFCGAL {
 		 */
 		void                      addPolygons( const PolyhedralSurface & polyhedralSurface ) ;
 
-
+		//-- SFCGAL::Geometry
+		virtual size_t               numGeometries() const ;
+		//-- SFCGAL::Geometry
+		virtual const Polygon  &    geometryN( size_t const& n ) const ;
+		//-- SFCGAL::Geometry
+		virtual Polygon &            geometryN( size_t const& n ) ;
 
 		/**
 		 * Convert to CGAL::Polyhedron_3

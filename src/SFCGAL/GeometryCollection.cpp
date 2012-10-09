@@ -108,6 +108,30 @@ bool   GeometryCollection::is3D() const
 ///
 ///
 ///
+size_t  GeometryCollection::numGeometries() const
+{
+	return _geometries.size();
+}
+
+///
+///
+///
+const Geometry  &  GeometryCollection::geometryN( size_t const& n ) const
+{
+	return _geometries[n];
+}
+
+///
+///
+///
+Geometry &         GeometryCollection::geometryN( size_t const& n ) {
+	return _geometries[n];
+}
+
+
+///
+///
+///
 void    GeometryCollection::addGeometry( Geometry * geometry )
 {
 	BOOST_ASSERT( geometry != NULL );

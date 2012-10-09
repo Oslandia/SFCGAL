@@ -51,18 +51,12 @@ namespace SFCGAL {
 		virtual bool           is3D() const ;
 
 
-		/**
-		 * [SFA/OGC]Returns the number of geometries
-		 */
-		inline size_t             numGeometries() const { return _geometries.size(); }
-		/**
-		 * [SFA/OGC]Returns the n-th geometry
-		 */
-		inline const Geometry  &  geometryN( size_t const& n ) const { return _geometries[n]; }
-		/**
-		 * [SFA/OGC]Returns the n-th geometry
-		 */
-		inline Geometry &         geometryN( size_t const& n ) { return _geometries[n]; }
+		//-- SFCGAL::Geometry
+		virtual size_t              numGeometries() const ;
+		//-- SFCGAL::Geometry
+		virtual const Geometry  &  geometryN( size_t const& n ) const ;
+		//-- SFCGAL::Geometry
+		virtual Geometry &          geometryN( size_t const& n ) ;
 
 		/**
 		 * [SFA/OGC]add a geometry to the collection (takes ownership)
@@ -88,8 +82,6 @@ namespace SFCGAL {
 		inline const_iterator end() const {
 			return _geometries.end() ;
 		}
-
-
 
 		//-- visitors
 

@@ -210,6 +210,21 @@ namespace SFCGAL {
         */
        double distance( const Geometry & other ) const ;
 
+       /**
+        * [OGC/SFA]Return the number of geometries in a collection of geometries
+        * @warning 1 for Point, LineString, Polygon, Triangle
+        */
+        virtual size_t             numGeometries() const ;
+       /**
+        * [OGC/SFA]Returns the n-th geometry
+        * @warning *this for Point, LineString, Polygon, Triangle
+        */
+       virtual const Geometry  &  geometryN( size_t const& n ) const ;
+       /**
+        * [OGC/SFA]Returns the n-th geometry
+        * @warning *this for Point, LineString, Polygon, Triangle
+        */
+       virtual Geometry &          geometryN( size_t const& n ) ;
 
 
        /**
@@ -248,7 +263,6 @@ namespace SFCGAL {
         * [visitor]dispatch visitor
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
-
 
     protected:
        Geometry();
