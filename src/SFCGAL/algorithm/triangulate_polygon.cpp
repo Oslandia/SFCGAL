@@ -124,21 +124,94 @@ void mark_domains(CDT& cdt) {
 ///
 void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface )
 {
-	if ( g.is< Polygon >() ){
+	switch ( g.geometryTypeId() ){
+	case TYPE_POINT:
+		return ;
+	case TYPE_POLYGON:
 		triangulate( g.as< Polygon >(), triangulatedSurface ) ;
-	}else if ( g.is< MultiPolygon >() ){
+		return ;
+	case TYPE_MULTIPOINT:
+		triangulate( g.as< MultiPoint >(), triangulatedSurface ) ;
+		return ;
+	case TYPE_MULTIPOLYGON:
 		triangulate( g.as< MultiPolygon >(), triangulatedSurface ) ;
-	}else if ( g.is< PolyhedralSurface >() ){
+		return ;
+	case TYPE_TRIANGULATEDSURFACE:
+		triangulatedSurface.addTriangles( g.as< TriangulatedSurface >() ) ;
+		return ;
+	case TYPE_POLYHEDRALSURFACE:
 		triangulate( g.as< PolyhedralSurface >(), triangulatedSurface ) ;
-	}else{
-		BOOST_THROW_EXCEPTION(
-			Exception(
-				( boost::format( "can't triangulate type '%1%'" ) % g.geometryType() ).str()
-			)
-		);
+		return ;
 	}
+
+	BOOST_THROW_EXCEPTION(
+		Exception(
+			( boost::format( "can't triangulate type '%1%'" ) % g.geometryType() ).str()
+		)
+	);
 }
 
+
+///
+///
+///
+void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulatedSurface )
+{
+	/*
+	 * filter empty geometry
+	 */
+	if ( geometry.isEmpty() )
+		return ;
+
+	/*
+	 * prepare a Constraint Delaunay Triangulation
+	 */
+	CDT cdt;
+
+	/*
+	 * insert each vertex in the triangulation
+	 */
+	for ( size_t j = 0; j < geometry.numGeometries(); j++ ) {
+		const Point & point = geometry.pointN( j );
+
+		CGAL::Point_2< Kernel > p2d(
+			point.x(),
+			point.y()
+		);
+
+		/*
+		 * insert into triangulation
+		 */
+		CDT::Vertex_handle vh = cdt.insert( p2d );
+		vh->info().original = point ;
+	}
+
+
+	/*
+	 * Convert CDT to TriangulatedSurface
+	 */
+	for ( CDT::Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it )
+	{
+		//ignore holes
+		if ( ! it->info().in_domain() ){
+			continue ;
+		}
+
+		const Point & a = it->vertex(0)->info().original ;
+		const Point & b = it->vertex(1)->info().original ;
+		const Point & c = it->vertex(2)->info().original ;
+
+		// check that vertex has an original vertex
+		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+			BOOST_THROW_EXCEPTION( Exception(
+				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % geometry.asText() ).str()
+			) ) ;
+		}
+
+		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
+	}
+
+}
 
 ///
 ///
