@@ -4,11 +4,10 @@ set( EXAMPLE_NAMES
 	CGAL-point_generator
 	CGAL-triangulation2
 	CGAL-polygon_triangulation2
-	
-	SFCGAL-save_obj_file
-	
 	BOOST-transform-iterator
 )
+
+
 foreach( EXAMPLE_NAME ${EXAMPLE_NAMES} )
 	file( GLOB_RECURSE EXAMPLE_SOURCES ${EXAMPLE_NAME}/*.cpp )
 	add_executable( example-${EXAMPLE_NAME} ${EXAMPLE_SOURCES} )

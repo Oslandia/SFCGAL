@@ -3,61 +3,82 @@
 
 #include <SFCGAL/Geometry.h>
 
+
 namespace SFCGAL {
 namespace algorithm {
+
+	/**
+	 * dispatch distance
+	 */
+	double distance( const Geometry & gA, const Geometry& gB ) ;
+
+	/**
+	 * dispatch distance from Point to Geometry
+	 */
+	double distancePointGeometry( const Point & gA, const Geometry& gB ) ;
 	/**
 	 * distance between two Points
-	 *
-	 * @warning no empty geometries
 	 */
-	double distancePointPoint( const Point & a, const Point & b );
-	/**
-	 * distance between a Point and a Segment
-	 *
-	 * @warning no empty geometries
-	 */
-	double distancePointSegment( const Point & p, const Point & a, const Point & b );
+	double distancePointPoint( const Point & gA, const Point& gB ) ;
 	/**
 	 * distance between a Point and a LineString
-	 *
-	 * @warning no empty geometries
 	 */
-	double distancePointLineString( const Point & a, const LineString& lineString );
+	double distancePointLineString( const Point & gA, const LineString& gB ) ;
 	/**
 	 * distance between a Point and a Polygon
-	 *
-	 * @warning no empty geometries
 	 */
-	double distancePointPolygon( const Point & point, const Polygon& polygon );
+	double distancePointPolygon( const Point & gA, const Polygon& gB ) ;
+	/**
+	 * distance between a Point and a Triangle
+	 */
+	double distancePointTriangle( const Point & gA, const Triangle& gB ) ;
 
 	/**
-	 * distance between two Segments
-	 *
-	 * @warning no empty geometries
+	 * dispatch distance from LineString to Geometry
 	 */
-	double distanceSegmentSegment(
-		const Point & a, const Point & b,
-		const Point & c, const Point & d
-	);
-
+	double distanceLineStringGeometry( const LineString & gA, const Geometry& gB ) ;
 	/**
 	 * distance between two LineStrings
-	 *
-	 * @warning no empty geometries
-	 * @todo cull distance bbox? bounding sphere?
 	 */
-	double distanceLineStringLineString(
-		const LineString & gA,
-		const LineString & gB
-	);
+	double distanceLineStringLineString( const LineString & gA, const LineString& gB ) ;
+	/**
+	 * distance between a LineString and a Polygon
+	 */
+	double distanceLineStringPolygon( const LineString & gA, const Polygon& gB ) ;
+	/**
+	 * distance between a LineString and a Triangle
+	 */
+	double distanceLineStringTriangle( const LineString & gA, const Triangle& gB ) ;
 
 	/**
-	 * distance between two polygons
+	 * dispatch distance from Polygon to Geometry
 	 */
-	double distancePolygonPolygon(
-		const Polygon & gA,
-		const Polygon & gB
-	);
+	double distancePolygonGeometry( const Polygon & gA, const Geometry& gB ) ;
+	/**
+	 * distance between two Polygons
+	 */
+	double distancePolygonPolygon( const Polygon & gA, const Polygon& gB ) ;
+	/**
+	 * distance between a Polygon and a Triangle
+	 */
+	double distancePolygonTriangle( const Polygon & gA, const Triangle& gB ) ;
+
+
+	/**
+	 * dispatch distance from a Triangle to a Geometry
+	 */
+	double distanceTriangleGeometry( const Triangle & gA, const Geometry& gB ) ;
+
+
+	/**
+	 * dispatch distance from a collection of geometry (gA) to a Geometry (gB)
+	 */
+	double distanceGeometryCollectionGeometry( const Geometry & gA, const Geometry& gB ) ;
+
+
+
+	double distancePointSegment( const Point & p, const Point & a, const Point & b ) ;
+	double distanceSegmentSegment( const Point & a, const Point & b, const Point & c, const Point & d );
 
 }//namespace algorithm
 }//namespace SFCGAL

@@ -35,7 +35,7 @@ double area2D( const Geometry & g )
 	case TYPE_MULTIPOLYGON:
 		return detail::area< Kernel >( g.as< MultiPolygon >() );
 	case TYPE_POLYHEDRALSURFACE:
-	case TYPE_TIN:
+	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
@@ -64,7 +64,7 @@ double area3D( const Geometry & g )
 		return detail::area3D< Kernel >( g.as< MultiPolygon >() );
 	case TYPE_POLYHEDRALSURFACE:
 		return detail::area3D< Kernel >( g.as< PolyhedralSurface >() );
-	case TYPE_TIN:
+	case TYPE_TRIANGULATEDSURFACE:
 		return detail::area3D< Kernel >( g.as< TriangulatedSurface >() );
 	case TYPE_TRIANGLE:
 		return detail::area3D< Kernel >( g.as< Triangle >() );

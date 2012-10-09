@@ -34,6 +34,11 @@ namespace algorithm {
 	 */
 	Solid *               extrude( const PolyhedralSurface & g, double dx, double dy, double dz ) ;
 
+	/**
+	 * extrude each geometry in a GeometryCollection
+	 */
+	GeometryCollection*   extrude( const GeometryCollection & g, double dx, double dy, double dz ) ;
+
 }//algorithm
 }//SFCGAL
 

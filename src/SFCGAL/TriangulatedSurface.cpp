@@ -72,7 +72,7 @@ std::string  TriangulatedSurface::geometryType() const
 ///
 GeometryType TriangulatedSurface::geometryTypeId() const
 {
-	return TYPE_TIN ;
+	return TYPE_TRIANGULATEDSURFACE ;
 }
 
 ///
@@ -110,6 +110,43 @@ bool TriangulatedSurface::isEmpty() const
 bool TriangulatedSurface::is3D() const
 {
 	return ! _triangles.empty() && _triangles.front().is3D() ;
+}
+
+///
+///
+///
+void  TriangulatedSurface::addTriangles( const TriangulatedSurface & other )
+{
+	for ( TriangulatedSurface::const_iterator it = other.begin(); it != other.end(); ++it ){
+		addTriangle( *it ) ;
+	}
+}
+
+
+///
+///
+///
+size_t  TriangulatedSurface::numGeometries() const
+{
+	return _triangles.size();
+}
+
+///
+///
+///
+const Triangle  &  TriangulatedSurface::geometryN( size_t const& n ) const
+{
+	BOOST_ASSERT( n < numGeometries() );
+	return _triangles[n];
+}
+
+///
+///
+///
+Triangle &   TriangulatedSurface::geometryN( size_t const& n )
+{
+	BOOST_ASSERT( n < numGeometries() );
+	return _triangles[n];
 }
 
 ///

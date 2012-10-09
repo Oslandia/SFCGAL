@@ -104,7 +104,7 @@ namespace SFCGAL {
 //     TYPE_CURVE               = 13, //abstract
 //     TYPE_SURFACE             = 14, //abstract
        TYPE_POLYHEDRALSURFACE   = 15,
-       TYPE_TIN                 = 16,
+       TYPE_TRIANGULATEDSURFACE = 16,
 
        //-- not official codes
        TYPE_TRIANGLE            = 100, //17 in Wikipedia???
@@ -205,6 +205,27 @@ namespace SFCGAL {
 
        //inline int SRID() const ;
 
+       /**
+        * returns the distance to an other geometry
+        */
+       double distance( const Geometry & other ) const ;
+
+       /**
+        * [OGC/SFA]Return the number of geometries in a collection of geometries
+        * @warning 1 for Point, LineString, Polygon, Triangle
+        */
+        virtual size_t             numGeometries() const ;
+       /**
+        * [OGC/SFA]Returns the n-th geometry
+        * @warning *this for Point, LineString, Polygon, Triangle
+        */
+       virtual const Geometry  &  geometryN( size_t const& n ) const ;
+       /**
+        * [OGC/SFA]Returns the n-th geometry
+        * @warning *this for Point, LineString, Polygon, Triangle
+        */
+       virtual Geometry &          geometryN( size_t const& n ) ;
+
 
        /**
         * Test if geometry is of "Derived" type given as template parameter
@@ -242,7 +263,6 @@ namespace SFCGAL {
         * [visitor]dispatch visitor
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
-
 
     protected:
        Geometry();

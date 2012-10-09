@@ -452,7 +452,7 @@ namespace algorithm
 
 			return intersection3D_polyhedra( *polya, *polyb, exTri, false );
 		} break;
-		case TYPE_TIN: {
+		case TYPE_TRIANGULATEDSURFACE: {
 			const TriangulatedSurface& surf = static_cast<const TriangulatedSurface&>(ga);
 			std::auto_ptr<Polyhedron> polya = surf.toPolyhedron_3<Kernel, Polyhedron>();
 			return intersection3D_polyhedra( *polya, *polyb, exTri, /* is_volume */true );
@@ -534,7 +534,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
 			case TYPE_TRIANGLE:
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
@@ -551,7 +551,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGLE:
 				return intersection_triangles_( static_cast<const Triangle&>(ga), static_cast<const Triangle&>(gb) );
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_SOLID:
 				return intersection3D_solid_( ga, static_cast<const Solid&>(gb) );
@@ -570,9 +570,9 @@ namespace algorithm
 				return intersection3D( surf, gb );
 			} break;
 
-		case TYPE_TIN:
+		case TYPE_TRIANGULATEDSURFACE:
 			switch ( gb.geometryTypeId() ) {
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYHEDRALSURFACE:
 				break;

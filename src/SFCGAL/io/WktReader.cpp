@@ -71,7 +71,7 @@ Geometry*    WktReader::readGeometry()
 		readInnerGeometryCollection( *g );
 		return g.release() ;
 	}
-	case TYPE_TIN :
+	case TYPE_TRIANGULATEDSURFACE :
 	{
 		std::auto_ptr< TriangulatedSurface > g( new TriangulatedSurface() );
 		readInnerTriangulatedSurface( *g );
@@ -122,7 +122,7 @@ GeometryType WktReader::readGeometryType()
 	}else if ( _reader.match("GEOMETRYCOLLECTION") ){
 		return TYPE_GEOMETRYCOLLECTION ;
 	}else if ( _reader.match("TIN") ){
-		return TYPE_TIN ;
+		return TYPE_TRIANGULATEDSURFACE ;
 	}else if ( _reader.match("POLYHEDRALSURFACE") ){
 		return TYPE_POLYHEDRALSURFACE ;
 	}else if ( _reader.match("SOLID") ){

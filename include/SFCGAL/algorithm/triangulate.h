@@ -10,6 +10,11 @@ namespace algorithm {
 	 */
 	void triangulate( const Geometry & geometry, TriangulatedSurface & triangulatedSurface ) ;
 	/**
+	 * Convert a 2D/3D point set to a TriangulatedSurface.
+	 * @warning projects points in the OXY plane
+	 */
+	void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulatedSurface ) ;
+	/**
 	 * Convert a 2D/3D polygon to a TriangulatedSurface.
 	 * @warning projects points in the polygon plane
 	 */

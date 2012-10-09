@@ -121,7 +121,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
 			case TYPE_TRIANGLE:
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
@@ -137,7 +137,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGLE:
 				return intersection_triangles_( static_cast<const Triangle&>(ga), static_cast<const Triangle&>(gb) );
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
@@ -152,7 +152,7 @@ namespace algorithm
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_POLYGON:
 				return intersection_polygons_( static_cast<const Polygon&>(ga), static_cast<const Polygon&>(gb) );
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				{
@@ -164,10 +164,9 @@ namespace algorithm
 				// symmetric call
 				return intersection( gb, ga );
 			}
-			break;
-		case TYPE_TIN:
+		case TYPE_TRIANGULATEDSURFACE:
 			switch ( gb.geometryTypeId() ) {
-			case TYPE_TIN:
+			case TYPE_TRIANGULATEDSURFACE:
 				return intersection_box_d_( ga, gb );
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:

@@ -69,10 +69,12 @@ namespace SFCGAL {
 
 		/**
 		 * [SFA/OGC]Returns the number of points
+		 * @deprecated see numGeometries()
 		 */
 		inline size_t             numTriangles() const { return _triangles.size(); }
 		/**
 		 * [SFA/OGC]Returns the n-th point
+		 * @deprecated see geometryN()
 		 */
 		inline const Triangle  &  triangleN( size_t const& n ) const {
 			BOOST_ASSERT( n < _triangles.size() );
@@ -80,6 +82,7 @@ namespace SFCGAL {
 		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
+		 * @deprecated see geometryN()
 		 */
 		inline Triangle &         triangleN( size_t const& n ) {
 			BOOST_ASSERT( n < _triangles.size() );
@@ -99,6 +102,18 @@ namespace SFCGAL {
 		{
 			_triangles.push_back( triangle );
 		}
+		/**
+		 * add triangles from an other TriangulatedSurface
+		 */
+		void                      addTriangles( const TriangulatedSurface & other ) ;
+
+
+		//-- SFCGAL::Geometry
+		virtual size_t               numGeometries() const ;
+		//-- SFCGAL::Geometry
+		virtual const Triangle  &   geometryN( size_t const& n ) const ;
+		//-- SFCGAL::Geometry
+		virtual Triangle &           geometryN( size_t const& n ) ;
 
 
 		//const std::vector< Triangle > & triangles() const { return _triangles; }
