@@ -31,11 +31,21 @@ double distance( const Geometry & gA, const Geometry& gB )
 {
 	switch ( gA.geometryTypeId() ){
 	case TYPE_POINT:
-		return distancePointGeometry( gA.as< Point >(), gB );
+		return distancePointGeometry( gA.as< Point >(), gB ) ;
 	case TYPE_LINESTRING:
-		return distanceLineStringGeometry( gA.as< LineString >(), gB );
+		return distanceLineStringGeometry( gA.as< LineString >(), gB ) ;
 	case TYPE_POLYGON:
-		return distancePolygonGeometry( gA.as< Polygon >(), gB );
+		return distancePolygonGeometry( gA.as< Polygon >(), gB ) ;
+	case TYPE_TRIANGLE:
+		return distanceTriangleGeometry( gA.as< Triangle >(), gB ) ;
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_MULTIPOLYGON:
+	case TYPE_MULTISOLID:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_TRIANGULATEDSURFACE:
+	case TYPE_POLYHEDRALSURFACE:
+		return distanceGeometryCollectionGeometry( gA, gB );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -55,6 +65,18 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 		return distancePointLineString( gA, gB.as< LineString >() );
 	case TYPE_POLYGON:
 		return distancePointPolygon( gA, gB.as< Polygon >() );
+	case TYPE_TRIANGLE:
+		return distancePointTriangle( gA, gB.as< Triangle >() );
+
+	//collection dispatch
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_MULTIPOLYGON:
+	case TYPE_MULTISOLID:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_TRIANGULATEDSURFACE:
+	case TYPE_POLYHEDRALSURFACE:
+		return distanceGeometryCollectionGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -66,8 +88,9 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 ///
 double distancePointPoint( const Point & gA, const Point& gB )
 {
-	BOOST_ASSERT( ! gA.isEmpty() );
-	BOOST_ASSERT( ! gB.isEmpty() );
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
 
 	return CGAL::sqrt(
 		CGAL::to_double(
@@ -81,6 +104,10 @@ double distancePointPoint( const Point & gA, const Point& gB )
 ///
 double distancePointLineString( const Point & gA, const LineString& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	BOOST_ASSERT( gB.numPoints() >= 2 );
 	size_t numSegments = gB.numPoints() - 1 ;
 
@@ -99,6 +126,10 @@ double distancePointLineString( const Point & gA, const LineString& gB )
 ///
 double distancePointPolygon( const Point & gA, const Polygon& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	if ( intersects(gA,gB) ){
 		return 0.0 ;
 	}
@@ -114,6 +145,13 @@ double distancePointPolygon( const Point & gA, const Polygon& gB )
 	return dMin ;
 }
 
+///
+///
+///
+double distancePointTriangle( const Point & gA, const Triangle& gB )
+{
+	return distancePointPolygon( gA, gB.toPolygon() );
+}
 
 
 
@@ -122,6 +160,10 @@ double distancePointPolygon( const Point & gA, const Polygon& gB )
 ///
 double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	switch ( gB.geometryTypeId() ){
 	case TYPE_POINT:
 		return distancePointLineString( gB.as< Point >(), gA ); //symetric
@@ -129,6 +171,18 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 		return distanceLineStringLineString( gA, gB.as< LineString >() );
 	case TYPE_POLYGON:
 		return distanceLineStringPolygon( gA, gB.as< Polygon >() );
+	case TYPE_TRIANGLE:
+		return distanceLineStringTriangle( gA, gB.as< Triangle >() );
+
+	//collection dispatch
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_MULTIPOLYGON:
+	case TYPE_MULTISOLID:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_TRIANGULATEDSURFACE:
+	case TYPE_POLYHEDRALSURFACE:
+		return distanceGeometryCollectionGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -140,6 +194,10 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 ///
 double distanceLineStringLineString( const LineString & gA, const LineString& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	BOOST_ASSERT( gA.numPoints() >= 2 );
 	BOOST_ASSERT( gB.numPoints() >= 2 );
 	size_t nsA = gA.numPoints() - 1 ;
@@ -165,6 +223,10 @@ double distanceLineStringLineString( const LineString & gA, const LineString& gB
 ///
 double distanceLineStringPolygon( const LineString & gA, const Polygon& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	if ( intersects(gA, gB) ){
 		return 0.0 ;
 	}
@@ -178,12 +240,27 @@ double distanceLineStringPolygon( const LineString & gA, const Polygon& gB )
 }
 
 
+///
+///
+///
+double distanceLineStringTriangle( const LineString & gA, const Triangle& gB )
+{
+	return distanceLineStringPolygon( gA, gB.toPolygon() );
+}
+
+
+
+
 
 ///
 ///
 ///
 double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	switch ( gB.geometryTypeId() ){
 	case TYPE_POINT:
 		return distancePointPolygon( gB.as< Point >(), gA );           //symetric
@@ -191,6 +268,18 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 		return distanceLineStringPolygon( gB.as< LineString >(), gA ); //symetric
 	case TYPE_POLYGON:
 		return distancePolygonPolygon( gA, gB.as< Polygon >() );
+	case TYPE_TRIANGLE:
+		return distancePolygonTriangle( gA, gB.as< Triangle >() );
+
+	//collection dispatch
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_MULTIPOLYGON:
+	case TYPE_MULTISOLID:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_TRIANGULATEDSURFACE:
+	case TYPE_POLYHEDRALSURFACE:
+		return distanceGeometryCollectionGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -202,6 +291,10 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 ///
 double distancePolygonPolygon( const Polygon & gA, const Polygon& gB )
 {
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
 	if ( intersects(gA, gB) ){
 		return 0.0 ;
 	}
@@ -215,6 +308,40 @@ double distancePolygonPolygon( const Polygon & gA, const Polygon& gB )
 	}
 	return dMin ;
 }
+
+///
+///
+///
+double distancePolygonTriangle( const Polygon & gA, const Triangle& gB )
+{
+	return distancePolygonPolygon( gA, gB.toPolygon() );
+}
+
+///
+///
+///
+double distanceTriangleGeometry( const Triangle & gA, const Geometry& gB )
+{
+	return distancePolygonGeometry( gA.toPolygon(), gB );
+}
+
+
+///
+///
+///
+double distanceGeometryCollectionGeometry( const Geometry & gA, const Geometry& gB )
+{
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
+	double dMin = std::numeric_limits< double >::infinity() ;
+	for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+		dMin = std::min( dMin, distance( gA.geometryN(i), gB ) );
+	}
+	return dMin ;
+}
+
 
 
 
@@ -249,6 +376,11 @@ double distancePointSegment( const Point & p, const Point & a, const Point & b )
 ///
 double distanceSegmentSegment( const Point & a, const Point & b, const Point & c, const Point & d )
 {
+	BOOST_ASSERT( ! a.isEmpty() );
+	BOOST_ASSERT( ! b.isEmpty() );
+	BOOST_ASSERT( ! c.isEmpty() );
+	BOOST_ASSERT( ! d.isEmpty() );
+
 	return CGAL::sqrt( CGAL::to_double(
 		CGAL::squared_distance(
 			CGAL::Segment_2< Kernel >( a.toPoint_2< Kernel >(), b.toPoint_2< Kernel >() ),

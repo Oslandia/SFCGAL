@@ -21,14 +21,17 @@ namespace algorithm {
 	 */
 	double distancePointPoint( const Point & gA, const Point& gB ) ;
 	/**
-	 * distance between a Point an a LineString
+	 * distance between a Point and a LineString
 	 */
 	double distancePointLineString( const Point & gA, const LineString& gB ) ;
 	/**
-	 * distance between a Point an a Polygon
+	 * distance between a Point and a Polygon
 	 */
 	double distancePointPolygon( const Point & gA, const Polygon& gB ) ;
-
+	/**
+	 * distance between a Point and a Triangle
+	 */
+	double distancePointTriangle( const Point & gA, const Triangle& gB ) ;
 
 	/**
 	 * dispatch distance from LineString to Geometry
@@ -42,8 +45,10 @@ namespace algorithm {
 	 * distance between a LineString and a Polygon
 	 */
 	double distanceLineStringPolygon( const LineString & gA, const Polygon& gB ) ;
-
-
+	/**
+	 * distance between a LineString and a Triangle
+	 */
+	double distanceLineStringTriangle( const LineString & gA, const Triangle& gB ) ;
 
 	/**
 	 * dispatch distance from Polygon to Geometry
@@ -53,6 +58,23 @@ namespace algorithm {
 	 * distance between two Polygons
 	 */
 	double distancePolygonPolygon( const Polygon & gA, const Polygon& gB ) ;
+	/**
+	 * distance between a Polygon and a Triangle
+	 */
+	double distancePolygonTriangle( const Polygon & gA, const Triangle& gB ) ;
+
+
+	/**
+	 * dispatch distance from a Triangle to a Geometry
+	 */
+	double distanceTriangleGeometry( const Triangle & gA, const Geometry& gB ) ;
+
+
+	/**
+	 * dispatch distance from a collection of geometry (gA) to a Geometry (gB)
+	 */
+	double distanceGeometryCollectionGeometry( const Geometry & gA, const Geometry& gB ) ;
+
 
 
 	double distancePointSegment( const Point & p, const Point & a, const Point & b ) ;
