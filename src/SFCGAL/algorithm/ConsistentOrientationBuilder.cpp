@@ -28,8 +28,8 @@ void ConsistentOrientationBuilder::addTriangle( const Triangle & triangle )
 ///
 void ConsistentOrientationBuilder::addTriangulatedSurface( const TriangulatedSurface & triangulatedSurface )
 {
-	for ( size_t i = 0; i < triangulatedSurface.numTriangles(); i++ ){
-		addTriangle( triangulatedSurface.triangleN( i ) ) ;
+	for ( size_t i = 0; i < triangulatedSurface.numGeometries(); i++ ){
+		addTriangle( triangulatedSurface.geometryN( i ) ) ;
 	}
 }
 

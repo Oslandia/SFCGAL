@@ -114,8 +114,8 @@ namespace detail {
 	template <int Dim>
 	void to_boxes_( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
 	{
-		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
-			handles.push_back( &surf.triangleN(i));
+		for ( size_t i = 0; i < surf.numGeometries(); ++i ) {
+			handles.push_back( &surf.geometryN(i));
 			boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
 		}
 	}

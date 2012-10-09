@@ -62,8 +62,8 @@ namespace transform {
 
 		virtual void transform( TriangulatedSurface & surf )
 		{
-			for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
-				transform( surf.triangleN(i) );
+			for ( size_t i = 0; i < surf.numGeometries(); ++i ) {
+				transform( surf.geometryN(i) );
 			}
 		}
 

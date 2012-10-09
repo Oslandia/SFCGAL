@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE( testTriangulateTriangle )
 	std::auto_ptr< Geometry > geometry( io::readWkt("POLYGON((0.0 0.0,1.0 0.0,0.5 0.5,0.0 0.0))") );
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 1U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 1U );
 }
 
 
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE( testTriangulateSquare2d )
 	std::auto_ptr< Geometry > geometry( io::readWkt("POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))") );
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 2U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
 }
 
 BOOST_AUTO_TEST_CASE( testTriangulateVerticalSquare )
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE( testTriangulateVerticalSquare )
 	BOOST_CHECK( geometry->is3D() );
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 2U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
 }
 
 BOOST_AUTO_TEST_CASE( testTriangulateConcavePolygon )
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( testTriangulateConcavePolygon )
 	BOOST_CHECK( geometry->is3D() );
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 3U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 3U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

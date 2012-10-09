@@ -206,12 +206,12 @@ Solid *   extrude( const TriangulatedSurface & g, double dx, double dy, double d
 	std::auto_ptr< Solid > result( new Solid() );
 
 	//bottom and top
-	for ( size_t i = 0; i < g.numTriangles(); i++ ){
-		Triangle bottomPart( g.triangleN(i) );
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		Triangle bottomPart( g.geometryN(i) );
 		bottomPart.reverse() ;
 		result->exteriorShell().addPolygon( bottomPart );
 
-		Triangle topPart( g.triangleN(i) );
+		Triangle topPart( g.geometryN(i) );
 		translate( topPart, dx, dy, dz );
 		result->exteriorShell().addPolygon( topPart );
 	}

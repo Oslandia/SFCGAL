@@ -301,11 +301,11 @@ void WktWriter::write( const TriangulatedSurface & g )
 	}
 
 	_s << "(" ; //begin TIN
-	for ( size_t i = 0; i < g.numTriangles(); i++ ){
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		if ( i != 0 ){
 			_s << ",";
 		}
-		writeInner( g.triangleN(i) );
+		writeInner( g.geometryN(i) );
 	}
 	_s << ")" ; //end TIN
 }

@@ -85,8 +85,8 @@ namespace io {
 		osg::Vec3Array * normals = static_cast<osg::Vec3Array*>(geometry->getNormalArray());
 
 		size_t start = vertices->size() ;
-		for ( size_t i = 0; i < g.numTriangles(); i++ ){
-			const Triangle & triangle = g.triangleN( i );
+		for ( size_t i = 0; i < g.numGeometries(); i++ ){
+			const Triangle & triangle = g.geometryN( i );
 			
 			osg::Vec3 a = createVec3( triangle.vertex( 0 ) );
 			osg::Vec3 b = createVec3( triangle.vertex( 1 ) );
@@ -107,7 +107,7 @@ namespace io {
 		}
 		
 		geometry->setNormalBinding( osg::Geometry::BIND_PER_VERTEX );
-		geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, g.numTriangles() * 3 ) );
+		geometry->addPrimitiveSet(  new osg::DrawArrays( osg::PrimitiveSet::TRIANGLES, start, g.numGeometries() * 3 ) );
 	}
 
 	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Polygon& g )

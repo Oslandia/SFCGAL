@@ -201,8 +201,8 @@ namespace detail {
 	)
 	{
 		double area = 0.0 ;
-		for ( size_t i = 0; i < g.numTriangles(); i++ ){
-			area += area3D< Kernel >( g.triangleN(i) ) ;
+		for ( size_t i = 0; i < g.numGeometries(); i++ ){
+			area += area3D< Kernel >( g.geometryN(i) ) ;
 		}
 		return area ;
 	}

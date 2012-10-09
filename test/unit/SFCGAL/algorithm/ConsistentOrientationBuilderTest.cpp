@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE( testOppositeTriangle )
 		)
 	);
 	TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 2U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
 	BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 }
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE( testFourTriangle )
 		)
 	);
 	TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
-	BOOST_CHECK_EQUAL( triangulatedSurface.numTriangles(), 4U );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 4U );
 	BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 }
 

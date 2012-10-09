@@ -354,16 +354,16 @@ namespace algorithm
 		// Generic processing of a TIN : apply on each triangle
 		if ( gb.geometryTypeId() == TYPE_TRIANGULATEDSURFACE ) {
 			const TriangulatedSurface& tri = static_cast< const TriangulatedSurface& >( gb );
-			for ( size_t i = 0; i < tri.numTriangles(); i++ ) {
-				if ( intersects(ga, tri.triangleN(i)) )
+			for ( size_t i = 0; i < tri.numGeometries(); i++ ) {
+				if ( intersects(ga, tri.geometryN(i)) )
 					return true;
 			}
 			return false;
 		}
 		if ( ga.geometryTypeId() == TYPE_TRIANGULATEDSURFACE ) {
 			const TriangulatedSurface& tri = static_cast< const TriangulatedSurface& >( ga );
-			for ( size_t i = 0; i < tri.numTriangles(); i++ ) {
-				if ( intersects(gb, tri.triangleN(i)) )
+			for ( size_t i = 0; i < tri.numGeometries(); i++ ) {
+				if ( intersects(gb, tri.geometryN(i)) )
 					return true;
 			}
 			return false;

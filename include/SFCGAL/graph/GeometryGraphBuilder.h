@@ -153,8 +153,8 @@ namespace graph {
 			BOOST_ASSERT( ! triangulatedSurface.isEmpty() );
 
 			std::vector< std::vector< edge_descriptor > > triangles ;
-			for ( size_t i = 0; i < triangulatedSurface.numTriangles(); i++ ){
-				triangles.push_back( addTriangle( triangulatedSurface.triangleN(i), edgeProperties ) );
+			for ( size_t i = 0; i < triangulatedSurface.numGeometries(); i++ ){
+				triangles.push_back( addTriangle( triangulatedSurface.geometryN(i), edgeProperties ) );
 			}
 			return triangles ;
 		}

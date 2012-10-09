@@ -161,15 +161,15 @@ namespace SFCGAL {
 			{
 				// Postcondition: `hds' is a valid polyhedral surface.
 				CGAL::Polyhedron_incremental_builder_3<HDS> B( hds, true);
-				B.begin_surface( /* vertices */ surf.numTriangles() * 3, /* facets */ surf.numTriangles());
+				B.begin_surface( /* vertices */ surf.numGeometries() * 3, /* facets */ surf.numGeometries());
 				
 				size_t vertex_idx = 0;
 				
 				// first pass: insert vertices, only if they are not shared between faces
 				// thanks to a binary tree (PointMap)
-				for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
+				for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
 					for ( size_t j = 0; j < 3; j++ ) {
-						Point p = surf.triangleN(i).vertex(j).template toPoint_3<K>();
+						Point p = surf.geometryN(i).vertex(j).template toPoint_3<K>();
 						size_t v;
 						if ( points.find(p) == points.end() ) {
 							B.add_vertex( p );
@@ -188,9 +188,9 @@ namespace SFCGAL {
 				// "The convention is that the halfedges are oriented counterclockwise
 				// around facets as seen from the outside of the polyhedron"
 
-				for ( size_t i = 0; i < surf.numTriangles(); i++ ) {
+				for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
 					B.begin_facet();
-					CGAL::Triangle_3<K> tri( surf.triangleN(i).template toTriangle_3<K>());
+					CGAL::Triangle_3<K> tri( surf.geometryN(i).template toTriangle_3<K>());
 					CGAL::Point_3<K> pa( tri[0] );
 					CGAL::Point_3<K> pb( tri[1] );
 					CGAL::Point_3<K> pc( tri[2] );
@@ -199,7 +199,7 @@ namespace SFCGAL {
 					     edges.find( std::make_pair(pb, pc)) != edges.end() ||
 					     edges.find( std::make_pair(pc, pa)) != edges.end() ) {
 						BOOST_THROW_EXCEPTION(Exception( "When trying to build a CGAL::Polyhedron_3 from a TriangulatedSurface: bad orientation for "
-										 + surf.triangleN(i).asText()
+										 + surf.geometryN(i).asText()
 										 + " consider using ConsistentOrientationBuilder first"));
 					}
 					B.add_vertex_to_facet( points[pa] );

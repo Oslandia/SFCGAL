@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 		 */
 		TriangulatedSurface triangulatedSurface ;
 		BOOST_CHECK_NO_THROW( algorithm::triangulate( *g, triangulatedSurface ) ) ;
-		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numTriangles() );
+		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numGeometries() );
 
 		/*
 		 * make some check
