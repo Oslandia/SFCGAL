@@ -30,6 +30,8 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, dou
 		return std::auto_ptr< Geometry >( extrude( g.as< Polygon >(), dx, dy, dz ));
 	case TYPE_TRIANGLE:
 		return std::auto_ptr< Geometry >( extrude( g.as< Triangle >(), dx, dy, dz ));
+	case TYPE_GEOMETRYCOLLECTION:
+		return std::auto_ptr< Geometry >( extrude( g.as< GeometryCollection >(), dx, dy, dz ) );
 	case TYPE_MULTIPOINT:
 		return std::auto_ptr< Geometry >( extrude( g.as< MultiPoint >(), dx, dy, dz ));
 	case TYPE_MULTILINESTRING:
@@ -232,6 +234,18 @@ Solid *   extrude( const PolyhedralSurface & g, double dx, double dy, double dz 
 	TriangulatedSurface triangulatedSurface ;
 	triangulate( g, triangulatedSurface );
 	return extrude( g, dx, dy, dz ) ;
+}
+
+///
+///
+///
+GeometryCollection*   extrude( const GeometryCollection & g, double dx, double dy, double dz )
+{
+	std::auto_ptr< GeometryCollection > result( new GeometryCollection() ) ;
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		result->addGeometry( extrude( g.geometryN(i), dx, dy, dz ).release() );
+	}
+	return result.release() ;
 }
 
 
