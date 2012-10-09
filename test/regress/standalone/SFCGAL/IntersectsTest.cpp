@@ -2,7 +2,6 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/WaveFrontObj.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/triangulate.h>
 
@@ -19,37 +18,39 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_IntersectsTest )
 // Load an obj
 // Build a polyhedral surface
 // Test intersection with some other objects
-BOOST_AUTO_TEST_CASE( testIntersectsTeapot )
-{
-    std::string filename( SFCGAL_TEST_DIRECTORY );
-    filename += "/regress/data/teapot.obj" ;
-    
-    io::WaveFrontObj obj;
-    obj.load( filename );
-    
-    //check points defined in all faces
-    PolyhedralSurface surf;
-    for ( size_t i = 0; i < obj.numFaces(); i++ ){
-	LineString ext_ring;
-	const io::WaveFrontFace & face = obj.faceN(i);
-	for ( size_t j = 0; j < face.size(); j++ ) {	    
-	    ext_ring.addPoint( obj.vertexN( face[j].v ) );
-	}
-	// close the polygon
-	ext_ring.addPoint( obj.vertexN( face[0].v ) );
-	surf.addPolygon( Polygon(ext_ring) );
-    }
 
-    Triangle tri1( Point(3.0, 1.8, 0.0), Point(-2.99, 1.8, -0.081), Point(-2.99, 1.8, 0.081) );
-    Triangle tri2( Point(3.0, 1.8, 5.0), Point(-2.99, 1.8, 5.081), Point(-2.99, 1.8, 5.081) );
-
-    bool intersects1 = algorithm::intersects3D( tri1, surf );
-    bool intersects2 = algorithm::intersects3D( tri2, surf );
-    BOOST_TEST_MESSAGE( boost::format("triangle1 intersects the teapot: %1%") % (intersects1 ? "YES" : "NO") );
-    BOOST_CHECK_EQUAL( intersects1, true );
-    BOOST_TEST_MESSAGE( boost::format("triangle2 intersects the teapot: %1%") % (intersects2 ? "YES" : "NO") );
-    BOOST_CHECK_EQUAL( intersects2, false );
-}
+// FIXME removed wavefront obj loader, transform to wkt
+//BOOST_AUTO_TEST_CASE( testIntersectsTeapot )
+//{
+//    std::string filename( SFCGAL_TEST_DIRECTORY );
+//    filename += "/regress/data/teapot.obj" ;
+//
+//    io::WaveFrontObj obj;
+//    obj.load( filename );
+//
+//    //check points defined in all faces
+//    PolyhedralSurface surf;
+//    for ( size_t i = 0; i < obj.numFaces(); i++ ){
+//	LineString ext_ring;
+//	const io::WaveFrontFace & face = obj.faceN(i);
+//	for ( size_t j = 0; j < face.size(); j++ ) {
+//	    ext_ring.addPoint( obj.vertexN( face[j].v ) );
+//	}
+//	// close the polygon
+//	ext_ring.addPoint( obj.vertexN( face[0].v ) );
+//	surf.addPolygon( Polygon(ext_ring) );
+//    }
+//
+//    Triangle tri1( Point(3.0, 1.8, 0.0), Point(-2.99, 1.8, -0.081), Point(-2.99, 1.8, 0.081) );
+//    Triangle tri2( Point(3.0, 1.8, 5.0), Point(-2.99, 1.8, 5.081), Point(-2.99, 1.8, 5.081) );
+//
+//    bool intersects1 = algorithm::intersects3D( tri1, surf );
+//    bool intersects2 = algorithm::intersects3D( tri2, surf );
+//    BOOST_TEST_MESSAGE( boost::format("triangle1 intersects the teapot: %1%") % (intersects1 ? "YES" : "NO") );
+//    BOOST_CHECK_EQUAL( intersects1, true );
+//    BOOST_TEST_MESSAGE( boost::format("triangle2 intersects the teapot: %1%") % (intersects2 ? "YES" : "NO") );
+//    BOOST_CHECK_EQUAL( intersects2, false );
+//}
 
 //
 // Test limit case
