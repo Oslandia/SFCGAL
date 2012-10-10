@@ -36,6 +36,11 @@ namespace tools {
 		std::vector< std::string > getGeometryTypes() const ;
 
 		/**
+		 * returns a new instance of the given geometryTypeName
+		 */
+		Geometry*  newGeometryByTypeName( const std::string & geometryTypeName ) const ;
+
+		/**
 		 * returns the instance of the registry
 		 */
 		static Registry & instance() ;

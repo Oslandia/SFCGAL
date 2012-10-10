@@ -4,6 +4,8 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/distance.h>
 
+#include <SFCGAL/tools/Registry.h>
+
 
 using namespace SFCGAL ;
 
@@ -12,12 +14,69 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_DistanceTest )
 
+/*
+ * check that distance between empty points is infinity
+ */
+BOOST_AUTO_TEST_CASE( testDistanceBetweenEmptyPointsIsInfinity )
+{
+	BOOST_CHECK_EQUAL( Point().distance( Point() ), std::numeric_limits< double >::infinity() );
+}
+/*
+ * check that distance between all kinds of empty geometry is infinity
+ */
+BOOST_AUTO_TEST_CASE( testDistanceBetweenEmptyGeometriesIsDefined )
+{
+	tools::Registry & registry = tools::Registry::instance() ;
+
+	std::vector< std::string > geometryTypes = tools::Registry::instance().getGeometryTypes() ;
+	for ( size_t i = 0; i < geometryTypes.size(); i++ ){
+		for ( size_t j = 0; j < geometryTypes.size(); j++ ){
+			BOOST_TEST_MESSAGE( boost::format("distance(%s,%s)") % geometryTypes[i] % geometryTypes[j] );
+
+			std::auto_ptr< Geometry > gA( registry.newGeometryByTypeName( geometryTypes[i] ) );
+			std::auto_ptr< Geometry > gB( registry.newGeometryByTypeName( geometryTypes[j] ) );
+
+			double dAB ;
+			BOOST_CHECK_NO_THROW( dAB = gA->distance( *gB ) ) ;
+			BOOST_CHECK_EQUAL( dAB, std::numeric_limits< double >::infinity() );
+		}
+	}
+}
+/*
+ * check that distance3D between all kinds of empty geometry is infinity
+ */
+BOOST_AUTO_TEST_CASE( testDistance3DBetweenEmptyGeometriesIsDefined )
+{
+	tools::Registry & registry = tools::Registry::instance() ;
+
+	std::vector< std::string > geometryTypes = tools::Registry::instance().getGeometryTypes() ;
+	for ( size_t i = 0; i < geometryTypes.size(); i++ ){
+		for ( size_t j = 0; j < geometryTypes.size(); j++ ){
+			BOOST_TEST_MESSAGE( boost::format("distance3D(%s,%s)") % geometryTypes[i] % geometryTypes[j] );
+
+			std::auto_ptr< Geometry > gA( registry.newGeometryByTypeName( geometryTypes[i] ) );
+			std::auto_ptr< Geometry > gB( registry.newGeometryByTypeName( geometryTypes[j] ) );
+
+			double dAB ;
+			BOOST_CHECK_NO_THROW( dAB = gA->distance3D( *gB ) ) ;
+			BOOST_CHECK_EQUAL( dAB, std::numeric_limits< double >::infinity() );
+		}
+	}
+}
+
+
 
 BOOST_AUTO_TEST_CASE( testDistancePointPoint )
 {
 	BOOST_CHECK_EQUAL( Point(0.0,0.0).distance( Point(0.0,0.0) ), 0.0 );
 	BOOST_CHECK_EQUAL( Point(1.0,1.0).distance( Point(4.0,5.0) ), 5.0 );
 }
+BOOST_AUTO_TEST_CASE( testDistancePointPoint3D )
+{
+	BOOST_CHECK_EQUAL( Point(0.0,0.0,0.0).distance3D( Point(0.0,0.0,0.0) ), 0.0 );
+	BOOST_CHECK_EQUAL( Point(1.0,1.0,1.0).distance3D( Point(4.0,1.0,5.0) ), 5.0 );
+}
+
 
 //testPointLineString
 BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString )

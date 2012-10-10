@@ -45,13 +45,12 @@ double distance( const Geometry & gA, const Geometry& gB )
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
-		return distanceGeometryCollectionGeometry( gA, gB );
+		return distanceGeometryCollectionToGeometry( gA, gB );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
 }
-
 
 ///
 ///
@@ -76,7 +75,7 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
-		return distanceGeometryCollectionGeometry( gB, gA );
+		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -182,7 +181,7 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
-		return distanceGeometryCollectionGeometry( gB, gA );
+		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -206,12 +205,13 @@ double distanceLineStringLineString( const LineString & gA, const LineString& gB
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < nsA; i++ ){
 		for ( size_t j = 0; j < nsB; j++ ){
-			double d = distanceSegmentSegment(
-				gA.pointN(i), gA.pointN(i+1),
-				gB.pointN(j), gB.pointN(j+1)
-			);
-			if ( d < dMin )
-				dMin = d ;
+			dMin = std::min(
+				dMin,
+				distanceSegmentSegment(
+					gA.pointN(i), gA.pointN(i+1),
+					gB.pointN(j), gB.pointN(j+1)
+				)
+			) ;
 		}
 	}
 	return dMin ;
@@ -279,7 +279,7 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 	case TYPE_GEOMETRYCOLLECTION:
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
-		return distanceGeometryCollectionGeometry( gB, gA );
+		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
@@ -329,7 +329,7 @@ double distanceTriangleGeometry( const Triangle & gA, const Geometry& gB )
 ///
 ///
 ///
-double distanceGeometryCollectionGeometry( const Geometry & gA, const Geometry& gB )
+double distanceGeometryCollectionToGeometry( const Geometry & gA, const Geometry& gB )
 {
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;

@@ -209,6 +209,10 @@ namespace SFCGAL {
         * returns the distance to an other geometry
         */
        double distance( const Geometry & other ) const ;
+       /**
+        * returns the 3D distance to an other geometry
+        */
+       double distance3D( const Geometry & other ) const ;
 
        /**
         * [OGC/SFA]Return the number of geometries in a collection of geometries

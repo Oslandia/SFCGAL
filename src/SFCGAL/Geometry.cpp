@@ -7,6 +7,7 @@
 
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
 #include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/distance3d.h>
 
 #include <SFCGAL/detail/EnvelopeVisitor.h>
 
@@ -125,6 +126,14 @@ Geometry* Geometry::boundary() const
 double Geometry::distance( const Geometry & other ) const
 {
 	return algorithm::distance( *this, other ) ;
+}
+
+///
+///
+///
+double Geometry::distance3D( const Geometry & other ) const
+{
+	return algorithm::distance3D( *this, other ) ;
 }
 
 ///

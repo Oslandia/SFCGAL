@@ -8,7 +8,7 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * dispatch distance
+	 * dispatch distance between two Geometries
 	 */
 	double distance( const Geometry & gA, const Geometry& gB ) ;
 
@@ -73,7 +73,7 @@ namespace algorithm {
 	/**
 	 * dispatch distance from a collection of geometry (gA) to a Geometry (gB)
 	 */
-	double distanceGeometryCollectionGeometry( const Geometry & gA, const Geometry& gB ) ;
+	double distanceGeometryCollectionToGeometry( const Geometry & gA, const Geometry& gB ) ;
 
 
 

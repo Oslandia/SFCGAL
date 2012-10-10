@@ -2,7 +2,7 @@
 
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/all.h>
-
+#include <SFCGAL/tools/Log.h>
 
 namespace SFCGAL {
 namespace tools {
@@ -47,6 +47,21 @@ std::vector< std::string > Registry::getGeometryTypes() const
 		names.push_back( (*it)->geometryType() );
 	}
 	return names ;
+}
+
+///
+///
+///
+Geometry*  Registry::newGeometryByTypeName( const std::string & geometryTypeName ) const
+{
+	for ( const_prototype_iterator it = _prototypes.begin(); it != _prototypes.end(); ++it ){
+		if ( geometryTypeName == (*it)->geometryType() ){
+			return (*it)->clone() ;
+		}
+	}
+
+	SFCGAL_WARNING( boost::format("Registry can't create a new Geometry for the type '%s' (returning null pointer)") % geometryTypeName );
+	return NULL ;
 }
 
 ///
