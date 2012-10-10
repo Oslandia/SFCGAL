@@ -137,7 +137,17 @@ void LineString::reverse()
 	std::reverse( _points.begin(), _points.end() );
 }
 
-
+///
+///
+///
+size_t LineString::numSegments() const
+{
+	if ( _points.empty() ){
+		return 0 ;
+	}
+	BOOST_ASSERT( numPoints() >= 2U );
+	return numPoints() - 1 ;
+}
 
 
 ///

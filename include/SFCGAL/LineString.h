@@ -80,6 +80,13 @@ namespace SFCGAL {
 		 */
 		inline size_t          numPoints() const { return _points.size(); }
 		/**
+		 * Returns the number of segments
+		 * @warning not standard
+		 */
+		size_t                  numSegments() const ;
+
+
+		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
 		inline const Point  &  pointN( size_t const& n ) const { return _points[n]; }
