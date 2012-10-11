@@ -55,12 +55,19 @@ namespace algorithm {
 	 * @todo same method than distancePointPolygon3D (unify if triangulate is available)
 	 */
 	double distanceLineStringPolygon3D( const LineString & gA, const Polygon & gB ) ;
-
+	/**
+	 * distance between a LineString and a Solid
+	 */
+	double distanceLineStringSolid3D( const LineString & gA, const Solid & gB ) ;
 
 	/**
 	 * dispatch distance between a Triangle and a Geometry
 	 */
 	double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB ) ;
+	/**
+	 * distance between a Triangle and a Solid
+	 */
+	double distanceTriangleSolid3D( const Triangle & gA, const Solid& gB ) ;
 
 
 
@@ -68,6 +75,16 @@ namespace algorithm {
 	 * dispatch distance between a Polygon and a Geometry
 	 */
 	double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB ) ;
+
+
+	/**
+	 * dispatch distance between a Solid and a Geometry
+	 */
+	double distanceSolidGeometry3D( const Solid & gA, const Geometry& gB ) ;
+	/**
+	 * distance between two Solids
+	 */
+	double distanceSolidSolid3D( const Solid & gA, const Solid& gB ) ;
 
 
 	/**

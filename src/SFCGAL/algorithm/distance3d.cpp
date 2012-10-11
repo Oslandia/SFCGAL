@@ -39,7 +39,8 @@ double distance3D( const Geometry & gA, const Geometry& gB )
 		return distancePolygonGeometry3D( gA.as< Polygon >(), gB );
 	case TYPE_TRIANGLE:
 		return distanceTriangleGeometry3D( gA.as< Triangle >(), gB );
-//	case TYPE_SOLID:
+	case TYPE_SOLID:
+		return distanceSolidGeometry3D( gA.as< Solid >(), gB );
 
 	//collection dispatch
 	case TYPE_MULTIPOINT:
@@ -193,6 +194,8 @@ double distanceLineStringGeometry3D( const LineString & gA, const Geometry& gB )
 			return distanceLineStringTriangle3D( gA, gB.as< Triangle >() );
 		case TYPE_POLYGON:
 			return distanceLineStringPolygon3D( gA, gB.as< Polygon >() );
+		case TYPE_SOLID:
+			return distanceLineStringSolid3D( gA, gB.as< Solid >() );
 
 		case TYPE_MULTIPOINT:
 		case TYPE_MULTILINESTRING:
@@ -274,12 +277,32 @@ double distanceLineStringPolygon3D( const LineString & gA, const Polygon & gB )
 	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceB, gA );
 }
 
+///
+///
+///
+double distanceLineStringSolid3D( const LineString & gA, const Solid & gB )
+{
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+	if ( intersects( gA, gB ) ){
+		return 0.0 ;
+	}
+	double dMin = std::numeric_limits< double >::infinity() ;
+	for ( size_t i = 0; i < gB.numShells(); i++ ){
+		dMin = std::min( dMin, gB.shellN(i).distance3D(gA) );
+	}
+	return dMin ;
+}
+
 
 ///
 ///
 ///
 double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB )
 {
+	SFCGAL_DEBUG( boost::format("dispatch distanceTriangleGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
 	switch ( gB.geometryTypeId() ){
 		case TYPE_POINT:
 			return distancePointTriangle3D( gB.as< Point >(), gA ); //symetric
@@ -289,6 +312,8 @@ double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB )
 			return distanceTriangleTriangle3D( gA, gB.as< Triangle >() );
 		case TYPE_POLYGON:
 			return distancePolygonGeometry3D( gB.as< Polygon >(), gA );
+		case TYPE_SOLID:
+			return distanceTriangleSolid3D( gA, gB.as< Solid >() );
 
 		case TYPE_MULTIPOINT:
 		case TYPE_MULTILINESTRING:
@@ -303,6 +328,24 @@ double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB )
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("distance3D(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
+}
+
+///
+///
+///
+double distanceTriangleSolid3D( const Triangle & gA, const Solid& gB )
+{
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+	if ( intersects( gA, gB ) ){
+		return 0.0 ;
+	}
+	double dMin = std::numeric_limits< double >::infinity() ;
+	for ( size_t i = 0; i < gB.numShells(); i++ ){
+		dMin = std::min( dMin, gB.shellN(i).distance3D(gA) );
+	}
+	return dMin ;
 }
 
 
@@ -322,6 +365,66 @@ double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB )
 	triangulate( gA, triangulateSurfaceA ) ;
 	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceA, gB );
 }
+
+
+///
+///
+///
+double distanceSolidGeometry3D( const Solid & gA, const Geometry& gB )
+{
+	SFCGAL_DEBUG( boost::format("dispatch distanceSolidGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
+	switch ( gB.geometryTypeId() ){
+		case TYPE_POINT:
+			return distancePointSolid3D( gB.as< Point >(), gA ); //symetric
+		case TYPE_LINESTRING:
+			return distanceLineStringSolid3D( gB.as< LineString >(), gA ); //symetric
+		case TYPE_TRIANGLE:
+			return distanceTriangleSolid3D( gB.as< Triangle >(), gA ); //symetric
+		case TYPE_POLYGON:
+			return distancePolygonGeometry3D( gB.as< Polygon >(), gA ); //symetric
+		case TYPE_SOLID:
+			return distanceSolidSolid3D( gA, gB.as< Solid >() );
+
+		case TYPE_MULTIPOINT:
+		case TYPE_MULTILINESTRING:
+		case TYPE_MULTIPOLYGON:
+		case TYPE_MULTISOLID:
+		case TYPE_GEOMETRYCOLLECTION:
+		case TYPE_TRIANGULATEDSURFACE:
+		case TYPE_POLYHEDRALSURFACE:
+			return distanceGeometryCollectionToGeometry3D( gB, gA );
+	}
+
+	BOOST_THROW_EXCEPTION(Exception(
+		( boost::format("distance3D(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+	));
+}
+
+///
+///
+///
+double distanceSolidSolid3D( const Solid & gA, const Solid& gB )
+{
+	SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
+	if ( intersects( gA, gB ) ){
+		return 0.0 ;
+	}
+
+	double dMin = std::numeric_limits< double >::infinity() ;
+	for ( size_t i = 0; i < gA.numShells(); i++ ){
+		for ( size_t j = 0; j < gB.numShells(); j++ ){
+			dMin = std::min( dMin, gA.shellN(i).distance3D( gB.shellN(j) ) );
+		}
+	}
+	return dMin ;
+}
+
 
 ///
 ///

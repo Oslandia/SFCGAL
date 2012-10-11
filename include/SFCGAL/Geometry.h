@@ -86,6 +86,7 @@ namespace SFCGAL {
      *
      * @todo solid and triangles as non OGC/SFA geometric types?
      * @warning codes for abstract classes and unimplement classes are hidden
+     * @warning code values have are important for WKB
      */
     typedef enum {
 //     TYPE_GEOMETRY            = 0, //abstract
