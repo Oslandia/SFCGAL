@@ -2,6 +2,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/Exception.h>
+#include <SFCGAL/tools/Log.h>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
@@ -27,13 +28,17 @@ namespace algorithm {
 ///
 double distance3D( const Geometry & gA, const Geometry& gB )
 {
+	SFCGAL_DEBUG( boost::format("dispatch distance3D(%s,%s)") % gA.asText() % gB.asText() );
+
 	switch ( gA.geometryTypeId() ){
 	case TYPE_POINT:
 		return distancePointGeometry3D( gA.as< Point >(), gB );
 	case TYPE_LINESTRING:
 		return distanceLineStringGeometry3D( gA.as< LineString >(), gB );
-//	case TYPE_POLYGON:
-//	case TYPE_TRIANGLE:
+	case TYPE_POLYGON:
+		return distancePolygonGeometry3D( gA.as< Polygon >(), gB );
+	case TYPE_TRIANGLE:
+		return distanceTriangleGeometry3D( gA.as< Triangle >(), gB );
 //	case TYPE_SOLID:
 
 	//collection dispatch
@@ -57,6 +62,8 @@ double distance3D( const Geometry & gA, const Geometry& gB )
 ///
 double distancePointGeometry3D( const Point & gA, const Geometry& gB )
 {
+	SFCGAL_DEBUG( boost::format("dispatch distancePointGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
 	switch ( gB.geometryTypeId() ){
 	case TYPE_POINT:
 		return distancePointPoint3D( gA, gB.as< Point >() );
@@ -112,7 +119,7 @@ double distancePointLineString3D( const Point & gA, const LineString& gB )
 	BOOST_ASSERT( gB.numPoints() >= 2 );
 
 	double dMin = std::numeric_limits< double >::infinity() ;
-	for ( size_t i = 0; i < gB.numPoints(); i++ ){
+	for ( size_t i = 0; i < gB.numSegments(); i++ ){
 		dMin = std::min( dMin, distancePointSegment3D( gA, gB.pointN(i), gB.pointN(i+1) ) );
 	}
 	return dMin ;
@@ -175,6 +182,8 @@ double distancePointSolid3D( const Point & gA, const Solid& gB )
 ///
 double distanceLineStringGeometry3D( const LineString & gA, const Geometry& gB )
 {
+	SFCGAL_DEBUG( boost::format("dispatch distanceLineStringGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
 	switch ( gB.geometryTypeId() ){
 		case TYPE_POINT:
 			return distancePointLineString3D( gB.as< Point >(), gA ); //symetric
@@ -190,7 +199,9 @@ double distanceLineStringGeometry3D( const LineString & gA, const Geometry& gB )
 		case TYPE_MULTIPOLYGON:
 		case TYPE_MULTISOLID:
 		case TYPE_GEOMETRYCOLLECTION:
-			return distanceGeometryCollectionToGeometry3D( gB.as< GeometryCollection >(), gA );
+		case TYPE_TRIANGULATEDSURFACE:
+		case TYPE_POLYHEDRALSURFACE:
+			return distanceGeometryCollectionToGeometry3D( gB, gA );
 	}
 
 	BOOST_THROW_EXCEPTION(Exception(
@@ -267,8 +278,58 @@ double distanceLineStringPolygon3D( const LineString & gA, const Polygon & gB )
 ///
 ///
 ///
+double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB )
+{
+	switch ( gB.geometryTypeId() ){
+		case TYPE_POINT:
+			return distancePointTriangle3D( gB.as< Point >(), gA ); //symetric
+		case TYPE_LINESTRING:
+			return distanceLineStringTriangle3D( gB.as< LineString >(), gA ); //symetric
+		case TYPE_TRIANGLE:
+			return distanceTriangleTriangle3D( gA, gB.as< Triangle >() );
+		case TYPE_POLYGON:
+			return distancePolygonGeometry3D( gB.as< Polygon >(), gA );
+
+		case TYPE_MULTIPOINT:
+		case TYPE_MULTILINESTRING:
+		case TYPE_MULTIPOLYGON:
+		case TYPE_MULTISOLID:
+		case TYPE_GEOMETRYCOLLECTION:
+		case TYPE_TRIANGULATEDSURFACE:
+		case TYPE_POLYHEDRALSURFACE:
+			return distanceGeometryCollectionToGeometry3D( gB, gA );
+	}
+
+	BOOST_THROW_EXCEPTION(Exception(
+		( boost::format("distance3D(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+	));
+}
+
+
+
+///
+///
+///
+double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB )
+{
+	SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
+	TriangulatedSurface triangulateSurfaceA ;
+	triangulate( gA, triangulateSurfaceA ) ;
+	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceA, gB );
+}
+
+///
+///
+///
 double distanceGeometryCollectionToGeometry3D( const Geometry & gA, const Geometry& gB )
 {
+	SFCGAL_DEBUG( boost::format("dispatch distanceGeometryCollectionToGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
@@ -304,22 +365,24 @@ double distancePointSegment3D( const Point & p, const Point & a, const Point & b
 }
 
 /*
- * CGAL pre-implentation
+ * missing in CGAL?
  */
-squared_distance_t distancePointTriangle3D(
+squared_distance_t squaredDistancePointTriangle3D(
 	const Point_3 & p,
-	const Point_3& a,
-	const Point_3& b,
-	const Point_3& c
+	const Triangle_3& abc
 )
 {
+	Point_3 a = abc.vertex(0);
+	Point_3 b = abc.vertex(1);
+	Point_3 c = abc.vertex(2);
+
 	/*
 	 * project P on ABC plane as projP.
 	 */
 	Point_3 projP = Plane_3( a, b, c ).projection( p );
 
 	squared_distance_t dMin ;
-	if ( Triangle_3( a, b, c ).has_on( projP ) ){
+	if ( abc.has_on( projP ) ){
 		// Is projP is in the triangle, return distance from P to its projection
 		// on the plane
 		dMin = CGAL::squared_distance( p, projP ) ;
@@ -374,28 +437,17 @@ double distanceSegmentSegment3D( const Point & a, const Point & b, const Point &
 
 
 
-///
-///
-///
-double distanceSegmentTriangle3D( const Point & sA_, const Point & sB_,
-	const Point & tA_, const Point & tB_, const Point & tC_
+squared_distance_t squaredDistanceSegmentTriangle3D(
+	const Segment_3& sAB,
+	const Triangle_3 & tABC
 )
 {
 	typedef Kernel::FT squared_distance_t ;
 
-	Point_3 sA = sA_.toPoint_3< Kernel >();
-	Point_3 sB = sB_.toPoint_3< Kernel >();
-	Segment_3 sAB( sA, sB );
-
-	Point_3 tA = tA_.toPoint_3< Kernel >();
-	Point_3 tB = tB_.toPoint_3< Kernel >();
-	Point_3 tC = tC_.toPoint_3< Kernel >();
-	Triangle_3 tABC( tA, tB, tC );
-
 	/*
 	 * If [sAsB] intersects the triangle (tA,tB,tC), distance is 0.0
 	 */
-	if ( CGAL::intersection( sAB, tABC ).empty() ){
+	if ( ! CGAL::intersection( sAB, tABC ).empty() ){
 		return 0.0 ;
 	}
 
@@ -405,13 +457,98 @@ double distanceSegmentTriangle3D( const Point & sA_, const Point & sB_,
 	 * - distance from sB to the Triangle
 	 * - distance from sAB to the side of the Triangles
 	 */
-	squared_distance_t dMin = distancePointTriangle3D( sA, tA, tB, tC );
-	dMin = std::min( dMin, distancePointTriangle3D( sB, tA, tB, tC ) );
+	squared_distance_t dMin = squaredDistancePointTriangle3D( sAB.vertex(0), tABC );
+	dMin = std::min( dMin, squaredDistancePointTriangle3D( sAB.vertex(1), tABC ) );
 
-	dMin = std::min( dMin, CGAL::squared_distance( sAB, Segment_3( tA, tB ) ) ) ;
-	dMin = std::min( dMin, CGAL::squared_distance( sAB, Segment_3( tB, tC ) ) ) ;
-	dMin = std::min( dMin, CGAL::squared_distance( sAB, Segment_3( tC, tA ) ) ) ;
+	for ( int i = 0; i < 3; i++ ){
+		dMin = std::min( dMin, CGAL::squared_distance( sAB,
+			Segment_3( tABC.vertex(i), tABC.vertex(i+1) ) )
+		) ;
+	}
 
+	return dMin ;
+}
+
+
+///
+///
+///
+double distanceSegmentTriangle3D( const Point & sA_, const Point & sB_,
+	const Point & tA_, const Point & tB_, const Point & tC_
+)
+{
+	Point_3 sA = sA_.toPoint_3< Kernel >();
+	Point_3 sB = sB_.toPoint_3< Kernel >();
+	Segment_3 sAB( sA, sB );
+
+	Point_3 tA = tA_.toPoint_3< Kernel >();
+	Point_3 tB = tB_.toPoint_3< Kernel >();
+	Point_3 tC = tC_.toPoint_3< Kernel >();
+	Triangle_3 tABC( tA, tB, tC );
+
+	squared_distance_t dMin = squaredDistanceSegmentTriangle3D( sAB, tABC );
+	return CGAL::sqrt( CGAL::to_double( dMin ) ) ;
+}
+
+/*
+ * missing in CGAL?
+ */
+squared_distance_t squaredDistanceTriangleTriangle3D(
+	const Triangle_3 & triangleA,
+	const Triangle_3 & triangleB
+)
+{
+	if ( ! CGAL::intersection( triangleA, triangleB ).empty() ){
+		return squared_distance_t(0);
+	}
+
+	/*
+	 * min of distance from A segments to B triangle and B segments to A triangle
+	 */
+
+	squared_distance_t dMin = squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleA.vertex(0), triangleA.vertex(1) ),
+		triangleB
+	);
+	dMin = std::min( dMin, squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleA.vertex(1), triangleA.vertex(2) ),
+		triangleB
+	) );
+	dMin = std::min( dMin, squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleA.vertex(2), triangleA.vertex(0) ),
+		triangleB
+	) );
+
+	dMin = std::min( dMin, squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleB.vertex(0), triangleB.vertex(1) ),
+		triangleA
+	) );
+	dMin = std::min( dMin, squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleB.vertex(1), triangleB.vertex(2) ),
+		triangleA
+	) );
+	dMin = std::min( dMin, squaredDistanceSegmentTriangle3D(
+		Segment_3( triangleB.vertex(2), triangleB.vertex(0) ),
+		triangleA
+	) );
+
+	return dMin ;
+}
+
+
+///
+///
+///
+double distanceTriangleTriangle3D( const Triangle & gA, const Triangle& gB )
+{
+	if ( gA.isEmpty() || gB.isEmpty() ){
+		return std::numeric_limits< double >::infinity() ;
+	}
+
+	Triangle_3 triangleA = gA.toTriangle_3< Kernel >() ;
+	Triangle_3 triangleB = gB.toTriangle_3< Kernel >() ;
+
+	squared_distance_t dMin = squaredDistanceTriangleTriangle3D( triangleA, triangleB );
 	return CGAL::sqrt( CGAL::to_double( dMin ) ) ;
 }
 

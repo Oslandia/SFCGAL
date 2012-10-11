@@ -5,7 +5,7 @@
 #include <SFCGAL/algorithm/distance.h>
 
 #include <SFCGAL/tools/Registry.h>
-
+#include <SFCGAL/tools/Log.h>
 
 using namespace SFCGAL ;
 
@@ -21,6 +21,10 @@ BOOST_AUTO_TEST_CASE( testDistanceBetweenEmptyPointsIsInfinity )
 {
 	BOOST_CHECK_EQUAL( Point().distance( Point() ), std::numeric_limits< double >::infinity() );
 }
+
+//TODO enable when implement is complete
+#if 0
+
 /*
  * check that distance between all kinds of empty geometry is infinity
  */
@@ -64,6 +68,7 @@ BOOST_AUTO_TEST_CASE( testDistance3DBetweenEmptyGeometriesIsDefined )
 	}
 }
 
+#endif
 
 
 BOOST_AUTO_TEST_CASE( testDistancePointPoint )
@@ -113,6 +118,33 @@ BOOST_AUTO_TEST_CASE( testDistancePointPolygon_pointOutOfPolygon )
 }
 
 
+// LineString / Triangle
+BOOST_AUTO_TEST_CASE( testDistance3DLineStringTriangle_lineStringInTriangle )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(-1.0 0.0 1.0,1.0 0.0 1.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("TRIANGLE((-4.0 0.0 1.0,4.0 0.0 1.0,0.0 4.0 1.0,-4.0 0.0 1.0))") );
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 0.0 );
+}
+BOOST_AUTO_TEST_CASE( testDistance3DLineStringTriangle_lineStringStartPointIsNearest )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(-1.0 0.0 2.0,1.0 0.0 3.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("TRIANGLE((-4.0 0.0 1.0,4.0 0.0 1.0,0.0 4.0 1.0,-4.0 0.0 1.0))") );
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 1.0 );
+}
+
+// Triangle / Triangle
+BOOST_AUTO_TEST_CASE( testDistance3DTriangleTriangle_contained )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("TRIANGLE((-3.0 0.0 1.0,3.0 0.0 1.0,0.0 3.0 1.0,-3.0 0.0 1.0))") );
+	std::auto_ptr< Geometry > gB( io::readWkt("TRIANGLE((-4.0 0.0 1.0,4.0 0.0 1.0,0.0 4.0 1.0,-4.0 0.0 1.0))") );
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 0.0 );
+}
+BOOST_AUTO_TEST_CASE( testDistance3DTriangleTriangle_parallel )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("TRIANGLE((-3.0 0.0 1.0,3.0 0.0 1.0,0.0 3.0 1.0,-3.0 0.0 1.0))") );
+	std::auto_ptr< Geometry > gB( io::readWkt("TRIANGLE((-4.0 0.0 2.0,4.0 0.0 2.0,0.0 4.0 2.0,-4.0 0.0 2.0))") );
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 1.0 );
+}
 
 // Polygon / Polygon
 

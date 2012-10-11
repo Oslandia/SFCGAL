@@ -58,6 +58,19 @@ namespace algorithm {
 
 
 	/**
+	 * dispatch distance between a Triangle and a Geometry
+	 */
+	double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB ) ;
+
+
+
+	/**
+	 * dispatch distance between a Polygon and a Geometry
+	 */
+	double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB ) ;
+
+
+	/**
 	 * dispatch distance from a collection of geometry (gA) to a Geometry (gB)
 	 */
 	double distanceGeometryCollectionToGeometry3D( const Geometry & gA, const Geometry& gB ) ;
@@ -66,9 +79,16 @@ namespace algorithm {
 	double distancePointSegment3D( const Point & p, const Point & a, const Point & b ) ;
 	double distancePointTriangle3D( const Point & p, const Point& a, const Point& b, const Point& c ) ;
 	double distanceSegmentSegment3D( const Point & a, const Point & b, const Point & c, const Point & d );
-	double distanceSegmentTriangle3D( const Point & sA, const Point & sB,
+	double distanceSegmentTriangle3D(
+		const Point & sA, const Point & sB,
 		const Point & tA, const Point & tB, const Point & tC
 	);
+	/**
+	 * distance between two Triangles
+	 */
+	double distanceTriangleTriangle3D( const Triangle & gA, const Triangle& gB ) ;
+
+
 
 }//namespace algorithm
 }//namespace SFCGAL
