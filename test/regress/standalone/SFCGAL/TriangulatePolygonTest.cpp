@@ -27,10 +27,14 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;
 
+	int numLine = 0 ;
 	std::string line;
 	while ( std::getline( ifs, line ) ){
+		numLine++ ;
 		if ( line[0] == '#' || line.empty() )
 			continue ;
+
+		BOOST_TEST_MESSAGE( boost::format("[line#%s]%s") % numLine % line );
 
 		std::istringstream iss(line);
 		bool shouldThrowException ;
@@ -42,7 +46,6 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 		/*
 		 * parse wkt
 		 */
-		BOOST_TEST_MESSAGE( boost::format("triangulate polygon : #%1%") % inputWkt );
 		std::auto_ptr< Geometry > g( io::readWkt(inputWkt) );
 
 		/*
@@ -54,13 +57,17 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 		 * triangulate polygon
 		 */
 		TriangulatedSurface triangulatedSurface ;
+		if ( shouldThrowException ){
+			BOOST_CHECK_THROW( algorithm::triangulate( *g, triangulatedSurface ), Exception );
+			continue ;
+		}
 		BOOST_CHECK_NO_THROW( algorithm::triangulate( *g, triangulatedSurface ) ) ;
+
 		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numGeometries() );
 
 		/*
-		 * make some check
+		 * make some checks
 		 */
-
 		if ( ! g->isEmpty() ){
 			BOOST_CHECK( ! triangulatedSurface.isEmpty() );
 		}
