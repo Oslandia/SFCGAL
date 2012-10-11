@@ -9,6 +9,9 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
+
+
+
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
@@ -51,6 +54,56 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_IntersectsTest )
 //    BOOST_TEST_MESSAGE( boost::format("triangle2 intersects the teapot: %1%") % (intersects2 ? "YES" : "NO") );
 //    BOOST_CHECK_EQUAL( intersects2, false );
 //}
+
+
+
+/**
+ * Perform tests in test/regress/data/IntersectsTest.txt
+ */
+BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
+{
+	//logger().setLogLevel( Logger::Debug );
+
+	std::string filename( SFCGAL_TEST_DIRECTORY );
+	filename += "/regress/data/IntersectsTest.txt" ;
+
+	std::ifstream ifs( filename.c_str() );
+	BOOST_REQUIRE( ifs.good() ) ;
+
+	int numLine = 0 ;
+	std::string line;
+	while ( std::getline( ifs, line ) ){
+		numLine++;
+		if ( line[0] == '#' || line.empty() )
+			continue ;
+
+		BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
+
+		std::istringstream iss(line);
+
+		std::string distanceDimension ;
+		std::string wktGA, wktGB ;
+		std::string trueOrFalse ;
+
+		std::getline( iss, distanceDimension, '|' ) ;
+		std::getline( iss, wktGA, '|' ) ;
+		std::getline( iss, wktGB, '|' ) ;
+		std::getline( iss, trueOrFalse, '|' ) ;
+
+		bool expected = ( trueOrFalse == "true" ) ? true : false ;
+
+		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
+		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+
+		if ( distanceDimension == "2" ){
+			BOOST_CHECK_EQUAL( algorithm::intersects(*gA,*gB), expected );
+		}else if ( distanceDimension == "3" ){
+			BOOST_CHECK_EQUAL( algorithm::intersects3D(*gA,*gB), expected );
+		}else{
+			BOOST_CHECK(false);
+		}
+	}
+}
 
 //
 // Test limit case
