@@ -73,14 +73,14 @@ namespace SFCGAL {
 		/**
 		 * log level
 		 */
-		enum Level
+		typedef enum
 		{
 			Debug,
 			Info,
 			Warning,
 			Error,
 			Critical
-		};
+		} Level ;
 
 		/**
 		 * singleton accessor
@@ -145,6 +145,11 @@ namespace SFCGAL {
 
 		std::ostream _out;
 	};
+
+	/**
+	 * get the logger
+	 */
+	Logger & logger() ;
 
 
 }//SFCGAL
