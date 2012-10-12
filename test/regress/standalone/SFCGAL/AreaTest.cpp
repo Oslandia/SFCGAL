@@ -22,9 +22,11 @@ public:
 	virtual void transform( Point & p )
 	{
 		BOOST_ASSERT( ! p.isEmpty() );
-		p.z() = p.is3D() ? p.z() : 0.0 ;
-		std::swap( p.x(), p.z() );
-		std::swap( p.y(), p.z() );
+		p = Point(
+			p.is3D() ? p.z() : 0.0,
+			p.x(),
+			p.y()
+		);
 	}
 
 };

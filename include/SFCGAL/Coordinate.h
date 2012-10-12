@@ -24,6 +24,7 @@ namespace SFCGAL {
 		Coordinate() ;
 		/**
 		 * XY[Z] constructor
+		 * @warning x,y,z may be NaN
 		 */
 		Coordinate( const double & x, const double & y, const double & z = NaN() ) ;
 
@@ -74,14 +75,18 @@ namespace SFCGAL {
 
 		//--- accessors
 
-		inline const double& x() const { return _x ; }
-		inline double & x() { return _x ; }
-
-		inline const double& y() const { return _y ; }
-		inline double & y() { return _y ; }
-
-		inline const double& z() const { return _z ; }
-		inline double & z() { return _z ; }
+		/**
+		 * Returns the x value as a double (NaN for empty coordinates)
+		 */
+		inline double x() const { return _x ; }
+		/**
+		 * Returns the y value as a double (NaN for empty coordinates)
+		 */
+		inline double y() const { return _y ; }
+		/**
+		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
+		 */
+		inline double z() const { return _z ; }
 
 
 		/**

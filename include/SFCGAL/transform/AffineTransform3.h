@@ -27,10 +27,7 @@ namespace transform {
 		 */
 		virtual void transform( Point & p )
 		{
-			CGAL::Point_3< Kernel > transformed = p.toPoint_3< Kernel >().transform( _transform );
-			p.x() = CGAL::to_double( transformed.x() );
-			p.y() = CGAL::to_double( transformed.y() );
-			p.z() = CGAL::to_double( transformed.z() );
+			p = Point( p.toPoint_3< Kernel >().transform( _transform ) ) ;
 		}
 
 		virtual void transform( LineString & ls )

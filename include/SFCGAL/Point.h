@@ -87,14 +87,18 @@ namespace SFCGAL {
 
 		//--- accessors
 
-		inline const double& x() const { return _coordinate.x() ; }
-		inline double & x() { return _coordinate.x() ; }
-
-		inline const double& y() const { return _coordinate.y() ; }
-		inline double & y() { return _coordinate.y() ; }
-
-		inline const double& z() const { return _coordinate.z() ; }
-		inline double & z() { return _coordinate.z() ; }
+		/**
+		 * Returns the x value as a double (NaN for empty Point)
+		 */
+		inline double x() const { return _coordinate.x() ; }
+		/**
+		 * Returns the y value as a double (NaN for empty Point)
+		 */
+		inline double y() const { return _coordinate.y() ; }
+		/**
+		 * Returns the z value as a double (NaN for empty or 2d Point)
+		 */
+		inline double z() const { return _coordinate.z() ; }
 
 
 		/**

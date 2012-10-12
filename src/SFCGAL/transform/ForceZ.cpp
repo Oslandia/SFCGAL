@@ -20,7 +20,7 @@ ForceZ::ForceZ( const double & defaultZ ):
 void ForceZ::transform( Point & p )
 {
 	if ( ! p.is3D() ){
-		p.z() = _defaultZ ;
+		p = Point( p.x(), p.y(), _defaultZ );
 	}
 }
 

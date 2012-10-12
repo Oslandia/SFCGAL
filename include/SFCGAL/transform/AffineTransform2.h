@@ -27,9 +27,7 @@ namespace transform {
 		 */
 		virtual void transform( Point & p )
 		{
-			CGAL::Point_2< Kernel > transformed = p.toPoint_2< Kernel >().transform( _transform );
-			p.x() = transformed.x() ;
-			p.y() = transformed.y() ;
+			p = Point( p.toPoint_2< Kernel >().transform( _transform ) );
 		}
 
 	private:
