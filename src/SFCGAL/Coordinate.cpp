@@ -9,21 +9,25 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-	_x( NaN() ),
-	_y( NaN() ),
-	_z( NaN() )
+	_xyz()
 {
 }
 
 ///
 ///
 ///
-Coordinate::Coordinate( const double & x, const double & y, const double & z ):
-	_x(x),
-	_y(y),
-	_z(z)
+Coordinate::Coordinate( const double & x, const double & y, const double & z )
 {
-
+	if ( isNaN(x) || isNaN(y) ){
+		BOOST_ASSERT( isNaN(x) && isNaN(y) );
+		_xyz = detail::Empty() ;
+	}else{
+		if ( isNaN(z) ){
+			_xyz = Kernel::Point_2( x, y ) ;
+		}else{
+			_xyz = Kernel::Point_3( x, y, z ) ;
+		}
+	}
 }
 
 
@@ -31,9 +35,7 @@ Coordinate::Coordinate( const double & x, const double & y, const double & z ):
 ///
 ///
 Coordinate::Coordinate( const Coordinate & other ):
-	_x(other._x),
-	_y(other._y),
-	_z(other._z)
+	_xyz(other._xyz)
 {
 
 }
@@ -43,9 +45,7 @@ Coordinate::Coordinate( const Coordinate & other ):
 ///
 Coordinate& Coordinate::operator = ( const Coordinate & other )
 {
-	_x = other._x ;
-	_y = other._y ;
-	_z = other._z ;
+	_xyz = other._xyz ;
 	return *this ;
 }
 
@@ -76,7 +76,7 @@ int Coordinate::coordinateDimension() const
 ///
 bool Coordinate::isEmpty() const
 {
-	return isNaN(_x) || isNaN(_y);
+	return detail::isEmpty( _xyz );
 }
 
 ///
@@ -84,7 +84,7 @@ bool Coordinate::isEmpty() const
 ///
 bool Coordinate::is3D() const
 {
-	return ! isEmpty() && ! isNaN(_z) ;
+	return detail::is3D( _xyz );
 }
 
 ///
@@ -103,24 +103,24 @@ bool Coordinate::operator < ( const Coordinate & other ) const
 	}
 
 	// comparison along x
-	if ( _x < other._x ){
+	if ( x() < other.x() ){
 		return true ;
-	}else if ( other._x < _x ){
+	}else if ( other.x() < x() ){
 		return false;
 	}
 
 	// comparison along y
-	if ( _y < other._y ){
+	if ( y() < other.y() ){
 		return true ;
-	}else if ( other._y < _y ){
+	}else if ( other.y() < y() ){
 		return false;
 	}
 
 	// comparison along z if possible
 	if ( is3D() ){
-		if ( _z < other._z ){
+		if ( z() < other.z() ){
 			return true ;
-		}else if ( other._z < _z ){
+		}else if ( other.z() < z() ){
 			return false;
 		}
 	}
@@ -138,9 +138,9 @@ bool Coordinate::operator == ( const Coordinate & other ) const
 		return other.isEmpty() ;
 	}
 	if ( is3D() || other.is3D() ){
-		return _x == other._x && _y == other._y  && _z == other._z ;
+		return x() == other.x() && y() == other.y()  && z() == other.z() ;
 	}else{
-		return _x == other._x && _y == other._y ;
+		return x() == other.x() && y() == other.y() ;
 	}
 }
 

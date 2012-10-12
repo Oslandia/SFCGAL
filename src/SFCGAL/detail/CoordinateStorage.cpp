@@ -1,4 +1,9 @@
 #include <SFCGAL/detail/CoordinateStorage.h>
+#include <SFCGAL/numeric.h>
+
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
+
 
 namespace SFCGAL {
 namespace detail {
@@ -40,6 +45,45 @@ public:
 };
 
 
+struct GetXVisitor : public boost::static_visitor< double > {
+public:
+	double operator() ( const Empty & coordinateStorage ) const {
+		return NaN();
+	}
+	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return CGAL::to_double( coordinateStorage.x() );
+	}
+	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return CGAL::to_double( coordinateStorage.x() );
+	}
+};
+
+struct GetYVisitor : public boost::static_visitor< double > {
+public:
+	double operator() ( const Empty & coordinateStorage ) const {
+		return NaN();
+	}
+	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return CGAL::to_double( coordinateStorage.y() );
+	}
+	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return CGAL::to_double( coordinateStorage.y() );
+	}
+};
+
+struct GetZVisitor : public boost::static_visitor< double > {
+public:
+	double operator() ( const Empty & coordinateStorage ) const {
+		return NaN();
+	}
+	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return NaN();
+	}
+	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return CGAL::to_double( coordinateStorage.z() );
+	}
+};
+
 ///
 ///
 ///
@@ -59,6 +103,33 @@ bool is3D( const CoordinateStorage & coordinateStorage )
 ///
 ///
 ///
+double x( const CoordinateStorage & coordinateStorage )
+{
+	GetXVisitor visitor ;
+	return boost::apply_visitor( visitor, coordinateStorage );
+}
+
+///
+///
+///
+double y( const CoordinateStorage & coordinateStorage )
+{
+	GetYVisitor visitor ;
+	return boost::apply_visitor( visitor, coordinateStorage );
+}
+
+///
+///
+///
+double z( const CoordinateStorage & coordinateStorage )
+{
+	GetZVisitor visitor ;
+	return boost::apply_visitor( visitor, coordinateStorage );
+}
+
+///
+///
+///
 Kernel::Point_2 toPoint_2( const CoordinateStorage & coordinateStorage )
 {
 	ToPoint_2Visitor toPoint_2Visitor;
@@ -72,6 +143,23 @@ Kernel::Point_3 toPoint_3( const CoordinateStorage & coordinateStorage )
 {
 	ToPoint_3Visitor toPoint_3Visitor;
 	return boost::apply_visitor( toPoint_3Visitor, coordinateStorage );
+}
+
+
+///
+///
+///
+Kernel::Vector_2 toVector_2( const CoordinateStorage & coordinateStorage )
+{
+	return toPoint_2(coordinateStorage) - CGAL::ORIGIN ;
+}
+
+///
+///
+///
+Kernel::Vector_3 toVector_3( const CoordinateStorage & coordinateStorage )
+{
+	return toPoint_3(coordinateStorage) - CGAL::ORIGIN ;
 }
 
 

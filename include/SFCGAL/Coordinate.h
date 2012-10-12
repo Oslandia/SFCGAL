@@ -6,12 +6,7 @@
 #include <SFCGAL/numeric.h>
 
 #include <SFCGAL/Kernel.h>
-
-#include <CGAL/Vector_2.h>
-#include <CGAL/Vector_3.h>
-
-#include <CGAL/Point_2.h>
-#include <CGAL/Point_3.h>
+#include <SFCGAL/detail/CoordinateStorage.h>
 
 namespace SFCGAL {
 
@@ -35,9 +30,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_2< K > & other ):
-			_x(CGAL::to_double(other.x())),
-			_y(CGAL::to_double(other.y())),
-			_z(NaN())
+			_xyz(other)
 		{
 
 		}
@@ -47,9 +40,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_3< K > & other ):
-			_x(CGAL::to_double(other.x())),
-			_y(CGAL::to_double(other.y())),
-			_z(CGAL::to_double(other.z()))
+			_xyz(other)
 		{
 
 		}
@@ -80,15 +71,15 @@ namespace SFCGAL {
 		/**
 		 * Returns the x value as a double (NaN for empty coordinates)
 		 */
-		inline double x() const { return _x ; }
+		inline double x() const { return detail::x(_xyz) ; }
 		/**
 		 * Returns the y value as a double (NaN for empty coordinates)
 		 */
-		inline double y() const { return _y ; }
+		inline double y() const { return detail::y(_xyz) ; }
 		/**
 		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
 		 */
-		inline double z() const { return _z ; }
+		inline double z() const { return detail::z(_xyz) ; }
 
 
 		/**
@@ -107,58 +98,47 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Vector_2
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Vector_2< K > toVector_2() const
 		{
-			return CGAL::Vector_2< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y
-			);
+			return detail::toVector_2( _xyz );
 		}
 
 		/**
 		 * Convert to CGAL::Vector_3
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Vector_3< K > toVector_3() const
 		{
-			return CGAL::Vector_3< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y,
-				isNaN(_z) ? 0.0 : _z
-			);
+			return detail::toVector_3( _xyz );
 		}
 
 		/**
 		 * Convert to CGAL::Point_2
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Point_2< K > toPoint_2() const
 		{
-			return CGAL::Point_2< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y
-			);
+			return detail::toPoint_2( _xyz );
 		}
 
 		/**
 		 * Convert to CGAL::Point_3
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Point_3< K > toPoint_3() const
 		{
-			return CGAL::Point_3< K >(
-				isNaN(_x) ? 0.0 : _x,
-				isNaN(_y) ? 0.0 : _y,
-				isNaN(_z) ? 0.0 : _z
-			);
+			return detail::toPoint_3( _xyz );
 		}
 
 	private:
-		double _x ;
-		double _y ;
-		double _z ;
+		detail::CoordinateStorage _xyz ;
+		//double _m
 	};
 
 

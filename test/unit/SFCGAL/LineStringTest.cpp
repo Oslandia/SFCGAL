@@ -85,8 +85,6 @@ BOOST_AUTO_TEST_CASE( iteratorTests )
 	points.push_back( Point(8.0, 9.0, 1.0) );
 	LineString g( points );
 
-	typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-
 	LineString::Point_2_const_iterator<Kernel> pi, pi_end;
 	int i = 0;
 	for ( boost::tie( pi, pi_end ) = g.points_2<Kernel>(); pi != pi_end; pi++, i++ ) {

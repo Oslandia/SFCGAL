@@ -126,6 +126,7 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Vector_2
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Vector_2< K > toVector_2() const
@@ -135,6 +136,7 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Vector_3
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Vector_3< K > toVector_3() const
@@ -144,6 +146,7 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Point_2
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Point_2< K > toPoint_2() const
@@ -153,6 +156,7 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Point_3
+		 * @todo remove template parameter
 		 */
 		template < typename K >
 		inline CGAL::Point_3< K > toPoint_3() const
@@ -162,6 +166,7 @@ namespace SFCGAL {
 
 		/**
 		 * Convert to CGAL::Point_2 or CGAL::Point_3
+		 * @todo remove template parameter
 		 */
 		template <typename K, int D>
 		typename TypeForKernel<K,D>::Point toPoint_d() const;

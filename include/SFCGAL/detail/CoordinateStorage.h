@@ -5,6 +5,12 @@
 
 #include <SFCGAL/Kernel.h>
 
+#include <CGAL/Vector_2.h>
+#include <CGAL/Vector_3.h>
+
+#include <CGAL/Point_2.h>
+#include <CGAL/Point_3.h>
+
 namespace SFCGAL {
 namespace detail {
 
@@ -27,6 +33,19 @@ namespace detail {
 	bool is3D( const CoordinateStorage & coordinateStorage ) ;
 
 	/**
+	 * X accessor, NaN if not defined
+	 */
+	double x( const CoordinateStorage & coordinateStorage ) ;
+	/**
+	 * Y accessor, NaN if not defined
+	 */
+	double y( const CoordinateStorage & coordinateStorage ) ;
+	/**
+	 * Z accessor, NaN if not defined
+	 */
+	double z( const CoordinateStorage & coordinateStorage ) ;
+
+	/**
 	 * Convert coordinate storage to Point_2
 	 */
 	Kernel::Point_2 toPoint_2( const CoordinateStorage & coordinateStorage ) ;
@@ -35,6 +54,15 @@ namespace detail {
 	 */
 	Kernel::Point_3 toPoint_3( const CoordinateStorage & coordinateStorage ) ;
 
+
+	/**
+	 * Convert coordinate storage to Vector_2
+	 */
+	Kernel::Vector_2 toVector_2( const CoordinateStorage & coordinateStorage ) ;
+	/**
+	 * Convert coordinate storage to Vector_3
+	 */
+	Kernel::Vector_3 toVector_3( const CoordinateStorage & coordinateStorage ) ;
 
 }//namespace detail
 }//namespace SFCGAL
