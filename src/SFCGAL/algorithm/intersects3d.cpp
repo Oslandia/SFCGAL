@@ -135,7 +135,7 @@ namespace algorithm
 		ga.accept( get_point_visitor );
 		for ( size_t i = 0; i < get_point_visitor.points.size(); ++i ) {
 			const Point *pt = get_point_visitor.points[i];
-			if ( covers3D( *pt, solid )) {
+			if ( covers3D( solid, *pt )) {
 				return true;
 			}
 		}

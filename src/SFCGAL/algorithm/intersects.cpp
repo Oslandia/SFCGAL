@@ -117,10 +117,10 @@ namespace algorithm
 
 	bool intersects_( const Polygon& pa, const Polygon& pb )
 	{
-		// first compute the bbox of the two polygons
-		CGAL::Bbox_2 gbboxa = pa.envelope().toBbox_2();
-		CGAL::Bbox_2 gbboxb = pb.envelope().toBbox_2();
-		if ( CGAL::do_overlap( gbboxa, gbboxb ) ) {
+		Envelope bboxa = pa.envelope();
+		Envelope bboxb = pb.envelope();
+
+		if ( Envelope::overlaps( bboxa, bboxb ) ) {
 			// test intersections between each rings
 			std::vector<detail::Object2Box> aboxes, bboxes;
 			std::list<detail::ObjectHandle> ahandles, bhandles;
@@ -133,7 +133,6 @@ namespace algorithm
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
 				detail::to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
 			}
-
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
@@ -143,21 +142,38 @@ namespace algorithm
 				return true;
 			}
 		}
+
 		// rings do not intersect, check if one polygon is inside another
 
-		// is pa inside pb ?
-		CGAL::Bounded_side b1 = CGAL::bounded_side_2( pb.exteriorRing().points_2_begin<Kernel>(),
-							      pb.exteriorRing().points_2_end<Kernel>(),
-							      pa.exteriorRing().startPoint().toPoint_2<Kernel>() );
-		if ( b1 == CGAL::ON_BOUNDED_SIDE ) {
-		    return true;
+		// if pa is inside pb
+		if ( Envelope::contains( bboxb, bboxa ) )
+		{
+			// is pa inside one of pb's holes ?
+			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
+				const LineString& interiorRing = pb.interiorRingN( i );
+				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin<Kernel>(),
+									      interiorRing.points_2_end<Kernel>(),
+									      pa.exteriorRing().startPoint().toPoint_2<Kernel>() );
+				if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
+					return false;
+				}
+			}
+			return true;
 		}
-		// is pb inside pa ?
-		CGAL::Bounded_side b2 = CGAL::bounded_side_2( pa.exteriorRing().points_2_begin<Kernel>(),
-							      pa.exteriorRing().points_2_end<Kernel>(),
-							      pb.exteriorRing().startPoint().toPoint_2<Kernel>() );
-		if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
-		    return true;
+		// if pb is inside pa
+		if ( Envelope::contains( bboxa, bboxb ) )
+		{
+			// is pb inside one of pa's holes ?
+			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
+				const LineString& interiorRing = pa.interiorRingN( i );
+				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin<Kernel>(),
+									      interiorRing.points_2_end<Kernel>(),
+									      pb.exteriorRing().startPoint().toPoint_2<Kernel>() );
+				if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
+					return false;
+				}
+			}
+			return true;
 		}
 		return false;
 	}

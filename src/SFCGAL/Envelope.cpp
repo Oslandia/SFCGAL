@@ -118,17 +118,17 @@ void Envelope::expandToInclude( const Coordinate & coordinate )
 bool Envelope::contains( const Envelope& a, const Envelope& b )
 {
 	if ( a.is3D() ) {
-		return b.xMin() <= a.xMin() && 
-			b.xMax() >= a.xMax() &&
-			b.yMin() <= a.yMin() &&
-			b.yMax() >= a.yMax() &&
-			b.zMin() <= a.zMin() &&
-			b.zMax() >= a.zMax();
+		return b.xMin() >= a.xMin() && 
+			b.xMax() <= a.xMax() &&
+			b.yMin() >= a.yMin() &&
+			b.yMax() <= a.yMax() &&
+			b.zMin() >= a.zMin() &&
+			b.zMax() <= a.zMax();
 	}
-	return b.xMin() <= a.xMin() && 
-		b.xMax() >= a.xMax() &&
-		b.yMin() <= a.yMin() &&
-		b.yMax() >= a.yMax();
+	return b.xMin() >= a.xMin() && 
+		b.xMax() <= a.xMax() &&
+		b.yMin() >= a.yMin() &&
+		b.yMax() <= a.yMax();
 }
 
 ///

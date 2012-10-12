@@ -517,10 +517,10 @@ namespace algorithm
 		// test first if one geometry is covered by the other one.
 		// In this case, the resulting intersection is the geometry covered by the other one.
 		if ( algorithm::covers3D( ga, gb )) {
-			return std::auto_ptr<Geometry>( ga.clone() );
+			return std::auto_ptr<Geometry>( gb.clone() );
 		}
 		if ( algorithm::covers3D( gb, ga )) {
-			return std::auto_ptr<Geometry>( gb.clone() );
+			return std::auto_ptr<Geometry>( ga.clone() );
 		}
 
 		switch ( ga.geometryTypeId() ) {
