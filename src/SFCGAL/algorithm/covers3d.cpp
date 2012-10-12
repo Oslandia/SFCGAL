@@ -24,7 +24,7 @@ namespace algorithm
 	//
 	// Test points inside a volume. Optimisation preventing recomputing of AABB trees needed by point_inside_polyhedron
 	//
-	bool covers3D( std::vector<const Point*>& pts, const Solid& solid )
+	bool covers3D( const Solid& solid, std::vector<const Point*>& pts )
 	{
 		typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
 		typedef CGAL::Polyhedral_mesh_domain_3<Polyhedron, Kernel> Mesh_domain;
@@ -63,19 +63,18 @@ namespace algorithm
 		return true;
 	}
 
-	static bool covers3D_x_solid_( const Geometry& ga, const Solid& solid )
+	static bool covers3D_solid_x_( const Solid& solid, const Geometry& ga )
 	{
 		//
 		// Now consider the geometry as a bunch of points
 		detail::GetPointsVisitor visitor;
 		ga.accept( visitor );
-		return covers3D( visitor.points, solid );
+		return covers3D( solid, visitor.points );
 	}
 
 	bool covers3D( const Geometry& ga, const Geometry& gb )
 	{
 		// deal with geometry collection
-		// call intersects on each geometry of the collection
 		const GeometryCollection* coll;
 		if ( (coll = dynamic_cast<const GeometryCollection*>( &ga )) ) {
 			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
@@ -100,15 +99,15 @@ namespace algorithm
 			return false;
 		}
 
-		if ( ga.geometryTypeId() == TYPE_SOLID ) {
+		if ( gb.geometryTypeId() == TYPE_SOLID ) {
 		    // Only another solid can be covered by a solid
-		    if ( gb.geometryTypeId() != TYPE_SOLID ) {
+		    if ( ga.geometryTypeId() != TYPE_SOLID ) {
 			return false;
 		    }
-		    return covers3D_x_solid_( static_cast<const Solid&>(ga), static_cast<const Solid&>(gb) );
+		    return covers3D_solid_x_( static_cast<const Solid&>(ga), static_cast<const Solid&>(gb) );
 		}
-		else if ( gb.geometryTypeId() == TYPE_SOLID ) {
-			return covers3D_x_solid_( ga, static_cast<const Solid&>(gb) );
+		else if ( ga.geometryTypeId() == TYPE_SOLID ) {
+			return covers3D_solid_x_( static_cast<const Solid&>(ga), gb );
 		}
 
 		// default behaviour
