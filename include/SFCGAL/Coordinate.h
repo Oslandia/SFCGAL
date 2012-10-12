@@ -5,6 +5,8 @@
 
 #include <SFCGAL/numeric.h>
 
+#include <SFCGAL/Kernel.h>
+
 #include <CGAL/Vector_2.h>
 #include <CGAL/Vector_3.h>
 

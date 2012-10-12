@@ -12,11 +12,7 @@
 #include <SFCGAL/detail/EnvelopeVisitor.h>
 
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
+#include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
 
@@ -80,7 +76,6 @@ Geometry* Geometry::fromCGAL( const CGAL::Object& obj )
 }
 
 template Geometry* Geometry::fromCGAL<Kernel>( const CGAL::Object& );
-template Geometry* Geometry::fromCGAL<ExactKernel>( const CGAL::Object& );
 
 
 ///

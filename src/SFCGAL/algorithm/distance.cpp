@@ -1,23 +1,22 @@
 #include <SFCGAL/algorithm/distance.h>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/Exception.h>
 
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/Polygon_2_algorithms.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 #include <SFCGAL/transform/AffineTransform3.h>
 #include <SFCGAL/algorithm/intersects.h>
 
 
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
-typedef Kernel::Point_2                                   Point_2 ;
-typedef Kernel::Vector_2                                  Vector_2 ;
-typedef Kernel::Segment_2                                 Segment_2 ;
+typedef SFCGAL::Kernel::Point_2                                   Point_2 ;
+typedef SFCGAL::Kernel::Vector_2                                  Vector_2 ;
+typedef SFCGAL::Kernel::Segment_2                                 Segment_2 ;
 
-typedef CGAL::Polygon_2< Kernel >                         Polygon_2 ;
-typedef CGAL::Polygon_with_holes_2< Kernel >              Polygon_with_holes_2 ;
+typedef CGAL::Polygon_2< SFCGAL::Kernel >                         Polygon_2 ;
+typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel >              Polygon_with_holes_2 ;
 
 
 

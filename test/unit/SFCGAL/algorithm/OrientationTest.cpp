@@ -1,9 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double > Kernel ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/orientation.h>

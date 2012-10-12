@@ -1,13 +1,13 @@
-#include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/intersection.h>
+
+#include <SFCGAL/all.h>
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 #include <CGAL/Point_inside_polyhedron_3.h>
 #include <CGAL/intersection_of_Polyhedra_3.h>
@@ -16,17 +16,13 @@
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 
-//
-// Intersection kernel
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_inexact_constructions_kernel ExactKernel;
-
-typedef CGAL::Point_2<Kernel> Point_2;
-typedef CGAL::Segment_2<Kernel> Segment_2;
-typedef CGAL::Triangle_2<Kernel> Triangle_2;
-typedef CGAL::Point_3<Kernel> Point_3;
-typedef CGAL::Segment_3<Kernel> Segment_3;
-typedef CGAL::Triangle_3<Kernel> Triangle_3;
+typedef SFCGAL::Kernel              Kernel ;
+typedef CGAL::Point_2< Kernel >     Point_2;
+typedef CGAL::Segment_2< Kernel >   Segment_2;
+typedef CGAL::Triangle_2< Kernel >  Triangle_2;
+typedef CGAL::Point_3< Kernel >     Point_3;
+typedef CGAL::Segment_3< Kernel >   Segment_3;
+typedef CGAL::Triangle_3< Kernel >  Triangle_3;
 
 template <class Refs>
 struct Halfedge_with_mark : public CGAL::HalfedgeDS_halfedge_base<Refs> {

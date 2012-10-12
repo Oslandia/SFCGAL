@@ -2,11 +2,10 @@
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/all.h>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Exception.h>
 #include <boost/format.hpp>
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-//#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/point_generators_3.h>
 #include <CGAL/algorithm.h>
 #include <CGAL/Polyhedron_3.h>
@@ -14,8 +13,8 @@
 #include <CGAL/convex_hull_3.h>
 #include <vector>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel  Kernel;
-//typedef CGAL::Exact_predicates_exact_constructions_kernel  Kernel;
+namespace SFCGAL {
+namespace algorithm {
 
 typedef CGAL::Point_3< Kernel >                              Point_3;
 typedef CGAL::Segment_3< Kernel >                            Segment_3;
@@ -23,9 +22,6 @@ typedef CGAL::Triangle_3< Kernel >                           Triangle_3;
 typedef CGAL::Polyhedron_3< Kernel >                         Polyhedron_3;
 
 typedef CGAL::Point_2< Kernel >                              Point_2;
-
-namespace SFCGAL {
-namespace algorithm {
 
 ///
 ///

@@ -1,8 +1,8 @@
 #include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
 
 #include <SFCGAL/Envelope.h>
 
+using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_EnvelopeTest )

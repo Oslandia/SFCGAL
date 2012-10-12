@@ -1,7 +1,4 @@
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double >  Kernel ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Point.h>
 
 #include <boost/test/unit_test.hpp>

@@ -1,9 +1,10 @@
 #include <map>
 #include <sstream>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+
 #include <CGAL/Point_2.h>
 #include <CGAL/Point_3.h>
 #include <CGAL/Segment_2.h>
@@ -22,16 +23,14 @@
 #include <SFCGAL/tools/Log.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-
-typedef CGAL::Point_2<Kernel> Point_2;
-typedef CGAL::Point_3<Kernel> Point_3;
-typedef CGAL::Segment_2<Kernel> Segment_2;
-typedef CGAL::Segment_3<Kernel> Segment_3;
-typedef CGAL::Triangle_2<Kernel> Triangle_2;
-typedef CGAL::Triangle_3<Kernel> Triangle_3;
-typedef CGAL::Polygon_2<Kernel> Polygon_2;
-typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2;
+typedef CGAL::Point_2< SFCGAL::Kernel >              Point_2;
+typedef CGAL::Point_3< SFCGAL::Kernel >              Point_3;
+typedef CGAL::Segment_2< SFCGAL::Kernel >            Segment_2;
+typedef CGAL::Segment_3< SFCGAL::Kernel >            Segment_3;
+typedef CGAL::Triangle_2< SFCGAL::Kernel >           Triangle_2;
+typedef CGAL::Triangle_3< SFCGAL::Kernel >           Triangle_3;
+typedef CGAL::Polygon_2< SFCGAL::Kernel >            Polygon_2;
+typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2;
 
 //#define CACHE_TRIANGULATION
 

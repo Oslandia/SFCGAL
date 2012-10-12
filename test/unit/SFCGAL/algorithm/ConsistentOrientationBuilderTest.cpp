@@ -1,9 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double > Kernel ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/ConsistentOrientationBuilder.h>
@@ -11,8 +8,6 @@ typedef CGAL::Cartesian< double > Kernel ;
 
 
 using namespace SFCGAL ;
-
-// always after CGAL
 using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_ConsistentOrientationBuilderTest )

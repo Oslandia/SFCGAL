@@ -1,7 +1,4 @@
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double >  Kernel ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/TriangulatedSurface.h>

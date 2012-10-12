@@ -1,9 +1,4 @@
-#include <CGAL/Cartesian.h>
-#include <CGAL/Nef_polyhedron_3.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-
-typedef CGAL::Cartesian< double >  Kernel ;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
+#include <SFCGAL/Kernel.h>
 
 #include <SFCGAL/Solid.h>
 #include <SFCGAL/TriangulatedSurface.h>
@@ -44,7 +39,7 @@ BOOST_AUTO_TEST_CASE( solidConversionTest )
 	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
 
 	const Solid& solid = static_cast<const Solid&>( *g );
-	CGAL::Nef_polyhedron_3<ExactKernel> nef( solid.toNef_polyhedron_3<ExactKernel>());
+	CGAL::Nef_polyhedron_3< Kernel > nef( solid.toNef_polyhedron_3< Kernel >());
 	// Here a Nef_polyhedron merges adjacent triangles
 	BOOST_CHECK_EQUAL( nef.number_of_facets(), 9U );
 }

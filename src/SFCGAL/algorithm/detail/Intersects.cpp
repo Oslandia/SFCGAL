@@ -4,16 +4,13 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Segment_2.h>
 #include <CGAL/Triangle_2.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
 namespace SFCGAL {
 namespace algorithm {
@@ -194,9 +191,7 @@ namespace detail {
 	}
 	/// template instanciations
 	template void intersects_cb<Kernel, 2>( const Object2Box& a, const Object2Box& b );
-	template void intersects_cb<ExactKernel, 2>( const Object2Box& a, const Object2Box& b );
 	template void intersects_cb<Kernel, 3>( const Object3Box& a, const Object3Box& b );
-	template void intersects_cb<ExactKernel, 3>( const Object3Box& a, const Object3Box& b );
 
 
 	template <typename K, int Dim>
@@ -272,8 +267,6 @@ namespace detail {
 	/// template instanciations
 	template struct intersection_cb<Kernel,2>;
 	template struct intersection_cb<Kernel,3>;
-	template struct intersection_cb<ExactKernel,2>;
-	template struct intersection_cb<ExactKernel,3>;
 } // detail
 } // algorithm
 } // SFCGAL

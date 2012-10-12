@@ -1,15 +1,10 @@
 #include <boost/test/unit_test.hpp>
 
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double > Kernel ;
-
-using namespace boost::unit_test ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/LineString.h>
-
 #include <SFCGAL/transform/AffineTransform2.h>
 
+using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_transform_AffineTransform2Test )

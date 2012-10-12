@@ -3,11 +3,6 @@
 
 #include <SFCGAL/Exception.h>
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
 
 namespace SFCGAL {
 
@@ -188,8 +183,7 @@ typename TypeForKernel<K,Dim>::Point Point::toPoint_d() const
 // template instanciations
 template CGAL::Point_2<Kernel> Point::toPoint_d<Kernel,2>() const;
 template CGAL::Point_3<Kernel> Point::toPoint_d<Kernel,3>() const;
-template CGAL::Point_2<ExactKernel> Point::toPoint_d<ExactKernel,2>() const;
-template CGAL::Point_3<ExactKernel> Point::toPoint_d<ExactKernel,3>() const;
+
 
 }//SFCGAL
 

@@ -3,10 +3,8 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
-
-using namespace SFCGAL ;
-
 using namespace boost::unit_test ;
+using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_BoundaryTest )
 

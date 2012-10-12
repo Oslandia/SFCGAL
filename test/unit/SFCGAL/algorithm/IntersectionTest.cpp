@@ -1,5 +1,6 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/io/wkt.h>
@@ -11,11 +12,7 @@
 #include <boost/test/unit_test.hpp>
 
 using namespace SFCGAL;
-
-// always after CGAL
 using namespace boost::unit_test ;
-
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 

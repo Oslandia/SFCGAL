@@ -28,7 +28,7 @@ namespace detail {
 			g.vertex(1).toPoint_2< Kernel >(),
 			g.vertex(2).toPoint_2< Kernel >()
 		);
-		return CGAL::abs( triangle.area() );
+		return CGAL::abs( CGAL::to_double( triangle.area() ) );
 	}
 
 	/**
@@ -51,10 +51,10 @@ namespace detail {
 
 			if ( i == 0 ){
 				//exterior ring
-				area += CGAL::abs( projectedPolygon.area() );
+				area += CGAL::abs( CGAL::to_double(projectedPolygon.area()) );
 			}else{
 				//interior ring
-				area -= CGAL::abs( projectedPolygon.area() );
+				area -= CGAL::abs( CGAL::to_double(projectedPolygon.area()) );
 			}
 		}
 
@@ -105,8 +105,8 @@ namespace detail {
 		 */
 		CGAL::Vector_3< Kernel > ux = c - b ;
 		CGAL::Vector_3< Kernel > uz = CGAL::cross_product( ux, a - b ) ;
-		ux = ux / CGAL::sqrt( ux.squared_length() ) ;
-		uz = uz / CGAL::sqrt( uz.squared_length() ) ;
+		ux = ux / CGAL::sqrt( CGAL::to_double(ux.squared_length()) ) ;
+		uz = uz / CGAL::sqrt( CGAL::to_double(uz.squared_length()) ) ;
 		CGAL::Vector_3< Kernel > uy = CGAL::cross_product( uz, ux );
 
 //		std::cout << "ux : " << ux << std::endl ;

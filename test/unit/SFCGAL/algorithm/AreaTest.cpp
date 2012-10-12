@@ -1,17 +1,13 @@
 #include <boost/test/unit_test.hpp>
 
-#include <CGAL/Cartesian.h>
-
-typedef CGAL::Cartesian< double > Kernel ;
-
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/area.h>
 
-using namespace SFCGAL ;
 
-// always after CGAL
 using namespace boost::unit_test ;
+using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_AreaTest )
 

@@ -1,10 +1,9 @@
 #include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
-
 
 #include <SFCGAL/graph/GeometryGraph.h>
 #include <SFCGAL/graph/algorithm/isHalfEdge.h>
 
+using namespace boost::unit_test ;
 using namespace SFCGAL ;
 using namespace SFCGAL::graph ;
 

@@ -331,9 +331,9 @@ public:
     if(N>0)
     {
       Vector v = p - grid_base;
-      int i = boost::math::round(v.x() / grid_dx);  
-      int j =  boost::math::round(v.y() / grid_dy);  
-      int k =  boost::math::round(v.z() / grid_dz);
+      int i = boost::math::round( CGAL::to_double(v.x()) / grid_dx);
+      int j =  boost::math::round( CGAL::to_double(v.y()) / grid_dy);
+      int k =  boost::math::round( CGAL::to_double(v.z()) / grid_dz);
 
       if(i>N-1)i=N-1;
       if(j>N-1)j=N-1;
