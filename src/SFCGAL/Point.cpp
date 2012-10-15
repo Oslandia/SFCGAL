@@ -163,26 +163,26 @@ bool Point::operator != ( const Point & other ) const
 
 ///
 /// Private structures used to implement partial function specialization
-template <typename K, int D>
+template <int D>
 struct do_toPoint_d
 {
-    static CGAL::Point_2<K> toPoint( const Point* p ) { return p->toPoint_2<K>(); }
+    static CGAL::Point_2<Kernel> toPoint( const Point* p ) { return p->toPoint_2(); }
 };
 
-template <typename K>
-struct do_toPoint_d<K,3>
+template <>
+struct do_toPoint_d<3>
 {
-    static CGAL::Point_3<K> toPoint( const Point* p ) { return p->toPoint_3<K>(); }
+    static CGAL::Point_3<Kernel> toPoint( const Point* p ) { return p->toPoint_3(); }
 };
 
-template <typename K, int Dim>
-typename TypeForKernel<K,Dim>::Point Point::toPoint_d() const
+template <int Dim>
+typename TypeForKernel<Dim>::Point Point::toPoint_d() const
 {
-    return do_toPoint_d<K,Dim>::toPoint( this );
+    return do_toPoint_d<Dim>::toPoint( this );
 }
 // template instanciations
-template CGAL::Point_2<Kernel> Point::toPoint_d<Kernel,2>() const;
-template CGAL::Point_3<Kernel> Point::toPoint_d<Kernel,3>() const;
+template CGAL::Point_2<Kernel> Point::toPoint_d<2>() const;
+template CGAL::Point_3<Kernel> Point::toPoint_d<3>() const;
 
 
 }//SFCGAL

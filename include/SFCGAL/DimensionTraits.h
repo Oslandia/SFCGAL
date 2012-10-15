@@ -19,29 +19,29 @@ namespace SFCGAL
 
     ///
     /// Generic traits, all types are defined to 'void'
-    template <typename K, int Dim>
+    template <int Dim>
     struct TypeForKernel
     {
     };
 
     ///
     /// Specialization for dimension = 2
-    template <typename K>
-    struct TypeForKernel<K, 2>
+    template <>
+    struct TypeForKernel<2>
     {
-	typedef CGAL::Point_2<K> Point;
-	typedef CGAL::Segment_2<K> Segment;
-	typedef CGAL::Triangle_2<K> Triangle;
+		typedef Kernel::Point_2 Point;
+		typedef Kernel::Segment_2 Segment;
+		typedef Kernel::Triangle_2 Triangle;
     };
     
     ///
     /// Specialization for dimension = 2
-    template <typename K>
-    struct TypeForKernel<K, 3>
+    template <>
+    struct TypeForKernel<3>
     {
-	typedef CGAL::Point_3<K> Point;
-	typedef CGAL::Segment_3<K> Segment;
-	typedef CGAL::Triangle_3<K> Triangle;
+		typedef Kernel::Point_3 Point;
+		typedef Kernel::Segment_3 Segment;
+		typedef Kernel::Triangle_3 Triangle;
     };
     
     template <int Dim>
@@ -52,13 +52,13 @@ namespace SFCGAL
     template <>
     struct TypeForDimension<2>
     {
-	typedef CGAL::Bbox_2 Bbox;
+    	typedef CGAL::Bbox_2 Bbox;
     };
 	
     template <>
     struct TypeForDimension<3>
     {
-	typedef CGAL::Bbox_3 Bbox;
+    	typedef CGAL::Bbox_3 Bbox;
     };
 }
 

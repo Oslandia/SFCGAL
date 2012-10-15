@@ -27,7 +27,7 @@ namespace transform {
 		 */
 		virtual void transform( Point & p )
 		{
-			p = Point( p.toPoint_2< Kernel >().transform( _transform ) );
+			p = Point( p.toPoint_2().transform( _transform ) );
 		}
 
 	private:

@@ -69,11 +69,11 @@ namespace algorithm
 
 	static std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
 	{
-		CGAL::Object obj = CGAL::intersection( tria.toTriangle_3<Kernel>(), trib.toTriangle_3<Kernel>() );
+		CGAL::Object obj = CGAL::intersection( tria.toTriangle_3(), trib.toTriangle_3() );
 		if (obj.empty()) {
 			return std::auto_ptr<Geometry>(new GeometryCollection());
 		}
-		return std::auto_ptr<Geometry>(Geometry::fromCGAL<Kernel>( obj ));
+		return std::auto_ptr<Geometry>(Geometry::fromCGAL( obj ));
 	}
 
 	static std::auto_ptr<Geometry> intersection3D_linestring_solid_( const LineString& ls, const Polyhedron& poly, const TriangulatedSurface& surf )
@@ -93,7 +93,7 @@ namespace algorithm
 		std::vector<std::pair<Point, Point> > pts;
 		for ( size_t i = 0; i < ls.numPoints(); ++i ) {
 			const Point* current = &ls.pointN(i);
-			current_inside = point_inside_poly( current->toPoint_3<Kernel>() );
+			current_inside = point_inside_poly( current->toPoint_3() );
 
 			if ( previous ) {
 				//				std::cout << "previous = " << previous->asText() << " inside = " << previous_inside << std::endl;
@@ -204,7 +204,7 @@ namespace algorithm
 		detail::to_boxes<3>( ga, ahandles, aboxes );
 		detail::to_boxes<3>( gb, bhandles, bboxes );
 		
-		detail::intersection_cb<Kernel,3> cb;
+		detail::intersection_cb<3> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );

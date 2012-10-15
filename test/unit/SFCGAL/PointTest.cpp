@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( xyzConstructor )
 BOOST_AUTO_TEST_CASE( emptyToVector_2 )
 {
 	Point g ;
-	CGAL::Vector_2< Kernel > p = g.toVector_2< Kernel >();
+	CGAL::Vector_2< Kernel > p = g.toVector_2();
 	BOOST_CHECK_EQUAL( p.x(), 0.0 );
 	BOOST_CHECK_EQUAL( p.y(), 0.0 );
 }
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE( emptyToVector_2 )
 BOOST_AUTO_TEST_CASE( xyToVector_2 )
 {
 	Point g( 3.0, 4.0 );
-	CGAL::Vector_2< Kernel > p = g.toVector_2< Kernel >();
+	CGAL::Vector_2< Kernel > p = g.toVector_2();
 	BOOST_CHECK_EQUAL( p.x(), 3.0 );
 	BOOST_CHECK_EQUAL( p.y(), 4.0 );
 }
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( xyToVector_2 )
 BOOST_AUTO_TEST_CASE( xyToVector_3 )
 {
 	Point g( 3.0, 4.0 );
-	CGAL::Vector_3< Kernel > p = g.toVector_3< Kernel >();
+	CGAL::Vector_3< Kernel > p = g.toVector_3();
 	BOOST_CHECK_EQUAL( p.x(), 3.0 );
 	BOOST_CHECK_EQUAL( p.y(), 4.0 );
 	BOOST_CHECK_EQUAL( p.z(), 0.0 );

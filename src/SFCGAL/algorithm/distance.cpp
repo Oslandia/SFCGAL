@@ -92,7 +92,7 @@ double distancePointPoint( const Point & gA, const Point& gB )
 
 	return CGAL::sqrt(
 		CGAL::to_double(
-			CGAL::squared_distance( gA.toPoint_2< Kernel >(), gB.toPoint_2< Kernel >() )
+			CGAL::squared_distance( gA.toPoint_2(), gB.toPoint_2() )
 		)
 	);
 }
@@ -360,10 +360,10 @@ double distancePointSegment( const Point & p, const Point & a, const Point & b )
 	return CGAL::sqrt(
 		CGAL::to_double(
 			CGAL::squared_distance(
-				p.toPoint_2< Kernel >(),
+				p.toPoint_2(),
 				Segment_2(
-					a.toPoint_2< Kernel >(),
-					b.toPoint_2< Kernel >()
+					a.toPoint_2(),
+					b.toPoint_2()
 				)
 			)
 		)
@@ -382,8 +382,8 @@ double distanceSegmentSegment( const Point & a, const Point & b, const Point & c
 
 	return CGAL::sqrt( CGAL::to_double(
 		CGAL::squared_distance(
-			CGAL::Segment_2< Kernel >( a.toPoint_2< Kernel >(), b.toPoint_2< Kernel >() ),
-			CGAL::Segment_2< Kernel >( c.toPoint_2< Kernel >(), d.toPoint_2< Kernel >() )
+			CGAL::Segment_2< Kernel >( a.toPoint_2(), b.toPoint_2() ),
+			CGAL::Segment_2< Kernel >( c.toPoint_2(), d.toPoint_2() )
 		)
 	) );
 }

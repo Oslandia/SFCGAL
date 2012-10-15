@@ -194,23 +194,21 @@ namespace SFCGAL {
 		/*
 		 * Convert to CGAL::Polygon_2. Does not consider holes, if any
 		 */
-		template < typename K >
-		CGAL::Polygon_2<K> toPolygon_2() const
+		CGAL::Polygon_2<Kernel> toPolygon_2() const
 		{
-			return exteriorRing().toPolygon_2<K>();
+			return exteriorRing().toPolygon_2();
 		}
 
 		/*
 		 * Convert to CGAL::Polygon_with_holes_2.
 		 */
-		template < typename K >
-		CGAL::Polygon_with_holes_2<K> toPolygon_with_holes_2() const
+		CGAL::Polygon_with_holes_2<Kernel> toPolygon_with_holes_2() const
 		{
-			std::list<CGAL::Polygon_2<K> > holes;
+			std::list<CGAL::Polygon_2<Kernel> > holes;
 			for ( size_t i = 0; i < numInteriorRings(); ++i ) {
-				holes.push_back( interiorRingN(i).toPolygon_2<K>() );
+				holes.push_back( interiorRingN(i).toPolygon_2() );
 			}
-			return CGAL::Polygon_with_holes_2<K>( exteriorRing().toPolygon_2<K>(),
+			return CGAL::Polygon_with_holes_2<Kernel>( exteriorRing().toPolygon_2(),
 							      holes.begin(),
 							      holes.end());
 		}

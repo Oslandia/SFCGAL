@@ -38,7 +38,7 @@ namespace algorithm
 		
 		for ( size_t j = 0; j < pts.size(); ++j ) {
 			//			if ( !point_inside_ext( pts[j]->toPoint_3<Kernel>() )) {
-			if ( ! is_in_ext( pts[j]->toPoint_3<Kernel>() )) {
+			if ( ! is_in_ext( pts[j]->toPoint_3() )) {
 				return false;
 			}
 		}
@@ -53,7 +53,7 @@ namespace algorithm
 			//			CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside( *shell_poly );
 			for ( size_t j = 0; j < pts.size(); ++j ) {
 				//if ( point_inside( pts[j]->toPoint_3<Kernel>() )) {
-				if ( is_in_shell( pts[j]->toPoint_3<Kernel>() )) {
+				if ( is_in_shell( pts[j]->toPoint_3() )) {
 					// FIXME : process nested holes
 					return false;
 				}

@@ -11,14 +11,13 @@
 
 //
 // Intersection kernel
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-typedef CGAL::Exact_predicates_exact_constructions_kernel ExactKernel;
+
+namespace SFCGAL {
 
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
-namespace SFCGAL {
 namespace algorithm
 {
 	static std::auto_ptr<Geometry> intersection_point_x_( const Point& pt, const Geometry& gb )
@@ -31,18 +30,18 @@ namespace algorithm
 
 	static std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
 	{
-		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2<Kernel>(), trib.toTriangle_2<Kernel>() );
+		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2(), trib.toTriangle_2() );
 		if (obj.empty()) {
 			return std::auto_ptr<Geometry>(new GeometryCollection());
 		}
-		return std::auto_ptr<Geometry>(Geometry::fromCGAL<Kernel>( obj ));
+		return std::auto_ptr<Geometry>(Geometry::fromCGAL( obj ));
 	}
 
 	static std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
 	{
-		std::list<CGAL::Polygon_with_holes_2<ExactKernel> > opolys;
-		CGAL::Polygon_with_holes_2<ExactKernel> pa = polya.toPolygon_with_holes_2<ExactKernel>();
-		CGAL::Polygon_with_holes_2<ExactKernel> pb = polyb.toPolygon_with_holes_2<ExactKernel>();
+		std::list<CGAL::Polygon_with_holes_2<Kernel> > opolys;
+		CGAL::Polygon_with_holes_2<Kernel> pa = polya.toPolygon_with_holes_2();
+		CGAL::Polygon_with_holes_2<Kernel> pb = polyb.toPolygon_with_holes_2();
 		CGAL::intersection( pa,
 				    pb,
 				    std::back_inserter(opolys) );
@@ -55,7 +54,7 @@ namespace algorithm
 		}
 
 		MultiPolygon* mp = new MultiPolygon;
-		std::list<CGAL::Polygon_with_holes_2<ExactKernel> >::const_iterator it;
+		std::list<CGAL::Polygon_with_holes_2<Kernel> >::const_iterator it;
 		for ( it = opolys.begin(); it != opolys.end(); ++it ) {
 			mp->addGeometry( new Polygon( *it));
 		}
@@ -73,7 +72,7 @@ namespace algorithm
 		detail::to_boxes<2>( ga, ahandles, aboxes );
 		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
-		detail::intersection_cb<Kernel,2> cb;
+		detail::intersection_cb<2> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );

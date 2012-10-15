@@ -67,12 +67,12 @@ namespace algorithm
 
 	static bool intersects3D_( const Point& pta, const Triangle& tri )
 	{
-		return tri.toTriangle_3<Kernel>().has_on( pta.toPoint_3<Kernel>() );
+		return tri.toTriangle_3().has_on( pta.toPoint_3() );
 	}
 
 	static bool intersects3D_( const Triangle& tri1, const Triangle& tri2 )
 	{
-		return CGAL::do_intersect( tri1.toTriangle_3<Kernel>(), tri2.toTriangle_3<Kernel>() );
+		return CGAL::do_intersect( tri1.toTriangle_3(), tri2.toTriangle_3() );
 	}
 
 	// ----------------------------------------------------------
@@ -85,7 +85,7 @@ namespace algorithm
 	static bool intersects3D_( const Point& pta, const LineString& ls )
 	{
 		// build a CGAL::Segment for each line string element and call CGAL::has_on
-		Point_3 p = pta.toPoint_3<Kernel>();
+		Point_3 p = pta.toPoint_3();
 
 		std::vector< Segment_3 > segs;
 		to_segments( ls, segs );
@@ -110,7 +110,7 @@ namespace algorithm
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
-						  detail::intersects_cb<Kernel,3> );
+						  detail::intersects_cb<3> );
 		}
 		catch ( detail::found_intersection& e ) {
 			return true;
