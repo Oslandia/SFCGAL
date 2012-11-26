@@ -277,7 +277,6 @@ namespace algorithm
 				Polyhedron::Halfedge_around_facet_const_circulator hit = fit->facet_begin();
 				do {
 					pts[i++] = Point( hit->vertex()->point() );
-					++i;
 				} while ( ++hit != fit->facet_begin());
 				ret_geo->addTriangle( Triangle( pts[0], pts[1], pts[2] ));
 			}
