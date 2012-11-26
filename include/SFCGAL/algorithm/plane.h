@@ -12,15 +12,13 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * Get 3 non collinear points from a Polygon
+	 * Test if a 3D plane can be exatracted from a Polygon
 	 */
 	template < typename Kernel >
-	void plane3D(
-		const Polygon & polygon,
-		CGAL::Point_3< Kernel > & a,
-		CGAL::Point_3< Kernel > & b,
-		CGAL::Point_3< Kernel > & c
-	)
+	bool hasPlane3D( const Polygon& polygon,
+			 CGAL::Point_3< Kernel > & a,
+			 CGAL::Point_3< Kernel > & b,
+			 CGAL::Point_3< Kernel > & c )
 	{
 		typedef CGAL::Point_3< Kernel > Point_3 ;
 
@@ -44,11 +42,32 @@ namespace algorithm {
 				break;
 			}
 		}
+		return n == 3;
+	}
 
-		/*
-		 * check
-		 */
-		if ( n != 3 ){
+	/**
+	 * Test if a 3D plane can be exatracted from a Polygon
+	 */
+	template < typename Kernel >
+	bool hasPlane3D( const Polygon& polygon )
+	{
+		// temporary arguments
+		CGAL::Point_3< Kernel > a, b, c;
+		return hasPlane3D( polygon, a, b, c );
+	}
+
+	/**
+	 * Get 3 non collinear points from a Polygon
+	 */
+	template < typename Kernel >
+	void plane3D(
+		const Polygon & polygon,
+		CGAL::Point_3< Kernel > & a,
+		CGAL::Point_3< Kernel > & b,
+		CGAL::Point_3< Kernel > & c
+	)
+	{
+		if ( ! hasPlane3D( polygon, a, b, c) ){
 			BOOST_THROW_EXCEPTION(
 				Exception(
 					( boost::format("can't find plane for Polygon '%1%'") % polygon.asText() ).str()
