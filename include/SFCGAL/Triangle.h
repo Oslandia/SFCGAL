@@ -87,28 +87,26 @@ namespace SFCGAL {
 		/**
 		 * Convert to CGAL::Triangle_2
 		 */
-		template < typename K >
-		inline CGAL::Triangle_2<K> toTriangle_2() const
+		inline Kernel::Triangle_2 toTriangle_2() const
 		{
-			return CGAL::Triangle_2<K>( vertex(0).toPoint_2<K>(), vertex(1).toPoint_2<K>(), vertex(2).toPoint_2<K>() );
+			return Kernel::Triangle_2( vertex(0).toPoint_2(), vertex(1).toPoint_2(), vertex(2).toPoint_2() );
 		}
 
  		/**
 		 * Convert to CGAL::Triangle_3
 		 */
-		template < typename K >
-		inline CGAL::Triangle_3<K> toTriangle_3() const
+		inline Kernel::Triangle_3 toTriangle_3() const
 		{
-			return CGAL::Triangle_3<K>( vertex(0).toPoint_3<K>(), vertex(1).toPoint_3<K>(), vertex(2).toPoint_3<K>() );
+			return Kernel::Triangle_3( vertex(0).toPoint_3(), vertex(1).toPoint_3(), vertex(2).toPoint_3() );
 		}
 
  		/**
 		 * Convert to CGAL::Triangle_2 or CGAL::Triangle_2
 		 */
-		template < typename K, int D >
-		inline typename TypeForKernel<K,D>::Triangle toTriangle_d() const
+		template < int D >
+		inline typename TypeForKernel<D>::Triangle toTriangle_d() const
 		{
-		    return typename TypeForKernel<K,D>::Triangle( vertex(0).toPoint_d<K,D>(), vertex(1).toPoint_d<K,D>(), vertex(2).toPoint_d<K,D>() );
+		    return typename TypeForKernel<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
 		}
 
 		//-- visitors

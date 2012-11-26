@@ -128,48 +128,44 @@ namespace SFCGAL {
 		 * Convert to CGAL::Vector_2
 		 * @todo remove template parameter
 		 */
-		template < typename K >
-		inline CGAL::Vector_2< K > toVector_2() const
+		inline Kernel::Vector_2 toVector_2() const
 		{
-			return _coordinate.toVector_2< K >();
+			return _coordinate.toVector_2();
 		}
 
 		/**
 		 * Convert to CGAL::Vector_3
 		 * @todo remove template parameter
 		 */
-		template < typename K >
-		inline CGAL::Vector_3< K > toVector_3() const
+		inline Kernel::Vector_3 toVector_3() const
 		{
-			return _coordinate.toVector_3< K >();
+			return _coordinate.toVector_3();
 		}
 
 		/**
 		 * Convert to CGAL::Point_2
 		 * @todo remove template parameter
 		 */
-		template < typename K >
-		inline CGAL::Point_2< K > toPoint_2() const
+		inline Kernel::Point_2 toPoint_2() const
 		{
-			return _coordinate.toPoint_2< K >();
+			return _coordinate.toPoint_2();
 		}
 
 		/**
 		 * Convert to CGAL::Point_3
 		 * @todo remove template parameter
 		 */
-		template < typename K >
-		inline CGAL::Point_3< K > toPoint_3() const
+		inline Kernel::Point_3 toPoint_3() const
 		{
-			return _coordinate.toPoint_3< K >();
+			return _coordinate.toPoint_3();
 		}
 
 		/**
 		 * Convert to CGAL::Point_2 or CGAL::Point_3
 		 * @todo remove template parameter
 		 */
-		template <typename K, int D>
-		typename TypeForKernel<K,D>::Point toPoint_d() const;
+		template <int D>
+		typename TypeForKernel<D>::Point toPoint_d() const;
 
 		inline Coordinate &       coordinate() { return _coordinate; }
 		inline const Coordinate & coordinate() const { return _coordinate; }

@@ -24,7 +24,6 @@ Geometry::~Geometry()
 
 }
 
-template <typename Kernel>
 Geometry* Geometry::fromCGAL( const CGAL::Object& obj )
 {
 	typedef CGAL::Point_2<Kernel> Point_2;
@@ -75,7 +74,6 @@ Geometry* Geometry::fromCGAL( const CGAL::Object& obj )
 	return 0;
 }
 
-template Geometry* Geometry::fromCGAL<Kernel>( const CGAL::Object& );
 
 
 ///

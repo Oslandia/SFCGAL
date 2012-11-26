@@ -85,15 +85,15 @@ BOOST_AUTO_TEST_CASE( iteratorTests )
 	points.push_back( Point(8.0, 9.0, 1.0) );
 	LineString g( points );
 
-	LineString::Point_2_const_iterator<Kernel> pi, pi_end;
+	LineString::Point_2_const_iterator pi, pi_end;
 	int i = 0;
-	for ( boost::tie( pi, pi_end ) = g.points_2<Kernel>(); pi != pi_end; pi++, i++ ) {
-		BOOST_CHECK_EQUAL( *pi, g.pointN(i).toPoint_2<Kernel>() );
+	for ( boost::tie( pi, pi_end ) = g.points_2(); pi != pi_end; pi++, i++ ) {
+		BOOST_CHECK_EQUAL( *pi, g.pointN(i).toPoint_2() );
 	}
-	LineString::Point_3_const_iterator<Kernel> ppi, ppi_end;
+	LineString::Point_3_const_iterator ppi, ppi_end;
 	i = 0;
-	for ( boost::tie( ppi, ppi_end ) = g.points_3<Kernel>(); ppi != ppi_end; ppi++, i++ ) {
-		BOOST_CHECK_EQUAL( *ppi, g.pointN(i).toPoint_3<Kernel>() );
+	for ( boost::tie( ppi, ppi_end ) = g.points_3(); ppi != ppi_end; ppi++, i++ ) {
+		BOOST_CHECK_EQUAL( *ppi, g.pointN(i).toPoint_3() );
 	}
 }
 

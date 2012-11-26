@@ -24,9 +24,9 @@ namespace detail {
 	)
 	{
 		CGAL::Triangle_2< Kernel > triangle(
-			g.vertex(0).toPoint_2< Kernel >(),
-			g.vertex(1).toPoint_2< Kernel >(),
-			g.vertex(2).toPoint_2< Kernel >()
+			g.vertex(0).toPoint_2(),
+			g.vertex(1).toPoint_2(),
+			g.vertex(2).toPoint_2()
 		);
 		return CGAL::abs( CGAL::to_double( triangle.area() ) );
 	}
@@ -46,7 +46,7 @@ namespace detail {
 
 			CGAL::Polygon_2< Kernel > projectedPolygon;
 			for ( size_t j = 0; j < ring.numPoints() - 1 ; j++ ){
-				projectedPolygon.push_back( ring.pointN(j).toPoint_2< Kernel >() );
+				projectedPolygon.push_back( ring.pointN(j).toPoint_2() );
 			}
 
 			if ( i == 0 ){
@@ -121,7 +121,7 @@ namespace detail {
 
 			CGAL::Polygon_2< Kernel > projectedPolygon;
 			for ( size_t j = 0; j < ring.numPoints() - 1 ; j++ ){
-				CGAL::Point_3< Kernel > point = ring.pointN(j).toPoint_3< Kernel >();
+				CGAL::Point_3< Kernel > point = ring.pointN(j).toPoint_3();
 //				std::cout << "point : " << point << std::endl;
 				CGAL::Point_2< Kernel > projectedPoint(
 					( point - b ) * ux,
@@ -184,9 +184,9 @@ namespace detail {
 	)
 	{
 		CGAL::Triangle_3< Kernel > triangle(
-			g.vertex(0).toPoint_3< Kernel >(),
-			g.vertex(1).toPoint_3< Kernel >(),
-			g.vertex(2).toPoint_3< Kernel >()
+			g.vertex(0).toPoint_3(),
+			g.vertex(1).toPoint_3(),
+			g.vertex(2).toPoint_3()
 		);
 		return sqrt( CGAL::to_double( triangle.squared_area() ) ) ;
 	}

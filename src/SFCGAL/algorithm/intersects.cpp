@@ -45,10 +45,10 @@ namespace algorithm
 	bool intersects_( const Point& pta, const LineString& ls )
 	{
 		// build a CGAL::Segment for each line string element and call CGAL::has_on
-		Point_2 p = pta.toPoint_2<Kernel>();
+		Point_2 p = pta.toPoint_2();
 
 		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
-			Segment_2 seg( ls.pointN(i).toPoint_2<Kernel>(), ls.pointN(i+1).toPoint_2<Kernel>() );
+			Segment_2 seg( ls.pointN(i).toPoint_2(), ls.pointN(i+1).toPoint_2() );
 
 			if ( seg.has_on( p ) )
 				return true;
@@ -58,13 +58,13 @@ namespace algorithm
 
 	bool intersects_( const Point& pta, const Triangle& tri )
 	{
-		CGAL::Bounded_side b = tri.toTriangle_2<Kernel>().bounded_side( pta.toPoint_2<Kernel>() );
+		CGAL::Bounded_side b = tri.toTriangle_2().bounded_side( pta.toPoint_2() );
 		return b == CGAL::ON_BOUNDED_SIDE || b == CGAL::ON_BOUNDARY;
 	}
     
 	bool intersects_( const Triangle& tri1, const Triangle& tri2 )
 	{
-		return CGAL::do_intersect( tri1.toTriangle_2<Kernel>(), tri2.toTriangle_2<Kernel>() );
+		return CGAL::do_intersect( tri1.toTriangle_2(), tri2.toTriangle_2() );
 	}
 
 	///
@@ -81,7 +81,7 @@ namespace algorithm
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
-						  detail::intersects_cb<Kernel,2> );
+						  detail::intersects_cb<2> );
 		}
 		catch ( detail::found_intersection& e ) {
 			return true;
@@ -91,9 +91,9 @@ namespace algorithm
 
 	bool intersects_( const Point& pt, const Polygon& poly )
 	{
-		CGAL::Bounded_side b1 = CGAL::bounded_side_2( poly.exteriorRing().points_2_begin<Kernel>(),
-							      poly.exteriorRing().points_2_end<Kernel>(),
-							      pt.toPoint_2<Kernel>() );
+		CGAL::Bounded_side b1 = CGAL::bounded_side_2( poly.exteriorRing().points_2_begin(),
+							      poly.exteriorRing().points_2_end(),
+							      pt.toPoint_2() );
 		if ( b1 == CGAL::ON_BOUNDARY ) {
 			return true;
 		}
@@ -101,9 +101,9 @@ namespace algorithm
 			// might be in a hole
 			for ( size_t i = 0; i < poly.numInteriorRings(); ++i ) {
 				const LineString& ring = poly.interiorRingN(i);
-				CGAL::Bounded_side b = CGAL::bounded_side_2( ring.points_2_begin<Kernel>(),
-									     ring.points_2_end<Kernel>(),
-									     pt.toPoint_2<Kernel>() );
+				CGAL::Bounded_side b = CGAL::bounded_side_2( ring.points_2_begin(),
+									     ring.points_2_end(),
+									     pt.toPoint_2() );
 				if ( b == CGAL::ON_BOUNDED_SIDE ) {
 					return false;
 				}
@@ -136,7 +136,7 @@ namespace algorithm
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
-							  detail::intersects_cb<Kernel,2> );
+							  detail::intersects_cb<2> );
 			}
 			catch ( detail::found_segment_segment_intersection& e ) {
 				return true;
@@ -151,9 +151,9 @@ namespace algorithm
 			// is pa inside one of pb's holes ?
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
 				const LineString& interiorRing = pb.interiorRingN( i );
-				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin<Kernel>(),
-									      interiorRing.points_2_end<Kernel>(),
-									      pa.exteriorRing().startPoint().toPoint_2<Kernel>() );
+				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin(),
+									      interiorRing.points_2_end(),
+									      pa.exteriorRing().startPoint().toPoint_2() );
 				if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
 					return false;
 				}
@@ -166,9 +166,9 @@ namespace algorithm
 			// is pb inside one of pa's holes ?
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
 				const LineString& interiorRing = pa.interiorRingN( i );
-				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin<Kernel>(),
-									      interiorRing.points_2_end<Kernel>(),
-									      pb.exteriorRing().startPoint().toPoint_2<Kernel>() );
+				CGAL::Bounded_side b2 = CGAL::bounded_side_2( interiorRing.points_2_begin(),
+									      interiorRing.points_2_end(),
+									      pb.exteriorRing().startPoint().toPoint_2() );
 				if ( b2 == CGAL::ON_BOUNDED_SIDE ) {
 					return false;
 				}

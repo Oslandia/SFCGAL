@@ -32,8 +32,8 @@ BOOST_AUTO_TEST_CASE( testIntersectsRobutness )
 
 	//ab, cd
 	CGAL::Object abIcd_ = CGAL::intersection(
-		Segment_2( ab.startPoint().toPoint_2< Kernel >(), ab.endPoint().toPoint_2< Kernel >() ),
-		Segment_2( cd.startPoint().toPoint_2< Kernel >(), cd.endPoint().toPoint_2< Kernel >() )
+		Segment_2( ab.startPoint().toPoint_2(), ab.endPoint().toPoint_2() ),
+		Segment_2( cd.startPoint().toPoint_2(), cd.endPoint().toPoint_2() )
 	);
 	const Point_2 * abIcd = CGAL::object_cast<Point_2>(&abIcd_) ;
 	BOOST_REQUIRE( abIcd != NULL );
@@ -42,15 +42,15 @@ BOOST_AUTO_TEST_CASE( testIntersectsRobutness )
 	Point intersectionA( *abIcd );
 
 	CGAL::Object abIef_ = CGAL::intersection(
-		intersectionA.toPoint_2< Kernel >(),
-		Segment_2( ef.startPoint().toPoint_2< Kernel >(), ef.endPoint().toPoint_2< Kernel >() )
+		intersectionA.toPoint_2(),
+		Segment_2( ef.startPoint().toPoint_2(), ef.endPoint().toPoint_2() )
 	);
 	const Point_2 * abIef = CGAL::object_cast<Point_2>(&abIef_) ;
 	BOOST_REQUIRE( abIef != NULL );
 
 	Point intersectionB( *abIef );
 
-	BOOST_CHECK_EQUAL( intersectionA.toPoint_2< Kernel >(), intersectionB.toPoint_2< Kernel >() );
+	BOOST_CHECK_EQUAL( intersectionA.toPoint_2(), intersectionB.toPoint_2() );
 }
 
 

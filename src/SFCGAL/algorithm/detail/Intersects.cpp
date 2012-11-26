@@ -149,53 +149,53 @@ namespace detail {
 	// There is no need to test the dynamic type here.
 	// We should rely on a strongly-typed implementation.
 	// i.e. intersects_cb<Point, Triangle>, intersects_cb<Segment, Segment>, etc.
-	template <typename K, int Dim>
+	template <int Dim>
 	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
-		typedef typename TypeForKernel<K, Dim>::Point Point_d;
-		typedef typename TypeForKernel<K, Dim>::Segment Segment_d;
-		typedef typename TypeForKernel<K, Dim>::Triangle Triangle_d;
+		typedef typename TypeForKernel<Dim>::Point Point_d;
+		typedef typename TypeForKernel<Dim>::Segment Segment_d;
+		typedef typename TypeForKernel<Dim>::Triangle Triangle_d;
 		if ( a.handle()->type == ObjectHandle::Point ) {
 			if ( b.handle()->type == ObjectHandle::Triangle ) {
-				Point_d point = a.handle()->point->template toPoint_d<K,Dim>();
-				Triangle_d tri = b.handle()->triangle->template toTriangle_d<K,Dim>();
+				Point_d point = a.handle()->point->template toPoint_d<Dim>();
+				Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
 				if ( CGAL::do_intersect( point, tri )) {
 					throw found_point_triangle_intersection();
 				}
 			}
 		}
 		else if ( a.handle()->type == ObjectHandle::Segment ) {
-			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<K,Dim>(),
-					a.handle()->segment.end_point->template toPoint_d<K,Dim>() );
+			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
+					a.handle()->segment.end_point->template toPoint_d<Dim>() );
 			if ( b.handle()->type == ObjectHandle::Segment ) {
-				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<K,Dim>(),
-						b.handle()->segment.end_point->template toPoint_d<K,Dim>());
+				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<Dim>(),
+						b.handle()->segment.end_point->template toPoint_d<Dim>());
 				if ( CGAL::do_intersect( sega, segb )) {
 					throw found_segment_segment_intersection();
 				}
 			} else {
 				// Segment x Triangle
-				Triangle_d tri = b.handle()->triangle->template toTriangle_d<K,Dim>();
+				Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
 				if ( CGAL::do_intersect( sega, tri )) {
 				 	throw found_segment_triangle_intersection();
 				}
 			}
 		} else {
 			// Triangle x Triangle intersection
-			Triangle_d tria( a.handle()->triangle->template toTriangle_d<K,Dim>() );
-			Triangle_d trib( b.handle()->triangle->template toTriangle_d<K,Dim>() );
+			Triangle_d tria( a.handle()->triangle->template toTriangle_d<Dim>() );
+			Triangle_d trib( b.handle()->triangle->template toTriangle_d<Dim>() );
 			if (CGAL::do_intersect( tria, trib )) {
 				throw found_triangle_triangle_intersection();
 			}
 		}
 	}
 	/// template instanciations
-	template void intersects_cb<Kernel, 2>( const Object2Box& a, const Object2Box& b );
-	template void intersects_cb<Kernel, 3>( const Object3Box& a, const Object3Box& b );
+	template void intersects_cb<2>( const Object2Box& a, const Object2Box& b );
+	template void intersects_cb<3>( const Object3Box& a, const Object3Box& b );
 
 
-	template <typename K, int Dim>
-	intersection_cb<K,Dim>::intersection_cb()
+	template <int Dim>
+	intersection_cb<Dim>::intersection_cb()
 	{
 		geometries = new GeometryCollection();
 	}
@@ -216,23 +216,23 @@ namespace detail {
 	// There is no need to test the dynamic type here.
 	// We should rely on a strongly-typed implementation.
 	// i.e. intersects_cb<Point, Triangle>, intersects_cb<Segment, Segment>, etc.
-	template <typename K, int Dim>
-	void intersection_cb<K, Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
+	template <int Dim>
+	void intersection_cb<Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
-		typedef typename TypeForKernel<K,Dim>::Point Point_d;
-		typedef typename TypeForKernel<K,Dim>::Segment Segment_d;
-		typedef typename TypeForKernel<K,Dim>::Triangle Triangle_d;
+		typedef typename TypeForKernel<Dim>::Point Point_d;
+		typedef typename TypeForKernel<Dim>::Segment Segment_d;
+		typedef typename TypeForKernel<Dim>::Triangle Triangle_d;
 		
 		if ( a.handle()->type == ObjectHandle::Segment ) {
-			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<K,Dim>(),
-					a.handle()->segment.end_point->template toPoint_d<K, Dim>());
+			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
+					a.handle()->segment.end_point->template toPoint_d<Dim>());
 			if ( b.handle()->type == ObjectHandle::Segment ) {
-				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<K, Dim>(),
-						b.handle()->segment.end_point->template toPoint_d<K, Dim>());
+				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<Dim>(),
+						b.handle()->segment.end_point->template toPoint_d<Dim>());
 				
 				CGAL::Object obj = CGAL::intersection( sega, segb );
 				if ( !obj.empty()) {
-					Geometry* g = Geometry::fromCGAL<K>(obj);
+					Geometry* g = Geometry::fromCGAL(obj);
 					BOOST_ASSERT( g != 0 );
 					if ( !collectionContains( *geometries, *g )) {
 						geometries->addGeometry(g);
@@ -240,10 +240,10 @@ namespace detail {
 				}
 			} else {
 				// Segment x Triangle
-				Triangle_d tri2( b.handle()->triangle->template toTriangle_d<K, Dim>() );
+				Triangle_d tri2( b.handle()->triangle->template toTriangle_d<Dim>() );
 				CGAL::Object obj = CGAL::intersection( sega, tri2 );
 				if ( !obj.empty()) {
-					Geometry* g = Geometry::fromCGAL<K>(obj);
+					Geometry* g = Geometry::fromCGAL(obj);
 					BOOST_ASSERT( g != 0 );
 					if ( !collectionContains( *geometries, *g )) {
 						geometries->addGeometry(g);
@@ -252,11 +252,11 @@ namespace detail {
 			}
 		} else {
 			// Triangle x Triangle intersection
-			Triangle_d tria( a.handle()->triangle->template toTriangle_d<K,Dim>() );
-			Triangle_d trib( b.handle()->triangle->template toTriangle_d<K,Dim>() );
+			Triangle_d tria( a.handle()->triangle->template toTriangle_d<Dim>() );
+			Triangle_d trib( b.handle()->triangle->template toTriangle_d<Dim>() );
 			CGAL::Object obj = CGAL::intersection( tria, trib );
 			if ( !obj.empty()) {
-				Geometry* g = Geometry::fromCGAL<K>(obj);
+				Geometry* g = Geometry::fromCGAL(obj);
 				BOOST_ASSERT( g != 0 );
 				if ( !collectionContains( *geometries, *g )) {
 					geometries->addGeometry(g);
@@ -265,8 +265,8 @@ namespace detail {
 		}
 	}
 	/// template instanciations
-	template struct intersection_cb<Kernel,2>;
-	template struct intersection_cb<Kernel,3>;
+	template struct intersection_cb<2>;
+	template struct intersection_cb<3>;
 } // detail
 } // algorithm
 } // SFCGAL

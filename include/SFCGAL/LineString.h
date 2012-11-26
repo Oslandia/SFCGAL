@@ -146,11 +146,10 @@ namespace SFCGAL {
 		 * Const iterator to 2D points
 		 * TODO: replace by boost::tranform_iterator ?
 		 */
-		template < typename K >
 		class Point_2_const_iterator :
 			public boost::iterator_facade<
-			Point_2_const_iterator<K>,
-			CGAL::Point_2<K> const,
+			Point_2_const_iterator,
+			Kernel::Point_2 const,
 			boost::bidirectional_traversal_tag >
 		{
 		public:
@@ -161,25 +160,22 @@ namespace SFCGAL {
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
 			void decrement() { it_--; }
-			bool equal( const Point_2_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_2<K>& dereference() const { p_ = it_->toPoint_2<K>(); return p_; }
-			mutable CGAL::Point_2<K> p_;
+			bool equal( const Point_2_const_iterator& other ) const { return this->it_ == other.it_; }
+			const Kernel::Point_2& dereference() const { p_ = it_->toPoint_2(); return p_; }
+			mutable Kernel::Point_2 p_;
 			const_iterator it_;
 		};
-		template < typename K >
-		Point_2_const_iterator<K> points_2_begin() const
+		Point_2_const_iterator points_2_begin() const
 		{
-			return Point_2_const_iterator<K>(begin());
+			return Point_2_const_iterator(begin());
 		}
-		template < typename K >
-		Point_2_const_iterator<K> points_2_end() const
+		Point_2_const_iterator points_2_end() const
 		{
-			return Point_2_const_iterator<K>(end());
+			return Point_2_const_iterator(end());
 		}
-		template < typename K >
-		std::pair< Point_2_const_iterator<K>, Point_2_const_iterator<K> > points_2() const
+		std::pair< Point_2_const_iterator, Point_2_const_iterator > points_2() const
 		{
-			return std::make_pair( points_2_begin<K>(), points_2_end<K>() );
+			return std::make_pair( points_2_begin(), points_2_end() );
 		}
 
 
@@ -187,52 +183,48 @@ namespace SFCGAL {
 		 * Const iterator to 3D points
 		 * TODO: replace by boost::tranform_iterator ?
 		 */
-		template < typename K >
 		class Point_3_const_iterator :
 			public boost::iterator_facade<
-			Point_3_const_iterator<K>,
-			CGAL::Point_3<K> const,
+			Point_3_const_iterator,
+			Kernel::Point_3 const,
 			boost::bidirectional_traversal_tag >
 		{
 		public:
 			Point_3_const_iterator() {}
 			explicit Point_3_const_iterator( const_iterator it ) : it_(it) {}
-			Point_3_const_iterator( const Point_3_const_iterator<K>& other ) : it_(other.it_) {}
+			Point_3_const_iterator( const Point_3_const_iterator& other ) : it_(other.it_) {}
 		private:
 			friend class boost::iterator_core_access;
 			void increment() { it_++; }
 			void decrement() { it_--; }
-			bool equal( const Point_3_const_iterator<K>& other ) const { return this->it_ == other.it_; }
-			const CGAL::Point_3<K>& dereference() const { p_ = it_->toPoint_3<K>(); return p_; }
-			mutable CGAL::Point_3<K> p_;
+			bool equal( const Point_3_const_iterator& other ) const { return this->it_ == other.it_; }
+			const Kernel::Point_3& dereference() const { p_ = it_->toPoint_3(); return p_; }
+			mutable Kernel::Point_3 p_;
 			const_iterator it_;
 		};
-		template < typename K >
-		Point_3_const_iterator<K> points_3_begin() const
+
+		Point_3_const_iterator points_3_begin() const
 		{
-			return Point_3_const_iterator<K>(begin());
+			return Point_3_const_iterator(begin());
 		}
-		template < typename K >
-		Point_3_const_iterator<K> points_3_end() const
+		Point_3_const_iterator points_3_end() const
 		{
-			return Point_3_const_iterator<K>(end());
+			return Point_3_const_iterator(end());
 		}
-		template < typename K >
-		std::pair< Point_3_const_iterator<K>, Point_3_const_iterator<K> > points_3() const
+		std::pair< Point_3_const_iterator, Point_3_const_iterator > points_3() const
 		{
-			return std::make_pair( points_3_begin<K>(), points_3_end<K>() );
+			return std::make_pair( points_3_begin(), points_3_end() );
 		}
 
 		/*
 		 * Convert to CGAL::Polygon_2
 		 */
-		template < typename K >
-		CGAL::Polygon_2<K> toPolygon_2() const
+		CGAL::Polygon_2< Kernel > toPolygon_2() const
 		{
-			Point_2_const_iterator<K> pend = points_2_end<K>();
+			Point_2_const_iterator pend = points_2_end();
 			// skip the last point
 			pend--;
-			return CGAL::Polygon_2<K>( points_2_begin<K>(), pend );
+			return CGAL::Polygon_2< Kernel >( points_2_begin(), pend );
 		}
 		//-- visitors
 

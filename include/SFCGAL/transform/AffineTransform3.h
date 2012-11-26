@@ -10,7 +10,7 @@ namespace transform {
 	/**
 	 * Wrapper for CGAL::Aff_transform_3
 	 */
-	template < typename Kernel >
+	template < typename K >
 	class AffineTransform3 : public Transform {
 	public:
 		/**
@@ -27,7 +27,7 @@ namespace transform {
 		 */
 		virtual void transform( Point & p )
 		{
-			p = Point( p.toPoint_3< Kernel >().transform( _transform ) ) ;
+			p = Point( p.toPoint_3().transform( _transform ) ) ;
 		}
 
 		virtual void transform( LineString & ls )
@@ -73,7 +73,7 @@ namespace transform {
 		}
 
 	private:
-		CGAL::Aff_transformation_3< Kernel > _transform ;
+		CGAL::Aff_transformation_3< K > _transform ;
 	};
 
 

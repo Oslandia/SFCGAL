@@ -145,7 +145,6 @@ namespace SFCGAL {
        /**
         * Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
         */
-       template <typename Kernel>
        static Geometry* fromCGAL( const CGAL::Object& obj );
 
        /**

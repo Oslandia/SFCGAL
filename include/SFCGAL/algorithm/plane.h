@@ -29,7 +29,7 @@ namespace algorithm {
 		 */
 		size_t  n = 0 ;
 		for ( size_t i = 0; i < exteriorRing.numPoints(); i++ ){
-			Point_3 p = exteriorRing.pointN(i).toPoint_3< Kernel >() ;
+			Point_3 p = exteriorRing.pointN(i).toPoint_3() ;
 			if ( n == 0 ){
 				a = p ;
 				n++ ;
