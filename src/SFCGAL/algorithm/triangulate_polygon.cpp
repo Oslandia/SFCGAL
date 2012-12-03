@@ -142,6 +142,9 @@ void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface 
 	case TYPE_POLYHEDRALSURFACE:
 		triangulate( g.as< PolyhedralSurface >(), triangulatedSurface ) ;
 		return ;
+	case TYPE_SOLID:
+		triangulate( g.as< Solid >().exteriorShell(), triangulatedSurface ) ;
+		return ;
 	}
 
 	BOOST_THROW_EXCEPTION(

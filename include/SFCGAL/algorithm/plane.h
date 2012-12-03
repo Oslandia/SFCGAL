@@ -24,6 +24,9 @@ namespace algorithm {
 
 		const LineString & exteriorRing = polygon.exteriorRing() ;
 
+		// FIXME: if the input polygon is not convex and first points are of concave shape,
+		// the resulting plane will be upside-down !
+		// Must only consider extreme points
 		/*
 		 * look for 3 non collinear points
 		 */
@@ -70,7 +73,7 @@ namespace algorithm {
 		if ( ! hasPlane3D( polygon, a, b, c) ){
 			BOOST_THROW_EXCEPTION(
 				Exception(
-					( boost::format("can't find plane for Polygon '%1%'") % polygon.asText() ).str()
+					( boost::format("can't find plane for Polygon '%1%'") % polygon.asText(3) ).str()
 				)
 			);
 		}

@@ -6,6 +6,7 @@
 #include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
+#include <SFCGAL/algorithm/collectionToMulti.h>
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>
 
@@ -232,7 +233,7 @@ namespace algorithm
 			// TODO: test for colinearity
 			// Temporary vertice may have been introduced during triangulations
 			// and since we expect here a planar surface, it is safe to simplify the boundary
-			// by eliminating colinear points.
+			// by eliminating collinear points.
 			if ( boundary.size() == 0 ) {
 				boundary.push_back( p1 );
 				boundary.push_back( p2 );
@@ -244,7 +245,7 @@ namespace algorithm
 				boundary.push_front( p1 );
 			}
 		}
-		if ( boundary.size() == 4 ) {
+		if ( boundary.size() == 3 ) {
 			// It is a triangle
 			
 			Point p[3];
@@ -279,6 +280,13 @@ namespace algorithm
 					pts[i++] = Point( hit->vertex()->point() );
 				} while ( ++hit != fit->facet_begin());
 				ret_geo->addTriangle( Triangle( pts[0], pts[1], pts[2] ));
+			}
+			// Build a triangle if only a triangle is needed
+			if ( ret_geo->numGeometries() == 1 )
+			{
+				Triangle tri( ret_geo->geometryN( 0 ) );
+				delete ret_geo;
+				return std::auto_ptr<Geometry>( new Triangle(tri) );
 			}
 			return std::auto_ptr<Geometry>( ret_geo );
 		}
@@ -401,7 +409,21 @@ namespace algorithm
 				// it's a segment
 				return std::auto_ptr<Geometry>(new LineString(lit[0], lit[1]));
 			}
-			BOOST_THROW_EXCEPTION( Exception( "Polylines with more than 2 points !" ));
+			else {
+#if 0
+				std::string msg;
+				for ( size_t k = 0; k < lit.size(); ++k ) {
+					msg += (boost::format( "(%f, %f, %f)" ) % lit[k].x() % lit[k].y() % lit[k].z()).str();
+				}
+				BOOST_THROW_EXCEPTION( Exception( "Polylines with more than 2 points !: " + msg ));
+#endif
+				LineString ring;
+				for ( size_t k = 0; k < lit.size(); ++k ) {
+					ring.addPoint( lit[k] );
+				}
+				ring.addPoint( lit[0] );
+				return std::auto_ptr<Geometry>( new Polygon(ring) );
+			}
 		}
 		// else it's a multipoint or a multilinestring
 		GeometryCollection* coll = new GeometryCollection();
@@ -501,14 +523,14 @@ namespace algorithm
 			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
 				ret->addGeometry(intersection3D( coll->geometryN( i ), gb).release());
 			}
-			return std::auto_ptr<Geometry>( ret );
+			return algorithm::collectionToMulti(std::auto_ptr<Geometry>( ret ));
 		}
 		if ( (coll = dynamic_cast<const GeometryCollection*>( &gb )) ) {
 			GeometryCollection *ret = new GeometryCollection();
 			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
 				ret->addGeometry(intersection3D( coll->geometryN( i ), ga).release());
 			}
-			return std::auto_ptr<Geometry>( ret );
+			return algorithm::collectionToMulti(std::auto_ptr<Geometry>( ret ));
 		}
 
 

@@ -157,5 +157,14 @@ void Polygon::accept( ConstGeometryVisitor & visitor ) const
 	return visitor.visit(*this);
 }
 
+///
+///
+///
+bool Polygon::isPointingUp() const
+{
+	CGAL::Polygon_2<Kernel> poly = toPolygon_2();
+	return poly.is_counterclockwise_oriented();
+}
+
 }//SFCGAL
 

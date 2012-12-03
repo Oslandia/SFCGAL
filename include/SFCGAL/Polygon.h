@@ -89,6 +89,11 @@ namespace SFCGAL {
 		virtual bool           is3D() const ;
 
 		/**
+		 * Check whether the 2D polygon is pointing up
+		 */
+		bool isPointingUp() const;
+
+		/**
 		 * reverse Polygon orientation
 		 */
 		void reverse() ;
