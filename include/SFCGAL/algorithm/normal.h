@@ -2,7 +2,6 @@
 #define _SFCGAL_ALGORITHM_NORMAL_H_
 
 #include <SFCGAL/Polygon.h>
-#include <SFCGAL/algorithm/plane.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -23,17 +22,31 @@ namespace algorithm {
 
 
 	/**
+	 * Returns the 3D normal to a ring (supposed to be planar and closed).
+	 */
+	template < typename Kernel >
+	CGAL::Vector_3< Kernel > normal3D( const LineString & ls )
+	{
+		// Newell's formula
+		CGAL::Vector_3< Kernel > normal;
+		for ( size_t i = 0; i < ls.numPoints(); ++i )
+		{
+			const Point& pi = ls.pointN(i);
+			const Point& pj = ls.pointN( (i+1) % ls.numPoints() );
+			normal[0] += ( pi.y() - pj.y() ) * ( pi.z() + pj.z() );
+			normal[1] += ( pi.z() - pj.z() ) * ( pi.x() + pj.x() );
+			normal[2] += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
+		}
+		return normal;
+	}
+
+	/**
 	 * Returns the 3D normal to a polygon (supposed to be planar).
-	 * @todo use plane
 	 */
 	template < typename Kernel >
 	CGAL::Vector_3< Kernel > normal3D( const Polygon & polygon )
 	{
-		CGAL::Point_3< Kernel > a, b, c ;
-		plane3D< Kernel >( polygon, a, b, c );
-
-		// ba ^ bc
-		return normal3D(a,b,c) ;
+		return normal3D< Kernel >( polygon.exteriorRing() );
 	}
 
 }//algorithm

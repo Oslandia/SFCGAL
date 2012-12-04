@@ -2,6 +2,7 @@
 #include <SFCGAL/GeometryVisitor.h>
 
 #include <SFCGAL/Triangle.h>
+#include <SFCGAL/algorithm/orientation.h>
 
 namespace SFCGAL {
 
@@ -160,10 +161,9 @@ void Polygon::accept( ConstGeometryVisitor & visitor ) const
 ///
 ///
 ///
-bool Polygon::isPointingUp() const
+bool Polygon::isCounterClockWiseOriented() const
 {
-	CGAL::Polygon_2<Kernel> poly = toPolygon_2();
-	return poly.is_counterclockwise_oriented();
+	return algorithm::isCounterClockWiseOriented( *this );
 }
 
 }//SFCGAL

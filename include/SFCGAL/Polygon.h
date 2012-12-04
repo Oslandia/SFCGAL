@@ -91,7 +91,7 @@ namespace SFCGAL {
 		/**
 		 * Check whether the 2D polygon is pointing up
 		 */
-		bool isPointingUp() const;
+		bool isCounterClockWiseOriented() const;
 
 		/**
 		 * reverse Polygon orientation

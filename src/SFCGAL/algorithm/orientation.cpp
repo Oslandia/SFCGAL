@@ -56,6 +56,41 @@ void makeConsistentOrientation3D( TriangulatedSurface & g )
 	g = builder.buildTriangulatedSurface() ;
 }
 
+///
+///
+///
+bool isCounterClockWiseOriented( const LineString& ls )
+{
+	// Compute the 'z' part of the Newell's formula
+	// and test against 0
+	double z = 0.0;
+	for ( size_t i = 0; i < ls.numPoints(); ++i )
+	{
+		const Point& pi = ls.pointN(i);
+		const Point& pj = ls.pointN( (i+1) % ls.numPoints() );
+		z += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
+	}
+	return z > 0;
+}
+
+///
+///
+///
+bool isCounterClockWiseOriented( const Triangle& tri )
+{
+	// Compute the 'z' part of the cross product
+
+	return (tri.vertex(2).x() - tri.vertex(1).x()) * (tri.vertex(0).y() - tri.vertex(1).y()) -
+		(tri.vertex(2).y() - tri.vertex(1).y()) * (tri.vertex(0).x() - tri.vertex(1).x()) > 0;
+}
+
+///
+///
+///
+bool isCounterClockWiseOriented( const Polygon& poly )
+{
+	return isCounterClockWiseOriented( poly.exteriorRing() );
+}
 
 }//algorithm
 }//SFCGAL

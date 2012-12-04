@@ -95,7 +95,13 @@ namespace detail {
 //		std::cout << "#" << g.asText(1) << std::endl;
 
 		CGAL::Point_3< Kernel > a, b, c ;
-		algorithm::plane3D< Kernel >( g, a, b, c );
+//		algorithm::plane3D< Kernel >( g, a, b, c );
+
+		CGAL::Plane_3< Kernel > plane = algorithm::plane3D< Kernel >( g );
+		a = plane.point();
+		b = plane.point() + plane.base1();
+		c = plane.point() + plane.base2();
+		// No need to compute a new basis anymore ?
 
 		/*
 		 * compute polygon base

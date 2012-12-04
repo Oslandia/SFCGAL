@@ -7,6 +7,7 @@
 
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/Polygon.h>
+#include <SFCGAL/algorithm/normal.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -80,19 +81,14 @@ namespace algorithm {
 	}
 
 	/**
-	 * Returns the 3D normal to a polygon (supposed to be planar).
+	 * Returns the 3D plane of a polygon (supposed to be planar).
 	 */
 	template < typename Kernel >
 	CGAL::Plane_3< Kernel > plane3D( const Polygon & polygon )
 	{
-		typedef CGAL::Point_3< Kernel > Point_3 ;
-
-		/*
-		 * look for 3 non collinear points
-		 */
-		Point_3 a,b,c;
-		plane3D(polygon,a,b,c);
-		return CGAL::Plane_3< Kernel >(a,b,c) ;
+		CGAL::Vector_3< Kernel > normal = normal3D< Kernel >( polygon );
+		return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN(0).toPoint_3(),
+						normal );
 	}
 
 

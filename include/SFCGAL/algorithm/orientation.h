@@ -20,6 +20,21 @@ namespace algorithm {
 	 */
 	void makeConsistentOrientation3D( TriangulatedSurface & g ) ;
 
+	/**
+	 * Test if a 2D surface is oriented counter clockwise
+	 */
+	bool isCounterClockWiseOriented( const Polygon& );
+
+	/**
+	 * Test if a 2D surface is oriented counter clockwise
+	 */
+	bool isCounterClockWiseOriented( const Triangle& );
+
+	/**
+	 * Test if a 2D surface is oriented counter clockwise
+	 */
+	bool isCounterClockWiseOriented( const LineString& );
+
 }//algorithm
 }//SFCGAL
 
