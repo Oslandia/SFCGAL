@@ -35,7 +35,7 @@ typedef CGAL::Triangle_3< SFCGAL::Kernel >       Triangle_3;
 typedef CGAL::Polyhedron_3< SFCGAL::Kernel >     Polyhedron;
 typedef CGAL::Nef_polyhedron_3< SFCGAL::Kernel > Nef_polyhedron;
 
-#define CACHE_TRIANGULATION
+//#define CACHE_TRIANGULATION
 
 typedef std::vector<Segment_3> Segments;
 typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, Segments::const_iterator> SegmentBox;
@@ -62,7 +62,7 @@ namespace algorithm
 	
 	static bool intersects3D_( const Point& pa, const Point& pb )
 	{
-		return pa == pb;
+		return pa.toPoint_3() == pb.toPoint_3();
 	}
 
 	static bool intersects3D_( const Point& pta, const Triangle& tri )

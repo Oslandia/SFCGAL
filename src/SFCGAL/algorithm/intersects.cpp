@@ -39,7 +39,7 @@ namespace algorithm
 {
 	bool intersects_( const Point& pa, const Point& pb )
 	{
-		return pa == pb;
+		return pa.x() == pb.x() && pa.y() == pb.y();
 	}
 
 	bool intersects_( const Point& pta, const LineString& ls )

@@ -96,9 +96,10 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
 		if ( distanceDimension == "2" ){
-			BOOST_CHECK_MESSAGE( algorithm::intersects(*gA,*gB) == expected, "intersects(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+			BOOST_CHECK_MESSAGE( algorithm::intersects(*gA,*gB) == expected, numLine << ": intersects(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
 		}else if ( distanceDimension == "3" ){
-			BOOST_CHECK_MESSAGE( algorithm::intersects3D(*gA,*gB) == expected, "intersects3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+			bool got = algorithm::intersects3D(*gA,*gB);
+			BOOST_CHECK_MESSAGE( got == expected, numLine << ": intersects3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
 		}else{
 			BOOST_CHECK(false);
 		}

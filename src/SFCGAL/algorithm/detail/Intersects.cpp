@@ -58,12 +58,18 @@ namespace detail {
 				ymin = segment.end_point->y();
 				ymax = segment.start_point->y();
 			}
-			if ( segment.start_point->z() < segment.end_point->z() ) {
-				zmin = segment.start_point->z();
-				zmax = segment.end_point->z();
-			} else {
-				zmin = segment.end_point->z();
-				zmax = segment.start_point->z();
+			if ( !segment.start_point->is3D() ) {
+				zmin = 0.0;
+				zmax = 0.0;
+			}
+			else {
+				if ( segment.start_point->z() < segment.end_point->z() ) {
+					zmin = segment.start_point->z();
+					zmax = segment.end_point->z();
+				} else {
+					zmin = segment.end_point->z();
+					zmax = segment.start_point->z();
+				}
 			}
 			return CGAL::Bbox_3( xmin, ymin, zmin, xmax, ymax, zmax );
 		}

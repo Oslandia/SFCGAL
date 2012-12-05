@@ -112,12 +112,16 @@ namespace SFCGAL {
 		 * Convenience function. Convert to CGAL::BBox_3
 		 */
 		inline CGAL::Bbox_3 toBbox_3() const {
-			BOOST_ASSERT( is3D() );
-
+			if ( is3D() ) {
+				return CGAL::Bbox_3(
+						    _bounds[0].lower(), _bounds[1].lower(), _bounds[2].lower(),
+						    _bounds[0].upper(), _bounds[1].upper(), _bounds[2].upper()
+						    );
+			}
 			return CGAL::Bbox_3(
-					_bounds[0].lower(), _bounds[1].lower(), _bounds[2].lower(),
-					_bounds[0].upper(), _bounds[1].upper(), _bounds[2].upper()
-			);
+					    _bounds[0].lower(), _bounds[1].lower(), 0.0,
+					    _bounds[0].upper(), _bounds[1].upper(), 0.0
+					    );
 		}
 
 
