@@ -64,7 +64,7 @@ bool isCounterClockWiseOriented( const LineString& ls )
 	// Compute the 'z' part of the Newell's formula
 	// and test against 0
 	double z = 0.0;
-	for ( size_t i = 0; i < ls.numPoints(); ++i )
+	for ( size_t i = 0; i < ls.numPoints() - 1; ++i )
 	{
 		const Point& pi = ls.pointN(i);
 		const Point& pj = ls.pointN( (i+1) % ls.numPoints() );

@@ -36,21 +36,21 @@ BOOST_AUTO_TEST_CASE( testArea3D_Square1x1 )
 {
 	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 1.0,0.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 0.0))" ) );
 	BOOST_CHECK_EQUAL( g->asText(1), "POLYGON((0.0 0.0 0.0,0.0 0.0 1.0,0.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 0.0))" );
-	BOOST_CHECK_EQUAL( algorithm::area3D( *g ), 1.0 );
+	BOOST_CHECK_CLOSE( algorithm::area3D( *g ), 1.0, 1e-10 );
 }
 
 BOOST_AUTO_TEST_CASE( testArea3D_Square4X4 )
 {
 	std::string wkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 4.0,0.0 4.0 4.0,0.0 4.0 0.0,0.0 0.0 0.0))" );
 	std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
-	BOOST_CHECK_EQUAL( algorithm::area3D( *g ), 16.0 );
+	BOOST_CHECK_CLOSE( algorithm::area3D( *g ), 16.0, 1e-10 );
 }
 
 BOOST_AUTO_TEST_CASE( testArea3D_Square4X4WithHole )
 {
 	std::string wkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 4.0,0.0 4.0 4.0,0.0 4.0 0.0,0.0 0.0 0.0),(0.0 2.0 2.0,0.0 2.0 3.0,0.0 3.0 3.0,0.0 3.0 2.0,0.0 2.0 2.0))" );
 	std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
-	BOOST_CHECK_EQUAL( algorithm::area3D( *g ), 15.0 );
+	BOOST_CHECK_CLOSE( algorithm::area3D( *g ), 15.0, 1e-10 );
 }
 
 

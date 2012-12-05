@@ -41,6 +41,17 @@ Geometry*    WktReader::readGeometry()
 		return g.release() ;
 	}
 	case TYPE_TRIANGLE:
+	{
+		std::auto_ptr< Triangle > g( new Triangle() );
+		if ( ! _reader.match('(') ){
+			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+		}
+		readInnerTriangle( *g );
+		if ( ! _reader.match(')') ){
+			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+		}
+		return g.release() ;
+	}
 	case TYPE_POLYGON:
 	{
 		std::auto_ptr< Polygon > g( new Polygon() );

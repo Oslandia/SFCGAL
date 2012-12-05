@@ -25,8 +25,38 @@ BOOST_AUTO_TEST_CASE( testNormal1 )
 	BOOST_CHECK_EQUAL( normal.z(), 1.0 );
 }
 
+BOOST_AUTO_TEST_CASE( testNormal2 )
+{
+	// a square ccw
+	std::auto_ptr<Geometry> gA( io::readWkt("POLYGON((0 0,1 0,1 1,0 1,0 0))") );
+	// a square cw oriented
+	std::auto_ptr<Geometry> gB( io::readWkt("POLYGON((0 0,0 1,1 1,1 0,0 0))") );
 
+	// a pseudo-square ccw oriented, with a concave part
+	std::auto_ptr<Geometry> gC( io::readWkt("POLYGON((0 0,0.5 0.5,1 0,1 1,0 1,0 0))") );
 
+	{
+		CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>() );
+		BOOST_CHECK_EQUAL( normal.x(), 0.0 );
+		BOOST_CHECK_EQUAL( normal.y(), 0.0 );
+		BOOST_CHECK_EQUAL( normal.z(), 2.0 );
+	}
+
+	{
+		CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gB->as<Polygon>() );
+		BOOST_CHECK_EQUAL( normal.x(), 0.0 );
+		BOOST_CHECK_EQUAL( normal.y(), 0.0 );
+		BOOST_CHECK_EQUAL( normal.z(), -2.0 );
+	}
+
+	{
+		CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gC->as<Polygon>() );
+		BOOST_CHECK_EQUAL( normal.x(), 0.0 );
+		BOOST_CHECK_EQUAL( normal.y(), 0.0 );
+		// ok, the normal is pointing up (z > 0)
+		BOOST_CHECK_EQUAL( normal.z(), 1.5 );
+	}
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -28,16 +28,19 @@ namespace algorithm {
 	CGAL::Vector_3< Kernel > normal3D( const LineString & ls )
 	{
 		// Newell's formula
-		CGAL::Vector_3< Kernel > normal;
-		for ( size_t i = 0; i < ls.numPoints(); ++i )
+		typename Kernel::FT nx, ny, nz;
+		nx = ny = nz = 0.0;
+		for ( size_t i = 0; i < ls.numPoints() - 1; ++i )
 		{
 			const Point& pi = ls.pointN(i);
 			const Point& pj = ls.pointN( (i+1) % ls.numPoints() );
-			normal[0] += ( pi.y() - pj.y() ) * ( pi.z() + pj.z() );
-			normal[1] += ( pi.z() - pj.z() ) * ( pi.x() + pj.x() );
-			normal[2] += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
+			typename Kernel::FT zi = pi.is3D() ? pi.z() : 0.0;
+			typename Kernel::FT zj = pj.is3D() ? pj.z() : 0.0;
+			nx += ( pi.y() - pj.y() ) * ( zi + zj );
+			ny += ( zi - zj ) * ( pi.x() + pj.x() );
+			nz += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
 		}
-		return normal;
+		return CGAL::Vector_3<Kernel>( nx, ny, nz );
 	}
 
 	/**

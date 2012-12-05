@@ -44,12 +44,10 @@ void ForceZOrderPoints::visit( Triangle & t )
 
 void ForceZOrderPoints::visit( Polygon& p )
 {
-	std::cout << "p.is3D(): " << p.is3D() << std::endl;
 	if ( ! p.is3D() ) {
 		LineString& ext = p.exteriorRing();
 		if ( ! algorithm::isCounterClockWiseOriented( p.exteriorRing() ) ) {
 			// exterior ring not pointing up, reverse
-			std::cout << "reverse" << std::endl;
 			ext.reverse();
 		}
 		for ( size_t i = 0; i < p.numInteriorRings(); ++i ) {
