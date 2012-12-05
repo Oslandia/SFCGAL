@@ -13,7 +13,7 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * Test if a 3D plane can be exatracted from a Polygon
+	 * Test if a 3D plane can be extracted from a Polygon
 	 */
 	template < typename Kernel >
 	bool hasPlane3D( const Polygon& polygon,
@@ -25,9 +25,6 @@ namespace algorithm {
 
 		const LineString & exteriorRing = polygon.exteriorRing() ;
 
-		// FIXME: if the input polygon is not convex and first points are of concave shape,
-		// the resulting plane will be upside-down !
-		// Must only consider extreme points
 		/*
 		 * look for 3 non collinear points
 		 */
@@ -50,7 +47,7 @@ namespace algorithm {
 	}
 
 	/**
-	 * Test if a 3D plane can be exatracted from a Polygon
+	 * Test if a 3D plane can be extracted from a Polygon
 	 */
 	template < typename Kernel >
 	bool hasPlane3D( const Polygon& polygon )
@@ -81,7 +78,7 @@ namespace algorithm {
 	}
 
 	/**
-	 * Returns the 3D plane of a polygon (supposed to be planar).
+	 * Returns the oriented 3D plane of a polygon (supposed to be planar).
 	 */
 	template < typename Kernel >
 	CGAL::Plane_3< Kernel > plane3D( const Polygon & polygon )
