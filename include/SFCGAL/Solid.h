@@ -156,6 +156,9 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 	private:
+		/**
+		 * @todo ptr_vector
+		 */
 		std::vector< PolyhedralSurface > _shells ;
 	};
 
