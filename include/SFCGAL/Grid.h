@@ -8,6 +8,8 @@ namespace SFCGAL {
 
 	/**
 	 *
+	 * [EXPERIMENTAL]
+	 *
 	 * Represents a surface where points are located on a grid. The boundary of the grid is provided by an Envelope.
 	 *
 	 * Points may have no value represented by NaN.
