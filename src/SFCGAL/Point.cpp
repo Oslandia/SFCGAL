@@ -176,7 +176,7 @@ struct do_toPoint_d<3>
 };
 
 template <int Dim>
-typename TypeForKernel<Dim>::Point Point::toPoint_d() const
+typename TypeForDimension<Dim>::Point Point::toPoint_d() const
 {
     return do_toPoint_d<Dim>::toPoint( this );
 }

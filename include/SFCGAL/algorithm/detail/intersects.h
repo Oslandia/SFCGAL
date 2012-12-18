@@ -6,7 +6,7 @@
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/DimensionTraits.h>
+#include <SFCGAL/TypeForDimension.h>
 
 namespace SFCGAL {
 namespace algorithm {

@@ -4,7 +4,7 @@
 #include <SFCGAL/Coordinate.h>
 
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/DimensionTraits.h>
+#include <SFCGAL/TypeForDimension.h>
 
 namespace SFCGAL {
 
@@ -165,7 +165,7 @@ namespace SFCGAL {
 		 * @todo remove template parameter
 		 */
 		template <int D>
-		typename TypeForKernel<D>::Point toPoint_d() const;
+		typename TypeForDimension<D>::Point toPoint_d() const;
 
 		inline Coordinate &       coordinate() { return _coordinate; }
 		inline const Coordinate & coordinate() const { return _coordinate; }

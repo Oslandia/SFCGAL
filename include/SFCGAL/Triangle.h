@@ -5,7 +5,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
-#include <SFCGAL/DimensionTraits.h>
+#include <SFCGAL/TypeForDimension.h>
 
 #include <CGAL/Triangle_2.h>
 #include <CGAL/Triangle_3.h>
@@ -104,9 +104,9 @@ namespace SFCGAL {
 		 * Convert to CGAL::Triangle_2 or CGAL::Triangle_2
 		 */
 		template < int D >
-		inline typename TypeForKernel<D>::Triangle toTriangle_d() const
+		inline typename TypeForDimension<D>::Triangle toTriangle_d() const
 		{
-		    return typename TypeForKernel<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
+		    return typename TypeForDimension<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
 		}
 
 		//-- visitors

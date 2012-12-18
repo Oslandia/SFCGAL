@@ -158,9 +158,9 @@ namespace detail {
 	template <int Dim>
 	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
-		typedef typename TypeForKernel<Dim>::Point Point_d;
-		typedef typename TypeForKernel<Dim>::Segment Segment_d;
-		typedef typename TypeForKernel<Dim>::Triangle Triangle_d;
+		typedef typename TypeForDimension<Dim>::Point Point_d;
+		typedef typename TypeForDimension<Dim>::Segment Segment_d;
+		typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
 		if ( a.handle()->type == ObjectHandle::Point ) {
 			if ( b.handle()->type == ObjectHandle::Triangle ) {
 				Point_d point = a.handle()->point->template toPoint_d<Dim>();
@@ -225,9 +225,9 @@ namespace detail {
 	template <int Dim>
 	void intersection_cb<Dim>::operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
 	{
-		typedef typename TypeForKernel<Dim>::Point Point_d;
-		typedef typename TypeForKernel<Dim>::Segment Segment_d;
-		typedef typename TypeForKernel<Dim>::Triangle Triangle_d;
+		typedef typename TypeForDimension<Dim>::Point Point_d;
+		typedef typename TypeForDimension<Dim>::Segment Segment_d;
+		typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
 		
 		if ( a.handle()->type == ObjectHandle::Segment ) {
 			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
