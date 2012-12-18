@@ -35,15 +35,15 @@ namespace detail {
 	/**
 	 * X accessor, NaN if not defined
 	 */
-	double x( const CoordinateStorage & coordinateStorage ) ;
+	Kernel::FT x( const CoordinateStorage & coordinateStorage ) ;
 	/**
 	 * Y accessor, NaN if not defined
 	 */
-	double y( const CoordinateStorage & coordinateStorage ) ;
+	Kernel::FT y( const CoordinateStorage & coordinateStorage ) ;
 	/**
 	 * Z accessor, NaN if not defined
 	 */
-	double z( const CoordinateStorage & coordinateStorage ) ;
+	Kernel::FT z( const CoordinateStorage & coordinateStorage ) ;
 
 	/**
 	 * Convert coordinate storage to Point_2

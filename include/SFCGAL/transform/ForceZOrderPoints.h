@@ -1,6 +1,7 @@
 #ifndef _SFCGAL_TRANSFORM_FORCEZ_ORDER_POINTS_H_
 #define _SFCGAL_TRANSFORM_FORCEZ_ORDER_POINTS_H_
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
 namespace SFCGAL {
@@ -15,7 +16,7 @@ namespace transform {
 		/**
 		 * Constructor with a default Z value
 		 */
-		ForceZOrderPoints( const double & defaultZ = 0.0 ) ;
+		ForceZOrderPoints( const Kernel::FT & defaultZ = 0 ) ;
 
 		/*
 		 * [SFCGAL::Transform]
@@ -26,7 +27,7 @@ namespace transform {
 		virtual void visit( Polygon& );
 
 	private:
-		double _defaultZ ;
+		Kernel::FT _defaultZ ;
 	};
 
 

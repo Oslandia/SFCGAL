@@ -163,9 +163,9 @@ osg::Geometry* OsgFactory::createGeometry( const Geometry & g )
 osg::Vec3 OsgFactory::createVec3( const Point & g ) const
 {
 	return osg::Vec3(
-		isNaN( g.x() ) ? 0.0 : g.x() ,
-		isNaN( g.y() ) ? 0.0 : g.y() ,
-		isNaN( g.z() ) ? 0.0 : g.z()
+		CGAL::to_double( g.x() ),
+		CGAL::to_double( g.y() ),
+		CGAL::to_double( g.z() )
 	) ;
 }
 

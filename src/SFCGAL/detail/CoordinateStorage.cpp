@@ -45,42 +45,42 @@ public:
 };
 
 
-struct GetXVisitor : public boost::static_visitor< double > {
+struct GetXVisitor : public boost::static_visitor< Kernel::FT > {
 public:
-	double operator() ( const Empty & coordinateStorage ) const {
-		return NaN();
+	Kernel::FT operator() ( const Empty & coordinateStorage ) const {
+		return 0 ;
 	}
-	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
-		return CGAL::to_double( coordinateStorage.x() );
+	Kernel::FT operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return coordinateStorage.x() ;
 	}
-	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
-		return CGAL::to_double( coordinateStorage.x() );
+	Kernel::FT operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return coordinateStorage.x() ;
 	}
 };
 
-struct GetYVisitor : public boost::static_visitor< double > {
+struct GetYVisitor : public boost::static_visitor< Kernel::FT > {
 public:
-	double operator() ( const Empty & coordinateStorage ) const {
-		return NaN();
+	Kernel::FT operator() ( const Empty & coordinateStorage ) const {
+		return 0 ;
 	}
-	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
-		return CGAL::to_double( coordinateStorage.y() );
+	Kernel::FT operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return coordinateStorage.y() ;
 	}
-	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
-		return CGAL::to_double( coordinateStorage.y() );
+	Kernel::FT operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return coordinateStorage.y() ;
 	}
 };
 
-struct GetZVisitor : public boost::static_visitor< double > {
+struct GetZVisitor : public boost::static_visitor< Kernel::FT > {
 public:
-	double operator() ( const Empty & coordinateStorage ) const {
-		return NaN();
+	Kernel::FT operator() ( const Empty & coordinateStorage ) const {
+		return 0 ;
 	}
-	double operator() ( const Kernel::Point_2 & coordinateStorage ) const {
-		return NaN();
+	Kernel::FT operator() ( const Kernel::Point_2 & coordinateStorage ) const {
+		return 0 ;
 	}
-	double operator() ( const Kernel::Point_3 & coordinateStorage ) const {
-		return CGAL::to_double( coordinateStorage.z() );
+	Kernel::FT operator() ( const Kernel::Point_3 & coordinateStorage ) const {
+		return coordinateStorage.z() ;
 	}
 };
 
@@ -103,7 +103,7 @@ bool is3D( const CoordinateStorage & coordinateStorage )
 ///
 ///
 ///
-double x( const CoordinateStorage & coordinateStorage )
+Kernel::FT x( const CoordinateStorage & coordinateStorage )
 {
 	GetXVisitor visitor ;
 	return boost::apply_visitor( visitor, coordinateStorage );
@@ -112,7 +112,7 @@ double x( const CoordinateStorage & coordinateStorage )
 ///
 ///
 ///
-double y( const CoordinateStorage & coordinateStorage )
+Kernel::FT y( const CoordinateStorage & coordinateStorage )
 {
 	GetYVisitor visitor ;
 	return boost::apply_visitor( visitor, coordinateStorage );
@@ -121,7 +121,7 @@ double y( const CoordinateStorage & coordinateStorage )
 ///
 ///
 ///
-double z( const CoordinateStorage & coordinateStorage )
+Kernel::FT z( const CoordinateStorage & coordinateStorage )
 {
 	GetZVisitor visitor ;
 	return boost::apply_visitor( visitor, coordinateStorage );

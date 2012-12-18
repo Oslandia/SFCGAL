@@ -16,6 +16,25 @@ Coordinate::Coordinate():
 ///
 ///
 ///
+Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y ):
+	_xyz( Kernel::Point_2( x, y ) )
+{
+
+}
+
+///
+///
+///
+Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
+	_xyz( Kernel::Point_3( x, y, z ) )
+{
+
+}
+
+
+///
+///
+///
 Coordinate::Coordinate( const double & x, const double & y, const double & z )
 {
 	if ( isNaN(x) || isNaN(y) ){

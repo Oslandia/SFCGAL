@@ -31,6 +31,14 @@ namespace SFCGAL {
 		 */
 		Point( const Coordinate & coordinate ) ;
 		/**
+		 * XY Constructor with exact coordinates
+		 */
+		Point( const Kernel::FT & x, const Kernel::FT & y ) ;
+		/**
+		 * XY Constructor with exact coordinates
+		 */
+		Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
+		/**
 		 * XY[Z] constructor
 		 */
 		Point( const double & x, const double & y, const double & z = NaN() ) ;
@@ -90,15 +98,15 @@ namespace SFCGAL {
 		/**
 		 * Returns the x value as a double (NaN for empty Point)
 		 */
-		inline double x() const { return _coordinate.x() ; }
+		inline Kernel::RT x() const { return _coordinate.x() ; }
 		/**
 		 * Returns the y value as a double (NaN for empty Point)
 		 */
-		inline double y() const { return _coordinate.y() ; }
+		inline Kernel::RT y() const { return _coordinate.y() ; }
 		/**
 		 * Returns the z value as a double (NaN for empty or 2d Point)
 		 */
-		inline double z() const { return _coordinate.z() ; }
+		inline Kernel::RT z() const { return _coordinate.z() ; }
 
 
 		/**

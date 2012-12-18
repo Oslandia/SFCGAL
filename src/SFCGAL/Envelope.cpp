@@ -107,9 +107,13 @@ bool Envelope::is3D() const
 ///
 void Envelope::expandToInclude( const Coordinate & coordinate )
 {
-	_bounds[0].expandToInclude( coordinate.x() );
-	_bounds[1].expandToInclude( coordinate.y() );
-	_bounds[2].expandToInclude( coordinate.z() );
+	if ( ! coordinate.isEmpty() ){
+		_bounds[0].expandToInclude( CGAL::to_double( coordinate.x() ) );
+		_bounds[1].expandToInclude( CGAL::to_double( coordinate.y() ) );
+	}
+	if ( coordinate.is3D() ){
+		_bounds[2].expandToInclude( CGAL::to_double( coordinate.z() ) );
+	}
 }
 
 ///

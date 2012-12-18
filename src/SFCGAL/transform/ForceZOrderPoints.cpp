@@ -10,7 +10,7 @@ namespace transform {
 ///
 ///
 ///
-ForceZOrderPoints::ForceZOrderPoints( const double & defaultZ ):
+ForceZOrderPoints::ForceZOrderPoints( const Kernel::FT & defaultZ ):
 	_defaultZ(defaultZ)
 {
 

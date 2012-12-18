@@ -27,6 +27,24 @@ Point::Point( const Coordinate & coordinate ):
 ///
 ///
 ///
+Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
+	_coordinate(x,y)
+{
+
+}
+
+///
+///
+///
+Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
+	_coordinate(x,y,z)
+{
+
+}
+
+///
+///
+///
 Point::Point( const double & x, const double & y, const double & z ):
 	Geometry(),
 	_coordinate(x,y,z)

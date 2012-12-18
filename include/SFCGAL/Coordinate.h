@@ -20,6 +20,14 @@ namespace SFCGAL {
 		 */
 		Coordinate() ;
 		/**
+		 * XY Constructor with exact coordinates
+		 */
+		Coordinate( const Kernel::FT & x, const Kernel::FT & y ) ;
+		/**
+		 * XYZ Constructor with exact coordinates
+		 */
+		Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
+		/**
 		 * XY[Z] constructor
 		 * @warning x,y,z may be NaN
 		 */
@@ -71,15 +79,15 @@ namespace SFCGAL {
 		/**
 		 * Returns the x value as a double (NaN for empty coordinates)
 		 */
-		inline double x() const { return detail::x(_xyz) ; }
+		inline Kernel::FT x() const { return detail::x(_xyz) ; }
 		/**
 		 * Returns the y value as a double (NaN for empty coordinates)
 		 */
-		inline double y() const { return detail::y(_xyz) ; }
+		inline Kernel::FT y() const { return detail::y(_xyz) ; }
 		/**
 		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
 		 */
-		inline double z() const { return detail::z(_xyz) ; }
+		inline Kernel::FT z() const { return detail::z(_xyz) ; }
 
 
 		/**
