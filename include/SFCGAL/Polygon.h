@@ -163,18 +163,6 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Rings (both interior and exterior) accessors
-		 * @todo expose only the exterior subset, through iterators ?
-		 * @done could lead to memory leaks since std::vector< LineString > has been changed to std::vector< LineString* >
-		const std::vector< LineString > & rings() const {
-			return _rings;
-		}
-		std::vector< LineString > &       rings() {
-			return _rings;
-		}
-		*/
-
-		/**
 		 * append a ring to the Polygon
 		 */
 		inline void            addRing( const LineString & ls ) {

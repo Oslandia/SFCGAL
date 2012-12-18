@@ -121,8 +121,6 @@ namespace SFCGAL {
 			return tri.toPolyhedron_3<K, Polyhedron>();
 		}
 
-		//const std::vector< Polygon > & polygons() const { return _polygons; }
-		//std::vector< Polygon > &       polygons() { return _polygons; }
 
 		//-- iterators
 
