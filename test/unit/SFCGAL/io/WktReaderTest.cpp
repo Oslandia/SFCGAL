@@ -51,6 +51,15 @@ BOOST_AUTO_TEST_CASE( lineString_twoPoints )
 	BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
 }
 
+BOOST_AUTO_TEST_CASE( lineString_twoPoints3D )
+{
+	std::auto_ptr< Geometry > g( readWkt("LINESTRING(0.0 0.0 0.0,1.0 1.0 1.0)") );
+	BOOST_CHECK( g->is< LineString >() );
+	BOOST_CHECK( ! g->isEmpty() );
+	BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
+	BOOST_CHECK( g->as< LineString >().pointN(0).is3D() );
+	BOOST_CHECK( g->as< LineString >().pointN(1).is3D() );
+}
 
 //-- WKT POLYGON
 

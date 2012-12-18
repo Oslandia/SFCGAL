@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( asText3d )
 	BOOST_CHECK_EQUAL( g.asText(3), "POINT(2.000 3.000 4.000)" );
 }
 
-//-- isText
+//-- isPoint
 
 BOOST_AUTO_TEST_CASE( isPoint )
 {

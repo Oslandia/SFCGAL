@@ -2,6 +2,7 @@
 #define _SFCGAL_COORDINATE_H_
 
 #include <boost/assert.hpp>
+#include <boost/array.hpp>
 
 #include <SFCGAL/numeric.h>
 
@@ -38,7 +39,10 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_2< K > & other ):
-			_xyz(other)
+			_dimension(2),
+			_x(other.x()),
+			_y(other.y()),
+			_z(0)
 		{
 
 		}
@@ -48,7 +52,10 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_3< K > & other ):
-			_xyz(other)
+			_dimension(3),
+			_x(other.x()),
+			_y(other.y()),
+			_z(other.z())
 		{
 
 		}
@@ -79,15 +86,15 @@ namespace SFCGAL {
 		/**
 		 * Returns the x value as a double (NaN for empty coordinates)
 		 */
-		inline Kernel::FT x() const { return detail::x(_xyz) ; }
+		inline Kernel::FT x() const { return _x ; }
 		/**
 		 * Returns the y value as a double (NaN for empty coordinates)
 		 */
-		inline Kernel::FT y() const { return detail::y(_xyz) ; }
+		inline Kernel::FT y() const { return _y ; }
 		/**
 		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
 		 */
-		inline Kernel::FT z() const { return detail::z(_xyz) ; }
+		inline Kernel::FT z() const { return _z ; }
 
 
 		/**
@@ -110,7 +117,7 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Vector_2 toVector_2() const
 		{
-			return detail::toVector_2( _xyz );
+			return Kernel::Vector_2( _x, _y );
 		}
 
 		/**
@@ -119,7 +126,7 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Vector_3 toVector_3() const
 		{
-			return detail::toVector_3( _xyz );
+			return Kernel::Vector_3( _x, _y, _z );
 		}
 
 		/**
@@ -128,7 +135,7 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Point_2 toPoint_2() const
 		{
-			return detail::toPoint_2( _xyz );
+			return Kernel::Point_2( _x, _y );
 		}
 
 		/**
@@ -137,11 +144,15 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Point_3 toPoint_3() const
 		{
-			return detail::toPoint_3( _xyz );
+			return Kernel::Point_3( _x, _y, _z );
 		}
 
 	private:
-		detail::CoordinateStorage _xyz ;
+		size_t     _dimension ;
+		Kernel::FT _x ;
+		Kernel::FT _y ;
+		Kernel::FT _z ;
+
 		//double _m
 	};
 

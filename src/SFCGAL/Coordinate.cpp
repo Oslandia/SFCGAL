@@ -9,7 +9,10 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-	_xyz()
+	_dimension(0),
+	_x(0),
+	_y(0),
+	_z(0)
 {
 }
 
@@ -17,7 +20,10 @@ Coordinate::Coordinate():
 ///
 ///
 Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y ):
-	_xyz( Kernel::Point_2( x, y ) )
+	_dimension(2),
+	_x(x),
+	_y(y),
+	_z(0)
 {
 
 }
@@ -26,7 +32,10 @@ Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y ):
 ///
 ///
 Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
-	_xyz( Kernel::Point_3( x, y, z ) )
+	_dimension(3),
+	_x(x),
+	_y(y),
+	_z(z)
 {
 
 }
@@ -39,12 +48,17 @@ Coordinate::Coordinate( const double & x, const double & y, const double & z )
 {
 	if ( isNaN(x) || isNaN(y) ){
 		BOOST_ASSERT( isNaN(x) && isNaN(y) );
-		_xyz = detail::Empty() ;
 	}else{
 		if ( isNaN(z) ){
-			_xyz = Kernel::Point_2( x, y ) ;
+			_dimension = 2 ;
+			_x = x ;
+			_y = y ;
+			_z = 0 ;
 		}else{
-			_xyz = Kernel::Point_3( x, y, z ) ;
+			_dimension = 3 ;
+			_x = x ;
+			_y = y ;
+			_z = z ;
 		}
 	}
 }
@@ -54,7 +68,10 @@ Coordinate::Coordinate( const double & x, const double & y, const double & z )
 ///
 ///
 Coordinate::Coordinate( const Coordinate & other ):
-	_xyz(other._xyz)
+	_dimension(other._dimension),
+	_x(other._x),
+	_y(other._y),
+	_z(other._z)
 {
 
 }
@@ -64,7 +81,10 @@ Coordinate::Coordinate( const Coordinate & other ):
 ///
 Coordinate& Coordinate::operator = ( const Coordinate & other )
 {
-	_xyz = other._xyz ;
+	_dimension = other._dimension ;
+	_x = other._x ;
+	_y = other._y ;
+	_z = other._z ;
 	return *this ;
 }
 
@@ -82,11 +102,7 @@ Coordinate::~Coordinate()
 ///
 int Coordinate::coordinateDimension() const
 {
-	if ( isEmpty() ){
-		return 0 ;
-	}else {
-		return is3D() ? 3 : 2 ;
-	}
+	return _dimension ;
 }
 
 
@@ -95,7 +111,7 @@ int Coordinate::coordinateDimension() const
 ///
 bool Coordinate::isEmpty() const
 {
-	return detail::isEmpty( _xyz );
+	return _dimension == 0 ;
 }
 
 ///
@@ -103,7 +119,7 @@ bool Coordinate::isEmpty() const
 ///
 bool Coordinate::is3D() const
 {
-	return detail::is3D( _xyz );
+	return _dimension > 2 ;
 }
 
 ///

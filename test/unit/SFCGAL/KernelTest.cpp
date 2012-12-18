@@ -22,6 +22,36 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_KernelTest )
 
 
 /**
+ * 1 - 1/3 - 1/3 - 1/3 = 0
+ */
+BOOST_AUTO_TEST_CASE( testRobustArithmetric )
+{
+	Kernel::FT v = 1 ;
+	v -= Kernel::FT(1) / Kernel::FT(3) ;
+	v -= Kernel::FT(1) / Kernel::FT(3) ;
+	v -= Kernel::FT(1) / Kernel::FT(3) ;
+	BOOST_CHECK_EQUAL(v,0);
+}
+
+/**
+ * Serialize/Deserialize 1/3
+ * @todo check with hugo's code
+ */
+BOOST_AUTO_TEST_CASE( testSerializeDeserialize )
+{
+	Kernel::FT a = 1 ;
+	a /= 3 ;
+
+	std::ostringstream oss ;
+	oss << CGAL::exact(a) ;
+
+	Kernel::FT b( oss.str() );
+	BOOST_CHECK_EQUAL( a, b ) ;
+}
+
+
+
+/**
  * 3 lines intersecting on POINT(1/3 1)
  */
 BOOST_AUTO_TEST_CASE( testIntersectsRobutness )
