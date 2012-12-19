@@ -18,7 +18,7 @@ namespace algorithm {
 ///
 ///
 ///
-std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, double dz )
+std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	SFCGAL_INFO( boost::format( "extrude(%1%,%2%,%3%,%4%)" ) % g.asText(1) % dx % dy % dz );
 	switch ( g.geometryTypeId() ){
@@ -51,7 +51,7 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, double dx, double dy, dou
 ///
 ///
 ///
-void   translate( Geometry & g, double dx, double dy, double dz )
+void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	SFCGAL_INFO( boost::format( "translate(%1%,%2%,%3%,%4%)" ) % g.asText(1) % dx % dy % dz );
 
@@ -67,7 +67,7 @@ void   translate( Geometry & g, double dx, double dy, double dz )
 ///
 ///
 ///
-LineString * extrude( const Point & g, double dx, double dy, double dz )
+LineString * extrude( const Point & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
@@ -83,7 +83,7 @@ LineString * extrude( const Point & g, double dx, double dy, double dz )
 ///
 ///
 ///
-PolyhedralSurface * extrude( const LineString & g, double dx, double dy, double dz )
+PolyhedralSurface * extrude( const LineString & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
@@ -110,7 +110,7 @@ PolyhedralSurface * extrude( const LineString & g, double dx, double dy, double 
 ///
 ///
 ///
-Solid * extrude( const Polygon & g, double dx, double dy, double dz )
+Solid * extrude( const Polygon & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
@@ -149,7 +149,7 @@ Solid * extrude( const Polygon & g, double dx, double dy, double dz )
 ///
 ///
 ///
-Solid *  extrude( const Triangle & g, double dx, double dy, double dz )
+Solid *  extrude( const Triangle & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
@@ -159,7 +159,7 @@ Solid *  extrude( const Triangle & g, double dx, double dy, double dz )
 ///
 ///
 ///
-MultiLineString *     extrude( const MultiPoint & g, double dx, double dy, double dz )
+MultiLineString *     extrude( const MultiPoint & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString() );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
@@ -172,7 +172,7 @@ MultiLineString *     extrude( const MultiPoint & g, double dx, double dy, doubl
 ///
 ///
 ///
-PolyhedralSurface *   extrude( const MultiLineString & g, double dx, double dy, double dz )
+PolyhedralSurface *   extrude( const MultiLineString & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
@@ -188,7 +188,7 @@ PolyhedralSurface *   extrude( const MultiLineString & g, double dx, double dy, 
 ///
 ///
 ///
-MultiSolid *          extrude( const MultiPolygon & g, double dx, double dy, double dz )
+MultiSolid *          extrude( const MultiPolygon & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	std::auto_ptr< MultiSolid > result( new MultiSolid() );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
@@ -201,7 +201,7 @@ MultiSolid *          extrude( const MultiPolygon & g, double dx, double dy, dou
 ///
 ///
 ///
-Solid *   extrude( const TriangulatedSurface & g, double dx, double dy, double dz )
+Solid *   extrude( const TriangulatedSurface & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	std::auto_ptr< Solid > result( new Solid() );
 
@@ -229,7 +229,7 @@ Solid *   extrude( const TriangulatedSurface & g, double dx, double dy, double d
 ///
 ///
 ///
-Solid *   extrude( const PolyhedralSurface & g, double dx, double dy, double dz )
+Solid *   extrude( const PolyhedralSurface & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	TriangulatedSurface triangulatedSurface ;
 	triangulate( g, triangulatedSurface );
@@ -239,7 +239,7 @@ Solid *   extrude( const PolyhedralSurface & g, double dx, double dy, double dz 
 ///
 ///
 ///
-GeometryCollection*   extrude( const GeometryCollection & g, double dx, double dy, double dz )
+GeometryCollection*   extrude( const GeometryCollection & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	std::auto_ptr< GeometryCollection > result( new GeometryCollection() ) ;
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
