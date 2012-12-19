@@ -118,7 +118,7 @@ if( ${SFCGAL_BUILD_TOOLS} )
 endif()
 
 #-- viewer 
-option( SFCGAL_BUILD_VIEWER "build viewer" ON )
+option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
 if( ${SFCGAL_BUILD_VIEWER} )
 	add_subdirectory( viewer )
 endif()
