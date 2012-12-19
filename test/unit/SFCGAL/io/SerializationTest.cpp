@@ -11,7 +11,7 @@ using namespace boost::unit_test ;
 
 using namespace SFCGAL ;
 
-BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktReaderTest )
+BOOST_AUTO_TEST_SUITE( SFCGAL_io_SerializationTest )
 
 BOOST_AUTO_TEST_CASE( textTest )
 {
