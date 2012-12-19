@@ -132,6 +132,11 @@ namespace SFCGAL {
 			return detail::toPoint_3( _xyz );
 		}
 
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & _xyz;
+		}
 	private:
 		detail::CoordinateStorage _xyz ;
 		//double _m

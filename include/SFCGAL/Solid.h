@@ -4,6 +4,9 @@
 #include <vector>
 #include <boost/assert.hpp>
 
+#include <boost/serialization/base_object.hpp>
+#include <boost/serialization/vector.hpp>
+
 #include <SFCGAL/PolyhedralSurface.h>
 
 #include <CGAL/Nef_polyhedron_3.h>
@@ -155,6 +158,16 @@ namespace SFCGAL {
 		virtual void accept( GeometryVisitor & visitor ) ;
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
+		/**
+		 * Serializer
+		 */
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & boost::serialization::base_object<Geometry>(*this);
+			ar & _shells;
+		}
 	private:
 		std::vector< PolyhedralSurface > _shells ;
 	};

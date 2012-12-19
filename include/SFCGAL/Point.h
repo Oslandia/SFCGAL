@@ -6,6 +6,8 @@
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/DimensionTraits.h>
 
+#include <boost/serialization/base_object.hpp>
+
 namespace SFCGAL {
 
 	/**
@@ -169,6 +171,16 @@ namespace SFCGAL {
 
 		inline Coordinate &       coordinate() { return _coordinate; }
 		inline const Coordinate & coordinate() const { return _coordinate; }
+
+		/**
+		 * Serializer
+		 */
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & boost::serialization::base_object<Geometry>(*this);
+			ar & _coordinate;
+		}
 	private:
 		Coordinate _coordinate ;
 		//add m here, keep coordinate as a spatial position that can be shared

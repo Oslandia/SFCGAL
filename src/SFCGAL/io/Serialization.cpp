@@ -1,5 +1,69 @@
+#include <SFCGAL/all.h>
 #include <SFCGAL/io/Serialization.h>
 
+namespace SFCGAL {
+namespace io {
+
+	BinarySerializer::BinarySerializer( std::ostream& ostr ) : boost::archive::binary_oarchive( ostr )
+	{
+		using namespace SFCGAL;
+		register_type< Point >();
+		register_type< LineString >();
+		register_type< Triangle >();
+		register_type< Polygon >();
+		register_type< TriangulatedSurface >();
+		register_type< PolyhedralSurface >();
+		register_type< Solid >();
+		register_type< GeometryCollection >();
+		register_type< MultiPoint >();
+		register_type< MultiLineString >();
+		register_type< MultiPolygon >();
+		register_type< MultiSolid >();
+	}
+
+	BinaryUnserializer::BinaryUnserializer( std::istream& ostr ) : boost::archive::binary_iarchive( ostr )
+	{
+		using namespace SFCGAL;
+		register_type< Point >();
+		register_type< LineString >();
+		register_type< Triangle >();
+		register_type< Polygon >();
+		register_type< TriangulatedSurface >();
+		register_type< PolyhedralSurface >();
+		register_type< Solid >();
+		register_type< GeometryCollection >();
+		register_type< MultiPoint >();
+		register_type< MultiLineString >();
+		register_type< MultiPolygon >();
+		register_type< MultiSolid >();
+	}
+
+	///
+	///
+	///
+	std::string writeBinary( const Geometry& g )
+	{
+		std::ostringstream ostr;
+		BinarySerializer arc( ostr );
+		// use the pointer version to force dynamic type writing
+		const Geometry* pg = &g;
+		arc << pg;
+		return ostr.str();
+	}
+
+	///
+	///
+	///
+	std::auto_ptr<Geometry> readBinary( const std::string& str )
+	{
+		std::istringstream istr( str );
+		BinaryUnserializer iarc( istr );
+		Geometry* g;
+		iarc >> g;
+		return std::auto_ptr<Geometry>( g );
+	}
+}
+}
 namespace boost {
 namespace serialization {
 
@@ -39,7 +103,7 @@ namespace serialization {
 		mpz->_mp_size = size;
 		int32_t i;
 		for ( i = 0; i < size; ++i ) {
-		       ar & mpz->_mp_d[i];
+			ar & mpz->_mp_d[i];
 		}
 	}
 		

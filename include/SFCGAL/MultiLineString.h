@@ -4,6 +4,8 @@
 #include <vector>
 #include <boost/assert.hpp>
 
+#include <boost/serialization/base_object.hpp>
+
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/GeometryCollection.h>
 
@@ -63,6 +65,15 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
+		/**
+		 * Serializer
+		 */
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & boost::serialization::base_object<GeometryCollection>(*this);
+
+		}
 	protected:
 		//-- SFCGAL::GeometryCollection
 		virtual bool           isAllowed( Geometry const& g ) ;
