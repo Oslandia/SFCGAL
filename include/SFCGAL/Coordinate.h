@@ -7,7 +7,6 @@
 #include <SFCGAL/numeric.h>
 
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/detail/CoordinateStorage.h>
 
 namespace SFCGAL {
 
