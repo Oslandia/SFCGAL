@@ -5,6 +5,8 @@
 
 #include <boost/assert.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/serialization/base_object.hpp>
+#include <boost/ptr_container/serialize_ptr_vector.hpp>
 
 #include <SFCGAL/Point.h>
 
@@ -232,6 +234,16 @@ namespace SFCGAL {
 		virtual void accept( GeometryVisitor & visitor ) ;
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
+		/**
+		 * Serializer
+		 */
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & boost::serialization::base_object<Geometry>(*this);
+			ar & _points;
+		}
 	private:
 		boost::ptr_vector< Point > _points ;
 	};

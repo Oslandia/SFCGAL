@@ -268,6 +268,13 @@ namespace SFCGAL {
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
+       /**
+	* Serializer
+	*/
+       template <class Archive>
+       void serialize( Archive& ar, const unsigned int version )
+       {
+       }
     protected:
        Geometry();
        Geometry( Geometry const& other );

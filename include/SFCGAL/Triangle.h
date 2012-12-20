@@ -3,6 +3,8 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <boost/serialization/base_object.hpp>
+
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
 #include <SFCGAL/TypeForDimension.h>
@@ -115,6 +117,16 @@ namespace SFCGAL {
 		virtual void accept( GeometryVisitor & visitor ) ;
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+
+		/**
+		 * Serializer
+		 */
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & boost::serialization::base_object<Geometry>(*this);
+			ar & _vertices[0] & _vertices[1] & _vertices[2];
+		}
 	private:
 		/**
 		 * point forming the triangle

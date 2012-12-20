@@ -146,6 +146,11 @@ namespace SFCGAL {
 			return Kernel::Point_3( _x, _y, _z );
 		}
 
+		template <class Archive>
+		void serialize( Archive& ar, const unsigned int version )
+		{
+			ar & _xyz;
+		}
 	private:
 		size_t     _dimension ;
 		Kernel::FT _x ;
