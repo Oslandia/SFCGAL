@@ -7,6 +7,7 @@
 #include <SFCGAL/numeric.h>
 
 #include <SFCGAL/Kernel.h>
+#include <SFCGAL/io/Serialization.h>
 
 namespace SFCGAL {
 
@@ -149,7 +150,10 @@ namespace SFCGAL {
 		template <class Archive>
 		void serialize( Archive& ar, const unsigned int version )
 		{
-			ar & _xyz;
+			ar & _dimension;
+			ar & _x;
+			ar & _y;
+			ar & _z;
 		}
 	private:
 		size_t     _dimension ;

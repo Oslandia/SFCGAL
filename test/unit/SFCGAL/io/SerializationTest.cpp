@@ -15,8 +15,6 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_io_SerializationTest )
 
 BOOST_AUTO_TEST_CASE( textTest )
 {
-	Kernel::Point_2 pt( 2.3, 4.5 );
-	Kernel::Point_2 rpt;
 	Coordinate pt1( 2.3, 8.9 );
 	Coordinate rpt1;
 	// 2/3
@@ -25,7 +23,6 @@ BOOST_AUTO_TEST_CASE( textTest )
 
 	std::ostringstream ostr;
 	boost::archive::text_oarchive arc( ostr );
-	arc << pt;
 	arc << pt1;
 	arc << q1;
 
@@ -33,19 +30,17 @@ BOOST_AUTO_TEST_CASE( textTest )
 
 	std::istringstream istr( str );
 	boost::archive::text_iarchive iarc( istr );
-	iarc >> rpt;
 	iarc >> rpt1;
 	iarc >> rq1;
 
-	BOOST_CHECK( pt == rpt );
 	BOOST_CHECK( pt1 == rpt1 );
 	BOOST_CHECK( q1 == rq1 );
 }
 
 BOOST_AUTO_TEST_CASE( binaryTest )
 {
-	Kernel::Point_2 pt( 2.3, 4.5 );
-	Kernel::Point_2 rpt;
+	Coordinate pt( 2.3, 4.5 );
+	Coordinate rpt;
 
 	std::ostringstream ostr;
 	io::BinarySerializer arc( ostr );
