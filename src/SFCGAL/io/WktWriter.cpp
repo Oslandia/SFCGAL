@@ -12,7 +12,8 @@ namespace io {
 ///
 ///
 WktWriter::WktWriter( std::ostream & s ):
-	_s(s)
+	_s(s),
+	_exactWrite( false )
 {
 
 }
@@ -72,9 +73,17 @@ void WktWriter::write( const Geometry& g )
 ///
 void WktWriter::writeCoordinate( const Point& g )
 {
-	_s << g.x() << " " << g.y() ;
-	if ( g.is3D() ){
-		_s << " " << g.z() ;
+	if ( _exactWrite ) {
+		_s << CGAL::exact(g.x()) << " " << CGAL::exact(g.y());
+		if ( g.is3D() ) {
+			_s << " " << CGAL::exact(g.z());
+		}
+	}
+	else {
+		_s << g.x() << " " << g.y() ;
+		if ( g.is3D() ){
+			_s << " " << g.z() ;
+		}
 	}
 }
 

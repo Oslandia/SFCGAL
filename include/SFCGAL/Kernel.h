@@ -3,8 +3,6 @@
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include <boost/variant.hpp>
-
 namespace SFCGAL {
 
 	/**

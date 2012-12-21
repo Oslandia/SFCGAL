@@ -3,7 +3,6 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/detail/CoordinateStorage.h>
 
 #include <boost/assert.hpp>
 #include <boost/serialization/split_member.hpp>

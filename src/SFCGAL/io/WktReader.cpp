@@ -541,8 +541,8 @@ void WktReader::readInnerMultiSolid( MultiSolid & g )
 ///
 bool WktReader::readPointCoordinate( Point & p )
 {
-	std::vector< double > coordinates ;
-	double d;
+	std::vector< Kernel::Exact_kernel::FT > coordinates ;
+	Kernel::Exact_kernel::FT d;
 	while ( _reader.read(d) ){
 		coordinates.push_back( d );
 	}

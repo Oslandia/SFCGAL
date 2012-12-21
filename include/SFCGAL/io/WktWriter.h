@@ -22,6 +22,12 @@ namespace io {
 		 */
 		void write( const Geometry & g ) ;
 
+		/**
+		 * Exact / approximation setting
+		 */
+		void setExactWrite( bool e ) { _exactWrite = e; }
+		bool exactWrite() const { return _exactWrite; }
+
 	protected:
 		void writeCoordinate( const Point& g );
 
@@ -53,6 +59,7 @@ namespace io {
 		void writeInner( const Solid & g );
 	private:
 		std::ostream & _s ;
+		bool _exactWrite;
 	};
 
 
