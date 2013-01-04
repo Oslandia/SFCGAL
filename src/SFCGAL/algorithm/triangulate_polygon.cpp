@@ -158,6 +158,38 @@ void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface 
 ///
 ///
 ///
+void triangulate2D( const Geometry & g, TriangulatedSurface & triangulatedSurface )
+{
+	switch ( g.geometryTypeId() ){
+	case TYPE_POINT:
+		return ;
+	case TYPE_POLYGON:
+		triangulate2D( g.as< Polygon >(), triangulatedSurface ) ;
+		return ;
+	case TYPE_MULTIPOINT:
+		triangulate( g.as< MultiPoint >(), triangulatedSurface ) ;
+		return ;
+	case TYPE_MULTIPOLYGON:
+		triangulate2D( g.as< MultiPolygon >(), triangulatedSurface ) ;
+		return ;
+	case TYPE_TRIANGULATEDSURFACE:
+		triangulatedSurface.addTriangles( g.as< TriangulatedSurface >() ) ;
+		return ;
+	case TYPE_POLYHEDRALSURFACE:
+		triangulate2D( g.as< PolyhedralSurface >(), triangulatedSurface ) ;
+		return ;
+	}
+
+	BOOST_THROW_EXCEPTION(
+		Exception(
+			( boost::format( "can't triangulate type '%1%'" ) % g.geometryType() ).str()
+		)
+	);
+}
+
+///
+///
+///
 void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulatedSurface )
 {
 	/*
@@ -305,10 +337,100 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 ///
 ///
 ///
+void triangulate2D( const Polygon & polygon, TriangulatedSurface & triangulatedSurface )
+{
+	/*
+	 * filter empty polygon
+	 */
+	if ( polygon.isEmpty() )
+		return ;
+
+	/*
+	 * prepare a Constraint Delaunay Triangulation
+	 */
+	CDT cdt;
+
+	/*
+	 * insert each ring in the triangulation
+	 */
+	for ( size_t i = 0; i < polygon.numRings(); i++ ){
+		const LineString & ring  = polygon.ringN( i );
+
+		CDT::Vertex_handle v_prev ;
+		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
+			const Point & point = ring.pointN( j );
+
+			CGAL::Point_2< Kernel > p2d(
+				point.x(),
+				point.y()
+			);
+
+			/*
+			 * insert into triangulation
+			 */
+			CDT::Vertex_handle vh = cdt.insert( p2d );
+			vh->info().original = point ;
+
+			// filter first point
+			if ( j != 0 ){
+				if ( vh != v_prev ){
+					cdt.insert_constraint(vh, v_prev);
+				}else{
+					//@todo log
+				}
+			}
+			v_prev = vh;
+		}
+	}
+
+
+	/*
+	 * Mark facets that are inside the domain bounded by the polygon
+	 */
+	mark_domains(cdt);
+
+	/*
+	 * Convert CDT to triangulated surface
+	 */
+	for ( CDT::Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it )
+	{
+		//ignore holes
+		if ( ! it->info().in_domain() ){
+			continue ;
+		}
+//		assert( it->is_valid() );
+
+		const Point & a = it->vertex(0)->info().original ;
+		const Point & b = it->vertex(1)->info().original ;
+		const Point & c = it->vertex(2)->info().original ;
+
+		// check that vertex has an original vertex
+		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+			BOOST_THROW_EXCEPTION( Exception(
+				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % polygon.asText() ).str()
+			) ) ;
+		}
+		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
+	}
+}
+
+///
+///
+///
 void triangulate( const MultiPolygon & multiPolygon, TriangulatedSurface & triangulatedSurface )
 {
 	for ( size_t i = 0; i < multiPolygon.numGeometries(); i++ ){
 		triangulate( multiPolygon.geometryN(i).as< Polygon >(), triangulatedSurface );
+	}
+}
+
+///
+///
+///
+void triangulate2D( const MultiPolygon & multiPolygon, TriangulatedSurface & triangulatedSurface )
+{
+	for ( size_t i = 0; i < multiPolygon.numGeometries(); i++ ){
+		triangulate2D( multiPolygon.geometryN(i).as< Polygon >(), triangulatedSurface );
 	}
 }
 
@@ -322,6 +444,15 @@ void triangulate( const PolyhedralSurface & poly, TriangulatedSurface & triangul
 	}	
 }
 
+///
+///
+///
+void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triangulatedSurface )
+{
+	for ( size_t i = 0; i < poly.numPolygons(); i++ ){
+		triangulate2D( poly.polygonN(i), triangulatedSurface );
+	}	
+}
 
 }//algorithm
 }//SFCGAL

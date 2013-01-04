@@ -19,6 +19,9 @@ BOOST_AUTO_TEST_CASE( testTriangulateTriangle )
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
 	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 1U );
+	TriangulatedSurface surf2D;
+	algorithm::triangulate2D( geometry->as< Polygon >(), surf2D );
+	BOOST_CHECK_EQUAL( surf2D.numGeometries(), 1U );
 }
 
 
@@ -28,6 +31,9 @@ BOOST_AUTO_TEST_CASE( testTriangulateSquare2d )
 	TriangulatedSurface triangulatedSurface ;
 	algorithm::triangulate( geometry->as< Polygon >(), triangulatedSurface );
 	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
+	TriangulatedSurface surf2D;
+	algorithm::triangulate2D( geometry->as< Polygon >(), surf2D );
+	BOOST_CHECK_EQUAL( surf2D.numGeometries(), 2U );
 }
 
 BOOST_AUTO_TEST_CASE( testTriangulateVerticalSquare )

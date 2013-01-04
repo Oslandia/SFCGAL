@@ -2,6 +2,7 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
+#include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
 
@@ -156,7 +157,7 @@ namespace algorithm
 			case TYPE_SOLID:
 				{
 					TriangulatedSurface surf;
-					algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
+					algorithm::triangulate2D( static_cast<const PolyhedralSurface&>(ga), surf);
 					return intersection( ga, surf );
 				} break;
 			default:
@@ -178,7 +179,7 @@ namespace algorithm
 		case TYPE_POLYHEDRALSURFACE:
 			{
 				TriangulatedSurface surf;
-				algorithm::triangulate( static_cast<const PolyhedralSurface&>(ga), surf);
+				algorithm::triangulate2D( static_cast<const PolyhedralSurface&>(ga), surf);
 				return intersection( surf, gb );
 			} break;
 		default:
@@ -188,7 +189,7 @@ namespace algorithm
 
 		if ( gb.geometryTypeId() == TYPE_POLYHEDRALSURFACE || gb.geometryTypeId() == TYPE_POLYGON ) {
 			TriangulatedSurface surf;
-			algorithm::triangulate( gb, surf);
+			algorithm::triangulate2D( gb, surf);
 			return intersection( ga, surf );
 		}
 		

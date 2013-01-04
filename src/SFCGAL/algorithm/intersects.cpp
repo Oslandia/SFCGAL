@@ -334,7 +334,7 @@ namespace algorithm
 			TriangulationCache::const_iterator it = triangulation_cache.find( &gb );
 			if ( it == triangulation_cache.end() ) {
 				boost::shared_ptr<TriangulatedSurface> tri ( new TriangulatedSurface );
-				algorithm::triangulate( gb, *tri );
+				algorithm::triangulate2D( gb, *tri );
 				triangulation_cache[ &gb ] = tri;
 				return intersects( ga, *tri );
 			}
@@ -343,7 +343,7 @@ namespace algorithm
 			return intersects( ga, *tri );
 #else
 			TriangulatedSurface tri;
-			algorithm::triangulate( gb, tri );
+			algorithm::triangulate2D( gb, tri );
 			return intersects( ga, tri );
 #endif
 		}
@@ -352,7 +352,7 @@ namespace algorithm
 			TriangulationCache::const_iterator it = triangulation_cache.find( &ga );
 			if ( it == triangulation_cache.end() ) {
 				boost::shared_ptr<TriangulatedSurface> tri ( new TriangulatedSurface );
-				algorithm::triangulate( ga, *tri );
+				algorithm::triangulate2D( ga, *tri );
 				triangulation_cache[ &ga ] = tri;
 				return intersects( gb, *tri );
 			}
@@ -361,7 +361,7 @@ namespace algorithm
 			return intersects( gb, *tri );
 #else
 			TriangulatedSurface tri;
-			algorithm::triangulate( ga, tri );
+			algorithm::triangulate2D( ga, tri );
 			return intersects( gb, tri );
 #endif
 		}
