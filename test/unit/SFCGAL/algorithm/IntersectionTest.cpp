@@ -99,17 +99,17 @@ BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
 	// point x polygon
 	{
 		// a point inside
-		BOOST_CHECK( *(algorithm::intersection( Point(0.1, 0.1), *poly)) == Point(0.1, 0.1));
+		BOOST_CHECK( *(algorithm::intersection( Point(QT(1,10), QT(1,10)), *poly)) == Point(QT(1,10), QT(1,10)));
 		// a point on an edge
-		BOOST_CHECK( *(algorithm::intersection( Point(0.1, 0), *poly)) == Point(0.1, 0));
+		BOOST_CHECK( *(algorithm::intersection( Point(QT(1,10), 0), *poly)) == Point(QT(1,10), 0));
 		// a point on a vertex
 		BOOST_CHECK( *(algorithm::intersection( Point(0, 0), *poly)) == Point(0, 0));
 		// a point on an interior edge
-		BOOST_CHECK( *(algorithm::intersection( Point(1.5, 1.3), *poly)) == Point(1.5, 1.3));
+		BOOST_CHECK( *(algorithm::intersection( Point(QT(15,10), QT(13,10)), *poly)) == Point(QT(15,10), QT(13,10)));
 		// a point in a hole
-		BOOST_CHECK( (algorithm::intersection( Point(1.5, 1.5), *poly))->isEmpty() );
+		BOOST_CHECK( (algorithm::intersection( Point(QT(15,10), QT(15,10)), *poly))->isEmpty() );
 		// a point outside
-		BOOST_CHECK( (algorithm::intersection( Point(2.5, 2.5), *poly))->isEmpty() );
+		BOOST_CHECK( (algorithm::intersection( Point(QT(25,10), QT(25,10)), *poly))->isEmpty() );
 	}
 	// linestring x polygon
 	{
@@ -197,8 +197,8 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	BOOST_CHECK( *algorithm::intersection3D( ls2, *cube ) == ls2 );
 
 	// A linestring with more than one segment
-	ls1.addPoint( Point(0.8, 0.5, 0.5));
-	ls1.addPoint( Point(1.5, 0.5, 0.5));
+	ls1.addPoint( Point(QT(8,10), QT(5,10), QT(5,10)));
+	ls1.addPoint( Point(QT(15,10), QT(5,10), QT(5,10)));
 	BOOST_CHECK( *algorithm::intersection3D( ls1, *cube ) == *io::readWkt("LINESTRING(-0 0.5 0.5,0.5 0.5 0.5,0.8 0.5 0.5,1 0.5 0.5)") );
 
 	// A linestring crossing on two vertices
