@@ -166,6 +166,17 @@ void LineString::accept( ConstGeometryVisitor & visitor ) const
 	return visitor.visit(*this);
 }
 
+///
+///
+///
+CGAL::Polygon_2< Kernel > LineString::toPolygon_2() const
+{
+	Point_2_const_iterator pend = points_2_end();
+	// skip the last point
+	pend--;
+	return CGAL::Polygon_2< Kernel >( points_2_begin(), pend );
+}
+
 
 }//SFCGAL
 

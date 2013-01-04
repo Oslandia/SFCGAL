@@ -11,7 +11,7 @@
 
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Surface.h>
-
+#include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
 
@@ -48,23 +48,7 @@ namespace SFCGAL {
 		/**
 		 * Constructor from CGAL::Polygon_with_holes_2<K>
 		 */
-		template < typename K >
-		Polygon( const CGAL::Polygon_with_holes_2<K>& poly )
-		{
-			_rings.push_back( new LineString() );
-			CGAL::Polygon_2<K> outer = poly.outer_boundary();
-			typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
-			for ( ei = outer.edges_begin(); ei != outer.edges_end(); ++ei ) {
-				_rings.back().addPoint( ei->source() );
-			}
-			for ( typename CGAL::Polygon_with_holes_2<K>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
-				_rings.push_back( new LineString() );
-				typename CGAL::Polygon_2<K>::Edge_const_iterator ei;
-				for ( ei = hit->edges_begin(); ei != hit->edges_end(); ++ei ) {
-					_rings.back().addPoint( ei->source() );
-				}
-			}
-		}
+		Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly );
 
 		/**
 		 * assign operator
@@ -189,24 +173,12 @@ namespace SFCGAL {
 		/*
 		 * Convert to CGAL::Polygon_2. Does not consider holes, if any
 		 */
-		CGAL::Polygon_2<Kernel> toPolygon_2() const
-		{
-			return exteriorRing().toPolygon_2();
-		}
+		CGAL::Polygon_2<Kernel> toPolygon_2() const;
 
 		/*
 		 * Convert to CGAL::Polygon_with_holes_2.
 		 */
-		CGAL::Polygon_with_holes_2<Kernel> toPolygon_with_holes_2() const
-		{
-			std::list<CGAL::Polygon_2<Kernel> > holes;
-			for ( size_t i = 0; i < numInteriorRings(); ++i ) {
-				holes.push_back( interiorRingN(i).toPolygon_2() );
-			}
-			return CGAL::Polygon_with_holes_2<Kernel>( exteriorRing().toPolygon_2(),
-							      holes.begin(),
-							      holes.end());
-		}
+		CGAL::Polygon_with_holes_2<Kernel> toPolygon_with_holes_2() const;
 
 		//-- visitors
 

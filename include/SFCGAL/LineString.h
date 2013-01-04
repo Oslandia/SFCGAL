@@ -221,13 +221,8 @@ namespace SFCGAL {
 		/*
 		 * Convert to CGAL::Polygon_2
 		 */
-		CGAL::Polygon_2< Kernel > toPolygon_2() const
-		{
-			Point_2_const_iterator pend = points_2_end();
-			// skip the last point
-			pend--;
-			return CGAL::Polygon_2< Kernel >( points_2_begin(), pend );
-		}
+		CGAL::Polygon_2< Kernel > toPolygon_2() const;
+
 		//-- visitors
 
 		//-- SFCGAL::Geometry
