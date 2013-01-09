@@ -103,7 +103,7 @@ namespace SFCGAL {
 		 * Test if the polygon has interior rings
 		 */
 		inline bool                  hasInteriorRings() const {
-			return _rings.size() == 1 ;
+			return _rings.size() > 1 ;
 		}
 
 		/**
