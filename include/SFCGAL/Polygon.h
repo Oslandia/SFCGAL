@@ -89,13 +89,13 @@ namespace SFCGAL {
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline const LineString &    exteriorRing() const {
-			return _rings[0];
+			return _rings.front();
 		}
 		/**
 		 * [OGC/SFA]returns the exterior ring
 		 */
 		inline LineString &          exteriorRing() {
-			return _rings[0];
+			return _rings.front();
 		}
 
 
