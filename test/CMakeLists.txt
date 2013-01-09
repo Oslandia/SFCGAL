@@ -13,5 +13,10 @@ add_subdirectory( unit )
 #-- build regression tests
 add_subdirectory( regress )
 
+option( Compile_Bench "Compile benchmarks" OFF )
+if( ${Compile_Bench} )
+	add_subdirectory( bench )
+endif()
+
 
 
