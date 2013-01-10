@@ -41,17 +41,27 @@ namespace algorithm
 	static std::auto_ptr<Geometry> intersection_polygons_( const Polygon& polya, const Polygon& polyb )
 	{
 		std::list<CGAL::Polygon_with_holes_2<Kernel> > opolys;
-		CGAL::Polygon_with_holes_2<Kernel> pa = polya.toPolygon_with_holes_2();
-		CGAL::Polygon_with_holes_2<Kernel> pb = polyb.toPolygon_with_holes_2();
-		CGAL::intersection( pa,
-				    pb,
-				    std::back_inserter(opolys) );
+		if ( polya.hasInteriorRings() || polyb.hasInteriorRings() ) {
+			CGAL::Polygon_with_holes_2<Kernel> pa = polya.toPolygon_with_holes_2();
+			CGAL::Polygon_with_holes_2<Kernel> pb = polyb.toPolygon_with_holes_2();
+			CGAL::intersection( pa,
+					    pb,
+					    std::back_inserter(opolys) );
+		}
+		else {
+			// a little faster than using Polygon_with_holes when it is not needed
+			CGAL::Polygon_2<Kernel> pa = polya.toPolygon_2();
+			CGAL::Polygon_2<Kernel> pb = polyb.toPolygon_2();
+			CGAL::intersection( pa,
+					    pb,
+					    std::back_inserter(opolys) );
+		}
 
 		if ( opolys.size() == 0 ) {
 		    return std::auto_ptr<Geometry>( new GeometryCollection() );
 		}
 		if ( opolys.size() == 1 ) {
-		    return std::auto_ptr<Geometry>(new Polygon( *opolys.begin() ));
+		    return std::auto_ptr<Geometry>( new Polygon( *opolys.begin() ));
 		}
 
 		MultiPolygon* mp = new MultiPolygon;
