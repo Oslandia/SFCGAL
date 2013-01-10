@@ -1,9 +1,20 @@
+#TODO merge
+set(SFCGAL_HME_BENCHS
+  IntersectionPerfTest.cpp
+  KernelPerfTest.cpp
+  TestModule.cpp
+)
+add_executable( bench-hme ${SFCGAL_HME_BENCHS} )
+target_link_libraries( bench-hme
+       SFCGAL
+       ${Boost_LIBRARIES}
+       ${CGAL_LIBRARIES}
+)
+
 #-- build unit tests
 set( SFCGAL_BENCHS 
 	wkt 
 	triangulation
-	IntersectionPerfTest
-	KernelPerfTest
 )
 
 foreach( SFCGAL_BENCH ${SFCGAL_BENCHS} )
