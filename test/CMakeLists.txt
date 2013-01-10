@@ -9,6 +9,8 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 #-- build unit tests
 add_subdirectory( unit )
 
+#-- build benchs
+add_subdirectory( bench )
 
 #-- build regression tests
 add_subdirectory( regress )
