@@ -2,6 +2,8 @@
 set( SFCGAL_BENCHS 
 	wkt 
 	triangulation
+	IntersectionPerfTest
+	KernelPerfTest
 )
 
 foreach( SFCGAL_BENCH ${SFCGAL_BENCHS} )
