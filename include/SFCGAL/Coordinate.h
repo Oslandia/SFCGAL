@@ -3,6 +3,7 @@
 
 #include <boost/assert.hpp>
 #include <boost/array.hpp>
+#include <boost/variant.hpp>
 
 #include <SFCGAL/numeric.h>
 
@@ -39,10 +40,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_2< K > & other ):
-			_dimension(2),
-			_x(other.x()),
-			_y(other.y()),
-			_z(0)
+			_storage( other )
 		{
 
 		}
@@ -52,10 +50,7 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Coordinate( const CGAL::Point_3< K > & other ):
-			_dimension(3),
-			_x(other.x()),
-			_y(other.y()),
-			_z(other.z())
+			_storage(other)
 		{
 
 		}
@@ -86,16 +81,17 @@ namespace SFCGAL {
 		/**
 		 * Returns the x value as a double (NaN for empty coordinates)
 		 */
-		inline Kernel::FT x() const { return _x ; }
+		Kernel::FT x() const;
+
 		/**
 		 * Returns the y value as a double (NaN for empty coordinates)
 		 */
-		inline Kernel::FT y() const { return _y ; }
+		Kernel::FT y() const;
+
 		/**
 		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
 		 */
-		inline Kernel::FT z() const { return _z ; }
-
+		Kernel::FT z() const;
 
 		/**
 		 * compare two points
@@ -117,7 +113,7 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Vector_2 toVector_2() const
 		{
-			return Kernel::Vector_2( _x, _y );
+			return Kernel::Vector_2( CGAL::ORIGIN, toPoint_2() );
 		}
 
 		/**
@@ -126,42 +122,75 @@ namespace SFCGAL {
 		 */
 		inline Kernel::Vector_3 toVector_3() const
 		{
-			return Kernel::Vector_3( _x, _y, _z );
+			return Kernel::Vector_3( CGAL::ORIGIN, toPoint_3() );
 		}
 
 		/**
 		 * Convert to CGAL::Point_2
 		 * @todo remove template parameter
 		 */
-		inline Kernel::Point_2 toPoint_2() const
-		{
-			return Kernel::Point_2( _x, _y );
-		}
+		Kernel::Point_2 toPoint_2() const;
 
 		/**
 		 * Convert to CGAL::Point_3
 		 * @todo remove template parameter
 		 */
-		inline Kernel::Point_3 toPoint_3() const
+		Kernel::Point_3 toPoint_3() const;
+
+		// class for Empty coordinate
+		class Empty {};
+	private:
+		boost::variant< Empty, Kernel::Point_2, Kernel::Point_3 > _storage;
+
+	public:
+		/**
+		 * Serialization
+		 */
+		template <class Archive>
+		void save( Archive& ar, const unsigned int version ) const
 		{
-			return Kernel::Point_3( _x, _y, _z );
+			int dim = coordinateDimension();
+			ar << dim;
+			if ( _storage.which() > 0 ) {
+				const Kernel::FT& x_ = x();
+				const Kernel::FT& y_ = y();
+				ar << x_;
+				ar << y_;
+				if ( _storage.which() == 2 ) {
+					const Kernel::FT& z_ = z();
+					ar << z_;
+				}
+			}
 		}
 
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void load( Archive& ar, const unsigned int version )
 		{
-			ar & _dimension;
-			ar & _x;
-			ar & _y;
-			ar & _z;
+			int dim;
+			ar >> dim;
+			if ( dim == 0 ) {
+				_storage = Empty();
+			}
+			else if ( dim == 2 ) {
+				Kernel::FT x_, y_;
+				ar >> x_;
+				ar >> y_;
+				_storage = Kernel::Point_2( x_, y_ );
+			}
+			else if ( dim == 3 ) {
+				Kernel::FT x_, y_, z_;
+				ar >> x_;
+				ar >> y_;
+				ar >> z_;
+				_storage = Kernel::Point_3( x_, y_, z_ );
+			}
 		}
-	private:
-		size_t     _dimension ;
-		Kernel::FT _x ;
-		Kernel::FT _y ;
-		Kernel::FT _z ;
 
-		//double _m
+		template<class Archive>
+		void serialize(Archive & ar, const unsigned int version)
+		{
+			boost::serialization::split_member(ar, *this, version);
+		}
 	};
 
 
