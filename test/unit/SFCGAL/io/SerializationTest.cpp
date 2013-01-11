@@ -80,6 +80,27 @@ BOOST_AUTO_TEST_CASE( geometryTest )
 	BOOST_CHECK( io::readBinary( io::writeBinary( *g9 ) )->asText() == g9->asText() );
 	BOOST_CHECK( io::readBinary( io::writeBinary( *g10 ) )->asText() == g10->asText() );
 	BOOST_CHECK( io::readBinary( io::writeBinary( *g11 ) )->asText() == g11->asText() );
+
+}
+
+BOOST_AUTO_TEST_CASE( extBinaryTest )
+{
+	std::auto_ptr<Geometry> ng1 = io::readWkt( "POLYGON((9.70065196277574 -2.37991360574961,3.74221071600914 5.33515858836472,-4.30443822173402 -2.37991360574961,3.74221071600914 -12.1891073728912,9.70065196277574 -2.37991360574961))");
+	SFCGAL::Geometry* mg1 = ng1.release();
+	SFCGAL::Geometry* ng2;
+	
+	std::string str;
+	std::ostringstream ostr( str );
+	io::BinarySerializer arc( ostr );
+	arc << mg1;
+
+	std::istringstream istr( ostr.str() );
+	io::BinaryUnserializer iarc( istr );
+	iarc >> ng2;
+
+	BOOST_CHECK( mg1->asText() == ng2->asText() );
+	delete mg1;
+	delete ng2;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

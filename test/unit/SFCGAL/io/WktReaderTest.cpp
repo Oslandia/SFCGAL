@@ -152,6 +152,15 @@ BOOST_AUTO_TEST_CASE( wkt_exactTest )
 	BOOST_CHECK_EQUAL( y.denominator(), 2 );
 }
 
+BOOST_AUTO_TEST_CASE( charArrayRead )
+{
+	char str[] = "LINESTRING(0.0 0.0,1.0 1.0)";
+	std::auto_ptr< Geometry > g( readWkt( str, strlen(str) ) );
+	BOOST_CHECK( g->is< LineString >() );
+	BOOST_CHECK( ! g->isEmpty() );
+	BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 
