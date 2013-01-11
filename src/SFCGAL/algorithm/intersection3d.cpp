@@ -10,7 +10,7 @@
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>
 
-#include <CGAL/Point_inside_polyhedron_3.h>
+//#include <CGAL/Point_inside_polyhedron_3.h>
 #include <CGAL/intersection_of_Polyhedra_3.h>
 #include <CGAL/intersection_of_Polyhedra_3_refinement_visitor.h>
 #include <CGAL/corefinement_operations.h>
@@ -57,6 +57,8 @@ struct Is_not_marked{
   }
 };
 
+typedef CGAL::Polyhedral_mesh_domain_3<Polyhedron, Kernel> Mesh_domain;
+
 namespace SFCGAL {
 namespace algorithm
 {
@@ -81,7 +83,9 @@ namespace algorithm
 	{
 		// FIXME : only consider the exteriorShell for now
 
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_poly( const_cast<Polyhedron&>(poly) );
+		Mesh_domain ext_domain( const_cast<Polyhedron&>(poly) );
+		Mesh_domain::Is_in_domain is_in_ext( ext_domain );
+		//		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_poly( const_cast<Polyhedron&>(poly) );
 
 		//
 		// Only consider points inside the volume
@@ -94,16 +98,15 @@ namespace algorithm
 		std::vector<std::pair<Point, Point> > pts;
 		for ( size_t i = 0; i < ls.numPoints(); ++i ) {
 			const Point* current = &ls.pointN(i);
-			current_inside = point_inside_poly( current->toPoint_3() );
+			current_inside = is_in_ext( current->toPoint_3() );
+			//			current_inside = point_inside_poly( current->toPoint_3() );
 
 			if ( previous ) {
-				//				std::cout << "previous = " << previous->asText() << " inside = " << previous_inside << std::endl;
-				//				std::cout << "current = " << current->asText() << " inside = " << current_inside << std::endl;
 				if ( !previous_inside && current_inside ) {
 					// compute the intersection between this segment and the surface
 					LineString tmp_ls( *previous, *current );
 					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
-					//					std::cout << "inter_surface = " << g->asText() << std::endl;
+
 					if ( g->is<Point>() ) {
 						pts.push_back( std::make_pair(g->as<Point>(), *current ));
 					}
@@ -119,7 +122,7 @@ namespace algorithm
 					// compute the intersection between this segment and the surface
 					LineString tmp_ls( *previous, *current );
 					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
-					//					std::cout << "inter_surface = " << g->asText() << std::endl;
+
 					if ( g->is<Point>() ) {
 						pts.push_back( std::make_pair(*previous, g->as<Point>()) );
 					}
@@ -137,7 +140,6 @@ namespace algorithm
 					// compute the intersection between this segment and the surface
 					LineString tmp_ls( *previous, *current );
 					std::auto_ptr<Geometry> g = intersection3D( tmp_ls, surf );
-					//					std::cout << "inter_surface = " << g->asText() << std::endl;
 					if ( !g->isEmpty() ) {
 						if ( g->is<Point>() ) {
 							// insert a double point
@@ -162,7 +164,6 @@ namespace algorithm
 		for ( size_t i = 0; i < pts.size(); ++i ) {
 			const Point& first = pts[i].first;
 			const Point& second = pts[i].second;
-			//			std::cout << "first = " << first.asText() << " second = " << second.asText() << std::endl;
 
 			if ( last == 0 || first != *last ) {
 				if ( ret_ls ) {
@@ -350,7 +351,9 @@ namespace algorithm
 		Is_not_marked criterion;
 		CGAL::internal::extract_connected_components( polya, criterion, std::back_inserter(decomposition));
 
-		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_q( const_cast<Polyhedron&>(polyb) );
+		Mesh_domain ext_domain( const_cast<Polyhedron&>(polyb) );
+		Mesh_domain::Is_in_domain point_inside_q( ext_domain );
+		//		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_q( const_cast<Polyhedron&>(polyb) );
 
 		//		std::cout << "# of decomposition: " << decomposition.size() << std::endl;
 		for ( std::list<Polyhedron>::iterator it = decomposition.begin(); it != decomposition.end(); ++it ) {

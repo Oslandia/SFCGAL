@@ -1,8 +1,6 @@
 #include <SFCGAL/algorithm/covers.h>
 
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Polyhedron_3.h>
-#include <CGAL/Point_inside_polyhedron_3.h>
 
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/all.h>
