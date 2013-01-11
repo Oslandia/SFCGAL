@@ -79,8 +79,10 @@ namespace serialization {
 	void save ( boost::archive::binary_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version)
 	{
 		const mpz_t& mpz = z.mpz();
-		ar & mpz->_mp_size;
-		for ( int32_t i = 0; i < mpz->_mp_size; ++i ) {
+		int32_t size = mpz->_mp_size;
+		ar & size;
+		uint32_t rsize = size >= 0 ? size : -size;
+		for ( uint32_t i = 0; i < rsize; ++i ) {
 			ar & mpz->_mp_d[i];
 		}
 	}
@@ -97,12 +99,14 @@ namespace serialization {
 	void load( boost::archive::binary_iarchive & ar, CGAL::Gmpz & z, const unsigned int version)
 	{
 		int32_t size;
+		uint32_t rsize;
 		mpz_t& mpz = z.mpz();
 		ar & size;
-		_mpz_realloc( mpz, size );
+		rsize = size >= 0 ? size : -size;
 		mpz->_mp_size = size;
-		int32_t i;
-		for ( i = 0; i < size; ++i ) {
+		_mpz_realloc( mpz, rsize );
+		uint32_t i;
+		for ( i = 0; i < rsize; ++i ) {
 			ar & mpz->_mp_d[i];
 		}
 	}
