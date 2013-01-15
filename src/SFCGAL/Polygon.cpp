@@ -69,14 +69,14 @@ Polygon::Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly )
 {
 	_rings.push_back( new LineString() );
 	CGAL::Polygon_2<Kernel> outer = poly.outer_boundary();
-	typename CGAL::Polygon_2<Kernel>::Edge_const_iterator ei;
+	CGAL::Polygon_2<Kernel>::Edge_const_iterator ei;
 	for ( ei = outer.edges_begin(); ei != outer.edges_end(); ++ei ) {
 		_rings.back().addPoint( ei->source() );
 	}
 	_rings.back().addPoint( _rings.back().startPoint() );
-	for ( typename CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
+	for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly.holes_begin(); hit != poly.holes_end(); ++hit) {
 		_rings.push_back( new LineString() );
-		typename CGAL::Polygon_2<Kernel>::Edge_const_iterator ei;
+		CGAL::Polygon_2<Kernel>::Edge_const_iterator ei;
 		for ( ei = hit->edges_begin(); ei != hit->edges_end(); ++ei ) {
 			_rings.back().addPoint( ei->source() );
 		}
