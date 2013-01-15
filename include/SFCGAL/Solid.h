@@ -99,6 +99,13 @@ namespace SFCGAL {
 		{
 			_shells.push_back( shell.clone() );
 		}
+		/**
+		 * add a polygon to the PolyhedralSurface
+		 */
+		inline void                         addInteriorShell( PolyhedralSurface * shell )
+		{
+			_shells.push_back( shell );
+		}
 
 		/**
 		 * Returns the number of shells
