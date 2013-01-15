@@ -20,21 +20,21 @@ if( NOT ${Boost_USE_AUTO_LINK} )
 endif()
 
 option( Boost_USE_STATIC_LIBS "boost use dynamic libraries" OFF )
-if( Boost_USE_STATIC_LIBS )
+if( ${Boost_USE_STATIC_LIBS} )
 	message( STATUS "Boost_USE_STATIC_LIBS=ON" )
 	add_definitions( "-DBOOST_THREAD_USE_LIB" )
 else()
 	message( STATUS "Boost_USE_STATIC_LIBS=OFF" )
-	add_definitions( "-DBOOST_TEST_DYN_LINK" )
+#	add_definitions( "-DBOOST_TEST_DYN_LINK" )
+	add_definitions( "-DBOOST_ALL_DYN_LINK" )
 endif()
 
 option( Boost_USE_MULTITHREAD "boost use multithread libraries" ON )
-if( Boost_USE_MULTITHREAD )
+if( ${Boost_USE_MULTITHREAD} )
 	message( STATUS "Boost_USE_MULTITHREAD=ON" )
 else()
 	message( STATUS "Boost_USE_MULTITHREAD=OFF" )
 endif()
-
 find_package( Boost COMPONENTS chrono program_options unit_test_framework filesystem date_time system thread serialization timer REQUIRED )
 
 
