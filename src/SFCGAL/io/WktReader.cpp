@@ -182,9 +182,9 @@ void   WktReader::readInnerLineString( LineString & g )
 	}
 
 	while ( ! _reader.eof() ){
-		Point p ;
-		if ( readPointCoordinate( p ) ){
-			g.addPoint( p );
+		std::auto_ptr< Point > p( new Point() ) ;
+		if ( readPointCoordinate( *p ) ){
+			g.addPoint( p.release() );
 		}else{
 			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 		}
@@ -218,16 +218,19 @@ void   WktReader::readInnerPolygon( Polygon & g )
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
 
-	std::vector< LineString > rings ;
-	for( size_t i = 0;;i++){
-		rings.push_back( LineString() );
-		readInnerLineString( rings.back() );
+	for( int i = 0; ! _reader.eof() ; i++ ){
+		if ( i == 0 ){
+			readInnerLineString( g.exteriorRing() ) ;
+		}else{
+			std::auto_ptr< LineString > interiorRing( new LineString );
+			readInnerLineString( *interiorRing ) ;
+			g.addRing( interiorRing.release() ) ;
+		}
 		//break if not followed by another ring
 		if ( ! _reader.match(',') ){
 			break ;
 		}
 	}
-	g = Polygon( rings );
 
 	if ( ! _reader.match(')') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
@@ -456,9 +459,9 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface & g )
 	}
 
 	while( ! _reader.eof() ){
-		Polygon polygon ;
-		readInnerPolygon( polygon );
-		g.addPolygon( polygon );
+		std::auto_ptr< Polygon > polygon( new Polygon() ) ;
+		readInnerPolygon( *polygon );
+		g.addPolygon( polygon.release() );
 
 		//break if not followed by another points
 		if ( ! _reader.match(',') ){
@@ -486,11 +489,14 @@ void WktReader::readInnerSolid( Solid & g )
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
 
-	std::vector< PolyhedralSurface > shells ;
-	while( ! _reader.eof() ){
-		PolyhedralSurface shell ;
-		readInnerPolyhedralSurface( shell );
-		shells.push_back( shell );
+	for ( int i = 0; ! _reader.eof(); i++ ){
+		if ( i == 0 ){
+			readInnerPolyhedralSurface( g.exteriorShell() );
+		}else{
+			std::auto_ptr< PolyhedralSurface > shell( new PolyhedralSurface ) ;
+			readInnerPolyhedralSurface( *shell );
+			g.addInteriorShell( shell.release() );
+		}
 
 		//break if not followed by another points
 		if ( ! _reader.match(',') ){
@@ -502,8 +508,6 @@ void WktReader::readInnerSolid( Solid & g )
 	if ( ! _reader.match(')') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
-
-	g = Solid( shells );
 }
 
 ///

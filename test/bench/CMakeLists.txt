@@ -1,7 +1,8 @@
-#TODO merge
 set(SFCGAL_HME_BENCHS
   IntersectionPerfTest.cpp
   KernelPerfTest.cpp
+  BenchWKT.cpp
+  BenchTriangulation.cpp
   TestModule.cpp
 )
 add_executable( bench-hme ${SFCGAL_HME_BENCHS} )
@@ -10,25 +11,9 @@ target_link_libraries( bench-hme
        ${Boost_LIBRARIES}
        ${CGAL_LIBRARIES}
 )
+if( ${SFCGAL_WITH_MPFR} )
+	target_link_libraries( bench-hme ${MPFR_LIBRARIES} )
+endif( ${SFCGAL_WITH_MPFR} )
+set_target_properties( bench-hme PROPERTIES DEBUG_POSTFIX "d" )
+install( TARGETS bench-hme DESTINATION bin )
 
-#-- build unit tests
-set( SFCGAL_BENCHS 
-	wkt 
-	triangulation
-)
-
-foreach( SFCGAL_BENCH ${SFCGAL_BENCHS} )
-	set( BENCH_NAME bench-SFCGAL-${SFCGAL_BENCH} )
-	add_executable( ${BENCH_NAME} ${CMAKE_SOURCE_DIR}/test/bench/${SFCGAL_BENCH}.cpp )
-	target_link_libraries( ${BENCH_NAME}
-		SFCGAL
-		${Boost_LIBRARIES}
-		${CGAL_LIBRARIES}
-	)
-	if( ${SFCGAL_WITH_MPFR} )
-	  target_link_libraries( ${BENCH_NAME} ${MPFR_LIBRARIES} )
-	endif( ${SFCGAL_WITH_MPFR} )
-	
-	set_target_properties( ${BENCH_NAME} PROPERTIES DEBUG_POSTFIX "d" )
-	install( TARGETS ${BENCH_NAME} DESTINATION bin )
-endforeach()

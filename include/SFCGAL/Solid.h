@@ -4,6 +4,8 @@
 #include <vector>
 #include <boost/assert.hpp>
 
+#include <boost/ptr_container/ptr_vector.hpp>
+
 #include <boost/serialization/base_object.hpp>
 #include <boost/serialization/vector.hpp>
 
@@ -25,6 +27,9 @@ namespace SFCGAL {
 	 */
 	class Solid : public Geometry {
 	public:
+		typedef boost::ptr_vector< PolyhedralSurface >::iterator       iterator ;
+		typedef boost::ptr_vector< PolyhedralSurface >::const_iterator const_iterator ;
+
 		/**
 		 * Empty Solid constructor
 		 */
@@ -92,6 +97,13 @@ namespace SFCGAL {
 		 */
 		inline void                         addInteriorShell( const PolyhedralSurface & shell )
 		{
+			_shells.push_back( shell.clone() );
+		}
+		/**
+		 * add a polygon to the PolyhedralSurface
+		 */
+		inline void                         addInteriorShell( PolyhedralSurface * shell )
+		{
 			_shells.push_back( shell );
 		}
 
@@ -117,6 +129,17 @@ namespace SFCGAL {
 			BOOST_ASSERT( n < numShells() );
 			return _shells[n];
 		}
+
+		//-- iterators
+
+		inline iterator       begin() { return _shells.begin() ; }
+		inline const_iterator begin() const { return _shells.begin() ; }
+
+		inline iterator       end() { return _shells.end() ; }
+		inline const_iterator end() const { return _shells.end() ; }
+
+
+		//-- helpers
 
 		/**
 		 * Convert to Nef_polyhedron_3
@@ -149,8 +172,6 @@ namespace SFCGAL {
 			return nef;
 		}
 
-		const std::vector< PolyhedralSurface > & shells() const { return _shells; }
-		std::vector< PolyhedralSurface > &       shells() { return _shells; }
 
 		//-- visitors
 
@@ -169,10 +190,7 @@ namespace SFCGAL {
 			ar & _shells;
 		}
 	private:
-		/**
-		 * @todo ptr_vector
-		 */
-		std::vector< PolyhedralSurface > _shells ;
+		boost::ptr_vector< PolyhedralSurface > _shells ;
 	};
 
 

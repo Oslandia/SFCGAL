@@ -151,12 +151,27 @@ namespace SFCGAL {
 		/**
 		 * append a ring to the Polygon
 		 */
-		inline void            addRing( const LineString & ls ) {
+		inline void            addInteriorRing( const LineString & ls ) {
 			_rings.push_back( ls.clone() ) ;
+		}
+		/**
+		 * append a ring to the Polygon (take ownership)
+		 */
+		inline void            addInteriorRing( LineString* ls ) {
+			BOOST_ASSERT( ls != NULL );
+			_rings.push_back( ls ) ;
 		}
 
 		/**
+		 * append a ring to the Polygon
+		 * @deprecated addInteriorRing
+		 */
+		inline void            addRing( const LineString & ls ) {
+			_rings.push_back( ls.clone() ) ;
+		}
+		/**
 		 * append a ring to the Polygon (take ownership)
+		 * @deprecated addInteriorRing
 		 */
 		inline void            addRing( LineString* ls ) {
 			BOOST_ASSERT( ls != NULL );

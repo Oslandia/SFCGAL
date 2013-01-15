@@ -124,6 +124,12 @@ namespace SFCGAL {
 		inline void            addPoint( const Point & p ) {
 			_points.push_back( p.clone() ) ;
 		}
+		/**
+		 * append a Point to the LineString and takes ownership
+		 */
+		inline void            addPoint( Point* p ) {
+			_points.push_back( p ) ;
+		}
 
 		//remove 20120910 could lead to memory leaks with existing codes on std::vector< Point* >
 		//const std::vector< Point > & points() const { return _points; }
