@@ -1,19 +1,13 @@
-set(SFCGAL_HME_BENCHS
-  IntersectionPerfTest.cpp
-  KernelPerfTest.cpp
-  BenchWKT.cpp
-  BenchTriangulation.cpp
-  TestModule.cpp
-)
-add_executable( bench-hme ${SFCGAL_HME_BENCHS} )
-target_link_libraries( bench-hme
+file( GLOB SFCGAL_BENCHS_SOURCES *.cpp )
+add_executable( bench-SFCGAL ${SFCGAL_BENCHS_SOURCES} )
+target_link_libraries( bench-SFCGAL
        SFCGAL
        ${Boost_LIBRARIES}
        ${CGAL_LIBRARIES}
 )
-if( ${SFCGAL_WITH_MPFR} )
-	target_link_libraries( bench-hme ${MPFR_LIBRARIES} )
-endif( ${SFCGAL_WITH_MPFR} )
-set_target_properties( bench-hme PROPERTIES DEBUG_POSTFIX "d" )
-install( TARGETS bench-hme DESTINATION bin )
+if( SFCGAL_WITH_MPFR )
+	target_link_libraries( bench-SFCGAL ${MPFR_LIBRARIES} ${GMP_LIBRARIES} )
+endif()
+set_target_properties( bench-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
+install( TARGETS bench-SFCGAL DESTINATION bin )
 

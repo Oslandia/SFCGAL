@@ -4,6 +4,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/generator/hoch.h>
 
 #include "../test_config.h"
 
@@ -40,6 +41,21 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation )
 	timer.stop();
 	std::cout << "triangulate "<< N_POINTS << " points : " << timer.format() << std::endl;
 }
+
+BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
+{
+	const int N = 7 ;
+	std::auto_ptr< Polygon > fractal( generator::hoch(N) );
+//	std::cout << fractal->asText(5) << std::endl ;
+
+	boost::timer::cpu_timer timer;
+	timer.start();
+	TriangulatedSurface triangulatedSurface ;
+	SFCGAL::algorithm::triangulate( *fractal, triangulatedSurface ) ;
+	timer.stop();
+	std::cout << "hoch(" << N << ") "<< triangulatedSurface.numTriangles() << " triangles : " << timer.format() << std::endl;
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()
