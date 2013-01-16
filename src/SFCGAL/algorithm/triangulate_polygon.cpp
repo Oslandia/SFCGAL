@@ -2,6 +2,7 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/tools/Log.h>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
@@ -267,6 +268,11 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 //	std::cout << "---------------------------------------------------------" << std::endl ;
 //	std::cout << "triangulate polygon : " << polygon.asText() << std::endl;
 	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon ) ;
+	if ( polygonPlane.is_degenerate() ){
+		BOOST_THROW_EXCEPTION( Exception( 
+			( boost::format( "can't find plane for polygon %s" ) % polygon.asText() ).str()
+		) );
+	}
 
 	/*
 	 * insert each ring in the triangulation
@@ -277,12 +283,8 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 		CDT::Vertex_handle v_prev ;
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
 			const Point & point = ring.pointN( j );
-
-			CGAL::Point_3< Kernel > p3d(
-				point.x(),
-				point.y(),
-				point.is3D()?point.z():0.0
-			);
+			SFCGAL_DEBUG( boost::format( "insert point %s" ) % point.asText() );
+			CGAL::Point_3< Kernel > p3d = point.toPoint_3();
 
 			/*
 			 * insert into triangulation

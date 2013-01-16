@@ -16,3 +16,5 @@ polygon_triangulation2.obj
 
 *.3ds
 
+gmon.out
+

@@ -7,8 +7,9 @@ target_link_libraries( test-SFCGAL
 	${CGAL_LIBRARIES}
 )
 if( ${SFCGAL_WITH_MPFR} )
-  target_link_libraries( test-SFCGAL ${MPFR_LIBRARIES} )
+  target_link_libraries( test-SFCGAL ${MPFR_LIBRARIES} ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_MPFR} )
+
 
 #include( PrecompiledHeader )
 #if(PCHSupport_FOUND)

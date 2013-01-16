@@ -14,62 +14,23 @@ namespace CGAL {
 }
 
 namespace SFCGAL {
-
 	class Geometry ;
-//	typedef boost::shared_ptr< Geometry >         GeometryPtr ;
-//	typedef boost::shared_ptr< const Geometry >   ConstGeometryPtr ;
-
     class Point ;
-//	typedef boost::shared_ptr< Point >            PointPtr ;
-//	typedef boost::shared_ptr< const Point >      ConstPointPtr ;
-
     class LineString ;
-//	typedef boost::shared_ptr< LineString >       LineStringPtr ;
-//	typedef boost::shared_ptr< const LineString > ConstLineStringPtr ;
-
     class Polygon ;
-//	typedef boost::shared_ptr< Polygon >          PolygonPtr ;
-//	typedef boost::shared_ptr< const Polygon >    ConstPolygonPtr ;
-
     class GeometryCollection ;
-//	typedef boost::shared_ptr< GeometryCollection >        GeometryCollectionPtr ;
-//	typedef boost::shared_ptr< const GeometryCollection >  ConstGeometryCollectionPtr ;
-
     class MultiPoint ;
-//    typedef boost::shared_ptr< MultiPoint >             MultiPointPtr ;
-//	typedef boost::shared_ptr< const MultiPoint >       ConstMultiPointPtr ;
-
     class MultiLineString ;
-//    typedef boost::shared_ptr< MultiLineString >        MultiLineStringPtr ;
-//	typedef boost::shared_ptr< const MultiLineString >  ConstMultiLineString ;
-
     class MultiPolygon ;
-//    typedef boost::shared_ptr< MultiPolygon >           MultiPolygonPtr ;
-//	typedef boost::shared_ptr< const MultiPolygon >     ConstMultiPolygon ;
-
 
     class Triangle ;
-//    typedef boost::shared_ptr< Triangle >              TrianglePtr ;
-//	typedef boost::shared_ptr< const Triangle >        ConstTrianglePtr ;
-
     class TriangulatedSurface ;
-//    typedef boost::shared_ptr< TriangulatedSurface >            TriangulatedSurfacePtr ;
-//	typedef boost::shared_ptr< const TriangulatedSurface >      ConstTriangulatedSurfacePtr ;
-
     class PolyhedralSurface ;
-//    typedef boost::shared_ptr< PolyhedralSurface >              PolyhedralSurfacePtr ;
-//	typedef boost::shared_ptr< const PolyhedralSurface >        ConstPolyhedralSurfacePtr ;
 
     //not SFA, appears in GML/CityGML
     class Solid ;
-//    typedef boost::shared_ptr< Solid >             SolidPtr ;
-//	typedef boost::shared_ptr< const Solid >       ConstSolidPtr ;
-
     //not SFA, appears in GML/CityGML
     class MultiSolid ;
-//    typedef boost::shared_ptr< MultiSolid >        MultiSolidPtr ;
-//	typedef boost::shared_ptr< const MultiSolid >  ConstMultiSolidPtr ;
-
     //not SFA, appears in GML/CityGML
     class Grid ;
 

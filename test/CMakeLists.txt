@@ -12,8 +12,8 @@ add_subdirectory( unit )
 #-- build regression tests
 add_subdirectory( regress )
 
-option( Compile_Bench "Compile benchmarks" OFF )
-if( ${Compile_Bench} )
+option( SFCGAL_COMPILE_BENCH "Compile benchmarks" OFF )
+if( SFCGAL_COMPILE_BENCH )
 	add_subdirectory( bench )
 endif()
 

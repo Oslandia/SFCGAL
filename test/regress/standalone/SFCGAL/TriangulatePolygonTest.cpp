@@ -5,6 +5,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/tools/Log.h>
 
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/area.h>
@@ -21,6 +22,8 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatePolygonTest )
  */
 BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 {
+	//logger().setLogLevel( Logger::Debug );
+
 	std::string filename( SFCGAL_TEST_DIRECTORY );
 	filename += "/regress/data/TriangulatePolygonTest.txt" ;
 
