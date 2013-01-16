@@ -97,7 +97,18 @@ namespace SFCGAL {
 		inline LineString &          exteriorRing() {
 			return _rings.front();
 		}
-
+		/**
+		 * Sets the exterior ring
+		 */
+		inline void  setExteriorRing( const LineString& ring ){
+			_rings.front() = ring ;
+		}
+		/**
+		 * Sets the exterior ring (takes ownership)
+		 */
+		inline void  setExteriorRing( LineString* ring ){
+			_rings.replace( 0, ring );
+		}
 
 		/**
 		 * Test if the polygon has interior rings
