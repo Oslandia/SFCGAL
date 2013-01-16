@@ -21,8 +21,10 @@ WktWriter::WktWriter( std::ostream & s ):
 ///
 ///
 ///
-void WktWriter::write( const Geometry& g )
+void WktWriter::write( const Geometry& g, bool exact )
 {
+	_exactWrite = exact;
+
 	switch( g.geometryTypeId() ){
 	case TYPE_POINT:
 		write( g.as< Point >() );

@@ -62,6 +62,24 @@ namespace tools {
 		}
 
 
+		/// \brief try to match a char in the input stream, case-insensitive variant
+		bool imatch( char_type const& c )
+		{
+			begin();
+
+			if ( _skipWhiteSpaces ){
+				skipWhiteSpaces();
+			}
+
+			if ( ! _s.eof() && ::tolower(_s.get()) == ::tolower(c) ){
+				commit();
+				return true ;
+			}else{
+				rollback();
+				return false;
+			}
+		}
+
 		/// \brief try to match a string in the input stream
 		bool match( string_type const& str )
 		{
@@ -73,6 +91,26 @@ namespace tools {
 
 			for ( typename string_type::const_iterator it = str.begin(); it != str.end(); ++it ){
 				if ( ! _s.eof() && _s.get() == *it ){
+					continue ;
+				}
+				rollback();
+				return false ;
+			}
+			commit();
+			return true ;
+		}
+
+		/// \brief try to match a string in the input stream, case-insensitive variant
+		bool imatch( string_type const& str )
+		{
+			begin();
+
+			if ( _skipWhiteSpaces ){
+				skipWhiteSpaces();
+			}
+
+			for ( typename string_type::const_iterator it = str.begin(); it != str.end(); ++it ){
+				if ( ! _s.eof() && ::tolower(_s.get()) == ::tolower(*it) ){
 					continue ;
 				}
 				rollback();

@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/PreparedGeometry.h>
 
 #include <SFCGAL/tools/InputStreamReader.h>
 
@@ -23,6 +23,12 @@ namespace io {
 		 * read WKT from input stream
 		 */
 		WktReader( std::istream & s );
+
+		/**
+		 * read an SRID, if present
+		 *
+		 */
+		srid_t        readSRID() ;
 
 		/**
 		 * read a geometry from a string

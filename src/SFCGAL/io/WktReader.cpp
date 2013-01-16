@@ -18,14 +18,29 @@ WktReader::WktReader( std::istream & s ):
 
 }
 
-///Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.
+///
+///
+///
+srid_t WktReader::readSRID()
+{
+	srid_t srid = 0;
+	if ( _reader.imatch( "SRID=" ) ) {
+		_reader.read( srid );
+		
+		if ( !_reader.match( ";" ) ) {
+			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+		}
+	}
+	return srid;
+}
+
 ///
 ///
 Geometry*    WktReader::readGeometry()
 {
 	GeometryType   geometryType   = readGeometryType() ;
-	_is3D       = _reader.match("Z");
-	_isMeasured = _reader.match("M");
+	_is3D       = _reader.imatch("Z");
+	_isMeasured = _reader.imatch("M");
 
 	switch ( geometryType ){
 	case TYPE_POINT :
@@ -115,31 +130,31 @@ Geometry*    WktReader::readGeometry()
 ///
 GeometryType WktReader::readGeometryType()
 {
-	if ( _reader.match("POINT") ){
+	if ( _reader.imatch("POINT") ){
 		return TYPE_POINT ;
-	}else if ( _reader.match("LINESTRING") ){
+	}else if ( _reader.imatch("LINESTRING") ){
 		return TYPE_LINESTRING ;
-	}else if ( _reader.match("POLYGON") ){
+	}else if ( _reader.imatch("POLYGON") ){
 		return TYPE_POLYGON ;
-	}else if ( _reader.match("TRIANGLE") ){
+	}else if ( _reader.imatch("TRIANGLE") ){
 		//not official
 		return TYPE_TRIANGLE ;
-	}else if ( _reader.match("MULTIPOINT") ) {
+	}else if ( _reader.imatch("MULTIPOINT") ) {
 		return TYPE_MULTIPOINT ;
-	}else if ( _reader.match("MULTILINESTRING") ){
+	}else if ( _reader.imatch("MULTILINESTRING") ){
 		return TYPE_MULTILINESTRING ;
-	}else if ( _reader.match("MULTIPOLYGON") ){
+	}else if ( _reader.imatch("MULTIPOLYGON") ){
 		return TYPE_MULTIPOLYGON ;
-	}else if ( _reader.match("GEOMETRYCOLLECTION") ){
+	}else if ( _reader.imatch("GEOMETRYCOLLECTION") ){
 		return TYPE_GEOMETRYCOLLECTION ;
-	}else if ( _reader.match("TIN") ){
+	}else if ( _reader.imatch("TIN") ){
 		return TYPE_TRIANGULATEDSURFACE ;
-	}else if ( _reader.match("POLYHEDRALSURFACE") ){
+	}else if ( _reader.imatch("POLYHEDRALSURFACE") ){
 		return TYPE_POLYHEDRALSURFACE ;
-	}else if ( _reader.match("SOLID") ){
+	}else if ( _reader.imatch("SOLID") ){
 		//not official
 		return TYPE_SOLID ;
-	}else if ( _reader.match("MULTISOLID") ){
+	}else if ( _reader.imatch("MULTISOLID") ){
 		//not official
 		return TYPE_MULTISOLID ;
 	}
@@ -155,7 +170,7 @@ GeometryType WktReader::readGeometryType()
 ///
 void   WktReader::readInnerPoint( Point & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -173,7 +188,7 @@ void   WktReader::readInnerPoint( Point & g )
 ///
 void   WktReader::readInnerLineString( LineString & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -210,7 +225,7 @@ void   WktReader::readInnerLineString( LineString & g )
 ///
 void   WktReader::readInnerPolygon( Polygon & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -243,7 +258,7 @@ void   WktReader::readInnerPolygon( Polygon & g )
 ///
 void   WktReader::readInnerTriangle( Triangle & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -279,7 +294,7 @@ void   WktReader::readInnerTriangle( Triangle & g )
 ///
 void    WktReader::readInnerMultiPoint( MultiPoint & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -321,7 +336,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint & g )
 ///
 void   WktReader::readInnerMultiLineString( MultiLineString & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -350,7 +365,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString & g )
 ///
 void   WktReader::readInnerMultiPolygon( MultiPolygon & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -379,7 +394,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon & g )
 ///
 void   WktReader::readInnerGeometryCollection( GeometryCollection & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -407,7 +422,7 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection & g )
 ///
 void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -450,7 +465,7 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface & g )
 ///
 void WktReader::readInnerPolyhedralSurface( PolyhedralSurface & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -480,7 +495,7 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface & g )
 ///
 void WktReader::readInnerSolid( Solid & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 
@@ -515,7 +530,7 @@ void WktReader::readInnerSolid( Solid & g )
 ///
 void WktReader::readInnerMultiSolid( MultiSolid & g )
 {
-	if ( _reader.match("EMPTY") ){
+	if ( _reader.imatch("EMPTY") ){
 		return ;
 	}
 

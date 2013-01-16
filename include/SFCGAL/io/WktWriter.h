@@ -20,13 +20,7 @@ namespace io {
 		/**
 		 * @todo replace with visitor dispatch
 		 */
-		void write( const Geometry & g ) ;
-
-		/**
-		 * Exact / approximation setting
-		 */
-		void setExactWrite( bool e ) { _exactWrite = e; }
-		bool exactWrite() const { return _exactWrite; }
+		void write( const Geometry & g, bool exact = false ) ;
 
 	protected:
 		void writeCoordinate( const Point& g );
