@@ -37,6 +37,10 @@ namespace SFCGAL {
 		 */
 		Polygon( const LineString & exteriorRing ) ;
 		/**
+		 * Constructor with an exterior ring (takes ownership)
+		 */
+		Polygon( LineString * exteriorRing ) ;
+		/**
 		 * Constructor with a Triangle
 		 */
 		Polygon( const Triangle & triangle ) ;

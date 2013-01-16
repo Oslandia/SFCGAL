@@ -210,15 +210,10 @@ void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulate
 	for ( size_t j = 0; j < geometry.numGeometries(); j++ ) {
 		const Point & point = geometry.pointN( j );
 
-		CGAL::Point_2< Kernel > p2d(
-			point.x(),
-			point.y()
-		);
-
 		/*
 		 * insert into triangulation
 		 */
-		CDT::Vertex_handle vh = cdt.insert( p2d );
+		CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
 		vh->info().original = point ;
 	}
 
@@ -362,15 +357,10 @@ void triangulate2D( const Polygon & polygon, TriangulatedSurface & triangulatedS
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
 			const Point & point = ring.pointN( j );
 
-			CGAL::Point_2< Kernel > p2d(
-				point.x(),
-				point.y()
-			);
-
 			/*
 			 * insert into triangulation
 			 */
-			CDT::Vertex_handle vh = cdt.insert( p2d );
+			CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
 			vh->info().original = point ;
 
 			// filter first point
