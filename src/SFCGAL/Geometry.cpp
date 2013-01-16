@@ -87,10 +87,11 @@ std::string Geometry::asText( const int & numDecimals ) const
 		oss.precision( numDecimals );
 	}
 	io::WktWriter writer( oss );
+	bool exact = false;
 	if ( numDecimals == -1 ) {
-		writer.setExactWrite( true );
+		exact = true;
 	}
-	writer.write( *this );
+	writer.write( *this, exact );
 	return oss.str();
 }
 

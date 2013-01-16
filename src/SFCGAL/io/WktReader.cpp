@@ -20,6 +20,22 @@ WktReader::WktReader( std::istream & s ):
 
 ///
 ///
+///
+srid_t WktReader::readSRID()
+{
+	srid_t srid = 0;
+	if ( _reader.imatch( "SRID=" ) ) {
+		_reader.read( srid );
+		
+		if ( !_reader.match( ";" ) ) {
+			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+		}
+	}
+	return srid;
+}
+
+///
+///
 Geometry*    WktReader::readGeometry()
 {
 	GeometryType   geometryType   = readGeometryType() ;
