@@ -4,17 +4,20 @@
 
 namespace SFCGAL
 {
+	PreparedGeometry::PreparedGeometry() :
+		_srid( 0 )
+	{
+	}
+
 	PreparedGeometry::PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid ) :
 		_geometry( geometry ),
-		_srid( srid ),
-		_is_envelope_valid( false )
+		_srid( srid )
 	{
 	}
 
 	PreparedGeometry::PreparedGeometry( Geometry* geometry, srid_t srid ) :
 		_geometry( geometry ),
-		_srid( srid ),
-		_is_envelope_valid( false )
+		_srid( srid )
 	{
 	}
 
@@ -22,13 +25,32 @@ namespace SFCGAL
 	{
 	}
 
+	const Geometry& PreparedGeometry::geometry() const {
+		BOOST_ASSERT( _geometry.get() );
+		return *_geometry;
+	}
+
+	Geometry& PreparedGeometry::geometry() {
+		BOOST_ASSERT( _geometry.get() );
+		return *_geometry;
+	}
+
+	void PreparedGeometry::resetGeometry( Geometry* geom ) {
+		_geometry.reset( geom );
+		invalidateCache();
+	}
+
 	const Envelope& PreparedGeometry::envelope() const
 	{
-		if ( !_is_envelope_valid ) {
-			_envelope = _geometry->envelope();
-			_is_envelope_valid = true;
+		if ( ! _envelope ) {
+			_envelope.reset( _geometry->envelope() );
 		}
-		return _envelope;
+		return *_envelope;
+	}
+
+	void PreparedGeometry::invalidateCache()
+	{
+		_envelope.reset();
 	}
 
 	std::string PreparedGeometry::asEWKT( const int& numDecimals ) const
@@ -39,7 +61,9 @@ namespace SFCGAL
 			oss.precision( numDecimals );
 		}
 
-		oss << "SRID=" << _srid << ";";
+		if ( _srid != 0 ) {
+			oss << "SRID=" << _srid << ";";
+		}
 
 		io::WktWriter writer( oss );
 		bool exactWrite = false;

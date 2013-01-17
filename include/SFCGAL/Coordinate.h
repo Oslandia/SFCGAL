@@ -4,11 +4,11 @@
 #include <boost/assert.hpp>
 #include <boost/array.hpp>
 #include <boost/variant.hpp>
+#include <boost/serialization/split_member.hpp>
 
 #include <SFCGAL/numeric.h>
 
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/io/Serialization.h>
 
 namespace SFCGAL {
 

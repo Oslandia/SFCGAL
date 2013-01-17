@@ -3,6 +3,8 @@
 
 #include <SFCGAL/Envelope.h>
 
+#include <boost/serialization/split_member.hpp>
+#include <boost/optional.hpp>
 #include <boost/noncopyable.hpp>
 
 #include <stdint.h> // uint32_t
@@ -23,13 +25,18 @@ class PreparedGeometry : public boost::noncopyable
 {
  public:
 	/**
-	 * Cosntructor
+	 * Default constructor
+	 */
+	PreparedGeometry();
+
+	/**
+	 * Constructor
 	 * @geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
 	 */
 	PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid = 0 );
 
 	/**
-	 * Cosntructor
+	 * Constructor
 	 * @geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
 	 */
 	PreparedGeometry( Geometry* geometry, srid_t srid = 0 );
@@ -37,10 +44,15 @@ class PreparedGeometry : public boost::noncopyable
 	virtual ~PreparedGeometry();
 
 	/**
-	 * Geometry accessor
+	 * Geometry accessors
 	 */
-	const Geometry& geometry() const { return *_geometry; }
-	Geometry& geometry() { return *_geometry; }
+	const Geometry& geometry() const;
+	Geometry& geometry();
+
+	/**
+	 * Geometry setter
+	 */
+	void resetGeometry( Geometry* geom );
 
 	/**
 	 * SRID read only accessor
@@ -58,14 +70,9 @@ class PreparedGeometry : public boost::noncopyable
 	const Envelope& envelope() const;
 
 	/**
-	 * Is the envelope valid
+	 * Resets the cache
 	 */
-	bool isEnvelopeValid() const { return _is_envelope_valid; }
-
-	/**
-	 * Resets the envelope cache
-	 */
-	void invalidateEnvelope() { _is_envelope_valid = false; }
+	void invalidateCache();
 
 	/**
 	 * Convert to an extended WKT (with SRID)
@@ -73,6 +80,31 @@ class PreparedGeometry : public boost::noncopyable
 	 */
 	std::string asEWKT( const int& numDecimals = - 1) const;
 
+	/**
+	 * Serializer
+	 */
+	template <class Archive>
+	void save( Archive& ar, const unsigned int version ) const
+	{
+		ar & _srid;
+		const Geometry* pgeom = _geometry.get();
+		ar & pgeom;
+	}
+
+	template <class Archive>
+	void load( Archive& ar, const unsigned int version )
+	{
+		ar & _srid;
+		Geometry* pgeom;
+		ar & pgeom;
+		_geometry.reset( pgeom );
+	}
+
+	template <class Archive>
+	void serialize( Archive& ar, const unsigned int version )
+	{
+		boost::serialization::split_member(ar, *this, version);
+	}
 
 protected:
 	// Pointer to underlying Geometry
@@ -82,9 +114,7 @@ protected:
 	srid_t _srid;
 
 	// bbox of the geometry
-	mutable Envelope _envelope;
-	// Envelope dirty flag. When accessing to the envelope, it is not recomputed if this flag is set to true
-	mutable bool _is_envelope_valid;
+	mutable boost::optional<Envelope> _envelope;
 };
 
 }

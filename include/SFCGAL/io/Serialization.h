@@ -3,6 +3,7 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/PreparedGeometry.h>
 
 #include <boost/assert.hpp>
 #include <boost/serialization/split_member.hpp>
@@ -13,6 +14,7 @@
 #include <boost/archive/text_iarchive.hpp>
 
 namespace SFCGAL {
+
 namespace io {
 
 	class BinarySerializer : public boost::archive::binary_oarchive
@@ -31,12 +33,23 @@ namespace io {
 	 * Convert a Geometry to its binary representation
 	 * @warning resulting string may contain 0s
 	 */
-	std::string writeBinary( const SFCGAL::Geometry& );
+	std::string writeBinaryGeometry( const SFCGAL::Geometry& );
+
+	/**
+	 * Convert a PreparedGeometry to its binary representation
+	 * @warning resulting string may contain 0s
+	 */
+	std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
 
 	/**
 	 * Read a Geometry from a binary representation
 	 */
-	std::auto_ptr<SFCGAL::Geometry> readBinary( const std::string& );
+	std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
+
+	/**
+	 * Read a PreparedGeometry from a binary representation
+	 */
+	std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
 }
 }
 

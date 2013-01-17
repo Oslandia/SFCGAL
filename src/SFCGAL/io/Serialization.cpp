@@ -41,7 +41,7 @@ namespace io {
 	///
 	///
 	///
-	std::string writeBinary( const Geometry& g )
+	std::string writeBinaryGeometry( const Geometry& g )
 	{
 		std::ostringstream ostr;
 		BinarySerializer arc( ostr );
@@ -54,13 +54,37 @@ namespace io {
 	///
 	///
 	///
-	std::auto_ptr<Geometry> readBinary( const std::string& str )
+	std::string writeBinaryPrepared( const PreparedGeometry& g )
+	{
+		std::ostringstream ostr;
+		BinarySerializer arc( ostr );
+		const PreparedGeometry* pg = &g;
+		arc << pg;
+		return ostr.str();
+	}
+
+	///
+	///
+	///
+	std::auto_ptr<Geometry> readBinaryGeometry( const std::string& str )
 	{
 		std::istringstream istr( str );
 		BinaryUnserializer iarc( istr );
 		Geometry* g;
 		iarc >> g;
 		return std::auto_ptr<Geometry>( g );
+	}
+
+	///
+	///
+	///
+	std::auto_ptr<PreparedGeometry> readBinaryPrepared( const std::string& str )
+	{
+		std::istringstream istr( str );
+		BinaryUnserializer iarc( istr );
+		PreparedGeometry* pg;
+		iarc >> pg;
+		return std::auto_ptr<PreparedGeometry>( pg );
 	}
 }
 }
