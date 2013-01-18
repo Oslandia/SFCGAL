@@ -5,6 +5,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/io/Serialization.h>
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/ewkt.h>
 
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
@@ -69,18 +70,24 @@ BOOST_AUTO_TEST_CASE( geometryTest )
 	std::auto_ptr<Geometry> g10 = io::readWkt( "MULTIPOLYGON((( 0 0 0, 1 1 1, 3.4 5.6 6.7,2 3 4, 0 0 0)))" );
 	std::auto_ptr<Geometry> g11 = io::readWkt( "MULTISOLID((((( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0)), ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))))" );
 
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g1 ) )->asText() == g1->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g2 ) )->asText() == g2->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g3 ) )->asText() == g3->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g4 ) )->asText() == g4->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g5 ) )->asText() == g5->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g6 ) )->asText() == g6->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g7 ) )->asText() == g7->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g8 ) )->asText() == g8->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g9 ) )->asText() == g9->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g10 ) )->asText() == g10->asText() );
-	BOOST_CHECK( io::readBinary( io::writeBinary( *g11 ) )->asText() == g11->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g1 ) )->asText() == g1->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g2 ) )->asText() == g2->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g3 ) )->asText() == g3->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g4 ) )->asText() == g4->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g5 ) )->asText() == g5->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g6 ) )->asText() == g6->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g7 ) )->asText() == g7->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g8 ) )->asText() == g8->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g9 ) )->asText() == g9->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g10 ) )->asText() == g10->asText() );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g11 ) )->asText() == g11->asText() );
 
+}
+
+BOOST_AUTO_TEST_CASE( caseTest )
+{
+	std::auto_ptr<Geometry> g1 = io::readWkt( "PoInT( 3.4 4.5 5.6 )" );
+	BOOST_CHECK( io::readBinaryGeometry( io::writeBinaryGeometry( *g1 ) )->asText() == g1->asText() );
 }
 
 BOOST_AUTO_TEST_CASE( extBinaryTest )
@@ -101,6 +108,17 @@ BOOST_AUTO_TEST_CASE( extBinaryTest )
 	BOOST_CHECK( mg1->asText() == ng2->asText() );
 	delete mg1;
 	delete ng2;
+}
+
+BOOST_AUTO_TEST_CASE( preparedGeometryTest )
+{
+	std::auto_ptr<PreparedGeometry> g1 = io::readEwkt( "POINT( 3.4 4.5 5.6 )" );
+	std::auto_ptr<PreparedGeometry> g2 = io::readEwkt( "srid=0;POINT( 3.4 4.5 5.6 )" );
+	std::auto_ptr<PreparedGeometry> g3 = io::readEwkt( "srid=4326;POINT( 3.4 4.5 5.6 )" );
+
+	BOOST_CHECK( io::readBinaryPrepared( io::writeBinaryPrepared( *g1 ) )->asEWKT() == g1->asEWKT() );
+	BOOST_CHECK( io::readBinaryPrepared( io::writeBinaryPrepared( *g2 ) )->asEWKT() == g2->asEWKT() );
+	BOOST_CHECK( io::readBinaryPrepared( io::writeBinaryPrepared( *g3 ) )->asEWKT() == g3->asEWKT() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

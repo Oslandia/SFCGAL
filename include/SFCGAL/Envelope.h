@@ -2,12 +2,12 @@
 #define _SFCGAL_ENVELOPE_H_
 
 #include <boost/assert.hpp>
-#include <SFCGAL/detail/Interval.h>
-
-#include <SFCGAL/Coordinate.h>
 
 #include <CGAL/Bbox_2.h>
 #include <CGAL/Bbox_3.h>
+
+#include <SFCGAL/detail/Interval.h>
+#include <SFCGAL/Coordinate.h>
 
 namespace SFCGAL {
 
