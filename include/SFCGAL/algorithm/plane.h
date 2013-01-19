@@ -40,10 +40,11 @@ namespace algorithm {
 			}else if ( n == 2 && ! CGAL::collinear( a, b, p ) ) {
 				c = p ;
 				n++ ;
-				break;
+				return true ;
 			}
 		}
-		return n == 3;
+		BOOST_ASSERT( n < 3 );
+		return false;
 	}
 
 	/**
