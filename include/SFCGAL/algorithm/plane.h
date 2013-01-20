@@ -80,15 +80,14 @@ namespace algorithm {
 
 	/**
 	 * Returns the oriented 3D plane of a polygon (supposed to be planar).
+	 * @warning result is rounded to double if exact is false (avoid huge expression tree)
 	 */
 	template < typename Kernel >
-	CGAL::Plane_3< Kernel > plane3D( const Polygon & polygon )
+	CGAL::Plane_3< Kernel > plane3D( const Polygon & polygon, bool exact = true )
 	{
-		CGAL::Vector_3< Kernel > normal = normal3D< Kernel >( polygon );
-		return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN(0).toPoint_3(),
-						normal );
+		CGAL::Vector_3< Kernel > normal = normal3D< Kernel >( polygon, exact );
+		return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN(0).toPoint_3(), normal );
 	}
-
 
 
 
