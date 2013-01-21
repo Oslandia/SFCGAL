@@ -30,6 +30,14 @@ namespace SFCGAL {
 		 */
 		Triangle();
 		/**
+		 * Constructor with a CGAL triangle
+		 */
+		Triangle( const Kernel::Triangle_2 & triangle ) ;
+		/**
+		 * Constructor with a CGAL triangle
+		 */
+		Triangle( const Kernel::Triangle_3 & triangle ) ;
+		/**
 		 * constructor with 3 points
 		 */
 		Triangle( const Point & p, const Point & q, const Point & r );
