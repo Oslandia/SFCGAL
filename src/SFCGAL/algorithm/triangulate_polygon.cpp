@@ -278,7 +278,6 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 		CDT::Vertex_handle v_prev ;
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
 			const Point & point = ring.pointN( j );
-			SFCGAL_DEBUG( boost::format( "insert point %s" ) % point.asText() );
 			CGAL::Point_3< Kernel > p3d = point.toPoint_3();
 
 			/*
@@ -314,7 +313,6 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 		if ( ! it->info().in_domain() ){
 			continue ;
 		}
-//		assert( it->is_valid() );
 
 		const Point & a = it->vertex(0)->info().original ;
 		const Point & b = it->vertex(1)->info().original ;
