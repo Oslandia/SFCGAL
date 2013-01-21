@@ -58,5 +58,30 @@ BOOST_AUTO_TEST_CASE( testNormal2 )
 	}
 }
 
+
+BOOST_AUTO_TEST_CASE( testNormal3 )
+{
+	std::auto_ptr<Geometry> gA( io::readWkt("POLYGON((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))") );
+	// exact
+	{
+		CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), true);
+		//std::cout << CGAL::exact(normal) << std::endl;
+		CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+		//std::cout << CGAL::exact(plane) << std::endl;
+		BOOST_CHECK( ! plane.is_degenerate() );
+	}	
+	// round
+	{
+		CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), false);
+		//std::cout << CGAL::exact(normal) << std::endl;
+		CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+		//std::cout << CGAL::exact(plane) << std::endl;
+		BOOST_CHECK( ! plane.is_degenerate() );
+	}
+	
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END()
 

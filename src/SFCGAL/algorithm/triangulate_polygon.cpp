@@ -210,15 +210,10 @@ void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulate
 	for ( size_t j = 0; j < geometry.numGeometries(); j++ ) {
 		const Point & point = geometry.pointN( j );
 
-		CGAL::Point_2< Kernel > p2d(
-			point.x(),
-			point.y()
-		);
-
 		/*
 		 * insert into triangulation
 		 */
-		CDT::Vertex_handle vh = cdt.insert( p2d );
+		CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
 		vh->info().original = point ;
 	}
 
@@ -267,9 +262,9 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 
 //	std::cout << "---------------------------------------------------------" << std::endl ;
 //	std::cout << "triangulate polygon : " << polygon.asText() << std::endl;
-	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon ) ;
+	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon, false ) ;
 	if ( polygonPlane.is_degenerate() ){
-		BOOST_THROW_EXCEPTION( Exception( 
+		BOOST_THROW_EXCEPTION( Exception(
 			( boost::format( "can't find plane for polygon %s" ) % polygon.asText() ).str()
 		) );
 	}
@@ -283,7 +278,6 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 		CDT::Vertex_handle v_prev ;
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
 			const Point & point = ring.pointN( j );
-			SFCGAL_DEBUG( boost::format( "insert point %s" ) % point.asText() );
 			CGAL::Point_3< Kernel > p3d = point.toPoint_3();
 
 			/*
@@ -319,7 +313,6 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 		if ( ! it->info().in_domain() ){
 			continue ;
 		}
-//		assert( it->is_valid() );
 
 		const Point & a = it->vertex(0)->info().original ;
 		const Point & b = it->vertex(1)->info().original ;
@@ -362,15 +355,10 @@ void triangulate2D( const Polygon & polygon, TriangulatedSurface & triangulatedS
 		for ( size_t j = 0; j < ring.numPoints(); j++ ) {
 			const Point & point = ring.pointN( j );
 
-			CGAL::Point_2< Kernel > p2d(
-				point.x(),
-				point.y()
-			);
-
 			/*
 			 * insert into triangulation
 			 */
-			CDT::Vertex_handle vh = cdt.insert( p2d );
+			CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
 			vh->info().original = point ;
 
 			// filter first point
