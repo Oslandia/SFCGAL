@@ -262,9 +262,9 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 
 //	std::cout << "---------------------------------------------------------" << std::endl ;
 //	std::cout << "triangulate polygon : " << polygon.asText() << std::endl;
-	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon ) ;
+	CGAL::Plane_3< Kernel > polygonPlane = plane3D< Kernel >( polygon, false ) ;
 	if ( polygonPlane.is_degenerate() ){
-		BOOST_THROW_EXCEPTION( Exception( 
+		BOOST_THROW_EXCEPTION( Exception(
 			( boost::format( "can't find plane for polygon %s" ) % polygon.asText() ).str()
 		) );
 	}
