@@ -18,3 +18,5 @@ polygon_triangulation2.obj
 
 gmon.out
 
+include/SFCGAL/version.h
+

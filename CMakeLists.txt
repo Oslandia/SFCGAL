@@ -6,6 +6,7 @@ set( CMAKE_DEBUG_POSTFIX "d" )
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
+include( sfcgal-config.cmake )
 include( PrecompiledHeader )
 option( Use_precompiled_headers "Use precompiled headers" OFF )
 
@@ -105,8 +106,9 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-pg")
 endif()
 
-#-- configure the library
+#-- generate library headers
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
+configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h )
 
 #-- build the library
 #note : not available on windows without export/import

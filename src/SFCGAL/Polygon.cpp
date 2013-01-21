@@ -42,6 +42,15 @@ Polygon::Polygon( const LineString & exteriorRing ):
 ///
 ///
 ///
+Polygon::Polygon( LineString * exteriorRing ):
+	Surface()
+{
+	_rings.push_back( exteriorRing );
+}
+
+///
+///
+///
 Polygon::Polygon( const Triangle & triangle ):
 	Surface()
 {
