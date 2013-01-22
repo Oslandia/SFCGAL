@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_BenchContainer )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testVectorOfPoint2 )
 {
-	const int N = 10000 ;
+	const int N = 100000 ;
 
 	// create points
 	bench().start( "std::vector< Kernel::Point_2 > create" ) ;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint2 )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testVectorOfPoint )
 {
-	const int N = 10000 ;
+	const int N = 100000 ;
 
 	// create points
 	bench().start( "std::vector< Point > create" );
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testPtrVectorOfPoint )
 {
-	const int N = 10000 ;
+	const int N = 100000 ;
 
 	boost::timer::cpu_timer timer;
 
