@@ -91,11 +91,17 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Point  &  pointN( size_t const& n ) const { return _points[n]; }
+		inline const Point  &  pointN( size_t const& n ) const {
+			BOOST_ASSERT( n < numPoints() ) ;
+			return _points[n];
+		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Point &         pointN( size_t const& n ) { return _points[n]; }
+		inline Point &         pointN( size_t const& n ) {
+			BOOST_ASSERT( n < numPoints() ) ;
+			return _points[n];
+		}
 
 
 		/**
