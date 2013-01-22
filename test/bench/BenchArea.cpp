@@ -5,10 +5,9 @@
 #include <SFCGAL/all.h>
 
 #include "../test_config.h"
+#include "Bench.h"
 
-#include <boost/timer/timer.hpp>
 #include <boost/test/unit_test.hpp>
-#include <boost/format.hpp>
 
 #include <SFCGAL/generator/sierpinski.h>
 
@@ -26,28 +25,22 @@ BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 
 	boost::timer::cpu_timer timer ;
 
-	timer.start();
+	bench().start( "area sierpinski" ) ;
 	for ( int i = 0; i < 10; i++ ){
 		algorithm::area2D( *fractal ) ;
 	}
-	timer.stop();
-
-	std::cout << "area sierpinski : " << timer.format() << std::endl ;
+	bench().stop();
 }
 
 BOOST_AUTO_TEST_CASE( testAreaSierpinski3D )
 {
 	std::auto_ptr< MultiPolygon > fractal( generator::sierpinski(9) ) ;
 
-	boost::timer::cpu_timer timer ;
-
-	timer.start();
+	bench().start( "area sierpinski" ) ;
 	for ( int i = 0; i < 10; i++ ){
 		algorithm::area3D( *fractal ) ;
 	}
-	timer.stop();
-
-	std::cout << "area sierpinski 3D : " << timer.format() << std::endl ;
+	bench().stop() ;
 }
 
 
