@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 {
 	const int N = 7 ;
 	std::auto_ptr< Polygon > fractal( generator::hoch(N) );
-//	std::cout << fractal->asText(5) << std::endl ;
+	BOOST_CHECK_EQUAL( fractal->exteriorRing().numPoints(), 49153U );
 
 	boost::timer::cpu_timer timer;
 	timer.start();

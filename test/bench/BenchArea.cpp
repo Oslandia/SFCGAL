@@ -32,7 +32,6 @@ BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 	}
 	timer.stop();
 
-	std::cout << fractal->numGeometries() << std::endl;
 	std::cout << "area sierpinski : " << timer.format() << std::endl ;
 }
 
@@ -48,7 +47,6 @@ BOOST_AUTO_TEST_CASE( testAreaSierpinski3D )
 	}
 	timer.stop();
 
-	std::cout << fractal->numGeometries() << std::endl;
 	std::cout << "area sierpinski 3D : " << timer.format() << std::endl ;
 }
 

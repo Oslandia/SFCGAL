@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_BenchContainer )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testVectorOfPoint2 )
 {
-	const int N = 100000 ;
+	const int N = 10000 ;
 
 	boost::timer::cpu_timer timer;
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint2 )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testVectorOfPoint )
 {
-	const int N = 100000 ;
+	const int N = 10000 ;
 
 	boost::timer::cpu_timer timer;
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint )
 // Test limit case
 BOOST_AUTO_TEST_CASE( testPtrVectorOfPoint )
 {
-	const int N = 100000 ;
+	const int N = 10000 ;
 
 	boost::timer::cpu_timer timer;
 

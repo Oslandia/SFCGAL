@@ -7,7 +7,7 @@ namespace generator {
 
 std::vector< Kernel::Vector_2 > _hoch( const std::vector< Kernel::Vector_2 > & points ){
 	std::vector< Kernel::Vector_2 > result ;
-	//TODO result.reserve
+	result.reserve( points.size() * 2 ) ;
 	size_t numPoints = points.size() ;
 	for ( size_t i = 0; i < numPoints; i++ ){
 		const Kernel::Vector_2& a = points[ i ] ;
