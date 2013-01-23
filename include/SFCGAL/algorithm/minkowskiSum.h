@@ -9,6 +9,8 @@ namespace algorithm {
 
 	/**
 	 * @brief 2D minkowski sum (p+q)
+	 *
+	 * @todo missing cases (union) and input polygon (gA) with holes (decompose polygon/union)
 	 */
 	std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
