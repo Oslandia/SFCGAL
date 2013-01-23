@@ -91,11 +91,17 @@ namespace SFCGAL {
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline const Point  &  pointN( size_t const& n ) const { return _points[n]; }
+		inline const Point  &  pointN( size_t const& n ) const {
+			BOOST_ASSERT( n < numPoints() ) ;
+			return _points[n];
+		}
 		/**
 		 * [SFA/OGC]Returns the n-th point
 		 */
-		inline Point &         pointN( size_t const& n ) { return _points[n]; }
+		inline Point &         pointN( size_t const& n ) {
+			BOOST_ASSERT( n < numPoints() ) ;
+			return _points[n];
+		}
 
 
 		/**
@@ -131,9 +137,16 @@ namespace SFCGAL {
 			_points.push_back( p ) ;
 		}
 
-		//remove 20120910 could lead to memory leaks with existing codes on std::vector< Point* >
-		//const std::vector< Point > & points() const { return _points; }
-		//std::vector< Point > &       points() { return _points; }
+
+		//-- methods
+
+		/**
+		 * test if the LineString is closed
+		 */
+		bool isClosed() const ;
+
+
+		//-- iterators
 
 		inline iterator       begin() {
 			return _points.begin() ;

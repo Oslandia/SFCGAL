@@ -9,8 +9,8 @@
 #include <SFCGAL/algorithm/convexHull.h>
 
 #include "../test_config.h"
+#include "Bench.h"
 
-#include <boost/timer/timer.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
 
@@ -39,16 +39,15 @@ BOOST_AUTO_TEST_CASE( testIntersectionPerf )
 			double y = (rand() +.0) / RAND_MAX * 10.0;
 			mp.addGeometry( Point( x, y ) );
 		}
-		//		std::cout << i << ": " << mp.asText() << std::endl;
 		std::auto_ptr<Geometry> g( algorithm::convexHull( mp ) );
 		polygons.push_back( g.release() );
 	}
 
-	boost::timer::cpu_timer timer;
+	bench().start("intersects convex hull");
 	for ( size_t i = 0; i < N_POLYGONS / 2; ++i ) {
 		algorithm::intersects( *polygons[2*i], *polygons[2*i+1] );
 	}
-	std::cout << "elapsed: " << timer.format() << std::endl;
+	bench().stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

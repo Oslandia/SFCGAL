@@ -40,11 +40,13 @@ struct FaceInfo2 {
  * vertex information with original coordinates
  */
 struct VertexInfo2 {
-	VertexInfo2() {
+	VertexInfo2() :
+		original(NULL)
+	{
 	}
 
 
-	Point original ;
+	const Point * original ;
 };
 
 
@@ -214,7 +216,7 @@ void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulate
 		 * insert into triangulation
 		 */
 		CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
-		vh->info().original = point ;
+		vh->info().original = &point ;
 	}
 
 
@@ -228,18 +230,18 @@ void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulate
 			continue ;
 		}
 
-		const Point & a = it->vertex(0)->info().original ;
-		const Point & b = it->vertex(1)->info().original ;
-		const Point & c = it->vertex(2)->info().original ;
+		const Point * a = it->vertex(0)->info().original ;
+		const Point * b = it->vertex(1)->info().original ;
+		const Point * c = it->vertex(2)->info().original ;
 
 		// check that vertex has an original vertex
-		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+		if ( a == NULL || b == NULL || c == NULL ){
 			BOOST_THROW_EXCEPTION( Exception(
 				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % geometry.asText() ).str()
 			) ) ;
 		}
 
-		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
+		triangulatedSurface.addTriangle( Triangle( *a, *b, *c ) );
 	}
 
 }
@@ -284,7 +286,7 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 			 * insert into triangulation
 			 */
 			CDT::Vertex_handle vh = cdt.insert( polygonPlane.to_2d( p3d ) );
-			vh->info().original = point ;
+			vh->info().original = &point ;
 
 			// filter first point
 			if ( j != 0 ){
@@ -314,17 +316,17 @@ void triangulate( const Polygon & polygon, TriangulatedSurface & triangulatedSur
 			continue ;
 		}
 
-		const Point & a = it->vertex(0)->info().original ;
-		const Point & b = it->vertex(1)->info().original ;
-		const Point & c = it->vertex(2)->info().original ;
+		const Point * a = it->vertex(0)->info().original ;
+		const Point * b = it->vertex(1)->info().original ;
+		const Point * c = it->vertex(2)->info().original ;
 
 		// check that vertex has an original vertex
-		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+		if ( a == NULL || b == NULL || c == NULL ){
 			BOOST_THROW_EXCEPTION( Exception(
 				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % polygon.asText() ).str()
 			) ) ;
 		}
-		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
+		triangulatedSurface.addTriangle( Triangle( *a, *b, *c ) );
 	}
 }
 
@@ -359,7 +361,7 @@ void triangulate2D( const Polygon & polygon, TriangulatedSurface & triangulatedS
 			 * insert into triangulation
 			 */
 			CDT::Vertex_handle vh = cdt.insert( point.toPoint_2() );
-			vh->info().original = point ;
+			vh->info().original = &point ;
 
 			// filter first point
 			if ( j != 0 ){
@@ -390,17 +392,17 @@ void triangulate2D( const Polygon & polygon, TriangulatedSurface & triangulatedS
 		}
 //		assert( it->is_valid() );
 
-		const Point & a = it->vertex(0)->info().original ;
-		const Point & b = it->vertex(1)->info().original ;
-		const Point & c = it->vertex(2)->info().original ;
+		const Point * a = it->vertex(0)->info().original ;
+		const Point * b = it->vertex(1)->info().original ;
+		const Point * c = it->vertex(2)->info().original ;
 
 		// check that vertex has an original vertex
-		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
+		if ( a == NULL || b == NULL || c == NULL ){
 			BOOST_THROW_EXCEPTION( Exception(
 				( boost::format("can't triangulate %1% without adding vertex (constraint intersection found)") % polygon.asText() ).str()
 			) ) ;
 		}
-		triangulatedSurface.addTriangle( Triangle( a, b, c ) );
+		triangulatedSurface.addTriangle( Triangle( *a, *b, *c ) );
 	}
 }
 

@@ -8,10 +8,11 @@
 #include <SFCGAL/generator/disc.h>
 
 #include "../test_config.h"
+#include "Bench.h"
 
-#include <boost/timer/timer.hpp>
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
+
 
 #include <CGAL/point_generators_2.h>
 
@@ -35,26 +36,22 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation )
 		multiPoint.addGeometry( new Point( p ) ) ;
 	}
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate %s points") % N_POINTS );
 	TriangulatedSurface triangulatedSurface ;
 	SFCGAL::algorithm::triangulate( multiPoint, triangulatedSurface ) ;
-	timer.stop();
-	std::cout << "triangulate "<< N_POINTS << " points : " << timer.format() << std::endl;
+	bench().stop();
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 {
 	const int N = 7 ;
 	std::auto_ptr< Polygon > fractal( generator::hoch(N) );
-//	std::cout << fractal->asText(5) << std::endl ;
+	BOOST_CHECK_EQUAL( fractal->exteriorRing().numPoints(), 49153U );
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate hoch(%s)") % N );
 	TriangulatedSurface triangulatedSurface ;
 	SFCGAL::algorithm::triangulate( *fractal, triangulatedSurface ) ;
-	timer.stop();
-	std::cout << "hoch(" << N << ") "<< triangulatedSurface.numTriangles() << " triangles : " << timer.format() << std::endl;
+	bench().stop() ;
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc )
@@ -64,14 +61,12 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc )
 	std::auto_ptr< Polygon > disc( generator::disc( Point(0.0,0.0), 1.0, 8U ) );
 //	std::cout << fractal->asText(5) << std::endl ;
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate disc x %s") % N );
 	for ( int i = 0; i < N; i++ ){
 		TriangulatedSurface triangulatedSurface ;
 		SFCGAL::algorithm::triangulate( *disc, triangulatedSurface ) ;
 	}
-	timer.stop();
-	std::cout << N << " disc triangulation" << timer.format() << std::endl;
+	bench().stop();
 }
 
 
@@ -87,12 +82,10 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation2D )
 		multiPoint.addGeometry( new Point( p ) ) ;
 	}
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate2D %s points") % N_POINTS );
 	TriangulatedSurface triangulatedSurface ;
 	SFCGAL::algorithm::triangulate2D( multiPoint, triangulatedSurface ) ;
-	timer.stop();
-	std::cout << "triangulate2D "<< N_POINTS << " points : " << timer.format() << std::endl;
+	bench().stop();
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch2D )
@@ -101,29 +94,25 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch2D )
 	std::auto_ptr< Polygon > fractal( generator::hoch(N) );
 //	std::cout << fractal->asText(5) << std::endl ;
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate2D hoch(%s)") % N );
 	TriangulatedSurface triangulatedSurface ;
 	SFCGAL::algorithm::triangulate2D( *fractal, triangulatedSurface ) ;
-	timer.stop();
-	std::cout << "hoch2D(" << N << ") "<< triangulatedSurface.numTriangles() << " triangles : " << timer.format() << std::endl;
+	bench().stop();
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D )
 {
 	const int N = 20000 ;
 
-	std::auto_ptr< Polygon > disc( generator::disc( Point(0.0,0.0), 1.0, 8U ) );
+	std::auto_ptr< Polygon > disc( generator::disc( Point(0.0,0.0), 1.0, 8U ) ) ;
 //	std::cout << fractal->asText(5) << std::endl ;
 
-	boost::timer::cpu_timer timer;
-	timer.start();
+	bench().start( boost::format("triangulate2D disc x %s") % N ) ;
 	for ( int i = 0; i < N; i++ ){
 		TriangulatedSurface triangulatedSurface ;
 		SFCGAL::algorithm::triangulate2D( *disc, triangulatedSurface ) ;
 	}
-	timer.stop();
-	std::cout << N << " disc triangulation 2D" << timer.format() << std::endl;
+	bench().stop() ;
 }
 
 
