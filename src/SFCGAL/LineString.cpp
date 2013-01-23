@@ -149,6 +149,14 @@ size_t LineString::numSegments() const
 	return numPoints() - 1 ;
 }
 
+///
+///
+///
+bool LineString::isClosed() const
+{
+	return ( ! isEmpty() ) && ( startPoint() == endPoint() ) ;
+}
+
 
 ///
 ///

@@ -2,15 +2,10 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/algorithm/translate.h>
 
 #include <SFCGAL/tools/Log.h>
 
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <SFCGAL/transform/AffineTransform3.h>
-
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
-typedef Kernel::Point_3                                   Point_3 ;
-typedef Kernel::Vector_3                                  Vector_3 ;
 
 namespace SFCGAL {
 namespace algorithm {
@@ -46,22 +41,6 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT
 	BOOST_THROW_EXCEPTION( Exception(
 		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
 	));
-}
-
-///
-///
-///
-void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
-{
-	SFCGAL_INFO( boost::format( "translate(%1%,%2%,%3%,%4%)" ) % g.asText(1) % dx % dy % dz );
-
-	BOOST_ASSERT( ! g.isEmpty() );
-	BOOST_ASSERT( g.is3D() );
-
-	transform::AffineTransform3< Kernel > visitor(
-		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, Vector_3(dx,dy,dz) )
-	);
-	g.accept( visitor ) ;
 }
 
 ///
@@ -115,7 +94,7 @@ Solid * extrude( const Polygon & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz 
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
 
-	bool reverseOrientation = ( Vector_3( dx, dy, dz ) * normal3D< Kernel >( g ) ) > 0 ;
+	bool reverseOrientation = ( Kernel::Vector_3( dx, dy, dz ) * normal3D< Kernel >( g ) ) > 0 ;
 
 	//resulting shell
 	PolyhedralSurface polyhedralSurface ;

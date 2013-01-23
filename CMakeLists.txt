@@ -6,7 +6,12 @@ set( CMAKE_DEBUG_POSTFIX "d" )
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
-include( sfcgal-config.cmake )
+set( SFCGAL_VERSION_MAJOR 0 )
+set( SFCGAL_VERSION_MINOR 1 )
+set( SFCGAL_VERSION_PATCH 0 )
+
+set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
+
 include( PrecompiledHeader )
 option( Use_precompiled_headers "Use precompiled headers" OFF )
 

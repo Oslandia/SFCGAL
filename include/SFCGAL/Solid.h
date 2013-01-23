@@ -104,6 +104,7 @@ namespace SFCGAL {
 		 */
 		inline void                         addInteriorShell( PolyhedralSurface * shell )
 		{
+			BOOST_ASSERT( shell != NULL );
 			_shells.push_back( shell );
 		}
 

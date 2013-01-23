@@ -13,7 +13,6 @@ namespace algorithm {
 	 */
 	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
-	void       translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 	LineString *          extrude( const Point & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 	PolyhedralSurface *   extrude( const LineString & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
