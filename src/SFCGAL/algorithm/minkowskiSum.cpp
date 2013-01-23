@@ -42,6 +42,9 @@ std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
 ///
 std::auto_ptr< Geometry > minkowskiSum( const Point& gA, const Polygon& gB )
 {
+	if ( gA.isEmpty() ){
+		return std::auto_ptr< Geometry >( new GeometryCollection ) ;
+	}
 	return std::auto_ptr< Geometry >( gB.clone() ) ;
 }
 
@@ -50,6 +53,10 @@ std::auto_ptr< Geometry > minkowskiSum( const Point& gA, const Polygon& gB )
 ///
 std::auto_ptr< Geometry > minkowskiSum( const LineString& gA, const Polygon& gB )
 {
+	if ( gA.isEmpty() ){
+		return std::auto_ptr< Geometry >( new GeometryCollection ) ;
+	}
+
 	Polygon_2 Q = gB.toPolygon_2() ;
 
 	Polygon_set_2 polygonSet ;
@@ -89,8 +96,36 @@ std::auto_ptr< Geometry > minkowskiSum( const LineString& gA, const Polygon& gB 
 ///
 std::auto_ptr< Geometry > minkowskiSum( const Polygon& gA, const Polygon& gB )
 {
-	Polygon_with_holes_2 sum = minkowski_sum_2( gA.toPolygon_2(), gB.toPolygon_2() );
-	return std::auto_ptr< Geometry >( new Polygon( sum ) );
+	if ( gA.isEmpty() ){
+		return std::auto_ptr< Geometry >( new GeometryCollection ) ;
+	}
+
+	Polygon_2 Q = gB.toPolygon_2() ;
+
+	/*
+	 * Basic invocation if the polygon has no holes
+	 */
+	if ( ! gA.hasInteriorRings() ){
+		Polygon_with_holes_2 sum = minkowski_sum_2( gA.toPolygon_2(), Q );
+		return std::auto_ptr< Geometry >( new Polygon( sum ) );
+	}
+
+	/*
+	 * Invoke minkowski_sum_2 for exterior ring and compute the difference with the
+	 * interiorRings of the results for each ring (if any)
+	 */
+	Polygon_set_2 polygonSet ;
+	polygonSet.insert( minkowski_sum_2( gA.exteriorRing().toPolygon_2(), Q ) );
+//	for ( size_t i = 0; i < gA.numInteriorRings(); i++ ){
+//		Polygon_with_holes_2 holeSum = minkowski_sum_2( gA.interiorRingN(i).toPolygon_2(), Q ) ;
+//		polygonSet.difference( holeSum.outer_boundary() );
+//	}
+
+	/*
+	 * convert the result into a SFCGAL::MultiPolygon
+	 */
+	std::auto_ptr< MultiPolygon > result( detail::polygonSetToMultiPolygon( polygonSet ) );
+	return std::auto_ptr< Geometry >( result.release() );
 }
 
 

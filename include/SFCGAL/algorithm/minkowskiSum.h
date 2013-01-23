@@ -24,6 +24,8 @@ namespace algorithm {
 	std::auto_ptr< Geometry > minkowskiSum( const LineString& gA, const Polygon& gB ) ;
 	/**
 	 * @brief 2D minkowski sum (p+q)
+	 *
+	 * @todo take holes in account
 	 */
 	std::auto_ptr< Geometry > minkowskiSum( const Polygon& gA, const Polygon& gB ) ;
 
