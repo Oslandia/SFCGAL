@@ -1,48 +1,77 @@
-#-- GMP finder
+#-- SFCGAL finder
 #
 # search variables :
-#     GMP_DIR(cmake/environment) : gmp install directory
-#     GMP_INCLUDE_DIR(cmake) : directory containing gmp.h      
-#     GMP_LIBRARY_DIR(cmake) : directory containing gmp libraries
-#
-# find options :
-#     GMP_ENABLE_CXX : search for gmpxx library?
+#     SFCGAL_DIR(cmake/environment) : SFCGAL install directory
+#     SFCGAL_INCLUDE_DIR(cmake) : directory containing SFCGAL.h      
+#     SFCGAL_LIBRARY_DIR(cmake) : directory containing SFCGAL libraries
 #
 # defined variables :
-#     GMP_FOUND : true if library found
-#     GMP_INCLUDE_DIRS : full path to gmp libraries
-#     GMP_LIBRARIES : full path to gmp libraries
+#     SFCGAL_FOUND : true if library found
+#     SFCGAL_INCLUDE_DIRS : full path to SFCGAL libraries
+#     SFCGAL_LIBRARIES : full path to SFCGAL libraries
 #
 
-option( GMP_ENABLE_CXX "enable cxx library" OFF )
-
-find_path(GMP_INCLUDE_DIRS gmp.h
-    HINTS $ENV{GMP_DIR} ${GMP_DIR} ${GMP_INCLUDE_DIRS}
+# -- parse version
+find_path(SFCGAL_INCLUDE_DIR SFCGAL/Kernel.h
+    HINTS $ENV{SFCGAL_DIR} ${SFCGAL_DIR} ${SFCGAL_INCLUDE_DIRS}
     PATH_SUFFIXES include
 )
 
-find_library(GMP_LIBRARY NAMES gmp gmp-10 
-	HINTS $ENV{GMP_DIR} ${GMP_DIR}
+# -- parse version
+IF(SFCGAL_INCLUDE_DIR)
+	IF(EXISTS "${SFCGAL_INCLUDE_DIR}/SFCGAL/version.h")
+		FILE(STRINGS "${SFCGAL_INCLUDE_DIR}/SFCGAL/version.h" sfcgal_version_str REGEX "^#define[\t ]+SFCGAL_VERSION[\t ]+\".*\"")
+
+		STRING(REGEX REPLACE "^#define[\t ]+SFCGAL_VERSION[\t ]+\"([^\"]*)\".*" "\\1" SFCGAL_VERSION "${ign_socle_version_str}")
+
+		# from http://www.cmake.org/Wiki/CMakeCompareVersionStrings 
+		# Breaks up a string in the form n1.n2.n3 into three parts and stores
+		# them in major, minor, and patch.  version should be a value, not a
+		# variable, while major, minor and patch should be variables.
+		IF(${SFCGAL_VERSION} MATCHES "[0-9]+\\.[0-9]+\\.[0-9]+")
+			STRING(REGEX REPLACE "^([0-9]+)\\.[0-9]+\\.[0-9]+" "\\1" SFCGAL_MAJOR_VERSION "${SFCGAL_VERSION}")
+			STRING(REGEX REPLACE "^[0-9]+\\.([0-9])+\\.[0-9]+" "\\1" SFCGAL_MINOR_VERSION "${SFCGAL_VERSION}")
+			STRING(REGEX REPLACE "^[0-9]+\\.[0-9]+\\.([0-9]+)" "\\1" SFCGAL_PATCH_VERSION "${SFCGAL_VERSION}")
+		ELSE()
+			MESSAGE( WARNING "IGN_SOCLE_VERSION (${SFCGAL_VERSION}) doesn't match *.*.* form" )
+		ENDIF()		
+
+
+		UNSET(sfcgal_version_str)
+	ELSE()
+		message( WARNING "can't parse SFCGAL version" )
+	ENDIF()
+ENDIF()
+
+
+
+# find library (Release)
+find_library(SFCGAL_LIBRARY NAMES SFCGAL
+	HINTS $ENV{SFCGAL_DIR} ${SFCGAL_DIR}
 	PATH_SUFFIXES lib
 )
-set( GMP_LIBRARIES ${GMP_LIBRARY} )
+# find library (Debug)
+find_library(SFCGAL_LIBRARY_DEBUG NAMES SFCGALd
+	HINTS $ENV{SFCGAL_DIR} ${SFCGAL_DIR}
+	PATH_SUFFIXES lib
+)
 
-if( ${GMP_ENABLE_CXX} )
-	find_library(GMP_CXX_LIBRARY NAMES gmpxx gmpxx-4
-		HINTS $ENV{GMP_DIR} ${GMP_DIR} 
-		PATH_SUFFIXES lib
-	)
-	set( GMP_LIBRARIES "${GMP_CXX_LIBRARY};${GMP_LIBRARIES}" )
+# set output variables
+set( SFCGAL_INCLUDE_DIRS "${SFCGAL_INCLUDE_DIR}" )
+if ( SFCGAL_LIBRARY_DEBUG )
+	set( SFCGAL_LIBRARIES "optimized;${SFCGAL_LIBRARY};debug;${SFCGAL_LIBRARY_DEBUG} )
+else()
+	set( SFCGAL_LIBRARIES ${SFCGAL_LIBRARY} )
 endif()
 
 # handle the QUIETLY and REQUIRED arguments and set <NAME>_FOUND to TRUE
 # if all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
-	GMP DEFAULT_MSG
-    GMP_INCLUDE_DIRS GMP_LIBRARIES
+	SFCGAL DEFAULT_MSG
+    SFCGAL_INCLUDE_DIRS SFCGAL_LIBRARIES
 )
 
-mark_as_advanced(GMP_INCLUDE_DIRS GMP_LIBRARIES)
+mark_as_advanced(SFCGAL_INCLUDE_DIRS SFCGAL_LIBRARIES)
 
 
