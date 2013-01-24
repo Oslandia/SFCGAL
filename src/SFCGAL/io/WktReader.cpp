@@ -567,7 +567,9 @@ bool WktReader::readPointCoordinate( Point & p )
 	}
 
 	if ( coordinates.size() < 2 ){
-		BOOST_THROW_EXCEPTION( Exception( "WKT parse error, Coordinate dimension < 2" ) );
+		BOOST_THROW_EXCEPTION( Exception(
+			( boost::format( "WKT parse error, Coordinate dimension < 2 (%s)" ) % _reader.context() ).str()
+		) );
 	}
 	if ( coordinates.size() > 4 ){
 		BOOST_THROW_EXCEPTION( Exception( "WKT parse error, Coordinate dimension > 4" ) );

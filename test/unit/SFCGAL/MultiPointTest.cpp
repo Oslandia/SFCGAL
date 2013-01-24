@@ -18,6 +18,10 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	BOOST_CHECK_EQUAL( g.numGeometries(), 0U );
 }
 
+BOOST_AUTO_TEST_CASE( testGeometryTypeId ){
+	MultiPoint g;
+	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_MULTIPOINT );
+}
 
 //-- addAllowedGeometry
 BOOST_AUTO_TEST_CASE( addPoint )

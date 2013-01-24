@@ -23,8 +23,6 @@ BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 {
 	std::auto_ptr< MultiPolygon > fractal( generator::sierpinski(9) ) ;
 
-	boost::timer::cpu_timer timer ;
-
 	bench().start( "area sierpinski" ) ;
 	for ( int i = 0; i < 10; i++ ){
 		algorithm::area2D( *fractal ) ;
