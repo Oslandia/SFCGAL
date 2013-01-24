@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint2 )
 		x += it->x() ;
 		y += it->y() ;
 	}
-	Kernel::Point_2 centroid( x / Kernel::FT(points.size()), y / Kernel::FT(points.size()) );
+	Kernel::Point_2 centroid( x / Kernel::FT((int)points.size()), y / Kernel::FT((int)points.size()) );
 	bench().stop() ;
 
 	// reverse
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( testVectorOfPoint )
 		x += it->x() ;
 		y += it->y() ;
 	}
-	Point centroid( x / Kernel::FT(points.size()), y / Kernel::FT(points.size()) );
+	Point centroid( x / Kernel::FT((int)points.size()), y / Kernel::FT((int)points.size()) );
 	bench().stop();
 
 
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( testPtrVectorOfPoint )
 		x += it->x() ;
 		y += it->y() ;
 	}
-	Point centroid( x / Kernel::FT(points.size()), y / Kernel::FT(points.size()) );
+	Point centroid( x / Kernel::FT((int)points.size()), y / Kernel::FT((int)points.size()) );
 	bench().stop();
 
 

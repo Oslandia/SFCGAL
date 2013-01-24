@@ -2,7 +2,6 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
-#include <SFCGAL/tools/Log.h>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
