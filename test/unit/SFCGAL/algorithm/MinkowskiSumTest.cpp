@@ -12,13 +12,22 @@ using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_MinkowskiTest )
 
+BOOST_AUTO_TEST_CASE( testEmptyPoint )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("MULTIPOINT EMPTY") );
+	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((0 0,0 1,1 1,1 0,0 0))") );
+
+	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
+	BOOST_CHECK_EQUAL( sum->asText(0), "MULTIPOLYGON EMPTY" );
+}
+
 BOOST_AUTO_TEST_CASE( testPoint )
 {
 	std::auto_ptr< Geometry > gA( io::readWkt("POINT(0 0)") );
 	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((0 0,0 1,1 1,1 0,0 0))") );
 
 	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
-	BOOST_CHECK_EQUAL( sum->asText(0), "POLYGON((0 0,0 1,1 1,1 0,0 0))" );
+	BOOST_CHECK_EQUAL( sum->asText(0), "MULTIPOLYGON(((0 0,1 0,1 1,0 1,0 0)))" );
 }
 BOOST_AUTO_TEST_CASE( testLineString )
 {
@@ -26,10 +35,23 @@ BOOST_AUTO_TEST_CASE( testLineString )
 	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((-1 0,0 -1,1 0,0 1,-1 0))") );
 
 	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
-	BOOST_CHECK_EQUAL( sum->asText(0), "POLYGON((5 1,0 1,-1 0,0 -1,5 -1,6 0,5 1))" );
+	BOOST_CHECK_EQUAL( sum->asText(0), "MULTIPOLYGON(((5 1,0 1,-1 0,0 -1,5 -1,6 0,5 1)))" );
+}
+/*
+ * check that CGAL doesn't use the center of the polygon gB
+ */
+BOOST_AUTO_TEST_CASE( testLineString2 )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0 0,5 0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((0 0,1 -1,2 0,1 1,0 0))") );
+
+	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
+	BOOST_CHECK_EQUAL( sum->asText(0), "MULTIPOLYGON(((6 1,1 1,0 0,1 -1,6 -1,7 0,6 1)))" );
 }
 
-BOOST_AUTO_TEST_CASE( testLineString2 )
+
+
+BOOST_AUTO_TEST_CASE( testLineString3 )
 {
 	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(5 5,0 5,5 0,0 0)") );
 	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((-1 0,0 -1,1 0,0 1,-1 0))") );
@@ -44,7 +66,7 @@ BOOST_AUTO_TEST_CASE( testPolygonWithHole ){
 	std::auto_ptr< Geometry > gB( io::readWkt( "POLYGON((-1 0,0 -1,1 0,0 1,-1 0))" ) );
 
 	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
-	std::cout << sum->asText(6) << std::endl ;
+	BOOST_CHECK_EQUAL( sum->asText(6), "MULTIPOLYGON(((53.554839 -5.557975,39.364158 3.434140,18.007885 2.872133,17.007885 1.872133,10.966308 -10.211022,11.966308 -11.211022,22.784946 -15.988082,23.784946 -14.988082,34.539099 -2.419977,44.939408 -9.229702,38.521147 -14.831093,32.479570 -20.310663,13.090323 -19.889158,5.643728 -24.525717,4.643728 -25.525717,5.643728 -26.525717,20.396416 -29.476254,43.438710 -23.856183,44.438710 -22.856183,54.554839 -6.557975,53.554839 -5.557975),(23.881857 -3.152977,21.997385 -8.387619,18.068659 -8.506671,16.900358 -7.260484,20.575363 -2.666728,23.881857 -3.152977)))" );
 }
 
 BOOST_AUTO_TEST_CASE( testMultiPoint ){
@@ -52,8 +74,9 @@ BOOST_AUTO_TEST_CASE( testMultiPoint ){
 	std::auto_ptr< Geometry > gB( io::readWkt( "POLYGON((-1 0,0 -1,1 0,0 1,-1 0))" ) );
 
 	std::auto_ptr< Geometry > sum( algorithm::minkowskiSum( *gA, gB->as< Polygon >() ) );
-	std::cout << sum->asText(6) << std::endl ;
+	BOOST_CHECK_EQUAL( sum->asText(0), "MULTIPOLYGON(((0 1,-1 0,0 -1,1 0,0 1)),((5 6,4 5,5 4,6 5,5 6)))" );
 }
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

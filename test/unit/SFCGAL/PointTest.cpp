@@ -25,6 +25,11 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	BOOST_CHECK_EQUAL( g.z(), 0 );
 }
 
+BOOST_AUTO_TEST_CASE( testGeometryTypeId ){
+	Point g;
+	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_POINT );
+}
+
 
 BOOST_AUTO_TEST_CASE( xyConstructor )
 {

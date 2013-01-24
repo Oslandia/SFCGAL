@@ -10,25 +10,28 @@ namespace algorithm {
 	/**
 	 * @brief 2D minkowski sum (p+q)
 	 *
-	 * @todo missing cases (union) and input polygon (gA) with holes (decompose polygon/union)
+	 * @todo missing cases (union)
 	 */
-	std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+	std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
 	/**
 	 * @brief 2D minkowski sum (p+q)
 	 */
-	std::auto_ptr< Geometry > minkowskiSum( const Point& gA, const Polygon& gB ) ;
+	std::auto_ptr< MultiPolygon > minkowskiSum( const Point& gA, const Polygon& gB ) ;
 	/**
 	 * @brief 2D minkowski sum (p+q)
 	 */
-	std::auto_ptr< Geometry > minkowskiSum( const LineString& gA, const Polygon& gB ) ;
+	std::auto_ptr< MultiPolygon > minkowskiSum( const LineString& gA, const Polygon& gB ) ;
+	/**
+	 * @brief 2D minkowski sum (p+q)
+	 */
+	std::auto_ptr< MultiPolygon > minkowskiSum( const Polygon& gA, const Polygon& gB ) ;
 	/**
 	 * @brief 2D minkowski sum (p+q)
 	 *
-	 * @todo take holes in account
+	 * @todo allow any kind of content
 	 */
-	std::auto_ptr< Geometry > minkowskiSum( const Polygon& gA, const Polygon& gB ) ;
-
+	std::auto_ptr< MultiPolygon > minkowskiSum( const GeometryCollection& gA, const Polygon& gB ) ;
 } // namespace algorithm
 } // namespace SFCGAL
 
