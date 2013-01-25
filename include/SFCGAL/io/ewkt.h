@@ -13,7 +13,7 @@ namespace SFCGAL {
 namespace SFCGAL {
 namespace io {
 	/**
-	 * Read a EWKT prepated geometry from an input stream
+	 * Read a EWKT prepared geometry from an input stream
 	 */
 	std::auto_ptr< PreparedGeometry > readEwkt( std::istream & s ) ;
 	/**

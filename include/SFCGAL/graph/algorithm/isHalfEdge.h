@@ -26,7 +26,7 @@ namespace algorithm {
 		typedef typename GeometryGraphT<V,E>::edge_iterator     edge_iterator ;
 
 		/*
-		 * try to insert all edges in a map, return false if an edge already exists
+		 * try to insert all edges in a map, return false if an edge already exists (i.e. there are parallel edges)
 		 */
 		std::set< std::complex< vertex_descriptor >, detail::ComplexComparator > edges ;
 		edge_iterator it,end ;

@@ -47,7 +47,7 @@ namespace algorithm {
 		std::vector< typename Graph::edge_descriptor > & target
 	){
 		/*
-		 * look for opposite or parallel edges in reference and target
+		 * look for opposite or parallel edges in "reference" and "target" edge sets
 		 */
 		bool hasOppositeEdge, hasParallelEdge ;
 		studyOrientation(graph,reference,target,hasOppositeEdge,hasParallelEdge);
@@ -62,7 +62,7 @@ namespace algorithm {
 			));
 		}
 		/*
-		 * Only parallel edge found, lets revert target order
+		 * Only parallel edge found, lets revert the orientation of the "target" edge set
 		 */
 		if ( hasParallelEdge ){
 			graph.reverse( target );
