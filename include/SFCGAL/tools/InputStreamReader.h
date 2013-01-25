@@ -23,8 +23,6 @@ namespace tools {
 
 	/**
 	 * Helper class to parse data from stream.
-	 *
-	 * (taken from IGN internal code)
 	 */
 	template < typename CharType >
 	class BasicInputStreamReader {

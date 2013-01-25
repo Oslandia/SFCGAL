@@ -191,7 +191,8 @@ double area3D( const Polygon & g )
 	algorithm::plane3D< Kernel >( g, a, b, c );
 
 	/*
-	 * compute polygon base (CGAL doesn't build a orthogonal basis, projection leads to area distorsions)
+	 * compute polygon basis (CGAL doesn't build an orthonormal basis so that computing
+	 * the 2D area in this basis would lead to scale effects)
 	 * ux = bc
 	 * uz = bc^ba
 	 * uy = uz^ux
