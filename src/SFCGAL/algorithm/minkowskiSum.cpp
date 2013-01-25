@@ -40,11 +40,11 @@ void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & poly
 /*
  * append gA+gB into the polygonSet
  */
-void minkowskiSum( const Triangle& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+void minkowskiSum( const Solid& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
 /*
  * append gA+gB into the polygonSet
  */
-void minkowskiSum( const GeometryCollection& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
 
 //-- private interface implementation
 
@@ -62,11 +62,16 @@ void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2<
 			return minkowskiSum( gA.as< Polygon >(), gB, polygonSet ) ;
 		case TYPE_TRIANGLE:
 			return minkowskiSum( gA.as< Triangle >().toPolygon(), gB, polygonSet ) ;
+		case TYPE_SOLID:
+			return minkowskiSum( gA.as< Solid >(), gB, polygonSet ) ;
 		case TYPE_MULTIPOINT:
 		case TYPE_MULTILINESTRING:
 		case TYPE_MULTIPOLYGON:
+		case TYPE_MULTISOLID:
 		case TYPE_GEOMETRYCOLLECTION:
-			return minkowskiSum( gA.as< GeometryCollection >(), gB, polygonSet ) ;
+		case TYPE_TRIANGULATEDSURFACE:
+		case TYPE_POLYHEDRALSURFACE:
+			return minkowskiSumCollection( gA, gB, polygonSet ) ;
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("minkowskiSum( %s, 'Polygon' ) is not defined")
@@ -150,10 +155,10 @@ void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & poly
 	}
 
 	/*
-	 * Compute the minkowski sum for each segment of the interior rings
-	 * and perform the union of the result.
+	 * Compute the Minkowski sum for each segment of the interior rings
+	 * and perform the union of the result. The result is a polygon, and its holes
+	 * correspond to the inset.
 	 *
-	 * Interior rings will corresponds
 	 */
 	if ( gA.hasInteriorRings() ){
 		Polygon_set_2 sumInteriorRings ;
@@ -162,7 +167,7 @@ void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & poly
 		}
 
 		/*
-		 * compute the difference for each holes of the resulting polygons
+		 * compute the difference for each hole of the resulting polygons
 		 */
 		std::list<Polygon_with_holes_2> interiorPolygons ;
 		sumInteriorRings.polygons_with_holes( std::back_inserter(interiorPolygons) ) ;
@@ -179,14 +184,23 @@ void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & poly
 	}
 }
 
+///
+///
+///
+void minkowskiSum( const Solid& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet )
+{
+	//use only the projection of exterior shell
+	minkowskiSumCollection( gA.exteriorShell(), gB, polygonSet );
+}
+
 
 ///
 ///
 ///
-void minkowskiSum( const GeometryCollection& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet )
+void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet )
 {
-	for ( GeometryCollection::const_iterator it = gA.begin(); it != gA.end(); ++it ){
-		minkowskiSum( *it, gB, polygonSet );
+	for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+		minkowskiSum( gA.geometryN(i), gB, polygonSet );
 	}
 }
 
