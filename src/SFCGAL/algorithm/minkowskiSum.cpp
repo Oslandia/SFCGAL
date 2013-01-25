@@ -19,33 +19,61 @@ typedef CGAL::Polygon_set_2< SFCGAL::Kernel >        Polygon_set_2 ;
 namespace SFCGAL {
 namespace algorithm {
 
+//-- private interface
+
+/**
+ * dispatch gA+gB sum
+ */
+void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel > & polygonSet ) ;
+/*
+ * append gA+gB into the polygonSet
+ */
+void minkowskiSum( const Point& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+/*
+ * append gA+gB into the polygonSet
+ */
+void minkowskiSum( const LineString& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+/*
+ * append gA+gB into the polygonSet
+ */
+void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+/*
+ * append gA+gB into the polygonSet
+ */
+void minkowskiSum( const Triangle& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+/*
+ * append gA+gB into the polygonSet
+ */
+void minkowskiSum( const GeometryCollection& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ) ;
+
+//-- private interface implementation
+
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB )
+void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel > & polygonSet )
 {
 	switch ( gA.geometryTypeId() ){
-	case TYPE_POINT:
-		return minkowskiSum( gA.as< Point >(), gB ) ;
-	case TYPE_LINESTRING:
-		return minkowskiSum( gA.as< LineString >(), gB ) ;
-	case TYPE_POLYGON:
-		return minkowskiSum( gA.as< Polygon >(), gB ) ;
-	case TYPE_MULTIPOINT:
-	case TYPE_MULTILINESTRING:
-	case TYPE_MULTIPOLYGON:
-	case TYPE_GEOMETRYCOLLECTION:
-		return minkowskiSum( gA.as< GeometryCollection >(), gB ) ;
+		case TYPE_POINT:
+			return minkowskiSum( gA.as< Point >(), gB, polygonSet ) ;
+		case TYPE_LINESTRING:
+			return minkowskiSum( gA.as< LineString >(), gB, polygonSet ) ;
+		case TYPE_POLYGON:
+			return minkowskiSum( gA.as< Polygon >(), gB, polygonSet ) ;
+		case TYPE_TRIANGLE:
+			return minkowskiSum( gA.as< Triangle >().toPolygon(), gB, polygonSet ) ;
+		case TYPE_MULTIPOINT:
+		case TYPE_MULTILINESTRING:
+		case TYPE_MULTIPOLYGON:
+		case TYPE_GEOMETRYCOLLECTION:
+			return minkowskiSum( gA.as< GeometryCollection >(), gB, polygonSet ) ;
 	}
 	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("minkowskiSum( %s, %s ) is not defined")
-			% gA.geometryType()
-			% gB.geometryType() ).str()
+		( boost::format("minkowskiSum( %s, 'Polygon' ) is not defined")
+			% gA.geometryType() ).str()
 	));
 }
 
-
-//-- support
 
 
 /*
@@ -76,12 +104,14 @@ void minkowskiSum( const Point& gA, const Polygon_2 & gB, Polygon_set_2 & polygo
 }
 
 
-
-
-/*
- * append gA+gB into the polygonSet
- */
+///
+///
+///
 void minkowskiSum( const LineString& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ){
+	if ( gA.isEmpty() ){
+		return ;
+	}
+
 	int npt = gA.numPoints() ;
 	for ( int i = 0; i < npt - 1 ; i++ ){
 		Polygon_2 P;
@@ -99,10 +129,14 @@ void minkowskiSum( const LineString& gA, const Polygon_2 & gB, Polygon_set_2 & p
 	}
 }
 
-/*
- * append gA+gB into the polygonSet
- */
+///
+///
+///
 void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ){
+	if ( gA.isEmpty() ){
+		return ;
+	}
+
 	/*
 	 * Invoke minkowski_sum_2 for exterior ring
 	 */
@@ -146,103 +180,28 @@ void minkowskiSum( const Polygon& gA, const Polygon_2 & gB, Polygon_set_2 & poly
 }
 
 
-
-//-- implementation
-
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > minkowskiSum( const Point& gA, const Polygon& gB )
+void minkowskiSum( const GeometryCollection& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet )
 {
-	if ( gA.isEmpty() ){
-		return std::auto_ptr< MultiPolygon >( new MultiPolygon ) ;
+	for ( GeometryCollection::const_iterator it = gA.begin(); it != gA.end(); ++it ){
+		minkowskiSum( *it, gB, polygonSet );
 	}
-
-	Polygon_set_2 polygonSet ;
-	minkowskiSum( gA, gB.toPolygon_2(), polygonSet );
-
-	return detail::polygonSetToMultiPolygon( polygonSet ) ;
-}
-
-///
-///
-///
-std::auto_ptr< MultiPolygon > minkowskiSum( const LineString& gA, const Polygon& gB )
-{
-	if ( gA.isEmpty() ){
-		return std::auto_ptr< MultiPolygon >( new MultiPolygon ) ;
-	}
-
-	Polygon_2 Q = gB.toPolygon_2() ;
-
-	// compute minkowski sum for each LineString (as a collapsed polygon), and join the results
-	Polygon_set_2 polygonSet ;
-	{
-		minkowskiSum( gA, Q, polygonSet );
-	}
-	return detail::polygonSetToMultiPolygon( polygonSet ) ;
-}
-
-///
-///
-///
-std::auto_ptr< MultiPolygon > minkowskiSum( const Polygon& gA, const Polygon& gB )
-{
-	if ( gA.isEmpty() ){
-		return std::auto_ptr< MultiPolygon >( new MultiPolygon ) ;
-	}
-
-	Polygon_2 Q = gB.toPolygon_2() ;
-	Polygon_set_2 polygonSet ;
-
-	minkowskiSum( gA, Q, polygonSet ) ;
-
-	/*
-	 * convert the result into a SFCGAL::MultiPolygon
-	 */
-	return detail::polygonSetToMultiPolygon( polygonSet ) ;
 }
 
 
+//-- public interface implementation
 
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > minkowskiSum( const GeometryCollection& gA, const Polygon& gB )
+std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB )
 {
-	if ( gA.isEmpty() ){
-		return std::auto_ptr< MultiPolygon >( new MultiPolygon ) ;
-	}
-
-	Polygon_2 Q = gB.toPolygon_2() ;
-
 	Polygon_set_2 polygonSet ;
-	for ( size_t i = 0; i < gA.numGeometries(); i++ ){
-		const Geometry & part = gA.geometryN(i) ;
-		switch ( part.geometryTypeId() ){
-		case TYPE_POINT:
-			minkowskiSum( part.as< Point >(), Q, polygonSet ) ;
-			break ;
-		case TYPE_LINESTRING:
-			minkowskiSum( part.as< LineString >(), Q, polygonSet ) ;
-			break ;
-		case TYPE_POLYGON:
-			minkowskiSum( part.as< Polygon >(), Q, polygonSet ) ;
-			break ;
-		default:
-			BOOST_THROW_EXCEPTION( Exception(
-				( boost::format("unsupported geometry type (%s) in GeometryCollection for minkowskiSum") % part.geometryType() ).str()
-			) ) ;
-			break;
-		}
-	}
-
-	/*
-	 * convert the result into a SFCGAL::MultiPolygon
-	 */
+	minkowskiSum( gA, gB.toPolygon_2(), polygonSet ) ;
 	return detail::polygonSetToMultiPolygon( polygonSet ) ;
 }
-
 
 } // namespace algorithm
 } // namespace SFCGAL
