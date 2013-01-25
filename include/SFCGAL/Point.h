@@ -135,8 +135,7 @@ namespace SFCGAL {
 
 
 		/**
-		 * Convert to CGAL::Vector_2
-		 * @todo remove template parameter
+		 * @see Coordinate::toVector_2()
 		 */
 		inline Kernel::Vector_2 toVector_2() const
 		{
@@ -144,8 +143,7 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Vector_3
-		 * @todo remove template parameter
+		 * @see Coordinate::toVector_3()
 		 */
 		inline Kernel::Vector_3 toVector_3() const
 		{
@@ -153,8 +151,7 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Point_2
-		 * @todo remove template parameter
+		 * @see Coordinate::toPoint_2()
 		 */
 		inline Kernel::Point_2 toPoint_2() const
 		{
@@ -162,8 +159,7 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Point_3
-		 * @todo remove template parameter
+		 * @see Coordinate::toPoint_3()
 		 */
 		inline Kernel::Point_3 toPoint_3() const
 		{
@@ -171,8 +167,7 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Point_2 or CGAL::Point_3
-		 * @todo remove template parameter
+		 * @brief Converts to CGAL::Point_2 or CGAL::Point_3
 		 */
 		template <int D>
 		typename TypeForDimension<D>::Point toPoint_d() const;

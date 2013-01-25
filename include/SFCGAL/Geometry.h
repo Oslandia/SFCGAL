@@ -46,7 +46,7 @@ namespace SFCGAL {
      * [OGC/SFA]8.2.3 "A common list of codes for geometric types"
      *
      * @todo solid and triangles as non OGC/SFA geometric types?
-     * @warning codes for abstract classes and unimplement classes are hidden
+     * @warning codes for abstract classes and unimplemented classes are hidden
      * @warning code values have are important for WKB
      */
     typedef enum {
@@ -76,7 +76,7 @@ namespace SFCGAL {
 
 
     /**
-     * EnvelopeDeclare coordinate types
+     * @brief coordinate types (XY, XYZ, XYM, etc.)
      * @see SFA 2.8.3 LineStringZ = 1003 ( coordinateType + geometryType)
      */
     typedef enum {
@@ -87,11 +87,8 @@ namespace SFCGAL {
     } CoordinateType ;
 
     /**
-     * OGC/SFA base geometry class
+     * @brief OGC/SFA based Geometry abstract class
      *
-     * @todo template with CGAL kernel as parameter?
-     * @todo store SRID?
-     * @todo store coordinate type?
      * @todo store bbox?
      */
     class Geometry {
@@ -99,22 +96,22 @@ namespace SFCGAL {
        virtual ~Geometry();
 
        /**
-        * returns a deep copy of the geometry
+        * @brief Get a deep copy of the geometry
         */
        virtual Geometry *  clone() const = 0 ;
 
        /**
-        * Factory function. Returns a SFCGAL::Geometry from a CGAL geometry
+        * @brief Factory method. Returns a SFCGAL::Geometry from a CGAL geometry
         */
        static Geometry* fromCGAL( const CGAL::Object& obj );
 
        /**
-        * [OGC/SFA]returns the geometry type
+        * @brief [OGC/SFA]returns the geometry type
         * @warning use CamelCase (LineString, not LINESTRING)
         */
        virtual std::string  geometryType() const = 0 ;
        /**
-        * Returns a code corresponding to the type
+        * @brief Returns a code corresponding to the type
         * @warning not standard
         */
        virtual GeometryType geometryTypeId() const = 0 ;
@@ -156,10 +153,10 @@ namespace SFCGAL {
         * otherway would lead to Polygon and PolyhedralSurface
         */
        //std::auto_ptr< Geometry > envelope() const = 0 ;
-       Envelope             envelope() const ;
+       Envelope              envelope() const ;
 
        /**
-        * [OGC/SFA]Return the boundary of the geometry
+        * @brief [OGC/SFA]Returns the boundary of the geometry
         */
        virtual Geometry*    boundary() const ;
 
@@ -167,33 +164,33 @@ namespace SFCGAL {
        //inline int SRID() const ;
 
        /**
-        * returns the distance to an other geometry
+        * @brief Computes the distance to an other geometry
         */
        double distance( const Geometry & other ) const ;
        /**
-        * returns the 3D distance to an other geometry
+        * @brief Computes the 3D distance to an other geometry
         */
        double distance3D( const Geometry & other ) const ;
 
        /**
-        * [OGC/SFA]Return the number of geometries in a collection of geometries
+        * @brief [OGC/SFA]Gets the number of geometries in a collection of geometries
         * @warning 1 for Point, LineString, Polygon, Triangle
         */
         virtual size_t             numGeometries() const ;
        /**
-        * [OGC/SFA]Returns the n-th geometry
+        * @brief [OGC/SFA]Returns the n-th geometry
         * @warning *this for Point, LineString, Polygon, Triangle
         */
        virtual const Geometry  &  geometryN( size_t const& n ) const ;
        /**
-        * [OGC/SFA]Returns the n-th geometry
+        * @brief [OGC/SFA]Returns the n-th geometry
         * @warning *this for Point, LineString, Polygon, Triangle
         */
        virtual Geometry &          geometryN( size_t const& n ) ;
 
 
        /**
-        * Test if geometry is of "Derived" type given as template parameter
+        * @brief Tests if geometry is of "Derived" type given as template parameter
         * @warning not optimized (slow with dynamic_cast)
         */
        template < typename Derived >
@@ -204,7 +201,8 @@ namespace SFCGAL {
 
 
        /**
-        * Downcast helper
+        * @brief Downcast to a "Derived" class
+        * @warning performs check if boost assertions are enabled
         */
        template < typename Derived >
        inline const Derived &  as() const {
@@ -212,7 +210,8 @@ namespace SFCGAL {
             return *static_cast< Derived const * >( this );
        }
        /**
-        * Downcast helper
+        * @brief Downcast to a "Derived" class
+        * @warning performs check if boost assertions are enabled
         */
        template < typename Derived >
        inline Derived &        as() {
@@ -221,17 +220,17 @@ namespace SFCGAL {
        }
 
        /**
-        * [visitor]dispatch visitor
+        * @brief [visitor]dispatch visitor
         */
        virtual void accept( GeometryVisitor & visitor ) = 0 ;
        /**
-        * [visitor]dispatch visitor
+        * @brief [visitor]dispatch visitor
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
        /**
-	* Serializer
-	*/
+        * Serializer
+        */
        template <class Archive>
        void serialize( Archive& ar, const unsigned int version )
        {

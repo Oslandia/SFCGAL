@@ -13,7 +13,8 @@
 namespace SFCGAL {
 
 	/**
-	 * Represents the Coordinate of a Point
+	 * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Kernel::Point_2,
+	 * or a Kernel::Point_3)
 	 */
 	class Coordinate {
 	public:
@@ -69,47 +70,61 @@ namespace SFCGAL {
 		 */
 		~Coordinate() ;
 
-		//-- SFCGAL::Geometry
+		/**
+		 * @brief Get the dimension of the coordinates
+		 */
 		int          coordinateDimension() const ;
-		//-- SFCGAL::Geometry
+		/**
+		 * @brief Tests if the coordinates are empty
+		 */
 		bool         isEmpty() const ;
-		//-- SFCGAL::Geometry
+		/**
+		 * @brief Tests if Z is defined
+		 */
 		bool         is3D() const ;
 
 		//--- accessors
 
 		/**
-		 * Returns the x value as a double (NaN for empty coordinates)
+		 * @brief Gets the x value
+		 * @warning Exact, 0 for empty coordinates
 		 */
 		Kernel::FT x() const;
 
 		/**
-		 * Returns the y value as a double (NaN for empty coordinates)
+		 * @brief Gets the y value
+		 * @warning Exact, 0 for empty coordinates
 		 */
 		Kernel::FT y() const;
 
 		/**
-		 * Returns the z value as a double (NaN for empty or 2d Coordinate)
+		 * @brief Gets the z value
+		 * @warning Exact, 0 for empty or 2D coordinates
 		 */
 		Kernel::FT z() const;
 
 		/**
-		 * compare two points
+		 * @brief Compares two points (lexicographic order)
+		 *
+		 * @warning coordinates must have the same dimension
 		 */
 		bool operator < ( const Coordinate & other ) const ;
 
 		/**
-		 * compare with an other point
+		 * @brief Compares with an other point
+		 *
+		 * @warning coordinates must have the same dimension
 		 */
 		bool operator == ( const Coordinate & other ) const ;
 		/**
-		 * compare with an other point
+		 * @brief Compares with an other point
+		 *
+		 * @warning coordinates must have the same dimension
 		 */
 		bool operator != ( const Coordinate & other ) const ;
 
 		/**
-		 * Convert to CGAL::Vector_2
-		 * @todo remove template parameter
+		 * @brief Converts to Kernel::Vector_2
 		 */
 		inline Kernel::Vector_2 toVector_2() const
 		{
@@ -117,8 +132,7 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Vector_3
-		 * @todo remove template parameter
+		 * @brief Converts to Kernel::Vector_3
 		 */
 		inline Kernel::Vector_3 toVector_3() const
 		{
@@ -126,14 +140,12 @@ namespace SFCGAL {
 		}
 
 		/**
-		 * Convert to CGAL::Point_2
-		 * @todo remove template parameter
+		 * @brief Converts to Kernel::Point_2
 		 */
 		Kernel::Point_2 toPoint_2() const;
 
 		/**
-		 * Convert to CGAL::Point_3
-		 * @todo remove template parameter
+		 * @brief Converts to Kernel::Point_3
 		 */
 		Kernel::Point_3 toPoint_3() const;
 

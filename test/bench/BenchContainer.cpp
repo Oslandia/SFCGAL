@@ -1,7 +1,3 @@
-#include <fstream>
-
-#include <sys/time.h>
-
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
@@ -16,6 +12,8 @@ using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_BenchContainer )
+
+#if 0
 
 //
 // Test limit case
@@ -130,7 +128,7 @@ BOOST_AUTO_TEST_CASE( testPtrVectorOfPoint )
 	bench().stop();
 }
 
-
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()
 
