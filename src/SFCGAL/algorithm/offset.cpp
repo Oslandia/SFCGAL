@@ -36,6 +36,8 @@ typedef CGAL::Polygon_with_holes_2< SFCGAL::Kernel > Polygon_with_holes_2 ;
 typedef CGAL::Polygon_set_2< SFCGAL::Kernel >        Polygon_set_2 ;
 
 typedef CGAL::Gps_circle_segment_traits_2< SFCGAL::Kernel >    Gps_traits_2;
+typedef Gps_traits_2::Curve_2                                  Offset_curve_2 ;
+typedef Gps_traits_2::X_monotone_curve_2                       Offset_x_monotone_curve_2 ;
 typedef Gps_traits_2::Polygon_2                                Offset_polygon_2;
 typedef Gps_traits_2::Polygon_with_holes_2                     Offset_polygon_with_holes_2;
 typedef CGAL::General_polygon_set_2< Gps_traits_2 >            Offset_polygon_set_2 ;
@@ -45,6 +47,32 @@ typedef CGAL::General_polygon_set_2< Gps_traits_2 >            Offset_polygon_se
 namespace SFCGAL {
 namespace algorithm {
 
+//-- private interface
+
+/**
+ * @brief dispatch a geometry
+ */
+void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & polygonSet ) ;
+
+/**
+ * @brief offset for a Point
+ */
+void offset( const Point & g, const double & radius, Offset_polygon_set_2 & polygonSet ) ;
+/**
+ * @brief offset for a LineString
+ */
+void offset( const LineString & g, const double & radius, Offset_polygon_set_2 & polygonSet ) ;
+/**
+ * @brief offset for a Polygon
+ */
+void offset( const Polygon & g, const double & radius, Offset_polygon_set_2 & polygonSet ) ;
+/**
+ * @brief offset for MultiPoint, MultiLineString, MultiPolygon, TriangulatedSurface, PolyhedralSurface
+ */
+void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_set_2 & polygonSet ) ;
+
+
+//-- helpers
 
 /**
  * @brief approximate an Offset_polygon_2 (filter null segments)
@@ -111,6 +139,42 @@ std::auto_ptr< MultiPolygon > polygonSetToMultiPolygon( const Offset_polygon_set
 }
 
 
+/**
+ * @brief helper to create a polygon from a circle
+ */
+Offset_polygon_2 circleToPolygon( const Kernel::Circle_2& circle )
+{
+	/*
+	 * convert the circle into Offset_x_monotone_curve_2 (exactly 2)
+	 */
+	Gps_traits_2 traits;
+	Offset_curve_2 curve( circle );
+
+	std::list<CGAL::Object> parts;
+	traits.make_x_monotone_2_object()( curve, std::back_inserter(parts) );
+	BOOST_ASSERT( parts.size() == 2U );
+
+	// Construct the polygon.
+	Offset_polygon_2 result ;
+	for ( std::list<CGAL::Object>::const_iterator it = parts.begin(); it != parts.end(); ++it) {
+		Offset_x_monotone_curve_2 arc;
+		CGAL::assign( arc, *it );
+		result.push_back( arc );
+	}
+	return result;
+}
+
+/**
+ * @brief build Point offset
+ */
+void offset( const Point & gA, const double& radius, Offset_polygon_set_2 & polygonSet ){
+	Kernel::Circle_2 circle( gA.toPoint_2(), radius * radius );
+	if ( polygonSet.is_empty() ){
+		polygonSet.insert( circleToPolygon( circle ) );
+	}else{
+		polygonSet.join( circleToPolygon( circle ) );
+	}
+}
 
 
 /**
@@ -135,8 +199,8 @@ void offset( const LineString & lineString, const double& radius, Offset_polygon
 ///
 ///
 ///
-void offset( const Polygon & gA, const double& radius, Offset_polygon_set_2 & polygonSet ){
-	if ( gA.isEmpty() ){
+void offset( const Polygon & g, const double& radius, Offset_polygon_set_2 & polygonSet ){
+	if ( g.isEmpty() ){
 		return ;
 	}
 
@@ -144,7 +208,7 @@ void offset( const Polygon & gA, const double& radius, Offset_polygon_set_2 & po
 	 * Invoke minkowski_sum_2 for exterior ring
 	 */
 	{
-		Offset_polygon_with_holes_2  offset = CGAL::approximated_offset_2( gA.exteriorRing().toPolygon_2(), radius, SFCGAL_OFFSET_ACCURACY ) ;
+		Offset_polygon_with_holes_2  offset = CGAL::approximated_offset_2( g.exteriorRing().toPolygon_2(), radius, SFCGAL_OFFSET_ACCURACY ) ;
 		if ( polygonSet.is_empty() ){
 			polygonSet.insert( offset );
 		}else{
@@ -158,10 +222,10 @@ void offset( const Polygon & gA, const double& radius, Offset_polygon_set_2 & po
 	 * correspond to the inset.
 	 *
 	 */
-	if ( gA.hasInteriorRings() ){
+	if ( g.hasInteriorRings() ){
 		Offset_polygon_set_2 sumInteriorRings ;
-		for ( size_t i = 0; i < gA.numInteriorRings(); i++ ){
-			offset( gA.interiorRingN(i), radius, sumInteriorRings ) ;
+		for ( size_t i = 0; i < g.numInteriorRings(); i++ ){
+			offset( g.interiorRingN(i), radius, sumInteriorRings ) ;
 		}
 
 		/*
@@ -182,18 +246,39 @@ void offset( const Polygon & gA, const double& radius, Offset_polygon_set_2 & po
 	}
 }
 
+///
+///
+///
+void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_set_2 & polygonSet ){
+	for ( size_t i = 0; i < g.numGeometries(); i++ ){
+		offset( g.geometryN(i), radius, polygonSet );
+	}
+}
 
-
 ///
 ///
 ///
-void offset( const Geometry & g, const double & r, Offset_polygon_set_2 & polygonSet )
+void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & polygonSet )
 {
 	switch ( g.geometryTypeId() ){
+	case TYPE_POINT:
+		return offset( g.as< Point >(), radius, polygonSet ) ;
 	case TYPE_LINESTRING:
-		return offset( g.as< LineString >(), r, polygonSet ) ;
+		return offset( g.as< LineString >(), radius, polygonSet ) ;
 	case TYPE_POLYGON:
-		return offset( g.as< Polygon >(), r, polygonSet ) ;
+		return offset( g.as< Polygon >(), radius, polygonSet ) ;
+	case TYPE_TRIANGLE:
+		return offset( g.as< Triangle >().toPolygon(), radius, polygonSet ) ;
+	case TYPE_SOLID:
+		return offset( g.as< Solid >().exteriorShell(), radius, polygonSet ) ;
+	case TYPE_MULTISOLID:
+	case TYPE_MULTIPOINT:
+	case TYPE_MULTILINESTRING:
+	case TYPE_MULTIPOLYGON:
+	case TYPE_GEOMETRYCOLLECTION:
+	case TYPE_TRIANGULATEDSURFACE:
+	case TYPE_POLYHEDRALSURFACE:
+		return offsetCollection( g, radius, polygonSet );
 	}
 }
 
