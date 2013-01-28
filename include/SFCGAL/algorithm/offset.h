@@ -14,7 +14,7 @@ namespace algorithm {
 	/**
 	 * @brief [experimental]compute polygon offset
 	 *
-	 * @warning test in order to compare with minkowski sum, supports only LineString and Polygon
+	 * @warning test in order to compare with minkowski sum
 	 */
 	std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r ) ;
 
