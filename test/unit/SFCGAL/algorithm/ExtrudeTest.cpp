@@ -24,6 +24,7 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/extrude.h>
 #include <SFCGAL/transform/ForceZ.h>
+#include <SFCGAL/io/wkt.h>
 
 using namespace SFCGAL ;
 
@@ -72,6 +73,15 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquare )
 	BOOST_CHECK( ext->is< Solid >() );
 	BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
 	BOOST_CHECK_EQUAL( ext->as< Solid >().exteriorShell().numPolygons(), 6U );
+}
+
+BOOST_AUTO_TEST_CASE( testExtrudePolyhedral )
+{
+	std::auto_ptr<Geometry> g = io::readWkt( "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))" );
+
+	std::auto_ptr< Geometry > ext = algorithm::extrude( *g, 0.0, 0.0, 1.0 );
+	BOOST_CHECK( ext->is< Solid >() );
+	BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
 }
 
 BOOST_AUTO_TEST_CASE( testExtrudeMultiPolygon )
