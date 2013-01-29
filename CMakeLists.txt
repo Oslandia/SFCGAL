@@ -142,12 +142,10 @@ if( ${SFCGAL_BUILD_VIEWER} )
 	add_subdirectory( viewer )
 endif()
 
+#-- doxygen documentation (allows make doc when doxygen is found)
+add_subdirectory( doc )
+
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)
-
-
-
-
-
 
 
