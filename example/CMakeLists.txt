@@ -5,6 +5,7 @@ set( EXAMPLE_NAMES
 	CGAL-triangulation2
 	CGAL-polygon_triangulation2
 	BOOST-transform-iterator
+	SFCGAL-offset
 )
 
 
