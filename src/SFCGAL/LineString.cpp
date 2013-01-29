@@ -177,6 +177,14 @@ bool LineString::isClosed() const
 	return ( ! isEmpty() ) && ( startPoint() == endPoint() ) ;
 }
 
+///
+///
+///
+void LineString::reserve( const size_t & n )
+{
+	_points.reserve( n ) ;
+}
+
 
 ///
 ///

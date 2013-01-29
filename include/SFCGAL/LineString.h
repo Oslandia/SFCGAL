@@ -182,6 +182,10 @@ namespace SFCGAL {
 			return _points.end() ;
 		}
 
+		//-- optimization
+
+		void reserve( const size_t & n ) ;
+
 
 		/**
 		 * Const iterator to 2D points
