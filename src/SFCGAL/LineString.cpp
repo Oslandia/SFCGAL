@@ -199,6 +199,10 @@ void LineString::accept( ConstGeometryVisitor & visitor ) const
 ///
 CGAL::Polygon_2< Kernel > LineString::toPolygon_2() const
 {
+	if ( isEmpty() ){
+		return CGAL::Polygon_2< Kernel >();
+	}
+
 	Point_2_const_iterator pend = points_2_end();
 	// skip the last point
 	pend--;
