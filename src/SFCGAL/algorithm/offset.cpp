@@ -260,6 +260,9 @@ void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_
 ///
 void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & polygonSet )
 {
+	if ( g.isEmpty() )
+		return ;
+
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 		return offset( g.as< Point >(), radius, polygonSet ) ;

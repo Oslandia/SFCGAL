@@ -73,6 +73,9 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_s
 ///
 void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel > & polygonSet )
 {
+	if ( gA.isEmpty() )
+		return ;
+
 	switch ( gA.geometryTypeId() ){
 		case TYPE_POINT:
 			return minkowskiSum( gA.as< Point >(), gB, polygonSet ) ;
