@@ -3,6 +3,8 @@ SFCGAL
 
 SFCGAL is a C++ wrapper library around [CGAL](http://www.cgal.org) with the aim of supporting ISO 19107 and OGC Simple Features for 3D operations.
 
+It depends on CGAL 4.1
+
 Compilation
 -----------
 
