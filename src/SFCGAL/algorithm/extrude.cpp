@@ -57,6 +57,10 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT
 		return std::auto_ptr< Geometry >( extrude( g.as< TriangulatedSurface >(), dx, dy, dz ));
 	case TYPE_POLYHEDRALSURFACE:
 		return std::auto_ptr< Geometry >( extrude( g.as< PolyhedralSurface >(), dx, dy, dz ));
+	case TYPE_SOLID:
+	case TYPE_MULTISOLID:
+		//extrusion not available
+		break;
 	}
 	BOOST_THROW_EXCEPTION( Exception(
 		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()

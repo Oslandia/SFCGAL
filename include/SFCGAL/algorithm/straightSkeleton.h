@@ -18,25 +18,35 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef SFCGAL_COLLECTION_HOMOGENIZE_ALGORITHM
-#define SFCGAL_COLLECTION_HOMOGENIZE_ALGORITHM
+#ifndef _SFCGAL_ALGORITHM_STRAIGHTSKELETON_H_
+#define _SFCGAL_ALGORITHM_STRAIGHTSKELETON_H_
 
 #include <memory>
 
-#include <SFCGAL/Geometry.h>
-#include <SFCGAL/GeometryCollection.h>
+namespace SFCGAL {
+	class Geometry ;
+	class Polygon ;
+	class MultiPolygon ;
+	class MultiLineString ;
+}
 
 namespace SFCGAL {
-    namespace algorithm {
-	    /*
-	     * Given a geometry collection, returns the "simplest" representation of the contents.
-	     * Singletons will be returned as singletons.
-	     * Collections that are homogeneous will be returned as the appropriate multi-type. 
-	     *
-	     * @warning Ownership is taken from the parameter
-	     */
-	    std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> coll );
-    }
-}
+namespace algorithm {
+	/**
+	 * @brief build a 2D straight skeleton for a Polygon
+	 */
+	std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g ) ;
+	/**
+	 * @brief build a 2D straight skeleton for a Polygon
+	 */
+	std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g ) ;
+	/**
+	 * @brief build a 2D straight skeleton for a Polygon
+	 */
+	std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g ) ;
+
+}//namespace algorithm
+}//namespace SFCGAL
+
 
 #endif

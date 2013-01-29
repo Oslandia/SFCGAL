@@ -26,11 +26,24 @@
 #include <SFCGAL/algorithm/minkowskiSum.h>
 #include <SFCGAL/generator/hoch.h>
 
+#include <SFCGAL/tools/Registry.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_MinkowskiTest )
+
+BOOST_AUTO_TEST_CASE( testEmpty )
+{
+	std::auto_ptr< Geometry > gB( io::readWkt("POLYGON((0 0,0 1,1 1,1 0,0 0))") );
+
+	tools::Registry & registry = tools::Registry::instance() ;
+	std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
+	for ( size_t i = 0; i < typeNames.size(); i++ ){
+		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+		BOOST_CHECK( algorithm::minkowskiSum( *g, gB->as< Polygon >() )->isEmpty() );
+	}
+}
 
 BOOST_AUTO_TEST_CASE( testEmptyPoint )
 {
