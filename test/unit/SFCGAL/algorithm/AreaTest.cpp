@@ -25,11 +25,42 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/area.h>
 
+#include <SFCGAL/tools/Registry.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_AreaTest )
+
+
+BOOST_AUTO_TEST_CASE( testEmpty2D3D )
+{
+	tools::Registry & registry = tools::Registry::instance() ;
+	std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
+	for ( size_t i = 0; i < typeNames.size(); i++ ){
+		BOOST_TEST_MESSAGE( typeNames[i] ) ;
+
+		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+		BOOST_REQUIRE( g.get() != NULL ) ;
+		BOOST_CHECK_EQUAL( algorithm::area( *g ), 0.0 );
+		BOOST_CHECK_EQUAL( algorithm::area3D( *g ), 0.0 );
+	}
+}
+
+// must return 0.0
+BOOST_AUTO_TEST_CASE( testPoint2D3D )
+{
+	BOOST_CHECK_EQUAL( algorithm::area( Point(3.0,4.0) ), 0.0 );
+	BOOST_CHECK_EQUAL( algorithm::area3D( Point(3.0,4.0,5.0) ), 0.0 );
+}
+// must return 0.0
+BOOST_AUTO_TEST_CASE( testLineString2D3D )
+{
+	BOOST_CHECK_EQUAL( algorithm::area( LineString(Point(0.0,0.0),Point(1.0,1.0)) ), 0.0 );
+	BOOST_CHECK_EQUAL( algorithm::area3D( LineString(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0)) ), 0.0 );
+}
+
+
 
 BOOST_AUTO_TEST_CASE( testArea3D_Triangle1 )
 {
@@ -72,7 +103,6 @@ BOOST_AUTO_TEST_CASE( testArea3D_Square4X4WithHole )
 	std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
 	BOOST_CHECK_CLOSE( algorithm::area3D( *g ), 15.0, 1e-10 );
 }
-
 
 
 BOOST_AUTO_TEST_SUITE_END()
