@@ -33,6 +33,10 @@ namespace algorithm {
 	/**
 	 * @brief translate a geometry from a given vector
 	 */
+	void       translate( Geometry & g, const Kernel::Vector_3 & v ) ;
+	/**
+	 * @brief translate a geometry from a given vector
+	 */
 	void       translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 } // namespace algorithm

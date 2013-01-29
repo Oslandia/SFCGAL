@@ -29,15 +29,23 @@ namespace algorithm {
 ///
 ///
 ///
-void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+void       translate( Geometry & g, const Kernel::Vector_3 & v )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
 	BOOST_ASSERT( g.is3D() );
 
 	transform::AffineTransform3< Kernel > visitor(
-		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, Kernel::Vector_3(dx,dy,dz) )
+		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
 	);
 	g.accept( visitor ) ;
+}
+
+///
+///
+///
+void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+{
+	translate( g, Kernel::Vector_3(dx,dy,dz) );
 }
 
 } // namespace algorithm
