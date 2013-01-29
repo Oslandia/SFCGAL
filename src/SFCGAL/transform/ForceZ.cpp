@@ -28,7 +28,7 @@ namespace transform {
 ///
 ///
 ///
-ForceZ::ForceZ( const double & defaultZ ):
+ForceZ::ForceZ( const Kernel::FT & defaultZ ):
 	_defaultZ(defaultZ)
 {
 
