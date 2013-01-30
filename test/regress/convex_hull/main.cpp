@@ -149,12 +149,12 @@ int main( int argc, char* argv[] ){
 
 		bool failed = true ;
 
-		TriangulatedSurface triangulatedSurface ;
+		std::auto_ptr< Geometry > hull, hull3D ;
 		try {
 			std::auto_ptr< Geometry > g;
 			g = io::readWkt( wkt ) ;
-			std::auto_ptr< Geometry > hull( algorithm::convexHull( *g ) ) ;
-			std::auto_ptr< Geometry > hull3D( algorithm::convexHull3D( *g ) ) ;
+			hull = algorithm::convexHull( *g ) ;
+			hull3D = algorithm::convexHull3D( *g ) ;
 			failed = false ;
 		}catch ( Exception & e ){
 			std::cerr << "[Exception]" << id << "|" << e.what() << "|" << wkt << std::endl ;
@@ -172,7 +172,7 @@ int main( int argc, char* argv[] ){
 		}
 
 		//output triangulated surface
-		ofs_result << id << "|" << failed << "|" << triangulatedSurface.asText(5) << std::endl;
+		ofs_result << id << "|" << failed << "|" << hull->asText(5) << std::endl;
 	}//end for each line
 
 

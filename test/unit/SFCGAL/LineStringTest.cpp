@@ -117,6 +117,15 @@ BOOST_AUTO_TEST_CASE( iteratorTests )
 	}
 }
 
+
+BOOST_AUTO_TEST_CASE( testToPolygon_2_Empty ){
+	LineString g ;
+	CGAL::Polygon_2< Kernel > polygon = g.toPolygon_2();
+	BOOST_CHECK( polygon.is_empty() );
+}
+
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

@@ -22,6 +22,7 @@
 #define _SFCGAL_NUMERIC_H_
 
 #include <limits>
+#include <cmath>
 
 namespace SFCGAL {
 	/**
@@ -33,6 +34,16 @@ namespace SFCGAL {
 	 */
 	inline bool   isNaN( const double & value ){ return value != value ; }
 
+	/**
+	 * @brief round a double to the nearest integer
+	 */
+	inline double round( const double & v ){
+		if ( v < 0.0 ){
+			return ceil( v - 0.5 ) ;
+		}else{
+			return floor( v + 0.5 ) ;
+		}
+	}
 
 }//SFCGAL
 

@@ -31,6 +31,7 @@
 
 #include <SFCGAL/detail/EnvelopeVisitor.h>
 
+#include <SFCGAL/transform/RoundTransform.h>
 
 #include <SFCGAL/Kernel.h>
 
@@ -151,6 +152,15 @@ double Geometry::distance( const Geometry & other ) const
 double Geometry::distance3D( const Geometry & other ) const
 {
 	return algorithm::distance3D( *this, other ) ;
+}
+
+///
+///
+///
+void Geometry::round( const double & scale )
+{
+	transform::RoundTransform roundTransform( scale );
+	accept( roundTransform ) ;
 }
 
 ///

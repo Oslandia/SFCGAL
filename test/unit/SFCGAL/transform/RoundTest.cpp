@@ -18,27 +18,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_ALGORITHM_EXTRUDE_H_
-#define _SFCGAL_ALGORITHM_EXTRUDE_H_
+#include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/all.h>
+#include <SFCGAL/io/wkt.h>
 
-namespace SFCGAL {
-namespace algorithm {
+using namespace boost::unit_test ;
+using namespace SFCGAL ;
 
-	/**
-	 * extrude a Geometry with a direction
-	 * @todo GeometryCollection, PolyhedralSurface, TriangulatedSurface (require boundary)
-	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
-	/**
-	 * @brief extrude a Geometry by a given vector
-	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
+BOOST_AUTO_TEST_SUITE( SFCGAL_CoordinateTest )
+
+BOOST_AUTO_TEST_CASE( testRoundPoint )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "POINT(1.5 2.6 3.4)" ) );
+	g->round(1.0);
+	BOOST_CHECK_EQUAL( g->asText(), "POINT(2/1 3/1 3/1)" );
+}
+
+BOOST_AUTO_TEST_CASE( testRoundLineString )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "LINESTRING(0.5 0.5,1.5 1.5)" ) );
+	g->round(10.0);
+	BOOST_CHECK_EQUAL( g->asText(), "LINESTRING(1/2 1/2,3/2 3/2)" );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 
-}//algorithm
-}//SFCGAL
 
-#endif
+

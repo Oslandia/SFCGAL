@@ -123,6 +123,17 @@ namespace SFCGAL {
 		 */
 		Kernel::FT z() const;
 
+		//-- helper
+
+		/**
+		 * @brief round coordinates with a scale factor
+		 * @return *this
+		 */
+		Coordinate& round( const double& scaleFactor = 1.0 ) ;
+
+
+		//-- comparator
+
 		/**
 		 * @brief Compares two points (lexicographic order)
 		 *
