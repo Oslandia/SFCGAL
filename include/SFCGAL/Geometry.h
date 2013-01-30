@@ -180,7 +180,6 @@ namespace SFCGAL {
         */
        virtual Geometry*    boundary() const ;
 
-
        //inline int SRID() const ;
 
        /**
@@ -191,6 +190,16 @@ namespace SFCGAL {
         * @brief Computes the 3D distance to an other geometry
         */
        double distance3D( const Geometry & other ) const ;
+
+
+       //-- helpers
+
+       /**
+        * @brief round the geometry with a corresponding scale factor
+        * @param scale the scale factor (1.0 corresponds to the nearest integer, 1000 to a 0.001 tolerance)
+        */
+       void round( const double & scale = 1.0 ) ;
+
 
        /**
         * @brief [OGC/SFA]Gets the number of geometries in a collection of geometries

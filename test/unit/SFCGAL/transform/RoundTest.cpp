@@ -18,33 +18,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_NUMERIC_H_
-#define _SFCGAL_NUMERIC_H_
+#include <boost/test/unit_test.hpp>
 
-#include <limits>
-#include <cmath>
+#include <SFCGAL/all.h>
+#include <SFCGAL/io/wkt.h>
 
-namespace SFCGAL {
-	/**
-	 * shortcut to get NaN for double
-	 */
-	inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
-	/**
-	 * shortcut to test NaN for double
-	 */
-	inline bool   isNaN( const double & value ){ return value != value ; }
+using namespace boost::unit_test ;
+using namespace SFCGAL ;
 
-	/**
-	 * @brief round a double to the nearest integer
-	 */
-	inline double round( const double & v ){
-		if ( v < 0.0 ){
-			return ceil( v - 0.5 ) ;
-		}else{
-			return floor( v + 0.5 ) ;
-		}
-	}
+BOOST_AUTO_TEST_SUITE( SFCGAL_CoordinateTest )
 
-}//SFCGAL
+BOOST_AUTO_TEST_CASE( testRoundPoint )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "POINT(1.5 2.6 3.4)" ) );
+	g->round(1.0);
+	BOOST_CHECK_EQUAL( g->asText(), "POINT(2/1 3/1 3/1)" );
+}
 
-#endif
+BOOST_AUTO_TEST_CASE( testRoundLineString )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "LINESTRING(0.5 0.5,1.5 1.5)" ) );
+	g->round(10.0);
+	BOOST_CHECK_EQUAL( g->asText(), "LINESTRING(1/2 1/2,3/2 3/2)" );
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+

@@ -120,6 +120,22 @@ BOOST_AUTO_TEST_CASE( testCoordinateDimensionXYZ )
 /// Kernel::FT y() const;
 /// Kernel::FT z() const;
 
+/// Coordinate& round( const Kernel::FT& scaleFactor ) ;
+BOOST_AUTO_TEST_CASE( testRoundInteger )
+{
+	Coordinate g(0.5,1.5);
+	g.round();
+	BOOST_CHECK_EQUAL( g.x(), 1 );
+	BOOST_CHECK_EQUAL( g.y(), 2 );
+}
+BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
+{
+	Coordinate g(0.52,1.57);
+	g.round( 10 );
+	BOOST_CHECK_EQUAL( g.x(), 0.5 );
+	BOOST_CHECK_EQUAL( g.y(), 1.6 );
+}
+
 /// bool operator < ( const Coordinate & other ) const ;
 BOOST_AUTO_TEST_CASE( testLessEmpty )
 {

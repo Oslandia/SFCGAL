@@ -18,33 +18,40 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_NUMERIC_H_
-#define _SFCGAL_NUMERIC_H_
+#ifndef _SFCGAL_TRANSFORM_ROUNDTRANSFORM_H_
+#define _SFCGAL_TRANSFORM_ROUNDTRANSFORM_H_
 
-#include <limits>
-#include <cmath>
+#include <SFCGAL/Kernel.h>
+#include <SFCGAL/Transform.h>
 
 namespace SFCGAL {
-	/**
-	 * shortcut to get NaN for double
-	 */
-	inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
-	/**
-	 * shortcut to test NaN for double
-	 */
-	inline bool   isNaN( const double & value ){ return value != value ; }
+namespace transform {
 
 	/**
-	 * @brief round a double to the nearest integer
+	 * Round the coordinates of a Geometry
 	 */
-	inline double round( const double & v ){
-		if ( v < 0.0 ){
-			return ceil( v - 0.5 ) ;
-		}else{
-			return floor( v + 0.5 ) ;
-		}
-	}
+	class RoundTransform : public Transform {
+	public:
+		/**
+		 * Constructor with a scale factor (default is nearest integer)
+		 */
+		RoundTransform( const double & scale = 1.0 ) ;
 
+		/*
+		 * [SFCGAL::Transform]
+		 */
+		virtual void transform( Point & p ) ;
+
+	private:
+		double _scale ;
+	};
+
+
+}//transform
 }//SFCGAL
 
+
+
+
 #endif
+
