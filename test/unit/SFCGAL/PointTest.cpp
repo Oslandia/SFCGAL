@@ -126,6 +126,7 @@ BOOST_AUTO_TEST_CASE( isPoint )
 	BOOST_CHECK( g.is< Point >() );
 }
 
+
 BOOST_AUTO_TEST_SUITE_END()
 
 

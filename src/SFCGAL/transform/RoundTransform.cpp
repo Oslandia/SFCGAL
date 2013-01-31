@@ -18,27 +18,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_ALGORITHM_EXTRUDE_H_
-#define _SFCGAL_ALGORITHM_EXTRUDE_H_
+#include <SFCGAL/transform/RoundTransform.h>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/all.h>
 
 namespace SFCGAL {
-namespace algorithm {
+namespace transform {
 
-	/**
-	 * extrude a Geometry with a direction
-	 * @todo GeometryCollection, PolyhedralSurface, TriangulatedSurface (require boundary)
-	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
-	/**
-	 * @brief extrude a Geometry by a given vector
-	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
+///
+///
+///
+RoundTransform::RoundTransform( const double & scale ):
+	_scale( scale )
+{
 
+}
 
-}//algorithm
+///
+///
+///
+void RoundTransform::transform( Point & p )
+{
+	p.coordinate().round( _scale ) ;
+}
+
+}//transform
 }//SFCGAL
 
-#endif
+
+

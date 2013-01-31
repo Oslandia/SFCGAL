@@ -22,7 +22,7 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Exception.h>
-
+#include <SFCGAL/numeric.h>
 
 namespace SFCGAL {
 
@@ -192,6 +192,51 @@ Kernel::FT Coordinate::z() const
 	GetZVisitor visitor;
 	return boost::apply_visitor( visitor, _storage );
 }
+
+//----------------------
+
+
+class RoundVisitor : public boost::static_visitor<>
+{
+public:
+	RoundVisitor( const double& scaleFactor ):
+		_scaleFactor(scaleFactor)
+	{
+
+	}
+
+	void operator()( Coordinate::Empty& ) const {
+
+	}
+	void operator()( Kernel::Point_2& storage ) const {
+		storage = Kernel::Point_2(
+			SFCGAL::round( CGAL::to_double( storage.x() * _scaleFactor ) ) / _scaleFactor ,
+			SFCGAL::round( CGAL::to_double( storage.y() * _scaleFactor ) ) / _scaleFactor
+		);
+	}
+	void operator()( Kernel::Point_3& storage ) const {
+		storage = Kernel::Point_3(
+			SFCGAL::round( CGAL::to_double( storage.x() * _scaleFactor ) ) / _scaleFactor,
+			SFCGAL::round( CGAL::to_double( storage.y() * _scaleFactor ) ) / _scaleFactor,
+			SFCGAL::round( CGAL::to_double( storage.z() * _scaleFactor ) ) / _scaleFactor
+		);
+	}
+
+private:
+	const double& _scaleFactor ;
+};
+
+
+Coordinate& Coordinate::round( const double& scaleFactor )
+{
+	RoundVisitor roundVisitor( scaleFactor ) ;
+	boost::apply_visitor( roundVisitor, _storage ) ;
+	return *this ;
+}
+
+
+
+//----------------------
 
 class ToPoint2Visitor : public boost::static_visitor<Kernel::Point_2>
 {
