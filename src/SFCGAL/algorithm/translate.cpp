@@ -32,7 +32,6 @@ namespace algorithm {
 void       translate( Geometry & g, const Kernel::Vector_3 & v )
 {
 	BOOST_ASSERT( ! g.isEmpty() );
-	BOOST_ASSERT( g.is3D() );
 
 	transform::AffineTransform3< Kernel > visitor(
 		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
