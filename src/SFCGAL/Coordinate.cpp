@@ -227,12 +227,24 @@ public:
 private:
 	const long& _scaleFactor ;
 
+
 	Kernel::FT _roundFT( const Kernel::FT& v ) const {
-		return Kernel::FT( CGAL::Gmpq(
-			CGAL::Gmpz( SFCGAL::round( CGAL::to_double(v) * _scaleFactor ) ),
-			CGAL::Gmpz( _scaleFactor )
-		) );
+		CGAL::Gmpq exact = v.exact() * CGAL::Gmpz( _scaleFactor ) ;
+		if ( exact < 0 ){
+			//ceil( v - 0.5 ) ;
+			return Kernel::FT( CGAL::Gmpq(
+				SFCGAL::ceil( exact - CGAL::Gmpq(1,2) ),
+				CGAL::Gmpz( _scaleFactor )
+			) );
+		}else{
+			//floor( v + 0.5 ) ;
+			return Kernel::FT( CGAL::Gmpq(
+				SFCGAL::floor( exact + CGAL::Gmpq(1,2) ),
+				CGAL::Gmpz( _scaleFactor )
+			) );
+		}
 	}
+
 };
 
 
