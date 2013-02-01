@@ -21,12 +21,15 @@ namespace SFCGAL {
 namespace io {
 
 	/**
-	 * @brief create an OSG geometry
+	 * @brief [helper] write an OSG geometry in a file. The format depends on the extension (http://www.openscenegraph.org/projects/osg/wiki/Support/UserGuides/Plugins)
+	 *
+	 * Note that osgviewer command line executable allows the visualization of the resulting files, screenshots and co
+	 *
 	 * @warning requires OpenSceneGraph
-	 * @return new osg::Geometry
+	 *
+	 * @todo list of geometrie?
 	 */
-	osg::Geometry * toOsgGeometry( const Geometry & g ) ;
-
+	void osgWriteFile( const Geometry & g, const std::string& filepath ) ;
 
 } // namespace io
 } // namespace SFCGAL

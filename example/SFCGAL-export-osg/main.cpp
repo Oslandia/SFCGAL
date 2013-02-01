@@ -51,8 +51,7 @@ int main( int argc, char* argv[] ){
 	}
 
 
-
-	//osgDB::writeNodeFile( *root, "SFCGAL-export-osg.3ds" ) ;
+	osgDB::writeNodeFile( *root, "SFCGAL-export-osg.3ds" ) ;
 	osgDB::writeNodeFile( *root, "SFCGAL-export-osg.osg" ) ;
 	return 0 ;
 }
