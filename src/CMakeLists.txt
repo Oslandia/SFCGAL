@@ -18,11 +18,14 @@ else()
 endif()
 
 if( ${SFCGAL_WITH_GMP} )
-  target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
+	target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_GMP} )
 if( ${SFCGAL_WITH_MPFR} )
-  target_link_libraries( SFCGAL ${MPFR_LIBRARIES} )
+	target_link_libraries( SFCGAL ${MPFR_LIBRARIES} )
 endif( ${SFCGAL_WITH_MPFR} )
+if( ${SFCGAL_WITH_OSG} )
+	 target_link_libraries( SFCGAL ${OPENSCENEGRAPH_LIBRARIES} )
+endif()
 
 target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
 

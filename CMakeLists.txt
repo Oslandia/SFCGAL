@@ -94,7 +94,7 @@ link_directories(
 )
 
 #-- optional OpenSceneGraph support
-option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" ON )
+option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" OFF )
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
 	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
