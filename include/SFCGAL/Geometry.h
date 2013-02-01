@@ -196,9 +196,9 @@ namespace SFCGAL {
 
        /**
         * @brief round the geometry with a corresponding scale factor
-        * @param scale the scale factor (1.0 corresponds to the nearest integer, 1000 to a 0.001 tolerance)
+        * @param scale the scale factor (1 corresponds to the nearest integer, 1000 to a 0.001 tolerance)
         */
-       void round( const double & scale = 1.0 ) ;
+       void round( const long & scale = 1 ) ;
 
 
        /**

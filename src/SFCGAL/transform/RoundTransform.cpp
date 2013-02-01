@@ -28,7 +28,7 @@ namespace transform {
 ///
 ///
 ///
-RoundTransform::RoundTransform( const double & scale ):
+RoundTransform::RoundTransform( const long & scale ):
 	_scale( scale )
 {
 

@@ -157,7 +157,7 @@ double Geometry::distance3D( const Geometry & other ) const
 ///
 ///
 ///
-void Geometry::round( const double & scale )
+void Geometry::round( const long & scale )
 {
 	transform::RoundTransform roundTransform( scale );
 	accept( roundTransform ) ;
