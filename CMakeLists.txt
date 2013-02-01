@@ -153,6 +153,9 @@ endif()
 #-- viewer 
 option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
 if( ${SFCGAL_BUILD_VIEWER} )
+	if ( NOT SFCGAL_BUILD_OSG )
+		message( FATAL_ERROR "can't build viewer without OSG support (set SFCGAL_BUILD_OSG to ON)" )
+	endif()
 	add_subdirectory( viewer )
 endif()
 
