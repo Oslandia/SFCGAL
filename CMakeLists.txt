@@ -98,6 +98,9 @@ option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
 	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
+	
+	# config.h generation
+	set( SFCGAL_WITH_OSG "ON" )
 endif()
 
 

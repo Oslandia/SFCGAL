@@ -1,24 +1,14 @@
-set( EXAMPLE_NAMES
-	CGAL-basic_manip
-	CGAL-cartesian_kernel
-	CGAL-point_generator
-	CGAL-triangulation2
-	CGAL-polygon_triangulation2
-	BOOST-transform-iterator
-	SFCGAL-offset
-)
+add_subdirectory( BOOST-transform-iterator )
 
+add_subdirectory( CGAL-basic_manip )
+add_subdirectory( CGAL-cartesian_kernel )
+add_subdirectory( CGAL-point_generator )
+add_subdirectory( CGAL-triangulation2 )
+add_subdirectory( CGAL-polygon_triangulation2 )
+add_subdirectory( SFCGAL-offset )
 
-foreach( EXAMPLE_NAME ${EXAMPLE_NAMES} )
-	file( GLOB_RECURSE EXAMPLE_SOURCES ${EXAMPLE_NAME}/*.cpp )
-	add_executable( example-${EXAMPLE_NAME} ${EXAMPLE_SOURCES} )
-	target_link_libraries( example-${EXAMPLE_NAME} 
-		SFCGAL
-		${CGAL_LIBRARIES}
-		${MPFR_LIBRARIES} 
-		${GMP_LIBRARIES}
-		${Boost_LIBRARIES}
-	)
-	install( TARGETS example-${EXAMPLE_NAME} DESTINATION bin )
-endforeach()
+if ( SFCGAL_BUILD_OSG )
+	add_subdirectory( SFCGAL-export-osg )
+endif()
+
 

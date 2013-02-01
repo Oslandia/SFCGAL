@@ -34,7 +34,7 @@
 /**
  * indicates if OpenSceneGraph dependency is activated
  */
-/* #undef SFCGAL_WITH_OSG */
+#define SFCGAL_WITH_OSG
 
 #endif
 
