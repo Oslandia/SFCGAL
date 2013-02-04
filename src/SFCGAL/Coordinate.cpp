@@ -199,7 +199,7 @@ Kernel::FT Coordinate::z() const
 class RoundVisitor : public boost::static_visitor<>
 {
 public:
-	RoundVisitor( const double& scaleFactor ):
+	RoundVisitor( const long& scaleFactor ):
 		_scaleFactor(scaleFactor)
 	{
 
@@ -225,12 +225,12 @@ public:
 
 
 private:
-	const long& _scaleFactor ;
+	long _scaleFactor ;
 
 
 	Kernel::FT _roundFT( const Kernel::FT& v ) const {
 		return Kernel::FT( CGAL::Gmpq(
-			SFCGAL::round( v.exact() * CGAL::Gmpz( _scaleFactor ) ),
+			SFCGAL::round( v.exact() * _scaleFactor ),
 			_scaleFactor
 		) ) ;
 	}

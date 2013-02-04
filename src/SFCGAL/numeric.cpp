@@ -18,49 +18,44 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_NUMERIC_H_
-#define _SFCGAL_NUMERIC_H_
-
-#include <limits>
-#include <cmath>
-
-#include <SFCGAL/Kernel.h>
+#include <SFCGAL/numeric.h>
 
 namespace SFCGAL {
-	/**
-	 * shortcut to get NaN for double
-	 */
-	inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
-	/**
-	 * shortcut to test NaN for double
-	 */
-	inline bool   isNaN( const double & value ){ return value != value ; }
 
-	/**
-	 * @brief round a double to the nearest integer
-	 */
-	inline double round( const double & v ){
-		if ( v < 0.0 ){
-			return ::ceil( v - 0.5 ) ;
-		}else{
-			return ::floor( v + 0.5 ) ;
-		}
+///
+///
+///
+CGAL::Gmpz floor( const CGAL::Gmpq & v )
+{
+	return v.numerator() / v.denominator() ;
+}
+
+///
+///
+///
+CGAL::Gmpz ceil( const CGAL::Gmpq & v )
+{
+	CGAL::Gmpz result(0) ;
+	mpz_cdiv_q( result.mpz(), v.numerator().mpz(), v.denominator().mpz() ) ;
+	return result ;
+}
+
+///
+///
+///
+CGAL::Gmpz round( const CGAL::Gmpq & v )
+{
+	if ( v < 0 ){
+		//ceil( v - 0.5 ) ;
+		return ceil( v - CGAL::Gmpq(1,2) );
+	}else if ( v == 0 ){
+		return 0 ;
+	}else{
+		//floor( v + 0.5 ) ;
+		return floor( v + CGAL::Gmpq(1,2) );
 	}
-
-
-	/**
-	 * @brief floor a rational to an integer
-	 */
-	CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
-	/**
-	 * @brief ceil a rational to an integer
-	 */
-	CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
-	/**
-	 * @brief round a rational to an integer
-	 */
-	CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
+}
 
 }//SFCGAL
 
-#endif
+
