@@ -229,20 +229,10 @@ private:
 
 
 	Kernel::FT _roundFT( const Kernel::FT& v ) const {
-		CGAL::Gmpq exact = v.exact() * CGAL::Gmpz( _scaleFactor ) ;
-		if ( exact < 0 ){
-			//ceil( v - 0.5 ) ;
-			return Kernel::FT( CGAL::Gmpq(
-				SFCGAL::ceil( exact - CGAL::Gmpq(1,2) ),
-				CGAL::Gmpz( _scaleFactor )
-			) );
-		}else{
-			//floor( v + 0.5 ) ;
-			return Kernel::FT( CGAL::Gmpq(
-				SFCGAL::floor( exact + CGAL::Gmpq(1,2) ),
-				CGAL::Gmpz( _scaleFactor )
-			) );
-		}
+		return Kernel::FT( CGAL::Gmpq(
+			SFCGAL::round( v.exact() * CGAL::Gmpz( _scaleFactor ) ),
+			_scaleFactor
+		) ) ;
 	}
 
 };

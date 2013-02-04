@@ -35,7 +35,7 @@ namespace transform {
 		/**
 		 * Constructor with a scale factor (default is nearest integer)
 		 */
-		RoundTransform( const long & scale = 1.0 ) ;
+		RoundTransform( const long & scale = 1 ) ;
 
 		/*
 		 * [SFCGAL::Transform]
