@@ -35,7 +35,7 @@ namespace transform {
 		/**
 		 * Constructor with a scale factor (default is nearest integer)
 		 */
-		RoundTransform( const double & scale = 1.0 ) ;
+		RoundTransform( const long & scale = 1 ) ;
 
 		/*
 		 * [SFCGAL::Transform]
@@ -43,7 +43,7 @@ namespace transform {
 		virtual void transform( Point & p ) ;
 
 	private:
-		double _scale ;
+		long _scale ;
 	};
 
 

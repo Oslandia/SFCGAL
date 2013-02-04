@@ -18,6 +18,9 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include <SFCGAL/config.h>
+#ifdef SFCGAL_WITH_OSG
+
 #include <SFCGAL/io/OsgFactory.h>
 
 #include <SFCGAL/all.h>
@@ -209,4 +212,7 @@ size_t OsgFactory::createVertex( osg::Vec3Array * vertices, const osg::Vec3 & g 
 
 }//io
 }//SFCGAL
+
+
+#endif // SFCGAL_WITH_OSG
 

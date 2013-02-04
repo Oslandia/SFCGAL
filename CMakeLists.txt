@@ -93,7 +93,19 @@ link_directories(
 	${GMP_LIBRARY_DIRS}	
 )
 
+#-- optional OpenSceneGraph support
+option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" OFF )
+if ( SFCGAL_BUILD_OSG )
+	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
+	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
+	
+	# config.h generation
+	set( SFCGAL_WITH_OSG "ON" )
+endif()
 
+
+
+#-- Warnings, frounding-math and gprof  ------------------------------------------
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -115,11 +127,13 @@ endif()
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h )
 
-#-- build the library
+
 #note : not available on windows without export/import
 OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" ON )
-add_subdirectory( src )
 
+
+#-- build the library
+add_subdirectory( src )
 
 #-- build test (todo only if boost use dyn link)
 add_subdirectory( test )
@@ -139,6 +153,9 @@ endif()
 #-- viewer 
 option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
 if( ${SFCGAL_BUILD_VIEWER} )
+	if ( NOT SFCGAL_BUILD_OSG )
+		message( FATAL_ERROR "can't build viewer without OSG support (set SFCGAL_BUILD_OSG to ON)" )
+	endif()
 	add_subdirectory( viewer )
 endif()
 

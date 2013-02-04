@@ -18,23 +18,44 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_CONFIG_H_
-#define _SFCGAL_CONFIG_H_
+#include <SFCGAL/numeric.h>
 
-/**
- * indicates if GMP is available
- */
-#define SFCGAL_WITH_GMP
-/**
- * indicates if MPFR is available
- */
-#define SFCGAL_WITH_MPFR
+namespace SFCGAL {
 
+///
+///
+///
+CGAL::Gmpz floor( const CGAL::Gmpq & v )
+{
+	return v.numerator() / v.denominator() ;
+}
 
-/**
- * indicates if OpenSceneGraph dependency is activated
- */
-/* #undef SFCGAL_WITH_OSG */
+///
+///
+///
+CGAL::Gmpz ceil( const CGAL::Gmpq & v )
+{
+	CGAL::Gmpz result(0) ;
+	mpz_cdiv_q( result.mpz(), v.numerator().mpz(), v.denominator().mpz() ) ;
+	return result ;
+}
 
-#endif
+///
+///
+///
+CGAL::Gmpz round( const CGAL::Gmpq & v )
+{
+	if ( v < 0 ){
+		//ceil( v - 0.5 ) ;
+		return ceil( v - CGAL::Gmpq(1,2) );
+	}else if ( v == 0 ){
+		return 0 ;
+	}else{
+		//floor( v + 0.5 ) ;
+		return floor( v + CGAL::Gmpq(1,2) );
+	}
+}
+
+}//SFCGAL
+
 

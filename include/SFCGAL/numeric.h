@@ -24,6 +24,8 @@
 #include <limits>
 #include <cmath>
 
+#include <SFCGAL/Kernel.h>
+
 namespace SFCGAL {
 	/**
 	 * shortcut to get NaN for double
@@ -39,11 +41,25 @@ namespace SFCGAL {
 	 */
 	inline double round( const double & v ){
 		if ( v < 0.0 ){
-			return ceil( v - 0.5 ) ;
+			return ::ceil( v - 0.5 ) ;
 		}else{
-			return floor( v + 0.5 ) ;
+			return ::floor( v + 0.5 ) ;
 		}
 	}
+
+
+	/**
+	 * @brief floor a rational to an integer
+	 */
+	CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
+	/**
+	 * @brief ceil a rational to an integer
+	 */
+	CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
+	/**
+	 * @brief round a rational to an integer
+	 */
+	CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
 
 }//SFCGAL
 
