@@ -132,9 +132,19 @@ BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
 {
 	Coordinate g(0.52,1.57);
 	g.round( 10 );
-	BOOST_CHECK_EQUAL( g.x(), 0.5 );
-	BOOST_CHECK_EQUAL( g.y(), 1.6 );
+	BOOST_CHECK_CLOSE( g.x(), 0.5, 0.1 );
+	BOOST_CHECK_CLOSE( g.y(), 1.6, 0.1 );
+
+
+	std::ostringstream oss;
+	oss << CGAL::exact(g.x()) << " " << CGAL::exact(g.y());
+	BOOST_CHECK_EQUAL( oss.str(), "1/2 8/5" ); //16/10
 }
+
+
+
+///--- comparators
+
 
 /// bool operator < ( const Coordinate & other ) const ;
 BOOST_AUTO_TEST_CASE( testLessEmpty )

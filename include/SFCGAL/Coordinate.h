@@ -129,7 +129,7 @@ namespace SFCGAL {
 		 * @brief round coordinates with a scale factor
 		 * @return *this
 		 */
-		Coordinate& round( const double& scaleFactor = 1.0 ) ;
+		Coordinate& round( const long& scaleFactor = 1 ) ;
 
 
 		//-- comparator

@@ -1,14 +1,38 @@
-#ifndef _SFCGAL_IO_OSGGEOMETRYWRITER_H_
-#define _SFCGAL_IO_OSGGEOMETRYWRITER_H_
+#ifndef _SFCGAL_IO_OSGFACTORY_H_
+#define _SFCGAL_IO_OSGFACTORY_H_
 
-#include <osg/Geometry>
+#include <SFCGAL/config.h>
+
+#ifndef SFCGAL_WITH_OSG
+#  error "SFCGAL is not built with OpenSceneGraph support, this header can't be included"
+#endif
+
+#include <osg/Geometry.h>
+
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
 namespace io {
 
 	/**
-	 * OSG factory
+	 *   SFCGAL
+	 *
+	 *   Copyright (C) 2012-2013 Oslandia <contact@oslandia.com>
+	 *   Copyright (C) 2012-2013 IGN (http://www.ign.fr)
+	 *
+	 *   This program is free software: you can redistribute it and/or modify
+	 *   it under the terms of the GNU General Public License as published by
+	 *   the Free Software Foundation, either version 3 of the License, or
+	 *   (at your option) any later version.
+	 *
+	 *   This program is distributed in the hope that it will be useful,
+	 *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+	 *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	 *   GNU General Public License for more details.
+	 *
+	 *   You should have received a copy of the GNU General Public License
+	 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	 *
 	 */
 	class OsgFactory {
 	public:

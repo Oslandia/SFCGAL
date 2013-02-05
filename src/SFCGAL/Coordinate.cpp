@@ -199,7 +199,7 @@ Kernel::FT Coordinate::z() const
 class RoundVisitor : public boost::static_visitor<>
 {
 public:
-	RoundVisitor( const double& scaleFactor ):
+	RoundVisitor( const long& scaleFactor ):
 		_scaleFactor(scaleFactor)
 	{
 
@@ -210,24 +210,35 @@ public:
 	}
 	void operator()( Kernel::Point_2& storage ) const {
 		storage = Kernel::Point_2(
-			SFCGAL::round( CGAL::to_double( storage.x() * _scaleFactor ) ) / _scaleFactor ,
-			SFCGAL::round( CGAL::to_double( storage.y() * _scaleFactor ) ) / _scaleFactor
+			_roundFT( storage.x() ),
+			_roundFT( storage.y() )
 		);
 	}
 	void operator()( Kernel::Point_3& storage ) const {
 		storage = Kernel::Point_3(
-			SFCGAL::round( CGAL::to_double( storage.x() * _scaleFactor ) ) / _scaleFactor,
-			SFCGAL::round( CGAL::to_double( storage.y() * _scaleFactor ) ) / _scaleFactor,
-			SFCGAL::round( CGAL::to_double( storage.z() * _scaleFactor ) ) / _scaleFactor
+			_roundFT( storage.x() ),
+			_roundFT( storage.y() ),
+			_roundFT( storage.z() )
 		);
 	}
 
+
+
 private:
-	const double& _scaleFactor ;
+	long _scaleFactor ;
+
+
+	Kernel::FT _roundFT( const Kernel::FT& v ) const {
+		return Kernel::FT( CGAL::Gmpq(
+			SFCGAL::round( v.exact() * _scaleFactor ),
+			_scaleFactor
+		) ) ;
+	}
+
 };
 
 
-Coordinate& Coordinate::round( const double& scaleFactor )
+Coordinate& Coordinate::round( const long& scaleFactor )
 {
 	RoundVisitor roundVisitor( scaleFactor ) ;
 	boost::apply_visitor( roundVisitor, _storage ) ;

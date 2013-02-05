@@ -11,6 +11,7 @@ polygon_triangulation2.obj
 /test/test_config.h
 /doc/html
 /doc/latex
+/doc/Doxyfile
 
 /triangulation3d_in_plane.obj
 
@@ -19,4 +20,5 @@ polygon_triangulation2.obj
 gmon.out
 
 include/SFCGAL/version.h
+include/SFCGAL/config.h
 
