@@ -7,7 +7,7 @@
 #  error "SFCGAL is not built with OpenSceneGraph support, this header can't be included"
 #endif
 
-#include <osg/Geometry.h>
+#include <osg/Geometry>
 
 #include <SFCGAL/Geometry.h>
 
