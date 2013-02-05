@@ -42,6 +42,14 @@ Solid::Solid( const PolyhedralSurface & exteriorShell )
 ///
 ///
 ///
+Solid::Solid( PolyhedralSurface * exteriorShell )
+{
+	_shells.push_back( exteriorShell );
+}
+
+///
+///
+///
 Solid::Solid( const std::vector< PolyhedralSurface > & shells )
 {
 	if ( shells.empty() ){
