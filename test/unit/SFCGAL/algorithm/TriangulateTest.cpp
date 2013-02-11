@@ -76,5 +76,13 @@ BOOST_AUTO_TEST_CASE( testTriangulateConcavePolygon )
 	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 3U );
 }
 
+BOOST_AUTO_TEST_CASE( testTriangulateMultipoint )
+{
+	std::string wkt("MULTIPOINT(-6.45492476224899 4.25109320878983,5.98560065031052 0.541289269924164,-1.84888219833374 -1.54492408037186,1.10624259710312 6.98255741596222,5.43607330322266 -6.01850175857544,-1.33869379758835 4.97127079963684,-3.64173883199692 0.856592357158661,-4.1760185956955 -5.95057207345963,7.06683385372162 -1.3869052529335,7.15141957998276 -3.7799169421196)");
+	std::auto_ptr< Geometry > geometry( io::readWkt(wkt) );
+	TriangulatedSurface triangulatedSurface ;
+	algorithm::triangulate2D( geometry->as< MultiPoint >(), triangulatedSurface );
+	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 11U );
+	}
 BOOST_AUTO_TEST_SUITE_END()
 

@@ -244,11 +244,6 @@ void triangulate( const MultiPoint & geometry, TriangulatedSurface & triangulate
 	 */
 	for ( CDT::Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it )
 	{
-		//ignore holes
-		if ( ! it->info().in_domain() ){
-			continue ;
-		}
-
 		const Point * a = it->vertex(0)->info().original ;
 		const Point * b = it->vertex(1)->info().original ;
 		const Point * c = it->vertex(2)->info().original ;
