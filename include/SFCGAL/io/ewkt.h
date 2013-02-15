@@ -43,7 +43,7 @@ namespace io {
 	/**
 	 * Read a EWKT geometry from a char*
 	 */
-	std::auto_ptr< PreparedGeometry > readEwkt( char*, size_t );
+	std::auto_ptr< PreparedGeometry > readEwkt( const char*, size_t );
 }
 }
 

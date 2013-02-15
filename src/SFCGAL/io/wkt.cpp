@@ -49,7 +49,7 @@ std::auto_ptr< Geometry > readWkt( const std::string & s )
 ///
 ///
 ///
-std::auto_ptr< Geometry > readWkt( char* str, size_t len )
+std::auto_ptr< Geometry > readWkt( const char* str, size_t len )
 {
 	CharArrayBuffer buf( str, str + len );
 	std::istream istr( &buf );

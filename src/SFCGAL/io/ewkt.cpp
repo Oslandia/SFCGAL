@@ -53,7 +53,7 @@ std::auto_ptr< PreparedGeometry > readEwkt( const std::string & s )
 ///
 ///
 ///
-std::auto_ptr< PreparedGeometry > readEwkt( char* str, size_t len )
+std::auto_ptr< PreparedGeometry > readEwkt( const char* str, size_t len )
 {
 	CharArrayBuffer buf( str, str + len );
 	std::istream istr( &buf );

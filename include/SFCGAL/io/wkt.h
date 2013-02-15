@@ -42,7 +42,7 @@ namespace io {
 	/**
 	 * Read a WKT geometry from a char*
 	 */
-	std::auto_ptr< Geometry > readWkt( char*, size_t );
+	std::auto_ptr< Geometry > readWkt( const char*, size_t );
 }
 }
 
