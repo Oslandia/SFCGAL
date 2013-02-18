@@ -50,6 +50,9 @@ std::auto_ptr<Geometry> convexHull( const Geometry & g )
 {
 	using CGAL::object_cast ;
 
+	if ( g.isEmpty() ) {
+		return std::auto_ptr<Geometry>( g.clone() );
+	}
 
 	SFCGAL::detail::GetPointsVisitor getPointVisitor;
 	const_cast< Geometry & >(g).accept( getPointVisitor );
