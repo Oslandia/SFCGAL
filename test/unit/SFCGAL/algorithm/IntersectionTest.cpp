@@ -309,5 +309,16 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
     }
 }
 
+
+BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
+{
+	// pôlygon with a doubled point (10 0)
+	std::auto_ptr<Geometry> gA = io::readWkt("POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))");
+	std::auto_ptr<Geometry> gB = io::readWkt("POLYGON((0 0,5 0,5 5,0 5,0 0))");
+
+	// check it does not assert
+	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

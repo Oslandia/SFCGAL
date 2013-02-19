@@ -214,7 +214,23 @@ CGAL::Polygon_2< Kernel > LineString::toPolygon_2() const
 	Point_2_const_iterator pend = points_2_end();
 	// skip the last point
 	pend--;
-	return CGAL::Polygon_2< Kernel >( points_2_begin(), pend );
+
+	// skip double points
+	// TODO: what to do with cycles ?
+	std::list<Kernel::Point_2> points;
+	Kernel::Point_2 lastP;
+	for ( Point_2_const_iterator pit = points_2_begin(); pit != pend; ++pit ) {
+		if ( pit == points_2_begin() ) {
+			lastP = *pit;
+			points.push_back( *pit );
+			continue;
+		}
+		if ( lastP != *pit ) {
+			points.push_back( *pit );
+		}
+		lastP = *pit;
+	}
+	return CGAL::Polygon_2< Kernel >( points.begin(), points.end() );
 }
 
 
