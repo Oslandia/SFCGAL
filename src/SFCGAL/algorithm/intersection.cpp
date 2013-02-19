@@ -25,6 +25,7 @@
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
+#include <SFCGAL/tools/Registry.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -41,19 +42,24 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace algorithm
 {
+	inline std::auto_ptr<Geometry> _new_empty_geometry( const GeometryType& typeId )
+	{
+		return std::auto_ptr<Geometry>( tools::Registry::instance().newGeometryByTypeId( typeId ) );
+	}
+
 	static std::auto_ptr<Geometry> intersection_point_x_( const Point& pt, const Geometry& gb )
 	{
 		if ( intersects( pt, gb )) {
 			return std::auto_ptr<Geometry>(new Point(pt));
 		}
-		return std::auto_ptr<Geometry>(new GeometryCollection());
+		return _new_empty_geometry( gb.geometryTypeId() );
 	}
 
 	static std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
 	{
 		CGAL::Object obj = CGAL::intersection( tria.toTriangle_2(), trib.toTriangle_2() );
 		if (obj.empty()) {
-			return std::auto_ptr<Geometry>(new GeometryCollection());
+			return _new_empty_geometry( SFCGAL::TYPE_TRIANGLE );
 		}
 		return std::auto_ptr<Geometry>(Geometry::fromCGAL( obj ));
 	}
@@ -78,12 +84,12 @@ namespace algorithm
 		}
 
 		if ( opolys.size() == 0 ) {
-		    return std::auto_ptr<Geometry>( new GeometryCollection() );
+			return _new_empty_geometry( SFCGAL::TYPE_POLYGON );
 		}
 		if ( opolys.size() == 1 ) {
-		    return std::auto_ptr<Geometry>( new Polygon( *opolys.begin() ));
+			return std::auto_ptr<Geometry>( new Polygon( *opolys.begin() ));
 		}
-
+		
 		MultiPolygon* mp = new MultiPolygon;
 		std::list<CGAL::Polygon_with_holes_2<Kernel> >::const_iterator it;
 		for ( it = opolys.begin(); it != opolys.end(); ++it ) {
@@ -123,7 +129,7 @@ namespace algorithm
 		//
 		// return EMPTY if bboxes do not overlap
 		if ( !Envelope::overlaps( ga.envelope(), gb.envelope() )) {
-		    return std::auto_ptr<Geometry>(new GeometryCollection() );
+			return _new_empty_geometry( gb.geometryTypeId() );
 		}
 
 		// deal with geometry collection

@@ -61,6 +61,11 @@ namespace tools {
 		Geometry*  newGeometryByTypeName( const std::string & geometryTypeName ) const ;
 
 		/**
+		 * returns a new instance of the given geometryType
+		 */
+		Geometry*  newGeometryByTypeId( int typeId ) const ;
+
+		/**
 		 * returns the instance of the registry
 		 */
 		static Registry & instance() ;

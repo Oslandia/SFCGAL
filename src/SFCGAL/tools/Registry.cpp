@@ -20,6 +20,7 @@
  */
 #include <SFCGAL/tools/Registry.h>
 
+#include <SFCGAL/Geometry.h>
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/tools/Log.h>
@@ -81,6 +82,21 @@ Geometry*  Registry::newGeometryByTypeName( const std::string & geometryTypeName
 	}
 
 	SFCGAL_WARNING( boost::format("Registry can't create a new Geometry for the type '%s' (returning null pointer)") % geometryTypeName );
+	return NULL ;
+}
+
+///
+///
+///
+Geometry*  Registry::newGeometryByTypeId( int typeId ) const
+{
+	for ( const_prototype_iterator it = _prototypes.begin(); it != _prototypes.end(); ++it ){
+		if ( typeId == (*it)->geometryTypeId() ){
+			return (*it)->clone() ;
+		}
+	}
+
+	SFCGAL_WARNING( boost::format("Registry can't create a new Geometry for the type '%d' (returning null pointer)") % typeId );
 	return NULL ;
 }
 

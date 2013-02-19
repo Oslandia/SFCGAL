@@ -69,7 +69,7 @@ namespace SFCGAL {
      * @warning codes for abstract classes and unimplemented classes are hidden
      * @warning code values have are important for WKB
      */
-    typedef enum {
+    enum GeometryType {
 //     TYPE_GEOMETRY            = 0, //abstract
        TYPE_POINT               = 1,
        TYPE_LINESTRING          = 2,
@@ -92,7 +92,7 @@ namespace SFCGAL {
        TYPE_TRIANGLE            = 100, //17 in Wikipedia???
        TYPE_SOLID               = 101,
        TYPE_MULTISOLID          = 102
-    } GeometryType ;
+    };
 
 
     /**

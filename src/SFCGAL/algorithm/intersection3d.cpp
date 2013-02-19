@@ -27,6 +27,7 @@
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionToMulti.h>
+#include <SFCGAL/tools/Registry.h>
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>
 
@@ -82,12 +83,17 @@ typedef CGAL::Polyhedral_mesh_domain_3<Polyhedron, Kernel> Mesh_domain;
 namespace SFCGAL {
 namespace algorithm
 {
+	inline std::auto_ptr<Geometry> _new_empty_geometry( const GeometryType& typeId )
+	{
+		return std::auto_ptr<Geometry>( tools::Registry::instance().newGeometryByTypeId( typeId ) );
+	}
+
 	static std::auto_ptr<Geometry> intersection_point_x_( const Point& pt, const Geometry& gb )
 	{
 		if ( intersects3D( pt, gb )) {
 			return std::auto_ptr<Geometry>(new Point(pt));
 		}
-		return std::auto_ptr<Geometry>(new GeometryCollection());
+		return _new_empty_geometry( gb.geometryTypeId() );
 	}
 
 	static std::auto_ptr<Geometry> intersection_triangles_( const Triangle& tria, const Triangle& trib )
@@ -363,7 +369,7 @@ namespace algorithm
 
 		if ( polylines.size() == 0 ) {
 			// no intersection
-			return std::auto_ptr<Geometry>( new GeometryCollection() );
+			return _new_empty_geometry( SFCGAL::TYPE_POLYHEDRALSURFACE );
 		}
 
 		std::list<Polyhedron> decomposition;
@@ -522,7 +528,7 @@ namespace algorithm
 
 		// empty intersection
 		if (result.size() == 0) {
-			return std::auto_ptr<Geometry>(new GeometryCollection());
+			return _new_empty_geometry( SFCGAL::TYPE_SOLID );
 		}
 
 		// else, we have an intersection
@@ -535,7 +541,7 @@ namespace algorithm
 		//
 		// return EMPTY if bboxes do not overlap
 		if ( !Envelope::overlaps( ga.envelope(), gb.envelope() )) {
-			return std::auto_ptr<Geometry>(new GeometryCollection());
+			return _new_empty_geometry( gb.geometryTypeId() );
 		}
 
 		// deal with geometry collection
