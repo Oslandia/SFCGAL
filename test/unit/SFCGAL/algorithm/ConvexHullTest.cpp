@@ -103,5 +103,14 @@ BOOST_AUTO_TEST_CASE( testConvexHull2D )
 	BOOST_CHECK( hull->is<Polygon>() );
 }
 
+BOOST_AUTO_TEST_CASE( testConvexHullEmpty )
+{
+	GeometryCollection collect;
+	collect.addGeometry( Polygon() );
+	collect.addGeometry( Polygon() );
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( collect ) );
+	BOOST_CHECK( hull->isEmpty() );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

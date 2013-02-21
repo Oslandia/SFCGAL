@@ -59,6 +59,10 @@ std::auto_ptr<Geometry> convexHull( const Geometry & g )
 
 	// collect points
 
+	if ( getPointVisitor.points.size() == 0 ) {
+		return std::auto_ptr<Geometry>( new GeometryCollection() );
+	}
+
 	std::vector< Point_2 > points ;
 	for ( size_t i = 0; i < getPointVisitor.points.size(); i++ ){
 		points.push_back( getPointVisitor.points[i]->toPoint_2() );
