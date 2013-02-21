@@ -33,7 +33,7 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/PreparedGeometry.h>
 
-#include <SFCGAL/sfcgal_c.h>
+#include <SFCGAL/capi/sfcgal_c.h>
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/ewkt.h>
