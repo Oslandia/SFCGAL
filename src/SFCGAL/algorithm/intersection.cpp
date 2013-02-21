@@ -114,14 +114,13 @@ namespace algorithm
 					  bboxes.begin(), bboxes.end(),
 					  cb );
 
-		if ( cb.geometries->numGeometries() == 1 ) {
+		if ( cb.geometries->size() == 1 ) {
 			// copy
-			std::auto_ptr<Geometry> g(cb.geometries->geometryN(0).clone());
-			delete cb.geometries;
+			std::auto_ptr<Geometry> g(*cb.geometries->begin());
 			return g;
 		}
 
-		return collectionHomogenize( std::auto_ptr<Geometry>(cb.geometries) );
+		return collectionHomogenize( std::auto_ptr<Geometry>( cb.geometryCollection().release() ) );
 	}
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )

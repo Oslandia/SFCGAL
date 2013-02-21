@@ -30,6 +30,9 @@
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/algorithm/detail/intersects.h>
+#include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/length.h>
+#include <SFCGAL/algorithm/area.h>
 
 
 namespace SFCGAL {
@@ -223,20 +226,107 @@ namespace detail {
 	template <int Dim>
 	intersection_cb<Dim>::intersection_cb()
 	{
-		geometries = new GeometryCollection();
+		geometries = boost::shared_ptr< std::list<Geometry*> >( new std::list<Geometry*> );
 	}
 
-	// FIXME
-	// temporary operator
-	static bool collectionContains( const GeometryCollection& coll, const Geometry& g )
+	//
+	// Tell if the gA geometry is "larger" than gB
+	// It is larger if its dimension is larger (line over point)
+	// Or if its length/area/volume is greater
+	bool isLarger( const Geometry& gA, const Geometry& gB )
 	{
-		for ( size_t i = 0; i < coll.numGeometries(); ++i ) {
-			if ( g == coll.geometryN(i) ) {
-				return true;
-			}
+		if ( gA.dimension() != gB.dimension() ) {
+			return gA.dimension() > gB.dimension();
 		}
+		if ( gA.dimension() == 1 ) { // lines
+			return algorithm::length( gA ) > algorithm::length( gB );
+		}
+		else if ( gA.dimension() == 2 ) { // surfaces
+			return algorithm::area( gA ) > algorithm::area( gB );
+		}
+		// TODO
+		// else if ( gA.dimension() == 3 ) { // solids
+		// 	return algorithm::volume( gA ) > algorithm::volume( gB );
+		// }		
 		return false;
 	}
+
+
+	//
+	// Choose between intersects and intersects3D based on a template parameter
+	template <int Dim>
+	struct intersectsF
+	{
+		inline bool operator()( const Geometry& g1, const Geometry& g2 )
+		{
+			return false;
+		}
+	};
+	template <>
+	struct intersectsF<2>
+	{
+		inline bool operator()( const Geometry& g1, const Geometry& g2 )
+		{
+			return algorithm::intersects( g1, g2 );
+		}
+	};
+	template <>
+	struct intersectsF<3>
+	{
+		inline bool operator()( const Geometry& g1, const Geometry& g2 )
+		{
+			return algorithm::intersects3D( g1, g2 );
+		}
+	};
+	template <int Dim>
+	bool inline intersectsD( const Geometry& g1, const Geometry& g2 )
+	{
+		return intersectsF<Dim>()( g1, g2 );
+	}
+
+	template <int Dim>
+	struct collectionInsertF
+	{
+		void operator()( std::list<Geometry*>& coll, Geometry *g )
+		{
+			std::vector<Geometry*> toErase;
+			for ( std::list<Geometry*>::iterator it = coll.begin(); it != coll.end(); ++it ) {
+				if ( intersectsD<Dim>( *(*it), *g ) ) {
+					if ( isLarger( *g, *(*it) ) ) {
+						// if the candidate is larger than the intersecting geometry
+						// erase it
+						toErase.push_back( *it );
+					}
+					else if ( isLarger( *(*it), *g ) ) {
+						// the candidate intersects with an already present geometry
+						// that is larger, abort
+						return;
+					}
+				}
+			}
+			for ( size_t i = 0; i < toErase.size(); ++i ) {
+				delete toErase[i];
+				coll.erase( std::find( coll.begin(), coll.end(), toErase[i] ) );
+			}
+			coll.push_back( g );
+		}
+	};
+	template <int Dim>
+	inline void collectionInsert( std::list<Geometry*>& coll, Geometry* g )
+	{
+		collectionInsertF<Dim>()( coll, g );
+	}
+
+	template <int Dim>
+	std::auto_ptr<GeometryCollection> intersection_cb<Dim>::geometryCollection() const
+	{
+		std::auto_ptr<GeometryCollection> collect( new GeometryCollection );
+		for ( std::list<Geometry*>::const_iterator it = geometries->begin(); it != geometries->end(); ++it ) {
+			collect->addGeometry( *it );
+		}
+		return collect;
+	}
+
 	//
 	// FIXME
 	// There is no need to test the dynamic type here.
@@ -260,9 +350,7 @@ namespace detail {
 				if ( !obj.empty()) {
 					Geometry* g = Geometry::fromCGAL(obj);
 					BOOST_ASSERT( g != 0 );
-					if ( !collectionContains( *geometries, *g )) {
-						geometries->addGeometry(g);
-					}
+					collectionInsert<Dim>( *geometries, g );
 				}
 			} else {
 				// Segment x Triangle
@@ -271,9 +359,7 @@ namespace detail {
 				if ( !obj.empty()) {
 					Geometry* g = Geometry::fromCGAL(obj);
 					BOOST_ASSERT( g != 0 );
-					if ( !collectionContains( *geometries, *g )) {
-						geometries->addGeometry(g);
-					}
+					collectionInsert<Dim>( *geometries, g );
 				}
 			}
 		} else {
@@ -284,9 +370,7 @@ namespace detail {
 			if ( !obj.empty()) {
 				Geometry* g = Geometry::fromCGAL(obj);
 				BOOST_ASSERT( g != 0 );
-				if ( !collectionContains( *geometries, *g )) {
-					geometries->addGeometry(g);
-				}
+				collectionInsert<Dim>( *geometries, g );
 			}
 		}
 	}

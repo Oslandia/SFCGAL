@@ -28,6 +28,8 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/TypeForDimension.h>
 
+#include <boost/shared_ptr.hpp>
+
 namespace SFCGAL {
 namespace algorithm {
 namespace detail {
@@ -135,10 +137,16 @@ namespace detail {
 	template <int Dim>
 	struct intersection_cb
 	{
-		///
-		/// The resulting intersection geometry
-		GeometryCollection* geometries;
-		
+		//
+		// The resulting intersection geometry
+		// A shared_ptr seems to be needed here, since intersection_cb is copied
+		// a few times (and auto_ptr is not enough)
+		boost::shared_ptr< std::list<Geometry*> > geometries;
+
+		// convert to a geometrycollection
+		// warning: it is destructive
+		std::auto_ptr<GeometryCollection> geometryCollection() const;
+
 		intersection_cb();
 		
 		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );

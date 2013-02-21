@@ -237,13 +237,12 @@ namespace algorithm
 					  bboxes.begin(), bboxes.end(),
 					  cb );
 
-		if ( cb.geometries->numGeometries() == 1 ) {
+		if ( cb.geometries->size() == 1 ) {
 			// copy
-			std::auto_ptr<Geometry> g(cb.geometries->geometryN(0).clone());
-			delete cb.geometries;
+			std::auto_ptr<Geometry> g(*cb.geometries->begin());
 			return g;
 		}
-		return std::auto_ptr<Geometry>( cb.geometries );
+		return std::auto_ptr<Geometry>( std::auto_ptr<Geometry>( cb.geometryCollection() ) );
 	}
 
 	

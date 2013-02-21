@@ -36,6 +36,7 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
+#if 0
 BOOST_AUTO_TEST_CASE( testIntersectionPoint )
 {
     // The same point
@@ -319,6 +320,17 @@ BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
 	// check it does not assert
 	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
 }
+#endif
 
+BOOST_AUTO_TEST_CASE( testIntersectionCleanup )
+{
+	// pôlygon with a doubled point (10 0)
+	std::auto_ptr<Geometry> gA = io::readWkt("LINESTRING(0 0,0 10,10 10,10 0)");
+	std::auto_ptr<Geometry> gB = io::readWkt("LINESTRING(10 10 4,10 0 5,0 0 5)");
+
+	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
+	BOOST_CHECK( gI->geometryTypeId() == SFCGAL::TYPE_GEOMETRYCOLLECTION );
+	BOOST_CHECK( gI->as<GeometryCollection>().numGeometries() == 2 );
+}
 BOOST_AUTO_TEST_SUITE_END()
 
