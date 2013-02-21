@@ -102,6 +102,13 @@ BOOST_AUTO_TEST_CASE( multiPointEmpty )
 	BOOST_CHECK( g->isEmpty() );
 }
 
+BOOST_AUTO_TEST_CASE( multiPointEmpty2 )
+{
+	std::auto_ptr< Geometry > g( readWkt("MULTIPOINT(0 0,1 1,EMPTY)") );
+	BOOST_CHECK( g->is< MultiPoint >() );
+	BOOST_CHECK( g->numGeometries() == 3 );
+}
+
 //-- WKT MULTILINESTRING
 
 BOOST_AUTO_TEST_CASE( multiLineStringEmpty )

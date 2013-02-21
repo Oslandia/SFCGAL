@@ -78,6 +78,9 @@ Geometry*    WktReader::readGeometry()
 	case TYPE_TRIANGLE:
 	{
 		std::auto_ptr< Triangle > g( new Triangle() );
+		if ( _reader.match("EMPTY") ) {
+			return g.release();
+		}
 		if ( ! _reader.match('(') ){
 			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 		}
@@ -197,6 +200,9 @@ void   WktReader::readInnerPoint( Point & g )
 	if ( ! _reader.match('(') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
+	if ( _reader.imatch("EMPTY") ){
+		return ;
+	}	
 	readPointCoordinate( g );
 	if ( ! _reader.match(')') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
@@ -217,6 +223,9 @@ void   WktReader::readInnerLineString( LineString & g )
 	}
 
 	while ( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break;
+		}
 		std::auto_ptr< Point > p( new Point() ) ;
 		if ( readPointCoordinate( *p ) ){
 			g.addPoint( p.release() );
@@ -253,6 +262,10 @@ void   WktReader::readInnerPolygon( Polygon & g )
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
 
+	if ( _reader.imatch("EMPTY") ){
+		return ;
+	}	
+
 	for( int i = 0; ! _reader.eof() ; i++ ){
 		if ( i == 0 ){
 			readInnerLineString( g.exteriorRing() ) ;
@@ -285,6 +298,10 @@ void   WktReader::readInnerTriangle( Triangle & g )
 	if ( ! _reader.match('(') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
+
+	if ( _reader.imatch("EMPTY") ){
+		return ;
+	}	
 
 	// 4 points to read
 	std::vector< Point > points ;
@@ -321,7 +338,6 @@ void    WktReader::readInnerMultiPoint( MultiPoint & g )
 	if ( ! _reader.match('(') ){
 		BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 	}
-
 
 	while( ! _reader.eof() ){
 		std::auto_ptr< Point > p( new Point() );
@@ -365,6 +381,10 @@ void   WktReader::readInnerMultiLineString( MultiLineString & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break;
+		}
+
 		std::auto_ptr< LineString > lineString( new LineString() );
 		readInnerLineString( *lineString );
 		g.addGeometry( lineString.release() );
@@ -394,6 +414,10 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break;
+		}
+
 		std::auto_ptr< Polygon > polygon( new Polygon() );
 		readInnerPolygon( *polygon );
 		g.addGeometry( polygon.release() );
@@ -423,6 +447,10 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break ;
+		}
+
 		//read a full wkt geometry ex : POINT(2.0 6.0)
 		g.addGeometry( readGeometry() );
 
@@ -451,6 +479,10 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break ;
+		}
+
 		if ( ! _reader.match('(') ){
 			BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
 		}
@@ -494,6 +526,10 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break ;
+		}
+
 		std::auto_ptr< Polygon > polygon( new Polygon() ) ;
 		readInnerPolygon( *polygon );
 		g.addPolygon( polygon.release() );
@@ -525,6 +561,10 @@ void WktReader::readInnerSolid( Solid & g )
 	}
 
 	for ( int i = 0; ! _reader.eof(); i++ ){
+		if ( _reader.imatch("EMPTY") ){
+			break ;
+		}
+
 		if ( i == 0 ){
 			readInnerPolyhedralSurface( g.exteriorShell() );
 		}else{
@@ -559,6 +599,10 @@ void WktReader::readInnerMultiSolid( MultiSolid & g )
 	}
 
 	while( ! _reader.eof() ){
+		if ( _reader.imatch("EMPTY") ){
+			break ;
+		}
+
 		std::auto_ptr< Solid > solid( new Solid() );
 		readInnerSolid( *solid );
 		g.addGeometry( solid.release() );
@@ -582,6 +626,10 @@ bool WktReader::readPointCoordinate( Point & p )
 {
 	std::vector< Kernel::Exact_kernel::FT > coordinates ;
 	Kernel::Exact_kernel::FT d;
+	if ( _reader.imatch("EMPTY") ) {
+		p = Point();
+		return false;
+	}
 	while ( _reader.read(d) ){
 		coordinates.push_back( d );
 	}
