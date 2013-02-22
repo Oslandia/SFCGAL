@@ -36,7 +36,6 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
-#if 0
 BOOST_AUTO_TEST_CASE( testIntersectionPoint )
 {
     // The same point
@@ -159,13 +158,13 @@ BOOST_AUTO_TEST_CASE( testIntersectionPolygon )
 
 BOOST_AUTO_TEST_CASE( testIntersection3DPolygon )
 {
-    std::auto_ptr<Geometry> square(io::readWkt("POLYGON((0 0 0,1 0 0,1 1 0,0 1 0,0 0 0))"));
+    std::auto_ptr<Geometry> square(io::readWkt("POLYGON((0 0 0.1,1 0 0.1,1 1 0.1,0 1 0.1,0 0 0.1))"));
 
     // linestring crossing
-    LineString ls( Point(0.5, 0.5, -0.5), Point(0.5, 0.5, 0.5));
-    BOOST_CHECK( *algorithm::intersection3D( ls, *square ) == Point(0.5, 0.5, 0.0) );
+    LineString ls( Point(QT(1,2), QT(1,2), -QT(1,2)), Point(QT(1,2), QT(1,2), QT(1,10)));
+    BOOST_CHECK( *algorithm::intersection3D( ls, *square ) == Point(QT(1,2), QT(1,2), QT(1,10)) );
     // linestring on a triangulation edge
-    LineString ls2( Point(0.1, 0.9, 0.0), Point(0.9, 0.1, 0.0));
+    LineString ls2( Point(QT(1,10), QT(9,10), QT(1,10)), Point(QT(9,10), QT(1,10), QT(1,10)));
     BOOST_CHECK( *algorithm::intersection3D( ls2, *square ) == ls2 );
 }
 
@@ -320,7 +319,6 @@ BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
 	// check it does not assert
 	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
 }
-#endif
 
 BOOST_AUTO_TEST_CASE( testIntersectionCleanup )
 {

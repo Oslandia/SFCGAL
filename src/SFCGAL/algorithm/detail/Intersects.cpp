@@ -230,7 +230,7 @@ namespace detail {
 	}
 
 	//
-	// Tell if the gA geometry is "larger" than gB
+	// Tell if the gA geometry is "larger" (or equal) than gB
 	// It is larger if its dimension is larger (line over point)
 	// Or if its length/area/volume is greater
 	bool isLarger( const Geometry& gA, const Geometry& gB )
@@ -238,11 +238,14 @@ namespace detail {
 		if ( gA.dimension() != gB.dimension() ) {
 			return gA.dimension() > gB.dimension();
 		}
-		if ( gA.dimension() == 1 ) { // lines
-			return algorithm::length( gA ) > algorithm::length( gB );
+		if ( gA.dimension() == 0 ) { // points
+			return true;
+		}
+		else if ( gA.dimension() == 1 ) { // lines
+			return algorithm::length( gA ) >= algorithm::length( gB );
 		}
 		else if ( gA.dimension() == 2 ) { // surfaces
-			return algorithm::area( gA ) > algorithm::area( gB );
+			return algorithm::area( gA ) >= algorithm::area( gB );
 		}
 		// TODO
 		// else if ( gA.dimension() == 3 ) { // solids
