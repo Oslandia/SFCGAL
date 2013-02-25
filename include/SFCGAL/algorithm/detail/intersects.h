@@ -128,8 +128,13 @@ namespace detail {
 	/// Callback function used with box_intersection_d for 2d and 3d intersection test
 	/// Throws an exception if an intersection has been found
 	///
-	template <int Dim>
-	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b );
+	template <int TA, int TB, int Dim>
+	class intersects_cb
+	{
+	public:
+		void operator()( const typename detail::ObjectBox<Dim>::Type& a,
+				 const typename detail::ObjectBox<Dim>::Type& b );
+	};
 
 	///
 	/// Callback functor used with box_intersection_d for 2d and 3d intersections

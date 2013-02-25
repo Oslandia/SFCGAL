@@ -173,55 +173,84 @@ namespace detail {
 	template void to_boxes<3>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<Object3Box>& boxes );
 
 
-	//
-	// FIXME
-	// There is no need to test the dynamic type here.
-	// We should rely on a strongly-typed implementation.
-	// i.e. intersects_cb<Point, Triangle>, intersects_cb<Segment, Segment>, etc.
 	template <int Dim>
-	void intersects_cb( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
+	class intersects_cb<detail::ObjectHandle::Point, detail::ObjectHandle::Triangle, Dim>
 	{
-		typedef typename TypeForDimension<Dim>::Point Point_d;
-		typedef typename TypeForDimension<Dim>::Segment Segment_d;
-		typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
-		if ( a.handle()->type == ObjectHandle::Point ) {
-			if ( b.handle()->type == ObjectHandle::Triangle ) {
-				Point_d point = a.handle()->point->template toPoint_d<Dim>();
-				Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
-				if ( CGAL::do_intersect( point, tri )) {
-					throw found_point_triangle_intersection();
-				}
+	public:
+		void operator()( const typename detail::ObjectBox<Dim>::Type& a,
+				 const typename detail::ObjectBox<Dim>::Type& b )
+		{
+			typedef typename TypeForDimension<Dim>::Point Point_d;
+			typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
+			Point_d point = a.handle()->point->template toPoint_d<Dim>();
+			Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
+			if ( CGAL::do_intersect( point, tri )) {
+				throw detail::found_point_triangle_intersection();
 			}
 		}
-		else if ( a.handle()->type == ObjectHandle::Segment ) {
+	};
+
+	template <int Dim>
+	class intersects_cb<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment, Dim>
+	{
+	public:
+		void operator()( const typename detail::ObjectBox<Dim>::Type& a,
+				 const typename detail::ObjectBox<Dim>::Type& b )
+		{
+			typedef typename TypeForDimension<Dim>::Segment Segment_d;
 			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
-					a.handle()->segment.end_point->template toPoint_d<Dim>() );
-			if ( b.handle()->type == ObjectHandle::Segment ) {
-				Segment_d segb( b.handle()->segment.start_point->template toPoint_d<Dim>(),
-						b.handle()->segment.end_point->template toPoint_d<Dim>());
-				if ( CGAL::do_intersect( sega, segb )) {
-					throw found_segment_segment_intersection();
-				}
-			} else {
-				// Segment x Triangle
-				Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
-				if ( CGAL::do_intersect( sega, tri )) {
-				 	throw found_segment_triangle_intersection();
-				}
+					a.handle()->segment.end_point->template toPoint_d<Dim>());
+			Segment_d segb( b.handle()->segment.start_point->template toPoint_d<Dim>(),
+					b.handle()->segment.end_point->template toPoint_d<Dim>());
+			if ( CGAL::do_intersect( sega, segb )) {
+				throw detail::found_segment_segment_intersection();
 			}
-		} else {
-			// Triangle x Triangle intersection
+		}
+	};
+
+	template <int Dim>
+	class intersects_cb<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle, Dim>
+	{
+	public:
+		void operator()( const typename detail::ObjectBox<Dim>::Type& a,
+				 const typename detail::ObjectBox<Dim>::Type& b )
+		{
+			typedef typename TypeForDimension<Dim>::Segment Segment_d;
+			typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
+			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
+					a.handle()->segment.end_point->template toPoint_d<Dim>());
+			Triangle_d tri = b.handle()->triangle->template toTriangle_d<Dim>();
+			if ( CGAL::do_intersect( sega, tri )) {
+				throw detail::found_segment_triangle_intersection();
+			}
+		}
+	};
+
+	template <int Dim>
+	class intersects_cb<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle, Dim>
+	{
+	public:
+		void operator()( const typename detail::ObjectBox<Dim>::Type& a,
+				 const typename detail::ObjectBox<Dim>::Type& b )
+		{
+			typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
 			Triangle_d tria( a.handle()->triangle->template toTriangle_d<Dim>() );
 			Triangle_d trib( b.handle()->triangle->template toTriangle_d<Dim>() );
 			if (CGAL::do_intersect( tria, trib )) {
-				throw found_triangle_triangle_intersection();
+				throw detail::found_triangle_triangle_intersection();
 			}
-		}
-	}
-	/// template instanciations
-	template void intersects_cb<2>( const Object2Box& a, const Object2Box& b );
-	template void intersects_cb<3>( const Object3Box& a, const Object3Box& b );
 
+		}
+	};
+	/// template instanciations
+	template class intersects_cb<ObjectHandle::Point, ObjectHandle::Triangle, 2>;
+	template class intersects_cb<ObjectHandle::Point, ObjectHandle::Triangle, 3>;
+	template class intersects_cb<ObjectHandle::Segment, ObjectHandle::Segment, 2>;
+	template class intersects_cb<ObjectHandle::Segment, ObjectHandle::Segment, 3>;
+	template class intersects_cb<ObjectHandle::Segment, ObjectHandle::Triangle, 2>;
+	template class intersects_cb<ObjectHandle::Segment, ObjectHandle::Triangle, 3>;
+	template class intersects_cb<ObjectHandle::Triangle, ObjectHandle::Triangle, 2>;
+	template class intersects_cb<ObjectHandle::Triangle, ObjectHandle::Triangle, 3>;
 
 	template <int Dim>
 	intersection_cb<Dim>::intersection_cb()

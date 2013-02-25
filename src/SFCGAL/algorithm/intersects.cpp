@@ -90,6 +90,8 @@ namespace algorithm
 	///
 	/// intersection test using CGAL::box_intersection_d
 	///
+	// TA: ObjectHandle::Point | Segment | Triangle
+	template <int TA, int TB>
 	bool intersects_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
 		std::vector<detail::Object2Box> aboxes, bboxes;
@@ -98,10 +100,11 @@ namespace algorithm
 		detail::to_boxes<2>( ga, ahandles, aboxes );
 		detail::to_boxes<2>( gb, bhandles, bboxes );
 		
+		detail::intersects_cb<TA, TB, 2> cb;
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
-						  detail::intersects_cb<2> );
+						  cb );
 		}
 		catch ( detail::found_intersection& e ) {
 			return true;
@@ -153,10 +156,11 @@ namespace algorithm
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
 				detail::to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
 			}
+			detail::intersects_cb<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment, 2> cb;
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
-							  detail::intersects_cb<2> );
+							  cb );
 			}
 			catch ( detail::found_segment_segment_intersection& e ) {
 				return true;
@@ -261,16 +265,16 @@ namespace algorithm
 		case TYPE_LINESTRING: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
-				return intersects_bbox_d( ga, gb );
+				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment>( ga, gb );
 			case TYPE_TRIANGLE:
-				return intersects_bbox_d( ga, gb );
+				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
-				return intersects_bbox_d( ga, gb );
+				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -288,7 +292,7 @@ namespace algorithm
 			case TYPE_SOLID:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects_bbox_d( ga, gb );
+				return intersects_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -324,7 +328,7 @@ namespace algorithm
 		case TYPE_TRIANGULATEDSURFACE: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects_bbox_d( ga, gb );
+				return intersects_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
 			case TYPE_SOLID:
 				break;
 			default:
