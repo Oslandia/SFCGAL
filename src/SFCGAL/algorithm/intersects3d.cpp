@@ -122,11 +122,13 @@ namespace algorithm
 	template <int TA, int TB>
 	static bool intersects3D_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
-		std::vector<detail::Object3Box> aboxes, bboxes;
-		std::list<detail::ObjectHandle> ahandles, bhandles;
+		using namespace SFCGAL::detail;
 
-		detail::to_boxes<3>( ga, ahandles, aboxes );
-		detail::to_boxes<3>( gb, bhandles, bboxes );
+		std::vector<Object3Box> aboxes, bboxes;
+		std::list<ObjectHandle> ahandles, bhandles;
+
+		to_boxes<3>( ga, ahandles, aboxes );
+		to_boxes<3>( gb, bhandles, bboxes );
 		
 		detail::intersects_cb<TA, TB, 3> cb;
 		try {
@@ -178,6 +180,8 @@ namespace algorithm
 
 	bool intersects3D( const Geometry& ga, const Geometry& gb )
 	{
+		using namespace SFCGAL::detail;
+
 		// deal with geometry collection
 		// call intersects on each geometry of the collection
 		const GeometryCollection* coll;
@@ -217,8 +221,8 @@ namespace algorithm
 			case TYPE_POLYHEDRALSURFACE:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects3D_bbox_d<detail::ObjectHandle::Point,
-							   detail::ObjectHandle::Triangle>
+				return intersects3D_bbox_d<ObjectHandle::Point,
+							   ObjectHandle::Triangle>
 					( static_cast<const Point&>(ga), static_cast<const TriangulatedSurface&>(gb));
 			case TYPE_SOLID:
 				break;
@@ -231,16 +235,16 @@ namespace algorithm
 		case TYPE_LINESTRING: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
-				return intersects3D_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment>( ga, gb );
+				return intersects3D_bbox_d<ObjectHandle::Segment, ObjectHandle::Segment>( ga, gb );
 			case TYPE_TRIANGLE:
-				return intersects3D_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects3D_bbox_d<ObjectHandle::Segment, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
-				return intersects3D_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects3D_bbox_d<ObjectHandle::Segment, ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects3D( gb, ga );
@@ -259,7 +263,7 @@ namespace algorithm
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
-				return intersects3D_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects3D_bbox_d<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects3D( gb, ga );
@@ -294,7 +298,7 @@ namespace algorithm
 		case TYPE_TRIANGULATEDSURFACE: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects3D_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects3D_bbox_d<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_SOLID:
 				break;
 			default:

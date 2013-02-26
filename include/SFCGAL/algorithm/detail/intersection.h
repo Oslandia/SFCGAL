@@ -18,8 +18,10 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
-#define _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
+#ifndef _SFCGAL_ALGORITHM_DETAIL_INTERSECTION_
+#define _SFCGAL_ALGORITHM_DETAIL_INTERSECTION_
+
+#include <SFCGAL/GeometryCollection.h>
 
 #include <SFCGAL/detail/GeometrySet.h>
 #include <boost/shared_ptr.hpp>
@@ -28,23 +30,30 @@ namespace SFCGAL {
 namespace algorithm {
 namespace detail {
 
-	struct found_intersection {};
-	struct found_point_triangle_intersection : public found_intersection {};
-	struct found_point_segment_intersection : public found_intersection {};
-	struct found_segment_segment_intersection : public found_intersection {};
-	struct found_segment_triangle_intersection : public found_intersection {};
-	struct found_triangle_triangle_intersection : public found_intersection {};
-	
 	///
-	/// Callback function used with box_intersection_d for 2d and 3d intersection test
-	/// Throws an exception if an intersection has been found
+	/// Callback functor used with box_intersection_d for 2d and 3d intersections
 	///
-	template <int TA, int TB, int Dim>
-	class intersects_cb
+	template <int Dim>
+	struct intersection_cb_base
 	{
-	public:
-		void operator()( const typename SFCGAL::detail::ObjectBox<Dim>::Type& a,
-				 const typename SFCGAL::detail::ObjectBox<Dim>::Type& b );
+		//
+		// The resulting intersection geometry
+		// A shared_ptr seems to be needed here, since intersection_cb is copied
+		// a few times (and auto_ptr is not enough)
+		boost::shared_ptr< std::list<Geometry*> > geometries;
+
+		// convert to a geometrycollection
+		// warning: it is destructive
+		std::auto_ptr<GeometryCollection> geometryCollection() const;
+
+		intersection_cb_base();
+	};
+
+	template <int TA, int TB, int Dim>
+	struct intersection_cb
+	{
+		intersection_cb_base<Dim> base;
+		void operator() ( const typename SFCGAL::detail::ObjectBox<Dim>::Type& a, const typename SFCGAL::detail::ObjectBox<Dim>::Type& b );
 	};
 
 } // detail

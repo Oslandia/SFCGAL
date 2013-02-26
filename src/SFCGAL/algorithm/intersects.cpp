@@ -94,13 +94,14 @@ namespace algorithm
 	template <int TA, int TB>
 	bool intersects_bbox_d( const Geometry& ga, const Geometry& gb )
 	{
-		std::vector<detail::Object2Box> aboxes, bboxes;
-		std::list<detail::ObjectHandle> ahandles, bhandles;
+		using namespace SFCGAL::detail;
+		std::vector<Object2Box> aboxes, bboxes;
+		std::list<ObjectHandle> ahandles, bhandles;
 
-		detail::to_boxes<2>( ga, ahandles, aboxes );
-		detail::to_boxes<2>( gb, bhandles, bboxes );
+		to_boxes<2>( ga, ahandles, aboxes );
+		to_boxes<2>( gb, bhandles, bboxes );
 		
-		detail::intersects_cb<TA, TB, 2> cb;
+		algorithm::detail::intersects_cb<TA, TB, 2> cb;
 		try {
 			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 						  bboxes.begin(), bboxes.end(),
@@ -144,19 +145,20 @@ namespace algorithm
 		Envelope bboxb = pb.envelope();
 
 		if ( Envelope::overlaps( bboxa, bboxb ) ) {
+			using namespace SFCGAL::detail;
 			// test intersections between each rings
-			std::vector<detail::Object2Box> aboxes, bboxes;
-			std::list<detail::ObjectHandle> ahandles, bhandles;
+			std::vector<Object2Box> aboxes, bboxes;
+			std::list<ObjectHandle> ahandles, bhandles;
 
-			detail::to_boxes<2>( pa.exteriorRing(), ahandles, aboxes );
+			to_boxes<2>( pa.exteriorRing(), ahandles, aboxes );
 			for ( size_t i = 0; i < pa.numInteriorRings(); ++i ) {
-				detail::to_boxes<2>( pa.interiorRingN( i ), ahandles, aboxes );
+				to_boxes<2>( pa.interiorRingN( i ), ahandles, aboxes );
 			}
-			detail::to_boxes<2>( pb.exteriorRing(), bhandles, bboxes );
+			to_boxes<2>( pb.exteriorRing(), bhandles, bboxes );
 			for ( size_t i = 0; i < pb.numInteriorRings(); ++i ) {
-				detail::to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
+				to_boxes<2>( pb.interiorRingN( i ), bhandles, bboxes );
 			}
-			detail::intersects_cb<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment, 2> cb;
+			detail::intersects_cb<ObjectHandle::Segment, ObjectHandle::Segment, 2> cb;
 			try {
 				CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 							  bboxes.begin(), bboxes.end(),
@@ -209,6 +211,8 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
+		using namespace SFCGAL::detail;
+
 		SFCGAL_DEBUG( "ga: " + ga.geometryType() + " gb: " + gb.geometryType() );
 		// deal with geometry collection
 		// call intersects on each geometry of the collection
@@ -265,16 +269,16 @@ namespace algorithm
 		case TYPE_LINESTRING: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
-				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Segment>( ga, gb );
+				return intersects_bbox_d<ObjectHandle::Segment, ObjectHandle::Segment>( ga, gb );
 			case TYPE_TRIANGLE:
-				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects_bbox_d<ObjectHandle::Segment, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
 				// call the proper accelerator
-				return intersects_bbox_d<detail::ObjectHandle::Segment, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects_bbox_d<ObjectHandle::Segment, ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -292,7 +296,7 @@ namespace algorithm
 			case TYPE_SOLID:
 				break;
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects_bbox_d<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			default:
 				// symmetric call
 				return intersects( gb, ga );
@@ -328,7 +332,7 @@ namespace algorithm
 		case TYPE_TRIANGULATEDSURFACE: {
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersects_bbox_d<detail::ObjectHandle::Triangle, detail::ObjectHandle::Triangle>( ga, gb );
+				return intersects_bbox_d<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_SOLID:
 				break;
 			default:

@@ -21,7 +21,7 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/detail/intersects.h>
+#include <SFCGAL/algorithm/detail/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
@@ -101,30 +101,34 @@ namespace algorithm
 	///
 	/// intersections involving Box_d
 	///
+	template <int TA, int TB>
 	static std::auto_ptr<Geometry> intersection_box_d_( const Geometry& ga, const Geometry& gb )
-	{
-		std::vector<detail::Object2Box> aboxes, bboxes;
-		std::list<detail::ObjectHandle> ahandles, bhandles;
+	{		
+		using namespace SFCGAL::detail;
+		std::vector<Object2Box> aboxes, bboxes;
+		std::list<ObjectHandle> ahandles, bhandles;
 
-		detail::to_boxes<2>( ga, ahandles, aboxes );
-		detail::to_boxes<2>( gb, bhandles, bboxes );
+		to_boxes<2>( ga, ahandles, aboxes );
+		to_boxes<2>( gb, bhandles, bboxes );
 		
-		detail::intersection_cb<2> cb;
+		algorithm::detail::intersection_cb<TA, TB, 2> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );
 
-		if ( cb.geometries->size() == 1 ) {
+		if ( cb.base.geometries->size() == 1 ) {
 			// copy
-			std::auto_ptr<Geometry> g(*cb.geometries->begin());
+			std::auto_ptr<Geometry> g(*cb.base.geometries->begin());
 			return g;
 		}
 
-		return collectionHomogenize( std::auto_ptr<Geometry>( cb.geometryCollection().release() ) );
+		return collectionHomogenize( std::auto_ptr<Geometry>( cb.base.geometryCollection().release() ) );
 	}
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
+		using namespace SFCGAL::detail;
+
 		//
 		// return EMPTY if bboxes do not overlap
 		if ( !Envelope::overlaps( ga.envelope(), gb.envelope() )) {
@@ -155,9 +159,10 @@ namespace algorithm
 		case TYPE_LINESTRING:
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_LINESTRING:
+				return intersection_box_d_<ObjectHandle::Segment, ObjectHandle::Segment>( ga, gb );
 			case TYPE_TRIANGLE:
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersection_box_d_( ga, gb );
+				return intersection_box_d_<ObjectHandle::Segment, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
@@ -173,7 +178,7 @@ namespace algorithm
 			case TYPE_TRIANGLE:
 				return intersection_triangles_( static_cast<const Triangle&>(ga), static_cast<const Triangle&>(gb) );
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersection_box_d_( ga, gb );
+				return intersection_box_d_<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYGON:
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
@@ -202,7 +207,7 @@ namespace algorithm
 		case TYPE_TRIANGULATEDSURFACE:
 			switch ( gb.geometryTypeId() ) {
 			case TYPE_TRIANGULATEDSURFACE:
-				return intersection_box_d_( ga, gb );
+				return intersection_box_d_<ObjectHandle::Triangle, ObjectHandle::Triangle>( ga, gb );
 			case TYPE_POLYHEDRALSURFACE:
 			case TYPE_SOLID:
 				break;
