@@ -21,7 +21,7 @@
 #ifndef _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
 #define _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
 
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/detail/Box_d.h>
 #include <boost/shared_ptr.hpp>
 
 namespace SFCGAL {

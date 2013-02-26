@@ -25,46 +25,52 @@
 #include <CGAL/Segment_3.h>
 #include <CGAL/Triangle_2.h>
 #include <CGAL/Triangle_3.h>
+#include <CGAL/Polygon_with_holes_2.h>
+#include <CGAL/Polyhedron_3.h>
 
 namespace SFCGAL {
 	///
-    /// Type traits for CGAL types.
-    ///
-    /// CGAL types cannot be directly parametrized by their dimension.
-    /// For instance, there are both a Triangle_2<K> and a Triangle_3<K> type
-    ///
-    /// TypeForKernel<K, 2>::Point is equivalent to CGAL::Point_2<K> for instance
-    /// TypeForDimension<2>::Bbox is equivalent to CGAL::Bbox_2
-
-    ///
-    /// Generic traits, all types are defined to 'void'
-    template <int Dim>
-    struct TypeForDimension
-    {
-    };
-
-    ///
-    /// Specialization for dimension = 2
-    template <>
-    struct TypeForDimension<2>
-    {
-    	typedef CGAL::Bbox_2 Bbox;
-		typedef Kernel::Point_2 Point;
-		typedef Kernel::Segment_2 Segment;
-		typedef Kernel::Triangle_2 Triangle;
-    };
-    
-    ///
-    /// Specialization for dimension = 2
-    template <>
-    struct TypeForDimension<3>
-    {
-    	typedef CGAL::Bbox_3 Bbox;
-		typedef Kernel::Point_3 Point;
-		typedef Kernel::Segment_3 Segment;
-		typedef Kernel::Triangle_3 Triangle;
-    };
-    
+	/// Type traits for CGAL types.
+	///
+	/// CGAL types cannot be directly parametrized by their dimension.
+	/// For instance, there are both a Triangle_2<K> and a Triangle_3<K> type
+	///
+	/// TypeForKernel<K, 2>::Point is equivalent to CGAL::Point_2<K> for instance
+	/// TypeForDimension<2>::Bbox is equivalent to CGAL::Bbox_2
+	
+	///
+	/// Generic traits, default dimension is 2
+	template <int Dim>
+	struct TypeForDimension
+	{
+		typedef CGAL::Bbox_2                        Bbox;
+		typedef Kernel::Point_2                     Point;
+		typedef Kernel::Segment_2                   Segment;
+		typedef Kernel::Triangle_2                  Triangle;
+		typedef CGAL::Polygon_with_holes_2<Kernel>  Surface;
+		typedef void*                               Volume;
+	};
+	
+	///
+	/// Specialization for dimension = 3
+	template <>
+	struct TypeForDimension<3>
+	{
+		typedef CGAL::Bbox_3               Bbox;
+		typedef Kernel::Point_3            Point;
+		typedef Kernel::Segment_3          Segment;
+		typedef Kernel::Triangle_3         Triangle;
+		typedef Kernel::Triangle_3         Surface;
+		typedef CGAL::Polyhedron_3<Kernel> Volume;
+	};
+	
+	///
+	/// Create a distinct type for each dimension
+	template <int N>
+	struct dim_t
+	{
+		enum { v = N };
+	};
 }
 
 #endif

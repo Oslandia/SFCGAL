@@ -26,144 +26,108 @@
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/Solid.h>
 #include <SFCGAL/Envelope.h>
 
 namespace SFCGAL {
 namespace detail {
 
-	CGAL::Bbox_2 ObjectHandle::bbox_2() const
+	void _decompose_triangle( const Triangle& tri, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
-		if ( type == Segment ) {
-			double xmin, xmax, ymin, ymax;
-			if ( segment.start_point->x() < segment.end_point->x() ) {
-				xmin = CGAL::to_double( segment.start_point->x() ) ;
-				xmax = CGAL::to_double( segment.end_point->x() ) ;
-			} else {
-				xmin = CGAL::to_double( segment.end_point->x() ) ;
-				xmax = CGAL::to_double( segment.start_point->x() ) ;
-			}
-			if ( segment.start_point->y() < segment.end_point->y() ) {
-				ymin = CGAL::to_double( segment.start_point->y() ) ;
-				ymax = CGAL::to_double( segment.end_point->y() ) ;
-			} else {
-				ymin = CGAL::to_double( segment.end_point->y() ) ;
-				ymax = CGAL::to_double( segment.start_point->y() ) ;
-			}
-			return CGAL::Bbox_2( xmin, ymin, xmax, ymax );
-		}
-		// else
-		return triangle->envelope().toBbox_2();
+		CGAL::Polygon_2<Kernel> outer;
+		outer.push_back( tri.vertex(0).toPoint_2() );
+		outer.push_back( tri.vertex(1).toPoint_2() );
+		outer.push_back( tri.vertex(2).toPoint_2() );
+		surfaces.push_back( CGAL::Polygon_with_holes_2<Kernel>( outer ) );
+	}
+	void _decompose_triangle( const Triangle& tri, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
+	{
+		CGAL::Triangle_3<Kernel> outtri( tri.vertex(0).toPoint_3(),
+						 tri.vertex(1).toPoint_3(),
+						 tri.vertex(2).toPoint_3() );
+		surfaces.push_back( outtri );
 	}
 
-	CGAL::Bbox_3 ObjectHandle::bbox_3() const
+	void decompose_polygon( const Polygon& poly, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
-		if ( type == Segment ) {
-			double xmin, xmax, ymin, ymax, zmin, zmax;
-			if ( segment.start_point->x() < segment.end_point->x() ) {
-				xmin = CGAL::to_double( segment.start_point->x() ) ;
-				xmax = CGAL::to_double( segment.end_point->x() ) ;
-			} else {
-				xmin = CGAL::to_double( segment.end_point->x() ) ;
-				xmax = CGAL::to_double( segment.start_point->x() ) ;
-			}
-			if ( segment.start_point->y() < segment.end_point->y() ) {
-				ymin = CGAL::to_double( segment.start_point->y() ) ;
-				ymax = CGAL::to_double( segment.end_point->y() ) ;
-			} else {
-				ymin = CGAL::to_double( segment.end_point->y() ) ;
-				ymax = CGAL::to_double( segment.start_point->y() ) ;
-			}
-			if ( !segment.start_point->is3D() ) {
-				zmin = 0.0;
-				zmax = 0.0;
-			}
-			else {
-				if ( segment.start_point->z() < segment.end_point->z() ) {
-					zmin = CGAL::to_double( segment.start_point->z() ) ;
-					zmax = CGAL::to_double( segment.end_point->z() ) ;
-				} else {
-					zmin = CGAL::to_double( segment.end_point->z() ) ;
-					zmax = CGAL::to_double( segment.start_point->z() ) ;
-				}
-			}
-			return CGAL::Bbox_3( xmin, ymin, zmin, xmax, ymax, zmax );
-		}
-		// else
-		return triangle->envelope().toBbox_3();
+		surfaces.push_back( poly.toPolygon_with_holes_2() );
 	}
-
-	template <>
-	CGAL::Bbox_2 ObjectHandle::bbox_d<2>() const
+	void decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
-		return bbox_2();
-	}
-	template <>
-	CGAL::Bbox_3 ObjectHandle::bbox_d<3>() const
-	{
-		return bbox_3();
-	}
-
-	///
-	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
-	///
-	template <int Dim>
-	void to_boxes_( const Point& pt, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
-	{
-		handles.push_back( detail::ObjectHandle( &pt ));
-		boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
-	}
-
-	template <int Dim>
-	void to_boxes_( const LineString& ls, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
-	{
-		for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
-			handles.push_back( detail::ObjectHandle( &ls.pointN(i), &ls.pointN(i+1) ));
-			boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
+		TriangulatedSurface surf;
+		algorithm::triangulate( poly, surf );
+		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+			const Triangle& tri = surf.triangleN( i );
+			surfaces.push_back( CGAL::Triangle_3<Kernel>( tri.vertex(0).toPoint_3(),
+								      tri.vertex(1).toPoint_3(),
+									      tri.vertex(2).toPoint_3() )
+					    );
 		}
 	}
 
-	template <int Dim>
-	void to_boxes_( const Triangle& tri, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
+	void decompose_solid( const Solid& solid, typename GeometrySet<2>::VolumeCollection& volumes, dim_t<2> )
 	{
-		handles.push_back( detail::ObjectHandle( &tri ));
-		boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
+		// nothing
+	}
+	void decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
+	{
+		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
 	}
 
 	template <int Dim>
-	void to_boxes_( const TriangulatedSurface& surf, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
+	void GeometrySet<Dim>::_decompose( const Geometry& g )
 	{
-		for ( size_t i = 0; i < surf.numGeometries(); ++i ) {
-			handles.push_back( &surf.geometryN(i));
-			boxes.push_back( typename ObjectBox<Dim>::Type( handles.back().bbox_d<Dim>(), &handles.back() ));
+		if ( g.is<GeometryCollection>() ) {
+			const GeometryCollection& collect = g.as<GeometryCollection>();
+			for ( size_t i = 0; i < g.numGeometries(); ++i ) {
+				_decompose<Dim>( g.geometryN(i) );
+			}
+			return;
 		}
-	}
-
-	///
-	/// Generic function
-        template <int Dim>
-	void to_boxes( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes )
-	{
-		switch ( g.geometryTypeId() ){
+		switch ( g.geometryTypeId() ) {
 		case TYPE_POINT:
-			to_boxes_<Dim>( static_cast<const Point&>(g), handles, boxes );
+			_points.push_back( g.as<Point>().toPoint_d<Dim>() );
 			break;
-		case TYPE_LINESTRING:
-			to_boxes_<Dim>( static_cast<const LineString&>(g), handles, boxes );
+		case TYPE_LINESTRING: {
+			const LineString& ls = g.as<LineString>();
+			for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
+				typename TypeForDimension<Dim>::Segment seg( ls.pointN(i),
+									     ls.pointN(i+1) );
+				_segments.push_back( seg );
+			}
 			break;
-		case TYPE_TRIANGLE:
-			to_boxes_<Dim>( static_cast<const Triangle&>(g), handles, boxes );
+		}
+		case TYPE_TRIANGLE: {
+			_decompose_triangle( g.as<Triangle>(), _surfaces, dim_t<Dim>() );
 			break;
-		case TYPE_TRIANGULATEDSURFACE:
-			to_boxes_<Dim>( static_cast<const TriangulatedSurface&>(g), handles, boxes );
+		}
+		case TYPE_POLYGON: {
+			_decompose_polygon( g.as<Polygon>(), _surfaces, dim_t<Dim>() );
+			break;
+		}
+		case TYPE_TRIANGULATEDSURFACE: {
+			const TriangulatedSurface& tri = g.as<TriangulatedSurface>();
+			for ( size_t i = 0; i < tri.numTriangles(); ++i ) {
+				_decompose<Dim>( tri.triangleN( i ) );
+			}
+			break;
+		}
+		case TYPE_POLYHEDRALSURFACE: {
+			const PolyhedralSurface& tri = g.as<PolyhedralSurface>();
+			for ( size_t i = 0; i < tri.numPolygons(); ++i ) {
+				_decompose<Dim>( tri.polygonN( i ) );
+			}
+			break;
+		}
+		case TYPE_SOLID:
+			const Solid& solid = g.as<Solid>();
+			_decompose_solid( solid, dim_t<Dim>() );
 			break;
 		default:
-			BOOST_THROW_EXCEPTION( Exception( "Trying to call to_boxes() with an incompatible type " + g.geometryType() ));
+			break;
 		}
 	}
-	// instanciation of templates
-	template void to_boxes<2>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<Object2Box>& boxes );
-	template void to_boxes<3>( const Geometry& g, std::list<detail::ObjectHandle>& handles, std::vector<Object3Box>& boxes );
-
 
 } // detail
 } // SFCGAL

@@ -23,7 +23,7 @@
 
 #include <SFCGAL/GeometryCollection.h>
 
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/detail/Box_d.h>
 #include <boost/shared_ptr.hpp>
 
 namespace SFCGAL {

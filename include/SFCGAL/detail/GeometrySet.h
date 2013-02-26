@@ -33,93 +33,26 @@
 
 namespace SFCGAL {
 	class Geometry;
-	class Point;
-	class Triangle;
 namespace detail {
 
-	///
-	/// Structure used to store handle to a segment or to a triangle
-	///
-	struct ObjectHandle
-	{
-		enum
-		{
-			Point,
-			Segment,
-			Triangle
-		} ObjectType;
-		int type;
-		
-		union
-		{
-			const SFCGAL::Point* point;
-
-			struct
-			{
-				const SFCGAL::Point* start_point;
-				const SFCGAL::Point* end_point;
-			} segment;
-
-			const SFCGAL::Triangle* triangle;
-		};
-
-		///
-		/// Constructors
-		ObjectHandle( const SFCGAL::Point* p ) :
-			type(ObjectHandle::Point)
-		{
-			point = p;
-		}
-
-		ObjectHandle( const SFCGAL::Point* spoint, const SFCGAL::Point* epoint ) :
-			type(ObjectHandle::Segment)
-		{
-			segment.start_point = spoint;
-			segment.end_point = epoint;
-		}
-
-		ObjectHandle( const SFCGAL::Triangle* triangle ) :
-			type(ObjectHandle::Triangle), triangle(triangle) {}
-
-		///
-		/// 2D Bounding box conversion
-		CGAL::Bbox_2 bbox_2() const;
-
-		///
-		/// 3D Bounding box conversion
-		CGAL::Bbox_3 bbox_3() const;
-
-		///
-		/// Generic way to call bbox_2 or bbox_3
-		template <int Dim>
-		typename TypeForDimension<Dim>::Bbox bbox_d() const;
-	};
-
-	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 2, ObjectHandle*> Object2Box;
-	typedef CGAL::Box_intersection_d::Box_with_handle_d<double, 3, ObjectHandle*> Object3Box;
-
 	template <int Dim>
-	struct ObjectBox
+	class GeometrySet
 	{
-		typedef void Type;
-	};
-	template <>
-	struct ObjectBox<2>
-	{
-		typedef detail::Object2Box Type;
-	};
-	template <>
-	struct ObjectBox<3>
-	{
-		typedef detail::Object3Box Type;
-	};
+	public:
+		typedef std::list<typename TypeForDimension<Dim>::Point>   PointCollection;
+		typedef std::list<typename TypeForDimension<Dim>::Segment> SegmentCollection;
+		typedef std::list<typename TypeForDimension<Dim>::Surface> SurfaceCollection;
+		typedef std::list<typename TypeForDimension<Dim>::Volume>  VolumeCollection;
+	private:
+		///
+		/// Given an input SFCGAL::Geometry, decompose it into CGAL primitives
+		void _decompose( const Geometry& g );
 
-	///
-	/// Auxiliary function used to fill up vectors of handle and boxes for segments, triangle and triangulated surfaces
-	///
-	template <int Dim> // 2 or 3
-	void to_boxes( const Geometry& g, std::list<ObjectHandle>& handles, std::vector<typename ObjectBox<Dim>::Type>& boxes );
-
+		PointCollection _points;
+		SegmentCollection _segments;
+		SurfaceCollection _surfaces;
+		VolumeCollection _volumes;
+	};
 
 }
 }

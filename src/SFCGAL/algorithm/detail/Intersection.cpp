@@ -69,67 +69,38 @@ namespace detail {
 
 	//
 	// Choose between intersects and intersects3D based on a template parameter
-	template <int Dim>
-	struct intersectsF
+	bool inline intersectsD( const Geometry& g1, const Geometry& g2, dim_t<2> )
 	{
-		inline bool operator()( const Geometry& g1, const Geometry& g2 )
-		{
-			return false;
-		}
-	};
-	template <>
-	struct intersectsF<2>
+		return algorithm::intersects( g1, g2 );
+	}
+	bool inline intersectsD( const Geometry& g1, const Geometry& g2, dim_t<3> )
 	{
-		inline bool operator()( const Geometry& g1, const Geometry& g2 )
-		{
-			return algorithm::intersects( g1, g2 );
-		}
-	};
-	template <>
-	struct intersectsF<3>
-	{
-		inline bool operator()( const Geometry& g1, const Geometry& g2 )
-		{
-			return algorithm::intersects3D( g1, g2 );
-		}
-	};
-	template <int Dim>
-	bool inline intersectsD( const Geometry& g1, const Geometry& g2 )
-	{
-		return intersectsF<Dim>()( g1, g2 );
+		return algorithm::intersects3D( g1, g2 );
 	}
 
 	template <int Dim>
-	struct collectionInsertF
-	{
-		void operator()( std::list<Geometry*>& coll, Geometry *g )
-		{
-			std::vector<Geometry*> toErase;
-			for ( std::list<Geometry*>::iterator it = coll.begin(); it != coll.end(); ++it ) {
-				if ( intersectsD<Dim>( *(*it), *g ) ) {
-					if ( isLarger( *g, *(*it) ) ) {
-						// if the candidate is larger than the intersecting geometry
-						// erase it
-						toErase.push_back( *it );
-					}
-					else if ( isLarger( *(*it), *g ) ) {
-						// the candidate intersects with an already present geometry
-						// that is larger, abort
-						return;
-					}
-				}
-			}
-			for ( size_t i = 0; i < toErase.size(); ++i ) {
-				delete toErase[i];
-				coll.erase( std::find( coll.begin(), coll.end(), toErase[i] ) );
-			}
-			coll.push_back( g );
-		}
-	};
-	template <int Dim>
 	inline void collectionInsert( std::list<Geometry*>& coll, Geometry* g )
 	{
-		collectionInsertF<Dim>()( coll, g );
+		std::vector<Geometry*> toErase;
+		for ( std::list<Geometry*>::iterator it = coll.begin(); it != coll.end(); ++it ) {
+			if ( intersectsD( *(*it), *g, dim_t<Dim>() ) ) {
+				if ( isLarger( *g, *(*it) ) ) {
+					// if the candidate is larger than the intersecting geometry
+					// erase it
+					toErase.push_back( *it );
+				}
+				else if ( isLarger( *(*it), *g ) ) {
+					// the candidate intersects with an already present geometry
+					// that is larger, abort
+					return;
+				}
+			}
+		}
+		for ( size_t i = 0; i < toErase.size(); ++i ) {
+			delete toErase[i];
+			coll.erase( std::find( coll.begin(), coll.end(), toErase[i] ) );
+		}
+		coll.push_back( g );
 	}
 
 	template <int Dim>
