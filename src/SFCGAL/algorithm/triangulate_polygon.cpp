@@ -23,6 +23,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 
+#include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 #include <CGAL/Triangulation_face_base_with_info_2.h>
@@ -33,6 +34,7 @@
 #include <CGAL/Line_3.h>
 
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <iostream>
 
@@ -82,6 +84,10 @@ typedef CGAL::Constrained_Delaunay_triangulation_2<
 			Kernel,
 			triangulation_data_structure,
 			CGAL::Exact_predicates_tag >                                              CDT;
+
+typedef CGAL::Delaunay_triangulation_2<
+	Kernel,
+	triangulation_data_structure>                                                 Triangulation;
 
 typedef CDT::Point                                                                    triangulation_point;
 typedef CGAL::Point_2<Kernel>                                                         Point_2;
@@ -167,6 +173,8 @@ void triangulate( const Geometry & g, TriangulatedSurface & triangulatedSurface 
 	case TYPE_SOLID:
 		triangulate( g.as< Solid >().exteriorShell(), triangulatedSurface ) ;
 		return ;
+	default:
+		break;
 	}
 
 	BOOST_THROW_EXCEPTION(
@@ -200,6 +208,8 @@ void triangulate2D( const Geometry & g, TriangulatedSurface & triangulatedSurfac
 	case TYPE_POLYHEDRALSURFACE:
 		triangulate2D( g.as< PolyhedralSurface >(), triangulatedSurface ) ;
 		return ;
+	default:
+		break;
 	}
 
 	BOOST_THROW_EXCEPTION(
@@ -458,6 +468,47 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 	for ( size_t i = 0; i < poly.numPolygons(); i++ ){
 		triangulate2D( poly.polygonN(i), triangulatedSurface );
 	}	
+}
+
+
+void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::GeometrySet<3>& geometry )
+{
+	typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
+	
+	Triangulation triangulation;
+	
+	for ( Polyhedron::Facet_const_iterator it = polyhedron.facets_begin(); it != polyhedron.facets_end(); ++it ) {
+		Polyhedron::Facet::Halfedge_around_facet_const_circulator fit;
+		
+		triangulation.clear();
+		
+		const CGAL::Plane_3<Kernel>& plane = it->plane();
+		
+		fit = it->facet_begin();
+		do {
+			const CGAL::Point_3<Kernel>& pt3 = fit->vertex()->point();
+			CGAL::Point_2<Kernel> pt2 = plane.to_2d( pt3 );
+
+			Triangulation::Vertex_handle vh = triangulation.insert( pt2 );
+			vh->info().original = reinterpret_cast<const SFCGAL::Point*>( &pt3 ); // well a pointer is a pointer ...
+
+			fit ++;
+		} while (fit != it->facet_begin() );
+
+		
+		for ( Triangulation::Finite_faces_iterator it = triangulation.finite_faces_begin();
+		      it != triangulation.finite_faces_end();
+		      ++it )
+		{
+			const CGAL::Point_3<Kernel> * a = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(0)->info().original) ;
+			const CGAL::Point_3<Kernel> * b = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(1)->info().original) ;
+			const CGAL::Point_3<Kernel> * c = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(2)->info().original) ;
+			
+			CGAL::Triangle_3<Kernel> tri( *a, *b, *c );
+			geometry.addPrimitive( tri );
+		}
+
+	}
 }
 
 }//algorithm

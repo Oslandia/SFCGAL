@@ -21,31 +21,14 @@
 #ifndef _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
 #define _SFCGAL_ALGORITHM_DETAIL_INTERSECTS_
 
-#include <SFCGAL/detail/Box_d.h>
-#include <boost/shared_ptr.hpp>
+#include <SFCGAL/detail/GeometrySet.h>
 
 namespace SFCGAL {
 namespace algorithm {
 namespace detail {
 
-	struct found_intersection {};
-	struct found_point_triangle_intersection : public found_intersection {};
-	struct found_point_segment_intersection : public found_intersection {};
-	struct found_segment_segment_intersection : public found_intersection {};
-	struct found_segment_triangle_intersection : public found_intersection {};
-	struct found_triangle_triangle_intersection : public found_intersection {};
-	
-	///
-	/// Callback function used with box_intersection_d for 2d and 3d intersection test
-	/// Throws an exception if an intersection has been found
-	///
-	template <int TA, int TB, int Dim>
-	class intersects_cb
-	{
-	public:
-		void operator()( const typename SFCGAL::detail::ObjectBox<Dim>::Type& a,
-				 const typename SFCGAL::detail::ObjectBox<Dim>::Type& b );
-	};
+	template <int Dim>
+	bool intersects( const SFCGAL::detail::GeometrySet<Dim>& a, const SFCGAL::detail::GeometrySet<Dim>& b );
 
 } // detail
 } // algorithm

@@ -30,6 +30,10 @@
 #include <SFCGAL/Solid.h>
 #include <SFCGAL/Envelope.h>
 
+#include <SFCGAL/algorithm/detail/intersects.h>
+
+#include <CGAL/Bbox_3.h>
+
 namespace SFCGAL {
 namespace detail {
 
@@ -49,11 +53,11 @@ namespace detail {
 		surfaces.push_back( outtri );
 	}
 
-	void decompose_polygon( const Polygon& poly, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
+	void _decompose_polygon( const Polygon& poly, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
 		surfaces.push_back( poly.toPolygon_with_holes_2() );
 	}
-	void decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
+	void _decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
 		TriangulatedSurface surf;
 		algorithm::triangulate( poly, surf );
@@ -66,13 +70,48 @@ namespace detail {
 		}
 	}
 
-	void decompose_solid( const Solid& solid, typename GeometrySet<2>::VolumeCollection& volumes, dim_t<2> )
+	void _decompose_solid( const Solid& solid, typename GeometrySet<2>::VolumeCollection& volumes, dim_t<2> )
 	{
 		// nothing
 	}
-	void decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
+	void _decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
 		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
+	}
+
+	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( )
+	{
+	}
+
+	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( const Geometry& g )
+	{
+		_decompose( g );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Point& p )
+	{
+		_points.push_back( p );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Segment& p )
+	{
+		_segments.push_back( p );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Surface& p )
+	{
+		_surfaces.push_back( p );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Volume& p )
+	{
+		_volumes.push_back( p );
 	}
 
 	template <int Dim>
@@ -81,7 +120,7 @@ namespace detail {
 		if ( g.is<GeometryCollection>() ) {
 			const GeometryCollection& collect = g.as<GeometryCollection>();
 			for ( size_t i = 0; i < g.numGeometries(); ++i ) {
-				_decompose<Dim>( g.geometryN(i) );
+				_decompose( collect.geometryN(i) );
 			}
 			return;
 		}
@@ -92,8 +131,8 @@ namespace detail {
 		case TYPE_LINESTRING: {
 			const LineString& ls = g.as<LineString>();
 			for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
-				typename TypeForDimension<Dim>::Segment seg( ls.pointN(i),
-									     ls.pointN(i+1) );
+				typename TypeForDimension<Dim>::Segment seg( ls.pointN(i).toPoint_d<Dim>(),
+									     ls.pointN(i+1).toPoint_d<Dim>() );
 				_segments.push_back( seg );
 			}
 			break;
@@ -109,25 +148,71 @@ namespace detail {
 		case TYPE_TRIANGULATEDSURFACE: {
 			const TriangulatedSurface& tri = g.as<TriangulatedSurface>();
 			for ( size_t i = 0; i < tri.numTriangles(); ++i ) {
-				_decompose<Dim>( tri.triangleN( i ) );
+				_decompose( tri.triangleN( i ) );
 			}
 			break;
 		}
 		case TYPE_POLYHEDRALSURFACE: {
 			const PolyhedralSurface& tri = g.as<PolyhedralSurface>();
 			for ( size_t i = 0; i < tri.numPolygons(); ++i ) {
-				_decompose<Dim>( tri.polygonN( i ) );
+				_decompose( tri.polygonN( i ) );
 			}
 			break;
 		}
-		case TYPE_SOLID:
+		case TYPE_SOLID: {
 			const Solid& solid = g.as<Solid>();
-			_decompose_solid( solid, dim_t<Dim>() );
+			_decompose_solid( solid, _volumes, dim_t<Dim>() );
 			break;
+		}
 		default:
 			break;
 		}
 	}
 
+	// bbox of a 'volume' for 2D, will never be called
+	CGAL::Bbox_2 compute_solid_bbox( const NoVolume&, dim_t<2> )
+	{
+		return CGAL::Bbox_2();
+	}
+
+	CGAL::Bbox_3 compute_solid_bbox( const typename TypeForDimension<3>::Volume& vol, dim_t<3> )
+	{
+		CGAL::Bbox_3 ret;
+		CGAL::Polyhedron_3<Kernel>::Point_const_iterator pit;
+		for ( pit = vol.points_begin(); pit != vol.points_end(); ++pit ) {
+			ret = ret + pit->bbox();
+		}
+		return ret;
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::compute_bboxes( typename HandleCollection<Dim>::Type& handles,
+					       typename BoxCollection<Dim>::Type& boxes ) const
+	{
+		boxes.clear();
+		for ( typename PointCollection::const_iterator it = _points.begin(); it != _points.end(); ++it ) {
+			const typename TypeForDimension<Dim>::Point* pt = &(*it);
+			PrimitiveHandle<Dim> h( pt );
+			handles.push_back( h );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+		}
+		for ( typename SegmentCollection::const_iterator it = _segments.begin(); it != _segments.end(); ++it ) {
+			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+		}
+		for ( typename SurfaceCollection::const_iterator it = _surfaces.begin(); it != _surfaces.end(); ++it ) {
+			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+		}
+		for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
+			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( compute_solid_bbox( *it, dim_t<Dim>() ),
+									    &handles.back() ) );
+		}
+	}
+
+
+	template class GeometrySet<2>;
+	template class GeometrySet<3>;
 } // detail
 } // SFCGAL

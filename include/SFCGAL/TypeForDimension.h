@@ -38,6 +38,8 @@ namespace SFCGAL {
 	/// TypeForKernel<K, 2>::Point is equivalent to CGAL::Point_2<K> for instance
 	/// TypeForDimension<2>::Bbox is equivalent to CGAL::Bbox_2
 	
+	struct NoVolume {};
+
 	///
 	/// Generic traits, default dimension is 2
 	template <int Dim>
@@ -48,7 +50,7 @@ namespace SFCGAL {
 		typedef Kernel::Segment_2                   Segment;
 		typedef Kernel::Triangle_2                  Triangle;
 		typedef CGAL::Polygon_with_holes_2<Kernel>  Surface;
-		typedef void*                               Volume;
+		typedef NoVolume                            Volume;
 	};
 	
 	///
@@ -70,6 +72,53 @@ namespace SFCGAL {
 	struct dim_t
 	{
 		enum { v = N };
+	};
+
+	///
+	/// Get a primitive dimension (0: point, 1: line, 2: surface, 3: volume) from a type
+	template <class T>
+	struct PrimitiveDimension
+	{
+		static const int value = 0;
+	};
+
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<2>::Segment>
+	{
+		static const int value = 1;
+	};
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<3>::Segment>
+	{
+		static const int value = 1;
+	};
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<2>::Surface>
+	{
+		static const int value = 2;
+	};
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<3>::Surface>
+	{
+		static const int value = 2;
+	};
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<2>::Volume>
+	{
+		static const int value = 3;
+	};
+	template <>
+	struct PrimitiveDimension<typename TypeForDimension<3>::Volume>
+	{
+		static const int value = 3;
+	};
+
+	///
+	/// Tests if a primitive type has a larger dimension than another one
+	template <class X, class Y>
+	struct IsPrimitiveLarger
+	{
+		static const bool value = PrimitiveDimension<X>::value > PrimitiveDimension<Y>::value;
 	};
 }
 

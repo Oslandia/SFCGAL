@@ -22,8 +22,13 @@
 #define _SFCGAL_ALGORITHM_TRIANGULATE_H_
 
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/Kernel.h>
+#include <CGAL/Polyhedron_3.h>
 
 namespace SFCGAL {
+	namespace detail {
+		template <int Dim> class GeometrySet;
+	}
 namespace algorithm {
 	/**
 	 * Convert a 2D/3D [Multi]Polygon to a TriangulatedSurface.
@@ -65,6 +70,8 @@ namespace algorithm {
 	 * Convert a 2D PolyhedralSurface to a TriangulatedSurface. Each polygon is triangulated invidualy
 	 */
 	void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triangulatedSurface ) ;
+
+	void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, SFCGAL::detail::GeometrySet<3>& geometry );
 }//algorithm
 }//SFCGAL
 
