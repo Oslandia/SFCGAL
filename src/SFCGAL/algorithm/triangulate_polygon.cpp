@@ -471,6 +471,9 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 }
 
 
+///
+///
+///
 void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::GeometrySet<3>& geometry )
 {
 	typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
@@ -508,6 +511,19 @@ void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::Geometry
 			geometry.addPrimitive( tri );
 		}
 
+	}
+}
+
+///
+///
+///
+void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, detail::GeometrySet<2>& output )
+{
+	Polygon poly( polygon );
+	TriangulatedSurface surf;
+	triangulate2D( poly, surf );
+	for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
+		output.addGeometry( surf.triangleN(i) );
 	}
 }
 

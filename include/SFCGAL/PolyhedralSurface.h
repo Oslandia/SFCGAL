@@ -56,6 +56,10 @@ namespace SFCGAL {
 		 */
 		PolyhedralSurface( const std::vector< Polygon > & polygons ) ;
 		/**
+		 * Constructor from a CGAL::Polyhedron_3
+		 */
+		//		PolyhedralSurface( const CGAL::Polyhderon_3<Kernel>& poly );
+		/**
 		 * Copy constructor
 		 */
 		PolyhedralSurface( PolyhedralSurface const& other ) ;

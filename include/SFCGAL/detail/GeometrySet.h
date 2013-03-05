@@ -55,6 +55,9 @@ namespace detail {
 
 		template <class T>
 		PrimitiveHandle( const T* p ) : handle( p ) {}
+
+		template <class T>
+		inline const T* as() const { return boost::get<const T*>(handle); }
 	};
 
 	template <int Dim>
@@ -85,8 +88,30 @@ namespace detail {
 		typedef std::list<typename TypeForDimension<Dim>::Volume>  VolumeCollection;
 
 		GeometrySet();
+
+		/**
+		 * Construct a GeometrySet from a SFCGAL::Geometry
+		 */
 		GeometrySet( const Geometry& g );
 
+		/**
+		 * Add a geometry by decomposing it into CGAL primitives
+		 */
+		void addGeometry( const Geometry& g );
+
+		/**
+		 * add a primitive from a PrimitiveHandle  to the set
+		 */
+		void addPrimitive( const PrimitiveHandle<Dim>& p );
+
+		/**
+		 * add a primitive from a CGAL::Object to the set
+		 */
+		void addPrimitive( const CGAL::Object& o );
+
+		/**
+		 * add a point to the set
+		 */
 		void addPrimitive( const typename TypeForDimension<Dim>::Point& g );
 		template <class IT>
 		void addPoints( IT ibegin, IT iend )
@@ -94,6 +119,9 @@ namespace detail {
 			std::copy( ibegin, iend, std::back_inserter(_points) );
 		}
 
+		/**
+		 * add a segment to the set
+		 */
 		void addPrimitive( const typename TypeForDimension<Dim>::Segment& g );
 		template <class IT>
 		void addSegments( IT ibegin, IT iend )
@@ -101,6 +129,9 @@ namespace detail {
 			std::copy( ibegin, iend, std::back_inserter(_segments) );
 		}
 
+		/**
+		 * add a surface to the set
+		 */
 		void addPrimitive( const typename TypeForDimension<Dim>::Surface& g );
 		template <class IT>
 		void addSurfaces( IT ibegin, IT iend )
@@ -108,6 +139,9 @@ namespace detail {
 			std::copy( ibegin, iend, std::back_inserter(_surfaces) );
 		}
 
+		/**
+		 * add a volume to the set
+		 */
 		void addPrimitive( const typename TypeForDimension<Dim>::Volume& g );
 		template <class IT>
 		void addVolumes( IT ibegin, IT iend )
@@ -115,7 +149,27 @@ namespace detail {
 			std::copy( ibegin, iend, std::back_inserter(_volumes) );
 		}
 
+		/**
+		 * Compute all bounding boxes and handles of the set
+		 */
 		void compute_bboxes( typename HandleCollection<Dim>::Type& handles, typename BoxCollection<Dim>::Type& boxes ) const;
+
+		inline PointCollection& points() { return _points; }
+		inline const PointCollection& points() const { return _points; }
+
+		inline SegmentCollection& segments() { return _segments; }
+		inline const SegmentCollection& segments() const { return _segments; }
+
+		inline SurfaceCollection& surfaces() { return _surfaces; }
+		inline const SurfaceCollection& surfaces() const { return _surfaces; }
+
+		inline VolumeCollection& volumes() { return _volumes; }
+		inline const VolumeCollection& volumes() const { return _volumes; }
+
+		/**
+		 * convert the set to a SFCGAL::Geometry
+		 */
+		std::auto_ptr<Geometry> recompose() const;
 	private:
 		///
 		/// Given an input SFCGAL::Geometry, decompose it into CGAL primitives

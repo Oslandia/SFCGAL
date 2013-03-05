@@ -32,7 +32,6 @@
 using namespace SFCGAL ;
 using namespace boost::unit_test ;
 
-
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectsTest )
 
 BOOST_AUTO_TEST_CASE( testPointPointIntersects )

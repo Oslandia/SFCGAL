@@ -21,40 +21,16 @@
 #ifndef _SFCGAL_ALGORITHM_DETAIL_INTERSECTION_
 #define _SFCGAL_ALGORITHM_DETAIL_INTERSECTION_
 
-#include <SFCGAL/GeometryCollection.h>
-
-#include <SFCGAL/detail/Box_d.h>
-#include <boost/shared_ptr.hpp>
+#include <SFCGAL/detail/GeometrySet.h>
 
 namespace SFCGAL {
 namespace algorithm {
 namespace detail {
 
-	///
-	/// Callback functor used with box_intersection_d for 2d and 3d intersections
-	///
+	using SFCGAL::detail::GeometrySet;
+
 	template <int Dim>
-	struct intersection_cb_base
-	{
-		//
-		// The resulting intersection geometry
-		// A shared_ptr seems to be needed here, since intersection_cb is copied
-		// a few times (and auto_ptr is not enough)
-		boost::shared_ptr< std::list<Geometry*> > geometries;
-
-		// convert to a geometrycollection
-		// warning: it is destructive
-		std::auto_ptr<GeometryCollection> geometryCollection() const;
-
-		intersection_cb_base();
-	};
-
-	template <int TA, int TB, int Dim>
-	struct intersection_cb
-	{
-		intersection_cb_base<Dim> base;
-		void operator() ( const typename SFCGAL::detail::ObjectBox<Dim>::Type& a, const typename SFCGAL::detail::ObjectBox<Dim>::Type& b );
-	};
+	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& );
 
 } // detail
 } // algorithm

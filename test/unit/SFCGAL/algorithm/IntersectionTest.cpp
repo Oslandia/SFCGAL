@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( testIntersectionLineString )
 
 BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
 {
-    Triangle tri( Point(0, 0), Point(1, 1), Point(1, 0));
+    Triangle tri( Point(0, 0), Point(1, 0), Point(1, 1));
     
     // A point on an edge
     BOOST_CHECK( *(algorithm::intersection( Point(0.5,0), tri)) == Point(0.5,0) );
@@ -80,6 +80,8 @@ BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
     
     // A linestring crossing
     LineString ls1( Point(0, 0), Point(2, 1));
+    std::auto_ptr<Geometry> inter = algorithm::intersection( ls1, tri );
+    std::cout << inter->asText() << std::endl;
     BOOST_CHECK( *(algorithm::intersection( ls1, tri)) == LineString(Point(0,0), Point(1, 0.5)) );
     // A linestring crossing only a vertex
     LineString ls2( Point(0, 0), Point(0, 1));
@@ -89,24 +91,24 @@ BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
     BOOST_CHECK( (algorithm::intersection( ls3, tri))->isEmpty() );
     
     // A triangle crossing, resulting in a triangle
-    Triangle tri2( Point(0.5, 0), Point(1.5, 1), Point(1.5, 0));
+    Triangle tri2( Point(0.5, 0), Point(1.5, 0), Point(1.5, 1));
+    std::cout << algorithm::intersection( tri2, tri)->asText() << std::endl;
     BOOST_CHECK( *(algorithm::intersection( tri2, tri)) == Triangle(Point(1, 0.5), Point(0.5, 0), Point(1,0)) );
     // A triangle crossing, resulting in a polygon
     Triangle tri3( Point(0, 0.5), Point(1, 0.5), Point(0, -0.5));
-    MultiPoint mp;
-    mp.addGeometry(Point(0.5, 0));
-    mp.addGeometry(Point(1, 0.5));
-    mp.addGeometry(Point(0.5, 0.5));
-    mp.addGeometry(Point(0, 0));
-    BOOST_CHECK( *(algorithm::intersection( tri3, tri)) == mp );
+
+    std::auto_ptr<Geometry> mp = io::readWkt( "POLYGON((0 0,0.5 0,1 0.5,0.5 0.5,0 0))" );
+    BOOST_CHECK( *(algorithm::intersection( tri3, tri ) ) == *mp );
     // A triangle outside
     Triangle tri4( Point(-3, 0), Point(-2, 1), Point(-2, 0));
     BOOST_CHECK( (algorithm::intersection( tri4, tri))->isEmpty() );
     // A triangle crossing on an edge
     Triangle tri5( Point(0, 0), Point(1, -1), Point(1, 0));
+    std::cout << "tri5: " << algorithm::intersection( tri5, tri )->asText() << std::endl;
     BOOST_CHECK( *(algorithm::intersection( tri5, tri)) == LineString(Point(1,0), Point(0,0)) );
     // A triangle crossing on a vertex
     Triangle tri6( Point(1, 0), Point(2, 1), Point(2, 0));
+    std::cout << algorithm::intersection( tri6, tri )->asText() << std::endl;
     BOOST_CHECK( *(algorithm::intersection( tri6, tri)) == Point(1,0) );
 }
 
@@ -192,7 +194,7 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	algorithm::intersection( Point(0, 0), *cube );
     }
     catch ( std::exception& e ) {
-	has_thrown = true;
+	    has_thrown = true;
     }
     BOOST_CHECK_EQUAL( has_thrown, true );
 

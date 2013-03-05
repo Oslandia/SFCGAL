@@ -19,7 +19,6 @@
  *
  */
 #include <CGAL/box_intersection_d.h>
-#include <CGAL/intersections.h>
 #include <CGAL/Bbox_2.h>
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Segment_2.h>
@@ -29,11 +28,12 @@
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/detail/intersection.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/length.h>
 #include <SFCGAL/algorithm/area.h>
-
 
 namespace SFCGAL {
 namespace algorithm {
@@ -41,6 +41,7 @@ namespace detail {
     
 	using namespace SFCGAL::detail;
 
+#if 0
 	//
 	// Tell if the gA geometry is "larger" (or equal) than gB
 	// It is larger if its dimension is larger (line over point)
@@ -102,97 +103,56 @@ namespace detail {
 		}
 		coll.push_back( g );
 	}
-
+#endif
+	void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
+			   GeometrySet<3>& output, dim_t<3> );
+	void intersection( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
+			   GeometrySet<2>& output, dim_t<2> );
+	//
+	// We deal here with symmetric call
 	template <int Dim>
-	intersection_cb_base<Dim>::intersection_cb_base()
+	void dispatch_intersection_sym( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb,
+					     GeometrySet<Dim>& output )
 	{
-		geometries = boost::shared_ptr< std::list<Geometry*> >( new std::list<Geometry*> );
+		// assume types are ordered by dimension within the boost::variant
+		if ( pa.handle.which() >= pb.handle.which() ) {
+			intersection( pa, pb, output, dim_t<Dim>() );
+		}
+		else {
+			intersection( pb, pa, output, dim_t<Dim>() );
+		}
 	}
 
+	template <int Dim>
+	struct intersection_cb
+	{
+		intersection_cb( GeometrySet<Dim>& out ) : output(out) {}
+
+		void operator()( const typename PrimitiveBox<Dim>::Type& a,
+				 const typename PrimitiveBox<Dim>::Type& b )
+		{
+			dispatch_intersection_sym<Dim>( *a.handle(), *b.handle(), output );
+		}
+
+		GeometrySet<Dim>& output;
+	};
 
 	template <int Dim>
-	std::auto_ptr<GeometryCollection> intersection_cb_base<Dim>::geometryCollection() const
+	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
 	{
-		std::auto_ptr<GeometryCollection> collect( new GeometryCollection );
-		for ( std::list<Geometry*>::const_iterator it = geometries->begin(); it != geometries->end(); ++it ) {
-			collect->addGeometry( *it );
-		}
-		return collect;
+		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
+		a.compute_bboxes( ahandles, aboxes );
+		b.compute_bboxes( bhandles, bboxes );
+
+		intersection_cb<Dim> cb( output );
+		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+					  bboxes.begin(), bboxes.end(),
+					  cb );
 	}
 
-	template struct intersection_cb_base<2>;
-	template struct intersection_cb_base<3>;
-
-	template <int Dim>
-	struct intersection_cb<ObjectHandle::Segment,ObjectHandle::Segment, Dim>
-	{
-		intersection_cb_base<Dim> base;
-
-		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
-		{
-			typedef typename TypeForDimension<Dim>::Segment Segment_d;
-			
-			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
-					a.handle()->segment.end_point->template toPoint_d<Dim>());
-			Segment_d segb( b.handle()->segment.start_point->template toPoint_d<Dim>(),
-					b.handle()->segment.end_point->template toPoint_d<Dim>());
-			CGAL::Object obj = CGAL::intersection( sega, segb );
-			if ( !obj.empty()) {
-				Geometry* g = Geometry::fromCGAL(obj);
-				BOOST_ASSERT( g != 0 );
-				collectionInsert<Dim>( *base.geometries, g );
-			}
-		}
-	};
-
-	template <int Dim>
-	struct intersection_cb<ObjectHandle::Segment,ObjectHandle::Triangle, Dim>
-	{
-		intersection_cb_base<Dim> base;
-
-		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
-		{
-			typedef typename TypeForDimension<Dim>::Segment Segment_d;
-			typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
-
-			Segment_d sega( a.handle()->segment.start_point->template toPoint_d<Dim>(),
-					a.handle()->segment.end_point->template toPoint_d<Dim>());
-			Triangle_d tri2( b.handle()->triangle->template toTriangle_d<Dim>() );
-			CGAL::Object obj = CGAL::intersection( sega, tri2 );
-			if ( !obj.empty()) {
-				Geometry* g = Geometry::fromCGAL(obj);
-				BOOST_ASSERT( g != 0 );
-				collectionInsert<Dim>( *base.geometries, g );
-			}
-		}
-	};
-
-	template <int Dim>
-	struct intersection_cb<ObjectHandle::Triangle,ObjectHandle::Triangle, Dim>
-	{
-		intersection_cb_base<Dim> base;
-
-		void operator() ( const typename ObjectBox<Dim>::Type& a, const typename ObjectBox<Dim>::Type& b )
-		{
-			typedef typename TypeForDimension<Dim>::Triangle Triangle_d;
-
-			Triangle_d tria( a.handle()->triangle->template toTriangle_d<Dim>() );
-			Triangle_d trib( b.handle()->triangle->template toTriangle_d<Dim>() );
-			CGAL::Object obj = CGAL::intersection( tria, trib );
-			if ( !obj.empty()) {
-				Geometry* g = Geometry::fromCGAL(obj);
-				BOOST_ASSERT( g != 0 );
-				collectionInsert<Dim>( *base.geometries, g );
-			}
-		}
-	};
-
-	template struct intersection_cb<ObjectHandle::Segment, ObjectHandle::Segment, 2>;
-	template struct intersection_cb<ObjectHandle::Segment, ObjectHandle::Segment, 3>;
-	template struct intersection_cb<ObjectHandle::Segment, ObjectHandle::Triangle, 2>;
-	template struct intersection_cb<ObjectHandle::Segment, ObjectHandle::Triangle, 3>;
-	template struct intersection_cb<ObjectHandle::Triangle, ObjectHandle::Triangle, 2>;
-	template struct intersection_cb<ObjectHandle::Triangle, ObjectHandle::Triangle, 3>;
+	template void intersection<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );
+	template void intersection<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
 
 } // detail
 } // algorithm

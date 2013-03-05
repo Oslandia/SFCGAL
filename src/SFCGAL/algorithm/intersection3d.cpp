@@ -83,6 +83,7 @@ typedef CGAL::Polyhedral_mesh_domain_3<Polyhedron, Kernel> Mesh_domain;
 namespace SFCGAL {
 namespace algorithm
 {
+#if 0
 	inline std::auto_ptr<Geometry> _new_empty_geometry( const GeometryType& typeId )
 	{
 		return std::auto_ptr<Geometry>( tools::Registry::instance().newGeometryByTypeId( typeId ) );
@@ -663,5 +664,18 @@ namespace algorithm
 		// null object
 		return std::auto_ptr<Geometry>();
 	}
+
+#endif
+
+	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
+	{
+		using SFCGAL::detail::GeometrySet;
+
+		detail::GeometrySet<3> gsa( ga ), gsb( gb ), output;
+		algorithm::detail::intersection( gsa, gsb, output );
+
+		return output.recompose();
+	}
+
 }
 }

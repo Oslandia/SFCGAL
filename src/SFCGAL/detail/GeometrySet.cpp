@@ -23,11 +23,16 @@
 
 #include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Point.h>
+#include <SFCGAL/MultiPoint.h>
 #include <SFCGAL/LineString.h>
+#include <SFCGAL/MultiLineString.h>
 #include <SFCGAL/Triangle.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/MultiPolygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Envelope.h>
 
 #include <SFCGAL/algorithm/detail/intersects.h>
@@ -43,6 +48,9 @@ namespace detail {
 		outer.push_back( tri.vertex(0).toPoint_2() );
 		outer.push_back( tri.vertex(1).toPoint_2() );
 		outer.push_back( tri.vertex(2).toPoint_2() );
+		if ( outer.orientation() == CGAL::CLOCKWISE ) {
+			outer.reverse_orientation();
+		}
 		surfaces.push_back( CGAL::Polygon_with_holes_2<Kernel>( outer ) );
 	}
 	void _decompose_triangle( const Triangle& tri, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
@@ -88,6 +96,56 @@ namespace detail {
 	GeometrySet<Dim>::GeometrySet( const Geometry& g )
 	{
 		_decompose( g );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addGeometry( const Geometry& g )
+	{
+		_decompose( g );
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const PrimitiveHandle<Dim>& p )
+	{
+		switch ( p.handle.which() )
+		{
+		case PrimitivePoint:
+			_points.push_back( *boost::get<const typename TypeForDimension<Dim>::Point*>(p.handle) );
+			break;
+		case PrimitiveSegment:
+			_segments.push_back( *boost::get<const typename TypeForDimension<Dim>::Segment*>(p.handle) );
+			break;
+		case PrimitiveSurface:
+			_surfaces.push_back( *boost::get<const typename TypeForDimension<Dim>::Surface*>(p.handle) );
+			break;
+		case PrimitiveVolume:
+			_volumes.push_back( *boost::get<const typename TypeForDimension<Dim>::Volume*>(p.handle) );
+			break;
+		}
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::addPrimitive( const CGAL::Object& o )
+	{
+		typedef typename TypeForDimension<Dim>::Point TPoint;
+		typedef typename TypeForDimension<Dim>::Segment TSegment;
+		typedef typename TypeForDimension<Dim>::Surface TSurface;
+		typedef typename TypeForDimension<Dim>::Volume TVolume;
+		if ( const TPoint * p = CGAL::object_cast<TPoint>( &o ) ) {
+			_points.push_back( TPoint( *p ) );
+		}
+		else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
+			std::copy( pts->begin(), pts->end(), std::back_inserter( _points ) );
+	        }
+		else if ( const TSegment * p = CGAL::object_cast<TSegment>( &o ) ) {
+			_segments.push_back( TSegment( *p ) );
+		}
+		else if ( const TSurface * p = CGAL::object_cast<TSurface>( &o ) ) {
+			_surfaces.push_back( TSurface( *p ) );
+		}
+		else if ( const TVolume * p = CGAL::object_cast<TVolume>( &o ) ) {
+			_volumes.push_back( TVolume( *p ) );
+		}
 	}
 
 	template <int Dim>
@@ -211,6 +269,160 @@ namespace detail {
 		}
 	}
 
+	template <int Dim>
+	void recompose_points( const typename GeometrySet<Dim>::PointCollection& points,
+			       std::vector<Geometry *>& rpoints,
+			       dim_t<Dim> )
+	{
+		if ( points.empty() ) {
+			return;
+			//			rpoints.push_back( new Point() );
+		}
+		else {
+			for ( typename GeometrySet<Dim>::PointCollection::const_iterator it = points.begin();
+			      it != points.end();
+			      ++it ) {
+				rpoints.push_back( new Point( *it ) );
+			}
+		}
+	}
+
+
+	template <int Dim>
+	void recompose_segments( const typename GeometrySet<Dim>::SegmentCollection& segments,
+				 std::vector<Geometry*>& lines,
+				 dim_t<Dim> )
+	{
+		if ( segments.empty() ) {
+			//			lines.push_back( new LineString );
+			return;
+		}
+
+		// convert segments to linestring / multi linestring
+		LineString* ls = new LineString;
+		bool first = true;
+		typename TypeForDimension<Dim>::Segment lastSeg;
+		for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
+		      it != segments.end();
+		      ++it ) {
+			if ( !first && lastSeg.target() != it->source() ) {
+				lines.push_back( ls );
+				ls = new LineString;
+				first = true;
+			}
+			if ( first ) {
+				ls->addPoint( new Point( it->source() ) );
+				first = false;
+			}
+			ls->addPoint( new Point( it->target() ) );
+			lastSeg = *it;
+		}
+		lines.push_back( ls );
+	}
+
+	void recompose_surfaces( const GeometrySet<2>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<2> )
+	{
+		for ( GeometrySet<2>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
+			std::cout << "size: " << it->outer_boundary().size() << std::endl;
+			if ( it->holes_begin() == it->holes_end() && it->outer_boundary().size() == 3 ) {
+				CGAL::Polygon_2<Kernel>::Vertex_iterator vit = it->outer_boundary().vertices_begin();
+				CGAL::Point_2<Kernel> p1( *vit++ );
+				CGAL::Point_2<Kernel> p2( *vit++ );
+				CGAL::Point_2<Kernel> p3( *vit++ );
+				output.push_back( new Triangle(CGAL::Triangle_2<Kernel>( p1, p2, p3 )) );
+			}
+			else {
+				output.push_back( new Polygon( *it ) );
+			}
+		}
+	}
+
+	void recompose_surfaces( const GeometrySet<3>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<3> )
+	{
+		// TODO : regroup triangles of the same mesh
+		TriangulatedSurface *tri = new TriangulatedSurface;
+		for ( GeometrySet<3>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
+			tri->addTriangle( new Triangle( *it ) );
+		}
+		output.push_back( tri );
+	}
+
+	void recompose_volumes( const GeometrySet<2>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<2> )
+	{
+	}
+
+	void recompose_volumes( const GeometrySet<3>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<3> )
+	{
+	}
+
+	template <int Dim>
+	std::auto_ptr<Geometry> GeometrySet<Dim>::recompose() const
+	{
+		std::vector<Geometry*> points, lines, surfaces, volumes;
+
+		recompose_points( _points, points, dim_t<Dim>() );
+		recompose_segments( _segments, lines, dim_t<Dim>() );
+		recompose_surfaces( _surfaces, surfaces, dim_t<Dim>() );
+		recompose_volumes( _volumes, volumes, dim_t<Dim>() );
+
+		if ( points.size() && !lines.size() && !surfaces.size() && !volumes.size() ) {
+			// we have only points
+			if ( points.size() == 1 ) {
+				return std::auto_ptr<Geometry>( points[0] );
+			}
+			MultiPoint* ret = new MultiPoint;
+			for ( size_t i = 0; i < points.size(); ++i ) {
+				ret->addGeometry( points[i] );
+			}
+			return std::auto_ptr<Geometry>(ret);
+		}
+		if ( !points.size() && lines.size() && !surfaces.size() && !volumes.size() ) {
+			if ( lines.size() == 1 ) {
+				return std::auto_ptr<Geometry>( lines[0] );
+			}
+			MultiLineString* ret = new MultiLineString;
+			for ( size_t i = 0; i < lines.size(); ++i ) {
+				ret->addGeometry( lines[i] );
+			}
+			return std::auto_ptr<Geometry>(ret);
+		}
+		if ( !points.size() && !lines.size() && surfaces.size() && !volumes.size() ) {
+			if ( surfaces.size() == 1 ) {
+				return std::auto_ptr<Geometry>( surfaces[0] );
+			}
+			MultiPolygon* ret = new MultiPolygon;
+			for ( size_t i = 0; i < surfaces.size(); ++i ) {
+				ret->addGeometry( surfaces[i] );
+			}
+			return std::auto_ptr<Geometry>(ret);
+		}
+		if ( !points.size() && !lines.size() && !surfaces.size() && volumes.size() ) {
+			if ( volumes.size() == 1 ) {
+				return std::auto_ptr<Geometry>( volumes[0] );
+			}
+			GeometryCollection* ret = new GeometryCollection;
+			for ( size_t i = 0; i < volumes.size(); ++i ) {
+				ret->addGeometry( volumes[i] );
+			}
+			return std::auto_ptr<Geometry>(ret);
+		}
+
+		// else we have a mix of different types
+		GeometryCollection* ret = new GeometryCollection;
+		for ( size_t i = 0; i < points.size(); ++i ) {
+			ret->addGeometry( points[i] );
+		}
+		for ( size_t i = 0; i < lines.size(); ++i ) {
+			ret->addGeometry( lines[i] );
+		}
+		for ( size_t i = 0; i < surfaces.size(); ++i ) {
+			ret->addGeometry( surfaces[i] );
+		}
+		for ( size_t i = 0; i < volumes.size(); ++i ) {
+			ret->addGeometry( volumes[i] );
+		}
+		return std::auto_ptr<Geometry>( ret );
+	}
 
 	template class GeometrySet<2>;
 	template class GeometrySet<3>;

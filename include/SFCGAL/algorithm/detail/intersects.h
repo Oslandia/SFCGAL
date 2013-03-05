@@ -27,8 +27,14 @@ namespace SFCGAL {
 namespace algorithm {
 namespace detail {
 
+	using SFCGAL::detail::GeometrySet;
+	using SFCGAL::detail::PrimitiveHandle;
+
 	template <int Dim>
-	bool intersects( const SFCGAL::detail::GeometrySet<Dim>& a, const SFCGAL::detail::GeometrySet<Dim>& b );
+	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );
+
+	template <int Dim>
+	bool intersects( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b );
 
 } // detail
 } // algorithm

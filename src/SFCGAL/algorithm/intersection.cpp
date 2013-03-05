@@ -42,6 +42,7 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace algorithm
 {
+#if 0
 	inline std::auto_ptr<Geometry> _new_empty_geometry( const GeometryType& typeId )
 	{
 		return std::auto_ptr<Geometry>( tools::Registry::instance().newGeometryByTypeId( typeId ) );
@@ -236,6 +237,16 @@ namespace algorithm
 		throw std::runtime_error( "intersection() not supported on " + ga.geometryType() + " x " + gb.geometryType() );
 		// null object
 		return std::auto_ptr<Geometry>();
+	}
+#endif
+	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
+	{
+		using SFCGAL::detail::GeometrySet;
+
+		detail::GeometrySet<2> gsa( ga ), gsb( gb ), output;
+		algorithm::detail::intersection( gsa, gsb, output );
+
+		return output.recompose();
 	}
 }
 }
