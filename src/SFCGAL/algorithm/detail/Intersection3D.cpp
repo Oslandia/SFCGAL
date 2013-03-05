@@ -26,7 +26,7 @@
 #include <CGAL/corefinement_operations.h>
 
 #include <SFCGAL/detail/GeometrySet.h>
-#include <SFCGAL/algorithm/detail/intersects.h>
+#include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/detail/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
 
@@ -89,7 +89,7 @@ namespace detail {
 	{
 		// everything vs a point
 		if ( pb.handle.which() == PrimitivePoint ) {
-			if ( algorithm::detail::intersects( pa, pb ) ) {
+			if ( algorithm::intersects( pa, pb ) ) {
 				output.addPrimitive( *boost::get<const TypeForDimension<3>::Point*>( pb.handle ) );
 			}
 		}

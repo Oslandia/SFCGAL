@@ -28,7 +28,7 @@
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/Envelope.h>
-#include <SFCGAL/algorithm/detail/intersects.h>
+#include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/detail/intersection.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>

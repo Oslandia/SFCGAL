@@ -35,8 +35,6 @@
 #include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Envelope.h>
 
-#include <SFCGAL/algorithm/detail/intersects.h>
-
 #include <CGAL/Bbox_3.h>
 
 namespace SFCGAL {

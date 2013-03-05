@@ -170,11 +170,11 @@ namespace detail {
 		 * convert the set to a SFCGAL::Geometry
 		 */
 		std::auto_ptr<Geometry> recompose() const;
+
 	private:
 		///
 		/// Given an input SFCGAL::Geometry, decompose it into CGAL primitives
 		void _decompose( const Geometry& g );
-
 
 		PointCollection _points;
 		SegmentCollection _segments;
