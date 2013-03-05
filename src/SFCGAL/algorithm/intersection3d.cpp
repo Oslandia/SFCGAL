@@ -24,10 +24,11 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
-#include <SFCGAL/algorithm/detail/intersection.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionToMulti.h>
 #include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>
 
@@ -672,7 +673,7 @@ namespace algorithm
 		using SFCGAL::detail::GeometrySet;
 
 		detail::GeometrySet<3> gsa( ga ), gsb( gb ), output;
-		algorithm::detail::intersection( gsa, gsb, output );
+		algorithm::intersection( gsa, gsb, output );
 
 		return output.recompose();
 	}

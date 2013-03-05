@@ -21,11 +21,12 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/detail/intersection.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
 #include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -112,7 +113,7 @@ namespace algorithm
 		to_boxes<2>( ga, ahandles, aboxes );
 		to_boxes<2>( gb, bhandles, bboxes );
 		
-		algorithm::detail::intersection_cb<TA, TB, 2> cb;
+		algorithm::intersection_cb<TA, TB, 2> cb;
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(), 
 					  bboxes.begin(), bboxes.end(),
 					  cb );
@@ -239,12 +240,64 @@ namespace algorithm
 		return std::auto_ptr<Geometry>();
 	}
 #endif
+	using namespace SFCGAL::detail;
+
+	void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
+			   GeometrySet<3>& output, dim_t<3> );
+	void intersection( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
+			   GeometrySet<2>& output, dim_t<2> );
+	//
+	// We deal here with symmetric call
+	template <int Dim>
+	void dispatch_intersection_sym( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb,
+					     GeometrySet<Dim>& output )
+	{
+		// assume types are ordered by dimension within the boost::variant
+		if ( pa.handle.which() >= pb.handle.which() ) {
+			intersection( pa, pb, output, dim_t<Dim>() );
+		}
+		else {
+			intersection( pb, pa, output, dim_t<Dim>() );
+		}
+	}
+
+	template <int Dim>
+	struct intersection_cb
+	{
+		intersection_cb( GeometrySet<Dim>& out ) : output(out) {}
+
+		void operator()( const typename PrimitiveBox<Dim>::Type& a,
+				 const typename PrimitiveBox<Dim>::Type& b )
+		{
+			dispatch_intersection_sym<Dim>( *a.handle(), *b.handle(), output );
+		}
+
+		GeometrySet<Dim>& output;
+	};
+
+	template <int Dim>
+	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
+	{
+		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
+		a.compute_bboxes( ahandles, aboxes );
+		b.compute_bboxes( bhandles, bboxes );
+
+		intersection_cb<Dim> cb( output );
+		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+					  bboxes.begin(), bboxes.end(),
+					  cb );
+	}
+
+	template void intersection<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );
+	template void intersection<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
+
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
 		using SFCGAL::detail::GeometrySet;
 
 		detail::GeometrySet<2> gsa( ga ), gsb( gb ), output;
-		algorithm::detail::intersection( gsa, gsb, output );
+		algorithm::intersection( gsa, gsb, output );
 
 		return output.recompose();
 	}

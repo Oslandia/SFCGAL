@@ -27,12 +27,11 @@
 
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/detail/intersection.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
 
 namespace SFCGAL {
 namespace algorithm {
-namespace detail {
     
 	using namespace SFCGAL::detail;
 
@@ -119,6 +118,5 @@ namespace detail {
 		}
 	}
 
-} // detail
 } // algorithm
 } // SFCGAL

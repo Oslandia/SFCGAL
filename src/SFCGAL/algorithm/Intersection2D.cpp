@@ -26,12 +26,11 @@
 
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/detail/intersection.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
 
 namespace SFCGAL {
 namespace algorithm {
-namespace detail {
     
 	using namespace SFCGAL::detail;
 
@@ -66,7 +65,7 @@ namespace detail {
 			      ++hit ) {
 				gpoly2.addSegments( hit->edges_begin(), hit->edges_end() );
 			}
-			algorithm::detail::intersection( gpoly1, gpoly2, output );
+			algorithm::intersection( gpoly1, gpoly2, output );
 
 			// now call on polygon's interiors
 			CGAL::intersection( *poly1,
@@ -109,9 +108,8 @@ namespace detail {
 			g.addPrimitive( pb );
 
 			// recurse call
-			algorithm::detail::intersection( triangles, g, output );
+			algorithm::intersection( triangles, g, output );
 		}
 	}
-} // detail
 } // algorithm
 } // SFCGAL

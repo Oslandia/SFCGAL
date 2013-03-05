@@ -21,10 +21,14 @@
 #ifndef SFCGAL_INTERSECTION_ALGORITHM
 #define SFCGAL_INTERSECTION_ALGORITHM
 
-#include <SFCGAL/Geometry.h>
+#include <memory>
 
 namespace SFCGAL {
-    namespace algorithm {
+	class Geometry;
+	namespace detail {
+		template <int Dim> class GeometrySet;
+	}
+	namespace algorithm {
 	/*
 	 * Intersection on 2D geometries.
 	 */
@@ -34,6 +38,9 @@ namespace SFCGAL {
 	 * Intersection on 3D geometries. Assume z = 0 if needed
 	 */
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
+
+	template <int Dim>
+	void intersection( const SFCGAL::detail::GeometrySet<Dim>& a, const SFCGAL::detail::GeometrySet<Dim>& b, SFCGAL::detail::GeometrySet<Dim>& );
     }
 }
 
