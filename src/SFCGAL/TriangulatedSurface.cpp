@@ -186,6 +186,91 @@ void TriangulatedSurface::accept( ConstGeometryVisitor & visitor ) const
 }
 
 
+// Private class
+// A modifier creating triangles from a TriangulatedSurface with the incremental builder.
+template <class HDS>
+class Triangulated2Polyhedron : public CGAL::Modifier_base<HDS> {
+public:
+	Triangulated2Polyhedron( const TriangulatedSurface& surf ) : surf(surf) {}
+	
+	typedef typename HDS::Vertex                Vertex;
+	typedef typename Vertex::Point              Point;
+	typedef typename HDS::Traits                K;
+	typedef std::map<Point, size_t>             PointMap;
+	typedef std::set< std::pair<Point, Point> > HalfedgeSet;
+	
+	void operator()( HDS& hds)
+	{
+		// Postcondition: `hds' is a valid polyhedral surface.
+		CGAL::Polyhedron_incremental_builder_3<HDS> B( hds, true);
+		B.begin_surface( /* vertices */ surf.numGeometries() * 3, /* facets */ surf.numGeometries());
+		
+		size_t vertex_idx = 0;
+		
+		// first pass: insert vertices, only if they are not shared between faces
+		// thanks to a binary tree (PointMap)
+		for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
+			for ( size_t j = 0; j < 3; j++ ) {
+				Point p = surf.geometryN(i).vertex(j).toPoint_3();
+				size_t v;
+				if ( points.find(p) == points.end() ) {
+					B.add_vertex( p );
+					v = vertex_idx++;
+					points[p] = v;
+				}
+				else {
+					v = points[p];
+				}
+			}
+		}
+		// second pass: adjacent triangles must be built with compliant orientations
+		// the two halfedges of a shared edge must be of opposite orientation
+		
+		// Extract from CGAL's documentation
+		// "The convention is that the halfedges are oriented counterclockwise
+		// around facets as seen from the outside of the polyhedron"
+		
+		for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
+			B.begin_facet();
+			CGAL::Triangle_3<K> tri( surf.geometryN(i).toTriangle_3());
+			CGAL::Point_3<K> pa( tri[0] );
+			CGAL::Point_3<K> pb( tri[1] );
+			CGAL::Point_3<K> pc( tri[2] );
+			
+			if ( edges.find( std::make_pair(pa, pb)) != edges.end() ||
+			     edges.find( std::make_pair(pb, pc)) != edges.end() ||
+			     edges.find( std::make_pair(pc, pa)) != edges.end() ) {
+				BOOST_THROW_EXCEPTION(Exception( "When trying to build a CGAL::Polyhedron_3 from a TriangulatedSurface: bad orientation for "
+								 + surf.geometryN(i).asText()
+								 + " consider using ConsistentOrientationBuilder first"));
+			}
+			B.add_vertex_to_facet( points[pa] );
+			B.add_vertex_to_facet( points[pb] );
+			B.add_vertex_to_facet( points[pc] );
+			edges.insert( std::make_pair( pa, pb ) );
+			edges.insert( std::make_pair( pb, pc ) );
+			edges.insert( std::make_pair( pc, pa ) );
+			B.end_facet();
+		}
+		B.end_surface();
+	}
+private:
+	const TriangulatedSurface& surf;
+	PointMap points;
+	HalfedgeSet edges;
+};
+
+template < typename K, typename Polyhedron >
+std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
+{
+	Polyhedron *poly = new Polyhedron();
+	Triangulated2Polyhedron<typename Polyhedron::HalfedgeDS> converter( *this );
+	poly->delegate( converter);
+	return std::auto_ptr<Polyhedron>( poly );
+}
+
+template std::auto_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
+
 }//SFCGAL
 
 
