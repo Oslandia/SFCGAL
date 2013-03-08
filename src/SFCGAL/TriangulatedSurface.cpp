@@ -203,7 +203,9 @@ public:
 	{
 		// Postcondition: `hds' is a valid polyhedral surface.
 		CGAL::Polyhedron_incremental_builder_3<HDS> B( hds, true);
-		B.begin_surface( /* vertices */ surf.numGeometries() * 3, /* facets */ surf.numGeometries());
+		B.begin_surface( /* vertices */ surf.numGeometries() * 3,
+				 /* facets */ surf.numGeometries(),
+				 /* halfedges */ surf.numGeometries() * 3);
 		
 		size_t vertex_idx = 0;
 		
@@ -212,14 +214,9 @@ public:
 		for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
 			for ( size_t j = 0; j < 3; j++ ) {
 				Point p = surf.geometryN(i).vertex(j).toPoint_3();
-				size_t v;
 				if ( points.find(p) == points.end() ) {
 					B.add_vertex( p );
-					v = vertex_idx++;
-					points[p] = v;
-				}
-				else {
-					v = points[p];
+					points[p] = vertex_idx++;
 				}
 			}
 		}
@@ -260,12 +257,26 @@ private:
 	HalfedgeSet edges;
 };
 
+template <typename Polyhedron>
+struct Plane_from_facet {
+	typename Polyhedron::Plane_3 operator()(typename Polyhedron::Facet& f) {
+		typename Polyhedron::Halfedge_handle h = f.halfedge();
+		return typename Polyhedron::Plane_3( h->vertex()->point(),
+					    h->next()->vertex()->point(),
+					    h->opposite()->vertex()->point());
+	}
+};
+
 template < typename K, typename Polyhedron >
 std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
 {
 	Polyhedron *poly = new Polyhedron();
 	Triangulated2Polyhedron<typename Polyhedron::HalfedgeDS> converter( *this );
 	poly->delegate( converter);
+
+	// compute planes
+	std::transform( poly->facets_begin(), poly->facets_end(), poly->planes_begin(), Plane_from_facet<Polyhedron>() );
+
 	return std::auto_ptr<Polyhedron>( poly );
 }
 

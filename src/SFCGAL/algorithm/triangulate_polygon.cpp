@@ -473,6 +473,7 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 
 ///
 ///
+/// input polyhedron must have its planes computed
 ///
 void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::GeometrySet<3>& geometry )
 {
@@ -480,32 +481,32 @@ void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::Geometry
 	
 	Triangulation triangulation;
 	
-	for ( Polyhedron::Facet_const_iterator it = polyhedron.facets_begin(); it != polyhedron.facets_end(); ++it ) {
-		Polyhedron::Facet::Halfedge_around_facet_const_circulator fit;
+	for ( Polyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {
+		Polyhedron::Facet::Halfedge_around_facet_const_circulator pit;
 		
 		triangulation.clear();
 		
-		const CGAL::Plane_3<Kernel>& plane = it->plane();
+		CGAL::Plane_3<Kernel> plane = fit->plane();
 		
-		fit = it->facet_begin();
+		pit = fit->facet_begin();
 		do {
-			const CGAL::Point_3<Kernel>& pt3 = fit->vertex()->point();
+			const CGAL::Point_3<Kernel>& pt3 = pit->vertex()->point();
 			CGAL::Point_2<Kernel> pt2 = plane.to_2d( pt3 );
 
 			Triangulation::Vertex_handle vh = triangulation.insert( pt2 );
 			vh->info().original = reinterpret_cast<const SFCGAL::Point*>( &pt3 ); // well a pointer is a pointer ...
 
-			fit ++;
-		} while (fit != it->facet_begin() );
+			pit ++;
+		} while (pit != fit->facet_begin() );
 
 		
-		for ( Triangulation::Finite_faces_iterator it = triangulation.finite_faces_begin();
-		      it != triangulation.finite_faces_end();
-		      ++it )
+		for ( Triangulation::Finite_faces_iterator tit = triangulation.finite_faces_begin();
+		      tit != triangulation.finite_faces_end();
+		      ++tit )
 		{
-			const CGAL::Point_3<Kernel> * a = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(0)->info().original) ;
-			const CGAL::Point_3<Kernel> * b = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(1)->info().original) ;
-			const CGAL::Point_3<Kernel> * c = reinterpret_cast<const CGAL::Point_3<Kernel>* >(it->vertex(2)->info().original) ;
+			const CGAL::Point_3<Kernel> * a = reinterpret_cast<const CGAL::Point_3<Kernel>* >(tit->vertex(0)->info().original) ;
+			const CGAL::Point_3<Kernel> * b = reinterpret_cast<const CGAL::Point_3<Kernel>* >(tit->vertex(1)->info().original) ;
+			const CGAL::Point_3<Kernel> * c = reinterpret_cast<const CGAL::Point_3<Kernel>* >(tit->vertex(2)->info().original) ;
 			
 			CGAL::Triangle_3<Kernel> tri( *a, *b, *c );
 			geometry.addPrimitive( tri );
