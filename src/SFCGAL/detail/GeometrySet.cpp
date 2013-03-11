@@ -151,27 +151,31 @@ namespace detail {
 	}
 
 	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Point& p )
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Point& p, int flags )
 	{
 		_points.push_back( p );
+		_points.back().setFlags( flags );
 	}
 
 	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Segment& p )
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Segment& p, int flags )
 	{
 		_segments.push_back( p );
+		_segments.back().setFlags( flags );
 	}
 
 	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Surface& p )
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Surface& p, int flags )
 	{
 		_surfaces.push_back( p );
+		_surfaces.back().setFlags( flags );
 	}
 
 	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Volume& p )
+	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Volume& p, int flags )
 	{
-		_volumes.push_back( p );
+		std::cout << "volume flag: " << flags << std::endl;
+		_volumes.push_back( typename GeometrySet<Dim>::VolumeCollection::value_type(p, flags) );
 	}
 
 	template <int Dim>
@@ -251,22 +255,22 @@ namespace detail {
 	{
 		boxes.clear();
 		for ( typename PointCollection::const_iterator it = _points.begin(); it != _points.end(); ++it ) {
-			const typename TypeForDimension<Dim>::Point* pt = &(*it);
+			const typename TypeForDimension<Dim>::Point* pt = &(it->primitive());
 			PrimitiveHandle<Dim> h( pt );
 			handles.push_back( h );
-			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->primitive().bbox(), &handles.back() ) );
 		}
 		for ( typename SegmentCollection::const_iterator it = _segments.begin(); it != _segments.end(); ++it ) {
-			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
-			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+			handles.push_back( PrimitiveHandle<Dim>( &(it->primitive()) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->primitive().bbox(), &handles.back() ) );
 		}
 		for ( typename SurfaceCollection::const_iterator it = _surfaces.begin(); it != _surfaces.end(); ++it ) {
-			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
-			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->bbox(), &handles.back() ) );
+			handles.push_back( PrimitiveHandle<Dim>( &(it->primitive()) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( it->primitive().bbox(), &handles.back() ) );
 		}
 		for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
-			handles.push_back( PrimitiveHandle<Dim>( &(*it) ) );
-			boxes.push_back( typename PrimitiveBox<Dim>::Type( compute_solid_bbox( *it, dim_t<Dim>() ),
+			handles.push_back( PrimitiveHandle<Dim>( &(it->primitive()) ) );
+			boxes.push_back( typename PrimitiveBox<Dim>::Type( compute_solid_bbox( it->primitive(), dim_t<Dim>() ),
 									    &handles.back() ) );
 		}
 	}
@@ -284,7 +288,7 @@ namespace detail {
 			for ( typename GeometrySet<Dim>::PointCollection::const_iterator it = points.begin();
 			      it != points.end();
 			      ++it ) {
-				rpoints.push_back( new Point( *it ) );
+				rpoints.push_back( new Point( it->primitive() ) );
 			}
 		}
 	}
@@ -307,21 +311,21 @@ namespace detail {
 		for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
 		      it != segments.end();
 		      ++it ) {
-			std::cout << "segment " << *it << std::endl;
-			if ( !first && lastSeg.target() != it->source() ) {
+			std::cout << "segment " << it->primitive() << std::endl;
+			if ( !first && lastSeg.target() != it->primitive().source() ) {
 				lines.push_back( ls );
 				ls = new LineString;
 				first = true;
 				std::cout << "new LineString" << std::endl;
 			}
 			if ( first ) {
-				ls->addPoint( new Point( it->source() ) );
-				std::cout << "add first point " << it->source() << std::endl;
+				ls->addPoint( new Point( it->primitive().source() ) );
+				std::cout << "add first point " << it->primitive().source() << std::endl;
 				first = false;
 			}
-			ls->addPoint( new Point( it->target() ) );
-			std::cout << "add point " << it->target() << std::endl;
-			lastSeg = *it;
+			ls->addPoint( new Point( it->primitive().target() ) );
+			std::cout << "add point " << it->primitive().target() << std::endl;
+			lastSeg = it->primitive();
 		}
 		lines.push_back( ls );
 	}
@@ -329,15 +333,16 @@ namespace detail {
 	void recompose_surfaces( const GeometrySet<2>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<2> )
 	{
 		for ( GeometrySet<2>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
-			if ( it->holes_begin() == it->holes_end() && it->outer_boundary().size() == 3 ) {
-				CGAL::Polygon_2<Kernel>::Vertex_iterator vit = it->outer_boundary().vertices_begin();
+			if ( it->primitive().holes_begin() == it->primitive().holes_end() &&
+			     it->primitive().outer_boundary().size() == 3 ) {
+				CGAL::Polygon_2<Kernel>::Vertex_iterator vit = it->primitive().outer_boundary().vertices_begin();
 				CGAL::Point_2<Kernel> p1( *vit++ );
 				CGAL::Point_2<Kernel> p2( *vit++ );
 				CGAL::Point_2<Kernel> p3( *vit++ );
 				output.push_back( new Triangle(CGAL::Triangle_2<Kernel>( p1, p2, p3 )) );
 			}
 			else {
-				output.push_back( new Polygon( *it ) );
+				output.push_back( new Polygon( it->primitive() ) );
 			}
 		}
 	}
@@ -348,9 +353,13 @@ namespace detail {
 			return;
 		}
 		// TODO : regroup triangles of the same mesh
+		if ( surfaces.size() == 1 ) {
+			output.push_back( new Triangle( surfaces.begin()->primitive() ) );
+			return;
+		}
 		TriangulatedSurface *tri = new TriangulatedSurface;
 		for ( GeometrySet<3>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
-			tri->addTriangle( new Triangle( *it ) );
+			tri->addTriangle( new Triangle( it->primitive() ) );
 		}
 		output.push_back( tri );
 	}
@@ -361,14 +370,19 @@ namespace detail {
 
 	void recompose_volumes( const GeometrySet<3>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<3> )
 	{
+		std::cout << "recompose volumes" << std::endl;
 		if ( volumes.empty() ) {
 			return;
 		}
 		for ( GeometrySet<3>::VolumeCollection::const_iterator vit = volumes.begin(); vit != volumes.end(); ++vit ) {
-			if ( vit->is_planar() ) {
+			std::cout << "flags: " << vit->flags() << std::endl;
+			if ( vit->flags() & detail::FLAG_IS_PLANAR ) {
+				std::cout << "is planar" << std::endl;
 				// extract the boundary
 				std::list<CGAL::Point_3<Kernel> > boundary;
-				for ( MarkedPolyhedron::Halfedge_const_iterator it = vit->halfedges_begin(); it != vit->halfedges_end(); ++it ) {
+				for ( MarkedPolyhedron::Halfedge_const_iterator it = vit->primitive().halfedges_begin();
+				      it != vit->primitive().halfedges_end();
+				      ++it ) {
 					if ( !it->is_border() )
 						continue;
 					CGAL::Point_3<Kernel> p1 = it->prev()->vertex()->point();
@@ -388,6 +402,7 @@ namespace detail {
 						boundary.push_front( p1 );
 					}
 				}
+				std::cout << "boundary size: " << boundary.size() << std::endl;
 				if ( boundary.size() == 3 ) {
 					// It is a triangle
 					
@@ -400,88 +415,42 @@ namespace detail {
 				}
 				else {
 					// Else it is a polygon
-					LineString ls;
+					LineString *ls = new LineString;
 					for ( std::list<CGAL::Point_3<Kernel> >::const_iterator it = boundary.begin(); it != boundary.end(); ++it ) {
-					ls.addPoint( *it );
+						ls->addPoint( *it );
 					}
 					output.push_back( new Polygon( ls ) );
 				}
 			}
 			else {
 				
-				PolyhedralSurface *shell = new PolyhedralSurface( *vit );
+				PolyhedralSurface *shell = new PolyhedralSurface( vit->primitive() );
 				// TODO: test open / closed
 				output.push_back( new Solid( shell ) );
 			}
 		}
+		std::cout << "end recompose volumes" << std::endl;
 	}
 
 	template <int Dim>
 	std::auto_ptr<Geometry> GeometrySet<Dim>::recompose() const
 	{
-		std::vector<Geometry*> points, lines, surfaces, volumes;
+		std::vector<Geometry*> geometries;
 
-		recompose_points( _points, points, dim_t<Dim>() );
-		recompose_segments( _segments, lines, dim_t<Dim>() );
-		recompose_surfaces( _surfaces, surfaces, dim_t<Dim>() );
-		recompose_volumes( _volumes, volumes, dim_t<Dim>() );
+		recompose_points( _points, geometries, dim_t<Dim>() );
+		recompose_segments( _segments, geometries, dim_t<Dim>() );
+		recompose_surfaces( _surfaces, geometries, dim_t<Dim>() );
+		recompose_volumes( _volumes, geometries, dim_t<Dim>() );
 
-		if ( points.size() && !lines.size() && !surfaces.size() && !volumes.size() ) {
-			// we have only points
-			if ( points.size() == 1 ) {
-				return std::auto_ptr<Geometry>( points[0] );
-			}
-			MultiPoint* ret = new MultiPoint;
-			for ( size_t i = 0; i < points.size(); ++i ) {
-				ret->addGeometry( points[i] );
-			}
-			return std::auto_ptr<Geometry>(ret);
+		if ( geometries.size() == 1 ) {
+			return std::auto_ptr<Geometry>( geometries[0] );
 		}
-		if ( !points.size() && lines.size() && !surfaces.size() && !volumes.size() ) {
-			if ( lines.size() == 1 ) {
-				return std::auto_ptr<Geometry>( lines[0] );
-			}
-			MultiLineString* ret = new MultiLineString;
-			for ( size_t i = 0; i < lines.size(); ++i ) {
-				ret->addGeometry( lines[i] );
-			}
-			return std::auto_ptr<Geometry>(ret);
-		}
-		if ( !points.size() && !lines.size() && surfaces.size() && !volumes.size() ) {
-			if ( surfaces.size() == 1 ) {
-				return std::auto_ptr<Geometry>( surfaces[0] );
-			}
-			MultiPolygon* ret = new MultiPolygon;
-			for ( size_t i = 0; i < surfaces.size(); ++i ) {
-				ret->addGeometry( surfaces[i] );
-			}
-			return std::auto_ptr<Geometry>(ret);
-		}
-		if ( !points.size() && !lines.size() && !surfaces.size() && volumes.size() ) {
-			if ( volumes.size() == 1 ) {
-				return std::auto_ptr<Geometry>( volumes[0] );
-			}
-			GeometryCollection* ret = new GeometryCollection;
-			for ( size_t i = 0; i < volumes.size(); ++i ) {
-				ret->addGeometry( volumes[i] );
-			}
-			return std::auto_ptr<Geometry>(ret);
-		}
-
 		// else we have a mix of different types
 		GeometryCollection* ret = new GeometryCollection;
-		for ( size_t i = 0; i < points.size(); ++i ) {
-			ret->addGeometry( points[i] );
+		for ( size_t i = 0; i < geometries.size(); ++i ) {
+			ret->addGeometry( geometries[i] );
 		}
-		for ( size_t i = 0; i < lines.size(); ++i ) {
-			ret->addGeometry( lines[i] );
-		}
-		for ( size_t i = 0; i < surfaces.size(); ++i ) {
-			ret->addGeometry( surfaces[i] );
-		}
-		for ( size_t i = 0; i < volumes.size(); ++i ) {
-			ret->addGeometry( volumes[i] );
-		}
+		// TODO: create multipoint, multilinestring, etc. when possible
 		return std::auto_ptr<Geometry>( ret );
 	}
 
@@ -559,9 +528,10 @@ namespace detail {
 	template <int Dim, class IT>
 	void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
 	{
+		std::cout << "filter covered " << std::endl;
 		for ( IT it = ibegin; it != iend; ++it ) {
 			GeometrySet<Dim> v1;
-			v1.addPrimitive( *it );
+			v1.addPrimitive( it->primitive() );
 			bool v1_covered = false;
 			for ( IT it2 = it; it2 != iend; ++it2 ) {
 				if ( it == it2 ) {
@@ -569,7 +539,7 @@ namespace detail {
 				}
 
 				GeometrySet<Dim> v2;
-				v2.addPrimitive( *it2 );
+				v2.addPrimitive( it2->primitive() );
 				if ( algorithm::covers( v2, v1 ) ) {
 					v1_covered = true;
 					break;
@@ -580,7 +550,7 @@ namespace detail {
 				// and not covered by another already inserted primitive
 				bool b = algorithm::covers( output, v1 );
 				if ( !b ) {
-					output.addPrimitive( *it );
+					output.addPrimitive( it->primitive(), it->flags() );
 				}
 			}
 		}
@@ -598,13 +568,13 @@ namespace detail {
 	std::ostream& operator<<( std::ostream& ostr, const GeometrySet<2>& g )
 	{
 		ostr << "points: ";
-		std::ostream_iterator<TypeForDimension<2>::Point> out_pt (ostr,", ");
+ 		std::ostream_iterator<CollectionElement<Point_d<2>::Type> > out_pt (ostr,", ");
 		std::copy( g.points().begin(), g.points().end(), out_pt );
 		ostr << std::endl << "segments: ";
-		std::ostream_iterator<TypeForDimension<2>::Segment> out_seg (ostr,", ");
+		std::ostream_iterator<CollectionElement<Segment_d<2>::Type> > out_seg (ostr,", ");
 		std::copy( g.segments().begin(), g.segments().end(), out_seg );
 		ostr << std::endl << "surfaces: ";
-		std::ostream_iterator<TypeForDimension<2>::Surface> out_surf (ostr,", ");
+		std::ostream_iterator<CollectionElement<Surface_d<2>::Type> > out_surf (ostr,", ");
 		std::copy( g.surfaces().begin(), g.surfaces().end(), out_surf );
 		ostr << std::endl;
 		return ostr;
@@ -613,16 +583,16 @@ namespace detail {
 	std::ostream& operator<<( std::ostream& ostr, const GeometrySet<3>& g )
 	{
 		ostr << "points: ";
-		std::ostream_iterator<TypeForDimension<3>::Point> out_pt (ostr,", ");
+ 		std::ostream_iterator<CollectionElement<Point_d<3>::Type> > out_pt (ostr,", ");
 		std::copy( g.points().begin(), g.points().end(), out_pt );
 		ostr << std::endl << "segments: ";
-		std::ostream_iterator<TypeForDimension<3>::Segment> out_seg (ostr,", ");
+		std::ostream_iterator<CollectionElement<Segment_d<3>::Type> > out_seg (ostr,", ");
 		std::copy( g.segments().begin(), g.segments().end(), out_seg );
 		ostr << std::endl << "surfaces: ";
-		std::ostream_iterator<TypeForDimension<3>::Surface> out_surf (ostr,", ");
+		std::ostream_iterator<CollectionElement<Surface_d<3>::Type> > out_surf (ostr,", ");
 		std::copy( g.surfaces().begin(), g.surfaces().end(), out_surf );
 		ostr << std::endl << "volumes: ";
-		std::ostream_iterator<TypeForDimension<3>::Volume> out_vol (ostr,", ");
+		std::ostream_iterator<CollectionElement<Volume_d<3>::Type> > out_vol (ostr,", ");
 		std::copy( g.volumes().begin(), g.volumes().end(), out_vol );
 		ostr << std::endl;
 		return ostr;

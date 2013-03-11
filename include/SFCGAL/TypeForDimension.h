@@ -52,6 +52,35 @@ namespace SFCGAL {
 		typedef CGAL::Polygon_with_holes_2<Kernel>  Surface;
 		typedef NoVolume                            Volume;
 	};
+
+
+	///
+	/// Extended polyhedron_3 type with a boolean marker on halfedges
+	/// This is used internally for polyhedra boolean operations
+	template <class Refs>
+	struct Halfedge_with_mark : public CGAL::HalfedgeDS_halfedge_base<Refs> {
+		Halfedge_with_mark()
+			: CGAL::HalfedgeDS_halfedge_base<Refs>(), mark(false)
+		{}
+		
+		bool mark;   // A boundary marker for faces with different status
+		void set_mark() // this will be called by Intersection_of_Polyhedra_3
+		{
+			mark = true;
+		}
+	};
+	
+	// An items type using my halfedge.
+	struct Items_with_mark_on_hedge : public CGAL::Polyhedron_items_3 
+	{
+		template <class Refs, class Traits>
+		struct Halfedge_wrapper {
+			typedef Halfedge_with_mark<Refs> Halfedge;
+		};
+	};
+	
+
+	typedef CGAL::Polyhedron_3<Kernel, Items_with_mark_on_hedge> MarkedPolyhedron;
 	
 	///
 	/// Specialization for dimension = 3
@@ -63,9 +92,34 @@ namespace SFCGAL {
 		typedef Kernel::Segment_3          Segment;
 		typedef Kernel::Triangle_3         Triangle;
 		typedef Kernel::Triangle_3         Surface;
-		typedef CGAL::Polyhedron_3<Kernel> Volume;
+		typedef MarkedPolyhedron           Volume;
 	};
 	
+	///
+	/// Another way of looking at TypeForDimension<Dim>::Point
+	template <int Dim>
+	struct Point_d {
+		typedef typename TypeForDimension<Dim>::Point Type;
+	};
+	///
+	/// Another way of looking at TypeForDimension<Dim>::Segment
+	template <int Dim>
+	struct Segment_d {
+		typedef typename TypeForDimension<Dim>::Segment Type;
+	};
+	///
+	/// Another way of looking at TypeForDimension<Dim>::Surface
+	template <int Dim>
+	struct Surface_d {
+		typedef typename TypeForDimension<Dim>::Surface Type;
+	};
+	///
+	/// Another way of looking at TypeForDimension<Dim>::Volume
+	template <int Dim>
+	struct Volume_d {
+		typedef typename TypeForDimension<Dim>::Volume Type;
+	};
+
 	///
 	/// Create a distinct type for each dimension
 	template <int N>

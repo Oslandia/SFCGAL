@@ -68,7 +68,8 @@ namespace algorithm {
 			if ( ! inter.points().empty() ) {
 				// the intersection is a point, build a segment from that point to the other end
 				if (!source_inside && target_inside) {
-					CGAL::Segment_3<Kernel> interSeg( *inter.points().begin(), segment->target() );
+					CGAL::Segment_3<Kernel> interSeg( inter.points().begin()->primitive(),
+									  segment->target() );
 					if ( interSeg.source() == interSeg.target() ) {
 						output.addPrimitive( segment->target() );
 					}
@@ -77,7 +78,8 @@ namespace algorithm {
 					}
 				}
 				else if ( source_inside && !target_inside ) {
-					CGAL::Segment_3<Kernel> interSeg( segment->source(), *inter.points().begin() );
+					CGAL::Segment_3<Kernel> interSeg( segment->source(),
+									  inter.points().begin()->primitive() );
 					if ( interSeg.source() == interSeg.target() ) {
 						output.addPrimitive( segment->source() );
 					}
@@ -87,12 +89,12 @@ namespace algorithm {
 					}
 				}
 				else { // !source_inside && !target_inside => intersection on a point
-					output.addPrimitive( *inter.points().begin() );
+					output.addPrimitive( inter.points().begin()->primitive() );
 				}
 			}
 			if ( ! inter.segments().empty() ) {
 				// the intersection is a segment
-				output.addPrimitive( *inter.segments().begin() );
+				output.addPrimitive( inter.segments().begin()->primitive() );
 			}
 		}
 		std::cout << "in intersection_solid_segment: " << output;
@@ -112,7 +114,6 @@ namespace algorithm {
 	
 	void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>& output )
 	{
-		bool isVolume = false;
 		Split_visitor visitor( NULL, true );
 
 		MarkedPolyhedron polyb;
@@ -138,8 +139,16 @@ namespace algorithm {
 		fa << polya;
 		fb << polyb;
 
+		Mesh_domain ext_domain( polya );
+		Mesh_domain::Is_in_domain point_inside_q( ext_domain );
 		if ( polylines.size() == 0 ) {
-			// no intersection
+			// no surface intersection
+			// if one of the point of the triangle is inside the polyhedron,
+			// the triangle is inside
+			if ( point_inside_q( tri.vertex(0) ) ) {
+				output.addPrimitive( tri );
+				return;
+			}
 			std::cout << "no intersection" << std::endl;
 			return;
 		}
@@ -149,8 +158,6 @@ namespace algorithm {
 		Is_not_marked criterion;
 		CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter(decomposition));
 
-		Mesh_domain ext_domain( polya );
-		Mesh_domain::Is_in_domain point_inside_q( ext_domain );
 		//		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_q( const_cast<Polyhedron&>(polyb) );
 
 		std::cout << "# of decomposition: " << decomposition.size() << std::endl;
@@ -189,6 +196,7 @@ namespace algorithm {
 			std::cout << "test_point = " << test_point << std::endl;
 			// point inside volume or on surface
 			bool point_inside_volume =  point_inside_q( test_point );
+			std::cout << "point_inside_volume: " << point_inside_volume << std::endl;
 
 			if ( point_inside_volume ) {
 				//				if ( is_volume ) {
@@ -198,8 +206,8 @@ namespace algorithm {
 
 
 				// we know it is a planar intersection
-				it->set_is_planar( true );
-				output.addPrimitive( &*it );
+				std::cout << "flag_is_planar" << std::endl;
+				output.addPrimitive( *it, detail::FLAG_IS_PLANAR );
 				return;
 			}
 		}
@@ -256,7 +264,6 @@ namespace algorithm {
 				_intersection_solid_triangle( *pa.as<MarkedPolyhedron>(),
 							      *pb.as<CGAL::Triangle_3<Kernel> >(),
 							      output );
-				// TODO
 			}
 			else if ( pb.handle.which() == PrimitiveVolume ) {
 				// TODO

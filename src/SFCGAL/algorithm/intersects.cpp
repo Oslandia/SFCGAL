@@ -239,7 +239,7 @@ namespace algorithm
 			points.collectPoints( geometry );
 			for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
 			      pit != points.points().end(); ++pit ) {
-				if ( is_in_poly( *pit ) ) {
+				if ( is_in_poly( pit->primitive() ) ) {
 					return true;
 				}
 			}

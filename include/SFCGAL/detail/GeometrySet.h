@@ -78,27 +78,53 @@ namespace detail {
 		typedef std::list<PrimitiveHandle<Dim> > Type;
 	};
 
+	///
+	/// Flags available for each type of Geometry type.
+	/// Primitives can be 'flagged' in order to speed up recomposition
+	enum ElementFlag
+	{
+		// the polyhedron is planar => build a triangle or a polygon
+		FLAG_IS_PLANAR = 1
+	};
+	template <class Primitive>
+	class CollectionElement
+	{
+	public:
+		int flags() const { return _flags; }
+		void setFlags( int flags ) { _flags = flags; }
+
+		Primitive& primitive() { return _primitive; }
+		const Primitive& primitive() const { return _primitive; }
+		
+		// constructor from Primitive
+		CollectionElement() : _flags(0) {}
+		CollectionElement( const Primitive& p ) : _primitive(p), _flags(0) {}
+		CollectionElement( const Primitive& p, int f ) : _primitive(p), _flags(f) {}
+
+		CollectionElement( const CollectionElement& other ) :
+			_primitive( other._primitive ),
+			_flags( other._flags )
+		{}
+	private:
+		Primitive _primitive;
+		int _flags;
+	};
+	template <class Primitive>
+	std::ostream& operator<<( std::ostream& ostr, const CollectionElement<Primitive>& p )
+	{
+		ostr << p.primitive() << " flags: " << p.flags();
+		return ostr;
+	}
+
 	template <int Dim>
 	class GeometrySet
 	{
 	public:
-		///
-		/// Flags available for each type of Geometry type.
-		/// Primitives can be 'flagged' in order to speed up recomposition
-		enum ElementFlag
-		{
-			// the polyhedron is planar => build a triangle or a polygon
-			FLAG_IS_PLANAR = 1
-		};
-		struct PointCollectionElement 
-		{
-			typename TypeForDimension<Dim>::Point point;
-			int flags;
-		};
-		typedef std::list<typename TypeForDimension<Dim>::Point>   PointCollection;
-		typedef std::list<typename TypeForDimension<Dim>::Segment> SegmentCollection;
-		typedef std::list<typename TypeForDimension<Dim>::Surface> SurfaceCollection;
-		typedef std::list<typename TypeForDimension<Dim>::Volume>  VolumeCollection;
+		// TODO: use a set instead of a list ?
+		typedef std::list<CollectionElement<typename Point_d<Dim>::Type> > PointCollection;
+		typedef std::list<CollectionElement<typename Segment_d<Dim>::Type> > SegmentCollection;
+		typedef std::list<CollectionElement<typename Surface_d<Dim>::Type> > SurfaceCollection;
+		typedef std::list<CollectionElement<typename Volume_d<Dim>::Type> > VolumeCollection;
 
 		GeometrySet();
 
@@ -125,7 +151,7 @@ namespace detail {
 		/**
 		 * add a point to the set
 		 */
-		void addPrimitive( const typename TypeForDimension<Dim>::Point& g );
+		void addPrimitive( const typename TypeForDimension<Dim>::Point& g, int flags = 0 );
 		template <class IT>
 		void addPoints( IT ibegin, IT iend )
 		{
@@ -140,7 +166,7 @@ namespace detail {
 		/**
 		 * add a segment to the set
 		 */
-		void addPrimitive( const typename TypeForDimension<Dim>::Segment& g );
+		void addPrimitive( const typename TypeForDimension<Dim>::Segment& g, int flags = 0 );
 		template <class IT>
 		void addSegments( IT ibegin, IT iend )
 		{
@@ -150,7 +176,7 @@ namespace detail {
 		/**
 		 * add a surface to the set
 		 */
-		void addPrimitive( const typename TypeForDimension<Dim>::Surface& g );
+		void addPrimitive( const typename TypeForDimension<Dim>::Surface& g, int flags = 0 );
 		template <class IT>
 		void addSurfaces( IT ibegin, IT iend )
 		{
@@ -160,7 +186,7 @@ namespace detail {
 		/**
 		 * add a volume to the set
 		 */
-		void addPrimitive( const typename TypeForDimension<Dim>::Volume& g );
+		void addPrimitive( const typename TypeForDimension<Dim>::Volume& g, int flags = 0 );
 		template <class IT>
 		void addVolumes( IT ibegin, IT iend )
 		{

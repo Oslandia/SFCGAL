@@ -54,7 +54,7 @@ namespace algorithm
 		ps.collectPoints( pb );
 		typename GeometrySet<Dim>::PointCollection& points = ps.points();
 		for ( typename GeometrySet<Dim>::PointCollection::const_iterator it = points.begin(); it != points.end(); ++it ) {
-			PrimitiveHandle<Dim> ppt( &*it );
+			PrimitiveHandle<Dim> ppt( &it->primitive() );
 			if ( !algorithm::intersects( pa, ppt ) ) {
 				return false;
 			}

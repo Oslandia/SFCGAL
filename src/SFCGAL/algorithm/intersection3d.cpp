@@ -679,6 +679,8 @@ namespace algorithm
 
 		detail::GeometrySet<3> filtered;
 		output.filterCovered( filtered );
+
+		std::cout << "after filter: " << filtered << std::endl;
 		return filtered.recompose();
 	}
 
