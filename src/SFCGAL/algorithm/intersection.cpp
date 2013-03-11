@@ -280,8 +280,8 @@ namespace algorithm
 	{
 		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
 		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
-		a.compute_bboxes( ahandles, aboxes );
-		b.compute_bboxes( bhandles, bboxes );
+		a.computeBoundingBoxes( ahandles, aboxes );
+		b.computeBoundingBoxes( bhandles, bboxes );
 
 		intersection_cb<Dim> cb( output );
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
@@ -299,7 +299,9 @@ namespace algorithm
 		detail::GeometrySet<2> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
-		return output.recompose();
+		detail::GeometrySet<2> filtered;
+		output.filterCovered( filtered );
+		return filtered.recompose();
 	}
 }
 }

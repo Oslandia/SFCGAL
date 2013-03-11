@@ -23,10 +23,12 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
 
+#include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
 
 //#define CACHE_TRIANGULATION
@@ -215,37 +217,41 @@ namespace algorithm
 	// intersects of a volume with any other type
 	struct intersects_volume_x : public boost::static_visitor<bool>
 	{
-		const CGAL::Polyhedron_3<Kernel> *polyhedron;
+		const MarkedPolyhedron *polyhedron;
 
-		intersects_volume_x( const CGAL::Polyhedron_3<Kernel>* vol ) : polyhedron(vol) {}
+		intersects_volume_x( const MarkedPolyhedron* vol ) : polyhedron(vol) {}
 
 		template <class T>
 		bool operator() ( const T *geometry ) const
 		{
+			typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
+
 			// intersection between a solid and a geometry
 			// 1. either one of the geometry' point lies inside the solid
 			// 2. or the geometry intersects one of the surfaces
 
 			// 1.
-#if 0
-			SFCGAL::detail::GetPointsVisitor get_point_visitor;
-			ga.accept( get_point_visitor );
-			for ( size_t i = 0; i < get_point_visitor.points.size(); ++i ) {
-				const Point *pt = get_point_visitor.points[i];
-				if ( covers3D( solid, *pt )) {
+		
+			Mesh_domain ext_domain( *polyhedron );
+			Mesh_domain::Is_in_domain is_in_poly( ext_domain );
+
+			GeometrySet<3> points;
+			points.collectPoints( geometry );
+			for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
+			      pit != points.points().end(); ++pit ) {
+				if ( is_in_poly( *pit ) ) {
 					return true;
 				}
 			}
-#endif
-			
+
 			// 2.
 
 			// triangulate the polyhedron_3
-			GeometrySet<3> triangles;
-			algorithm::triangulate( *polyhedron, triangles );
-
 			GeometrySet<3> g;
 			g.addPrimitive( *geometry );
+
+			GeometrySet<3> triangles;
+			algorithm::triangulate( *polyhedron, triangles );
 
 			return intersects( g, triangles );
 		}
@@ -265,7 +271,7 @@ namespace algorithm
 			return seg->has_on( *pt );
 		}
 		if ( pa.handle.which() == PrimitiveVolume ) {
-			intersects_volume_x visitor( pa.as<CGAL::Polyhedron_3<Kernel> >() );
+			intersects_volume_x visitor( pa.as<MarkedPolyhedron >() );
 			return boost::apply_visitor( visitor, pb.handle );
 		}
 		if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitivePoint ) {
@@ -325,8 +331,8 @@ namespace algorithm
 	{
 		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
 		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
-		a.compute_bboxes( ahandles, aboxes );
-		b.compute_bboxes( bhandles, bboxes );
+		a.computeBoundingBoxes( ahandles, aboxes );
+		b.computeBoundingBoxes( bhandles, bboxes );
 
 		try {
 			intersects_cb<Dim> cb;
@@ -356,8 +362,8 @@ namespace algorithm
 
 	bool intersects3D( const Geometry& ga, const Geometry& gb )
 	{
-		SFCGAL::detail::GeometrySet<3> gsa( ga );
-		SFCGAL::detail::GeometrySet<3> gsb( gb );
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
 
 		return intersects( gsa, gsb );
 	}

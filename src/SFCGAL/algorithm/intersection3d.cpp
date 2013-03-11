@@ -675,7 +675,11 @@ namespace algorithm
 		detail::GeometrySet<3> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
-		return output.recompose();
+		std::cout << "after intersection: " << output << std::endl;
+
+		detail::GeometrySet<3> filtered;
+		output.filterCovered( filtered );
+		return filtered.recompose();
 	}
 
 }

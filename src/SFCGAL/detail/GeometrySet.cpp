@@ -32,10 +32,14 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/detail/GeometrySet.h>
+
+#include <SFCGAL/algorithm/covers.h>
 
 #include <CGAL/Bbox_3.h>
+#include <CGAL/IO/Polyhedron_iostream.h>
 
 namespace SFCGAL {
 namespace detail {
@@ -82,7 +86,7 @@ namespace detail {
 	}
 	void _decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
-		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
+		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, MarkedPolyhedron >() );
 	}
 
 	template <int Dim>
@@ -234,7 +238,7 @@ namespace detail {
 	CGAL::Bbox_3 compute_solid_bbox( const typename TypeForDimension<3>::Volume& vol, dim_t<3> )
 	{
 		CGAL::Bbox_3 ret;
-		CGAL::Polyhedron_3<Kernel>::Point_const_iterator pit;
+		MarkedPolyhedron::Point_const_iterator pit;
 		for ( pit = vol.points_begin(); pit != vol.points_end(); ++pit ) {
 			ret = ret + pit->bbox();
 		}
@@ -242,7 +246,7 @@ namespace detail {
 	}
 
 	template <int Dim>
-	void GeometrySet<Dim>::compute_bboxes( typename HandleCollection<Dim>::Type& handles,
+	void GeometrySet<Dim>::computeBoundingBoxes( typename HandleCollection<Dim>::Type& handles,
 					       typename BoxCollection<Dim>::Type& boxes ) const
 	{
 		boxes.clear();
@@ -303,16 +307,20 @@ namespace detail {
 		for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
 		      it != segments.end();
 		      ++it ) {
+			std::cout << "segment " << *it << std::endl;
 			if ( !first && lastSeg.target() != it->source() ) {
 				lines.push_back( ls );
 				ls = new LineString;
 				first = true;
+				std::cout << "new LineString" << std::endl;
 			}
 			if ( first ) {
 				ls->addPoint( new Point( it->source() ) );
+				std::cout << "add first point " << it->source() << std::endl;
 				first = false;
 			}
 			ls->addPoint( new Point( it->target() ) );
+			std::cout << "add point " << it->target() << std::endl;
 			lastSeg = *it;
 		}
 		lines.push_back( ls );
@@ -321,7 +329,6 @@ namespace detail {
 	void recompose_surfaces( const GeometrySet<2>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<2> )
 	{
 		for ( GeometrySet<2>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
-			std::cout << "size: " << it->outer_boundary().size() << std::endl;
 			if ( it->holes_begin() == it->holes_end() && it->outer_boundary().size() == 3 ) {
 				CGAL::Polygon_2<Kernel>::Vertex_iterator vit = it->outer_boundary().vertices_begin();
 				CGAL::Point_2<Kernel> p1( *vit++ );
@@ -337,6 +344,9 @@ namespace detail {
 
 	void recompose_surfaces( const GeometrySet<3>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<3> )
 	{
+		if ( surfaces.empty() ) {
+			return;
+		}
 		// TODO : regroup triangles of the same mesh
 		TriangulatedSurface *tri = new TriangulatedSurface;
 		for ( GeometrySet<3>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
@@ -351,6 +361,59 @@ namespace detail {
 
 	void recompose_volumes( const GeometrySet<3>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<3> )
 	{
+		if ( volumes.empty() ) {
+			return;
+		}
+		for ( GeometrySet<3>::VolumeCollection::const_iterator vit = volumes.begin(); vit != volumes.end(); ++vit ) {
+			if ( vit->is_planar() ) {
+				// extract the boundary
+				std::list<CGAL::Point_3<Kernel> > boundary;
+				for ( MarkedPolyhedron::Halfedge_const_iterator it = vit->halfedges_begin(); it != vit->halfedges_end(); ++it ) {
+					if ( !it->is_border() )
+						continue;
+					CGAL::Point_3<Kernel> p1 = it->prev()->vertex()->point();
+					CGAL::Point_3<Kernel> p2 = it->vertex()->point();
+					// TODO: test for colinearity
+					// Temporary vertice may have been introduced during triangulations
+					// and since we expect here a planar surface, it is safe to simplify the boundary
+					// by eliminating collinear points.
+					if ( boundary.size() == 0 ) {
+						boundary.push_back( p1 );
+						boundary.push_back( p2 );
+					}
+					else if ( boundary.back() == p1 ) {
+						boundary.push_back( p2 );
+					}
+					else if ( boundary.front() == p2 ) {
+						boundary.push_front( p1 );
+					}
+				}
+				if ( boundary.size() == 3 ) {
+					// It is a triangle
+					
+					Point p[3];
+					std::list<CGAL::Point_3<Kernel> >::const_iterator it = boundary.begin();
+					for ( size_t i = 0; i < 3; ++i, ++it ) {
+						p[i] = *it;
+					}
+					output.push_back( new Triangle( p[0], p[1], p[2] ) );
+				}
+				else {
+					// Else it is a polygon
+					LineString ls;
+					for ( std::list<CGAL::Point_3<Kernel> >::const_iterator it = boundary.begin(); it != boundary.end(); ++it ) {
+					ls.addPoint( *it );
+					}
+					output.push_back( new Polygon( ls ) );
+				}
+			}
+			else {
+				
+				PolyhedralSurface *shell = new PolyhedralSurface( *vit );
+				// TODO: test open / closed
+				output.push_back( new Solid( shell ) );
+			}
+		}
 	}
 
 	template <int Dim>
@@ -420,6 +483,149 @@ namespace detail {
 			ret->addGeometry( volumes[i] );
 		}
 		return std::auto_ptr<Geometry>( ret );
+	}
+
+	void _collect_points( const CGAL::Polygon_with_holes_2<Kernel>& poly, GeometrySet<2>::PointCollection& points )
+	{
+		for ( CGAL::Polygon_2<Kernel>::Vertex_iterator vit = poly.outer_boundary().vertices_begin();
+		      vit != poly.outer_boundary().vertices_end();
+		      ++vit ) {
+			points.push_back( *vit );
+		}
+		for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly.holes_begin();
+		      hit != poly.holes_end();
+		      ++hit ) {
+			for ( CGAL::Polygon_2<Kernel>::Vertex_iterator vit = hit->vertices_begin();
+			      vit != hit->vertices_end();
+			      ++vit ) {
+				points.push_back( *vit );
+			}
+		}
+	}
+
+	void _collect_points( const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>::PointCollection& points )
+	{
+		points.push_back( tri.vertex(0) );
+		points.push_back( tri.vertex(1) );
+		points.push_back( tri.vertex(2) );
+	}
+
+	void _collect_points( const NoVolume&, GeometrySet<2>::PointCollection& points )
+	{
+		// nothing
+	}
+
+	void _collect_points( const MarkedPolyhedron& poly, GeometrySet<3>::PointCollection& points )
+	{
+		for ( MarkedPolyhedron::Vertex_const_iterator vit = poly.vertices_begin();
+		      vit != poly.vertices_end();
+		      ++vit ) {
+			points.push_back( vit->point() );
+		}
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::collectPoints( const PrimitiveHandle<Dim>& pa )
+	{
+		typedef typename TypeForDimension<Dim>::Point TPoint;
+		typedef typename TypeForDimension<Dim>::Segment TSegment;
+		typedef typename TypeForDimension<Dim>::Surface TSurface;
+		typedef typename TypeForDimension<Dim>::Volume TVolume;
+
+		switch ( pa.handle.which() ) {
+		case PrimitivePoint: {
+			const TPoint *pt = boost::get<const TPoint*>( pa.handle );
+			_points.push_back( *pt );
+			break;
+		}
+		case PrimitiveSegment: {
+			const TSegment* seg = boost::get<const TSegment*>( pa.handle );
+			_points.push_back( seg->source() );
+			// TODO : store points in a set
+			_points.push_back( seg->target() );
+			break;
+		}
+		case PrimitiveSurface: {
+			_collect_points( *boost::get<const TSurface*>( pa.handle ), _points );
+			break;
+		}
+		case PrimitiveVolume: {
+			_collect_points( *boost::get<const TVolume*>( pa.handle ), _points );
+			break;
+		}
+		}
+	}
+
+	template <int Dim, class IT>
+	void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
+	{
+		for ( IT it = ibegin; it != iend; ++it ) {
+			GeometrySet<Dim> v1;
+			v1.addPrimitive( *it );
+			bool v1_covered = false;
+			for ( IT it2 = it; it2 != iend; ++it2 ) {
+				if ( it == it2 ) {
+					continue;
+				}
+
+				GeometrySet<Dim> v2;
+				v2.addPrimitive( *it2 );
+				if ( algorithm::covers( v2, v1 ) ) {
+					v1_covered = true;
+					break;
+				}
+			}
+			// if its not covered by another volume
+			if ( !v1_covered ) {
+				// and not covered by another already inserted primitive
+				bool b = algorithm::covers( output, v1 );
+				if ( !b ) {
+					output.addPrimitive( *it );
+				}
+			}
+		}
+	}
+
+	template <int Dim>
+	void GeometrySet<Dim>::filterCovered( GeometrySet<Dim>& output ) const
+	{
+		_filter_covered( _volumes.begin(), _volumes.end(), output );
+		_filter_covered( _surfaces.begin(), _surfaces.end(), output );
+		_filter_covered( _segments.begin(), _segments.end(), output );
+		_filter_covered( _points.begin(), _points.end(), output );
+	}
+
+	std::ostream& operator<<( std::ostream& ostr, const GeometrySet<2>& g )
+	{
+		ostr << "points: ";
+		std::ostream_iterator<TypeForDimension<2>::Point> out_pt (ostr,", ");
+		std::copy( g.points().begin(), g.points().end(), out_pt );
+		ostr << std::endl << "segments: ";
+		std::ostream_iterator<TypeForDimension<2>::Segment> out_seg (ostr,", ");
+		std::copy( g.segments().begin(), g.segments().end(), out_seg );
+		ostr << std::endl << "surfaces: ";
+		std::ostream_iterator<TypeForDimension<2>::Surface> out_surf (ostr,", ");
+		std::copy( g.surfaces().begin(), g.surfaces().end(), out_surf );
+		ostr << std::endl;
+		return ostr;
+	}
+
+	std::ostream& operator<<( std::ostream& ostr, const GeometrySet<3>& g )
+	{
+		ostr << "points: ";
+		std::ostream_iterator<TypeForDimension<3>::Point> out_pt (ostr,", ");
+		std::copy( g.points().begin(), g.points().end(), out_pt );
+		ostr << std::endl << "segments: ";
+		std::ostream_iterator<TypeForDimension<3>::Segment> out_seg (ostr,", ");
+		std::copy( g.segments().begin(), g.segments().end(), out_seg );
+		ostr << std::endl << "surfaces: ";
+		std::ostream_iterator<TypeForDimension<3>::Surface> out_surf (ostr,", ");
+		std::copy( g.surfaces().begin(), g.surfaces().end(), out_surf );
+		ostr << std::endl << "volumes: ";
+		std::ostream_iterator<TypeForDimension<3>::Volume> out_vol (ostr,", ");
+		std::copy( g.volumes().begin(), g.volumes().end(), out_vol );
+		ostr << std::endl;
+		return ostr;
 	}
 
 	template class GeometrySet<2>;

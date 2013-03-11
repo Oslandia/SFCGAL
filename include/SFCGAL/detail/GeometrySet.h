@@ -82,6 +82,19 @@ namespace detail {
 	class GeometrySet
 	{
 	public:
+		///
+		/// Flags available for each type of Geometry type.
+		/// Primitives can be 'flagged' in order to speed up recomposition
+		enum ElementFlag
+		{
+			// the polyhedron is planar => build a triangle or a polygon
+			FLAG_IS_PLANAR = 1
+		};
+		struct PointCollectionElement 
+		{
+			typename TypeForDimension<Dim>::Point point;
+			int flags;
+		};
 		typedef std::list<typename TypeForDimension<Dim>::Point>   PointCollection;
 		typedef std::list<typename TypeForDimension<Dim>::Segment> SegmentCollection;
 		typedef std::list<typename TypeForDimension<Dim>::Surface> SurfaceCollection;
@@ -120,6 +133,11 @@ namespace detail {
 		}
 
 		/**
+		 * collect all points of b and add them to the point list
+		 */
+		void collectPoints( const PrimitiveHandle<Dim>& b );
+
+		/**
 		 * add a segment to the set
 		 */
 		void addPrimitive( const typename TypeForDimension<Dim>::Segment& g );
@@ -152,7 +170,7 @@ namespace detail {
 		/**
 		 * Compute all bounding boxes and handles of the set
 		 */
-		void compute_bboxes( typename HandleCollection<Dim>::Type& handles, typename BoxCollection<Dim>::Type& boxes ) const;
+		void computeBoundingBoxes( typename HandleCollection<Dim>::Type& handles, typename BoxCollection<Dim>::Type& boxes ) const;
 
 		inline PointCollection& points() { return _points; }
 		inline const PointCollection& points() const { return _points; }
@@ -171,6 +189,11 @@ namespace detail {
 		 */
 		std::auto_ptr<Geometry> recompose() const;
 
+		/**
+		 * Filter (remove) primitives that are already covered by others
+		 */
+		void filterCovered( GeometrySet<Dim>& output ) const;
+
 	private:
 		///
 		/// Given an input SFCGAL::Geometry, decompose it into CGAL primitives
@@ -181,6 +204,13 @@ namespace detail {
 		SurfaceCollection _surfaces;
 		VolumeCollection _volumes;
 	};
+
+	///
+	/// Display operator
+	std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
+	///
+	/// Display operator
+	std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
 }
 }
 

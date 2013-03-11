@@ -475,14 +475,12 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 ///
 /// input polyhedron must have its planes computed
 ///
-void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, detail::GeometrySet<3>& geometry )
+void triangulate( const MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& geometry )
 {
-	typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
-	
 	Triangulation triangulation;
 	
-	for ( Polyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {
-		Polyhedron::Facet::Halfedge_around_facet_const_circulator pit;
+	for ( MarkedPolyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {
+		MarkedPolyhedron::Facet::Halfedge_around_facet_const_circulator pit;
 		
 		triangulation.clear();
 		

@@ -25,6 +25,7 @@
 #include <SFCGAL/Kernel.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polygon_with_holes_2.h>
+#include <SFCGAL/TypeForDimension.h>
 
 namespace SFCGAL {
 	namespace detail {
@@ -75,7 +76,7 @@ namespace algorithm {
 	/**
 	 * Populate the GeometrySet<3> geometry with the triangulation (list of triangles) of polyhedron
 	 */
-	void triangulate( const CGAL::Polyhedron_3<Kernel>& polyhedron, SFCGAL::detail::GeometrySet<3>& geometry );
+	void triangulate( const MarkedPolyhedron& polyhedron, SFCGAL::detail::GeometrySet<3>& geometry );
 	/**
 	 * Populate the GeometrySet<2> geometry with the triangulation (list of polygons) of polygon
 	 */
