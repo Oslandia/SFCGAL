@@ -135,6 +135,15 @@ bool TriangulatedSurface::is3D() const
 ///
 ///
 ///
+bool TriangulatedSurface::isMeasured() const
+{
+	return ! _triangles.empty() && _triangles.front().isMeasured() ;
+}
+
+
+///
+///
+///
 void  TriangulatedSurface::addTriangles( const TriangulatedSurface & other )
 {
 	for ( TriangulatedSurface::const_iterator it = other.begin(); it != other.end(); ++it ){

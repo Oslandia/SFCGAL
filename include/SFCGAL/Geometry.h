@@ -156,6 +156,11 @@ namespace SFCGAL {
         * @warning suppose no mix of 2D/3D coordinates
         */
        virtual bool         is3D() const = 0 ;
+       /**
+        * [OGC/SFA]test if geometry is measured (has an m)
+        * @warning suppose no mix of M/!M points
+        */
+       virtual bool         isMeasured() const = 0 ;
 
        //virtual bool         isSimple() const = 0 ;
        //virtual bool isMeasured() const = 0 ;

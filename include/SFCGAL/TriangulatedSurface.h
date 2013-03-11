@@ -87,7 +87,8 @@ namespace SFCGAL {
 		virtual bool           isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
-
+		//-- SFCGAL::Geometry
+		virtual bool           isMeasured() const ;
 
 		/**
 		 * [SFA/OGC]Returns the number of points

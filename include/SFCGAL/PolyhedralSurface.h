@@ -83,7 +83,8 @@ namespace SFCGAL {
 		virtual bool           isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
-
+		//-- SFCGAL::Geometry
+		virtual bool           isMeasured() const ;
 
 		/**
 		 * Convert PolyhedralSurface to TriangulatedSurface

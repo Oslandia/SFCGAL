@@ -35,12 +35,8 @@ namespace SFCGAL {
 	 *
 	 * The x(),y(),z() interface is based on CGAL kernel requirements, taken
 	 * from examples/Kernel_23/MyPointC2.h
-	 *
-	 * Coordinates are stored as an ublas::vector
-	 *
-	 * @todo replace Coordinate by CGAL::Point_2 or CGAL::Point_3?
+
 	 * @todo strong typing on coordinate dimension?
-	 * @todo kernel as parameter?
 	 */
 	class Point : public Geometry {
 	public:
@@ -70,7 +66,8 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Point( const CGAL::Point_2< K > & other ):
-			_coordinate(other)
+			_coordinate(other),
+			_m(NaN())
 		{
 
 		}
@@ -80,7 +77,8 @@ namespace SFCGAL {
 		 */
 		template < typename K >
 		Point( const CGAL::Point_3< K > & other ):
-			_coordinate(other)
+			_coordinate(other),
+			_m(NaN())
 		{
 
 		}
@@ -114,7 +112,8 @@ namespace SFCGAL {
 		virtual bool         isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool         is3D() const ;
-
+		//-- SFCGAL::Geometry
+		virtual bool         isMeasured() const ;
 		//--- accessors
 
 		/**
@@ -126,9 +125,18 @@ namespace SFCGAL {
 		 */
 		inline Kernel::RT y() const { return _coordinate.y() ; }
 		/**
-		 * Returns the z value as a double (NaN for empty or 2d Point)
+		 * Returns the z value
 		 */
 		inline Kernel::RT z() const { return _coordinate.z() ; }
+
+		/**
+		 * Returns the m value (NaN is not defined)
+		 */
+		inline double    m() const { return _m ; }
+		/**
+		 * Sets the m value
+		 */
+		inline void      setM( const double & m ) { _m = m ; }
 
 
 		/**
@@ -206,7 +214,10 @@ namespace SFCGAL {
 		}
 	private:
 		Coordinate _coordinate ;
-		//add m here, keep coordinate as a spatial position that can be shared
+		/**
+		 * @brief m coordinates (NaN if not defined)
+		 */
+		double _m ;
 	};
 
 

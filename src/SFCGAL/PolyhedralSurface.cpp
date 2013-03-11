@@ -136,6 +136,19 @@ bool  PolyhedralSurface::is3D() const
 	}
 }
 
+///
+///
+///
+bool  PolyhedralSurface::isMeasured() const
+{
+	if ( isEmpty() ){
+		return false ;
+	}else{
+		return _polygons.front().isMeasured() ;
+	}
+}
+
+
 
 ///
 ///

@@ -144,6 +144,14 @@ bool  LineString::is3D() const
 ///
 ///
 ///
+bool  LineString::isMeasured() const
+{
+	return ! isEmpty() && startPoint().isMeasured() ;
+}
+
+///
+///
+///
 void LineString::clear()
 {
 	_points.clear();
