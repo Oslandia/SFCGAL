@@ -36,7 +36,6 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
-#if 0
 BOOST_AUTO_TEST_CASE( testIntersectionPoint )
 {
     // The same point
@@ -165,7 +164,6 @@ BOOST_AUTO_TEST_CASE( testIntersection3DPolygon )
     LineString ls2( Point(QT(1,10), QT(9,10), QT(1,10)), Point(QT(9,10), QT(1,10), QT(1,10)));
     BOOST_CHECK( *algorithm::intersection3D( ls2, *square ) == ls2 );
 }
-#endif
 
 BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 {
@@ -300,7 +298,6 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	BOOST_CHECK( *inter == *io::readWkt("GEOMETRYCOLLECTION(POINT(0.8 0.5 0),POINT(0.2 0.5 0))"));
     }
 
-#if 0	
     // Solid x Solid
     {
 	Solid solidb( static_cast<Solid&>(*cube));
@@ -315,11 +312,9 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	std::auto_ptr<Geometry> inter = algorithm::intersection3D( solidb, *cube );
 	BOOST_CHECK( inter->envelope() ==  Envelope( Coordinate( 0.5, 0, 0 ), Coordinate( 1.0, 1.0, 1.0)));
     }
-#endif
 }
 
 
-#if 0
 BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
 {
 	// pôlygon with a doubled point (10 0)
@@ -340,7 +335,5 @@ BOOST_AUTO_TEST_CASE( testIntersectionCleanup )
 	BOOST_CHECK( gI->geometryTypeId() == SFCGAL::TYPE_GEOMETRYCOLLECTION );
 	BOOST_CHECK( gI->as<GeometryCollection>().numGeometries() == 2 );
 }
-#endif
-
 BOOST_AUTO_TEST_SUITE_END()
 

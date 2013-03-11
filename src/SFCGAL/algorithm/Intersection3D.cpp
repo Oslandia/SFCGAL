@@ -225,6 +225,30 @@ namespace algorithm {
 			}
 		}
 	}
+
+	void _intersection_solid_solid( const MarkedPolyhedron& pa, const MarkedPolyhedron& pb, GeometrySet<3>& output )
+	{
+		typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
+		MarkedPolyhedron& polya = const_cast<MarkedPolyhedron&>( pa );
+		MarkedPolyhedron& polyb = const_cast<MarkedPolyhedron&>( pb );
+
+		Corefinement coref;
+		CGAL::Emptyset_iterator no_polylines;
+		// vector of <Polyhedron, tag>
+		std::vector<std::pair<MarkedPolyhedron*, int> > result;
+		coref( polya, polyb, no_polylines, std::back_inserter(result), Corefinement::Intersection_tag );
+
+		// empty intersection
+		if (result.size() == 0) {
+			return ;
+		}
+
+		// else, we have an intersection
+		MarkedPolyhedron* res_poly = result[0].first;
+		output.addPrimitive( *res_poly );
+		delete res_poly;
+	}
+
 	//
 	// must be called with pa's dimension larger than pb's
 	void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
@@ -266,7 +290,9 @@ namespace algorithm {
 							      output );
 			}
 			else if ( pb.handle.which() == PrimitiveVolume ) {
-				// TODO
+				_intersection_solid_solid(  *pa.as<MarkedPolyhedron>(),
+							    *pb.as<MarkedPolyhedron>(),
+							    output );
 			}
 		}
 	}
