@@ -33,6 +33,7 @@
 
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <SFCGAL/io/GeometryStreams.h>
 
@@ -92,46 +93,17 @@ namespace algorithm
 		return covers3D( solid, visitor.points );
 	}
 
+	using namespace SFCGAL::detail;
+
 	bool covers3D( const Geometry& ga, const Geometry& gb )
 	{
-		// deal with geometry collection
-		const GeometryCollection* coll;
-		if ( (coll = dynamic_cast<const GeometryCollection*>( &ga )) ) {
-			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
-				if ( covers( coll->geometryN( i ), gb ) ) {
-					return true;
-				}
-			}
+		if ( ga.isEmpty() || gb.isEmpty() ) {
 			return false;
 		}
-		if ( (coll = dynamic_cast<const GeometryCollection*>( &gb )) ) {
-			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
-				if ( covers( ga, coll->geometryN( i ) ) ) {
-					return true;
-				}
-			}
-			return false;
-		}
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
 
-		//
-		// first test if bounding boxes are compliants
-		if ( !Envelope::contains( ga.envelope(), gb.envelope() )) {
-			return false;
-		}
-
-		if ( gb.geometryTypeId() == TYPE_SOLID ) {
-		    // Only another solid can be covered by a solid
-		    if ( ga.geometryTypeId() != TYPE_SOLID ) {
-			return false;
-		    }
-		    return covers3D_solid_x_( static_cast<const Solid&>(ga), static_cast<const Solid&>(gb) );
-		}
-		else if ( ga.geometryTypeId() == TYPE_SOLID ) {
-			return covers3D_solid_x_( static_cast<const Solid&>(ga), gb );
-		}
-
-		// default behaviour
-		return false;
+		return covers( gsa, gsb );
 	}
 }
 }
