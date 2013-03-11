@@ -111,9 +111,44 @@ BOOST_AUTO_TEST_CASE( testIs3D_true )
 ///virtual bool           isMeasured() const ;
 
 ///void clear() ;
+BOOST_AUTO_TEST_CASE( testClear )
+{
+	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
+	g.clear();
+	BOOST_CHECK( g.isEmpty() );
+}
+
 ///void reverse() ;
+BOOST_AUTO_TEST_CASE( testReverse_empty )
+{
+	LineString g ;
+	g.reverse();
+	BOOST_CHECK( g.isEmpty() );
+}
+BOOST_AUTO_TEST_CASE( testReverse_twoPoints )
+{
+	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
+	g.reverse();
+	BOOST_CHECK_EQUAL( g.pointN(0).x(), 1.0 );
+	BOOST_CHECK_EQUAL( g.pointN(0).y(), 1.0 );
+	BOOST_CHECK_EQUAL( g.pointN(1).x(), 0.0 );
+	BOOST_CHECK_EQUAL( g.pointN(1).y(), 0.0 );
+}
+
 ///inline size_t          numPoints() const { return _points.size(); }
+
 ///size_t                 numSegments() const ;
+BOOST_AUTO_TEST_CASE( testNumSegments_empty )
+{
+	LineString g ;
+	BOOST_CHECK_EQUAL( g.numSegments(), 0U );
+}
+BOOST_AUTO_TEST_CASE( testNumSegments_twoPoints )
+{
+	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
+	BOOST_CHECK_EQUAL( g.numSegments(), 1U );
+}
+
 ///inline const Point  &  pointN( size_t const& n ) const
 ///inline Point &         pointN( size_t const& n )
 ///inline const Point &   startPoint() const { return _points.front(); }
@@ -151,7 +186,6 @@ BOOST_AUTO_TEST_CASE( testIsClosed_triangle )
 ///inline const_iterator begin() const
 ///inline iterator       end()
 ///inline const_iterator end() const
-
 BOOST_AUTO_TEST_CASE( simpleIteratorTest )
 {
 	LineString g;
