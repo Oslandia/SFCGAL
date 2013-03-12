@@ -7,6 +7,7 @@ target_link_libraries( example-${EXAMPLE_NAME}
 	${CGAL_LIBRARIES}
 	${MPFR_LIBRARIES} 
 	${GMP_LIBRARIES}
+	${OPENSCENEGRAPH_LIBRARIES}
 	${Boost_LIBRARIES}
 )
 install( TARGETS example-${EXAMPLE_NAME} DESTINATION bin )

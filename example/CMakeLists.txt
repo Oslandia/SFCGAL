@@ -1,5 +1,3 @@
-add_subdirectory( BOOST-transform-iterator )
-
 add_subdirectory( CGAL-basic_manip )
 add_subdirectory( CGAL-cartesian_kernel )
 add_subdirectory( CGAL-point_generator )
@@ -10,6 +8,7 @@ add_subdirectory( SFCGAL-building )
 
 if ( SFCGAL_BUILD_OSG )
 	add_subdirectory( SFCGAL-export-osg )
+	add_subdirectory( SFCGAL-asc2osg )
 endif()
 
 

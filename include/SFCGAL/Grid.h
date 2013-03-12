@@ -25,6 +25,7 @@
 
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/Point.h>
+#include <SFCGAL/TriangulatedSurface.h>
 
 namespace SFCGAL {
 
