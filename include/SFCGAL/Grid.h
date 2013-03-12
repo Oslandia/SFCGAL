@@ -116,9 +116,9 @@ namespace SFCGAL {
 		 */
 		inline double dx() const {
 			if ( _pixelType == PIXEL_IS_POINT ){
-				return _limits.boundsN(0).width() / ( _data.size1() - 1 ) ;
+				return _limits.boundsN(0).width() / ( _data.size2() - 1 ) ;
 			}else{
-				return _limits.boundsN(0).width() / ( _data.size1() ) ;
+				return _limits.boundsN(0).width() / ( _data.size2() ) ;
 			}
 		}
 
@@ -127,9 +127,9 @@ namespace SFCGAL {
 		 */
 		inline double dy() const {
 			if ( _pixelType == PIXEL_IS_POINT ){
-				return _limits.boundsN(1).width() / ( _data.size2() - 1 ) ;
+				return _limits.boundsN(1).width() / ( _data.size1() - 1 ) ;
 			}else{
-				return _limits.boundsN(1).width() / ( _data.size2() ) ;
+				return _limits.boundsN(1).width() / ( _data.size1() ) ;
 			}
 		}
 
@@ -137,26 +137,26 @@ namespace SFCGAL {
 		/**
 		 * @brief get Z for a given location
 		 */
-		inline const double & operator () ( const size_t& i, const size_t& j ) const {
+		inline const double & z( const size_t& i, const size_t& j ) const {
 			return _data(i,j) ;
 		}
 		/**
 		 * @brief get Z for a given location
 		 */
-		inline double & operator () ( const size_t& i, const size_t& j ) {
+		inline double & z( const size_t& i, const size_t& j ) {
 			return _data(i,j) ;
 		}
 
 		/**
 		 * @brief gets the width of the grid
 		 */
-		inline const size_t width() const {
+		inline const size_t ncols() const {
 			return _data.size2() ;
 		}
 		/**
 		 * @brief gets the height of the grid
 		 */
-		inline const size_t height() const {
+		inline const size_t nrows() const {
 			return _data.size1() ;
 		}
 

@@ -63,11 +63,11 @@ std::auto_ptr< Grid > readASC( std::istream& s )
 				BOOST_THROW_EXCEPTION(Exception(
 					( boost::format( "fail to read data(%s,%s) value" ) % i % j ).str()
 				));
-				if ( value == NODATA_value ){
-					data(i,j) = NaN() ;
-				}else{
-					data(i,j) = value ;
-				}
+			}
+			if ( value == NODATA_value ){
+				data(i,j) = NaN() ;
+			}else{
+				data(i,j) = value ;
 			}
 		}
 	}
@@ -77,7 +77,7 @@ std::auto_ptr< Grid > readASC( std::istream& s )
 	 */
 	Envelope limits(
 		xllcorner, xllcorner + cellsize * ncols,
-		yllcorner, yllcorner - cellsize * nrows
+		yllcorner, yllcorner + cellsize * nrows
 	);
 	return std::auto_ptr< Grid >( new Grid( data, limits, Grid::PIXEL_IS_AREA ) ) ;
 }

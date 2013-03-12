@@ -40,11 +40,34 @@ BOOST_AUTO_TEST_CASE( testReadExample )
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;
 	std::auto_ptr< Grid > grid( io::readASC( ifs ) ) ;
-	BOOST_CHECK_EQUAL( grid->width(), 4U );
-	BOOST_CHECK_EQUAL( grid->height(), 6U );
+	BOOST_CHECK_EQUAL( grid->ncols(), 4U );
+	BOOST_CHECK_EQUAL( grid->nrows(), 6U );
 
 	BOOST_CHECK_EQUAL( grid->dx(), 50.0 );
 	BOOST_CHECK_EQUAL( grid->dy(), 50.0 );
+
+	Envelope limits = grid->limits();
+	BOOST_CHECK_EQUAL( limits.xMin(), 0.0 );
+	BOOST_CHECK_EQUAL( limits.xMax(), 200.0 );
+	BOOST_CHECK_EQUAL( limits.yMin(), 0.0 );
+	BOOST_CHECK_EQUAL( limits.yMax(), 300.0 );
+
+	// first line
+	BOOST_CHECK( isNaN( grid->z(0,0) ) );
+	BOOST_CHECK( isNaN( grid->z(0,1) ) );
+	BOOST_CHECK_EQUAL( grid->z(0,2), 5.0 );
+	BOOST_CHECK_EQUAL( grid->z(0,3), 2.0 );
+
+	// last line
+	BOOST_CHECK_EQUAL( grid->z(5,0), 13.0 );
+	BOOST_CHECK_EQUAL( grid->z(5,1), 5.0 );
+	BOOST_CHECK_EQUAL( grid->z(5,2), 1.0 );
+	BOOST_CHECK( isNaN( grid->z(5,3) ) );
+
+	// pixel is area convention
+	Point a00 = grid->point(0,0);
+	BOOST_CHECK_EQUAL( a00.x(), 25.0 );
+	BOOST_CHECK_EQUAL( a00.y(), 275.0 );
 }
 
 

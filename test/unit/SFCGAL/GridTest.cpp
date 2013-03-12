@@ -31,8 +31,8 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 {
 	Grid g;
 	BOOST_CHECK( g.isEmpty() ) ;
-	BOOST_CHECK_EQUAL( g.width(), 0U );
-	BOOST_CHECK_EQUAL( g.height(), 0U );
+	BOOST_CHECK_EQUAL( g.ncols(), 0U );
+	BOOST_CHECK_EQUAL( g.nrows(), 0U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
