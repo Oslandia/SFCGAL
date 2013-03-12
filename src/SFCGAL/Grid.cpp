@@ -20,6 +20,9 @@
  */
 #include <SFCGAL/Grid.h>
 
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/TriangulatedSurface.h>
+
 namespace SFCGAL {
 
 ///
@@ -37,12 +40,13 @@ Grid::Grid():
 ///
 ///
 Grid::Grid(
-	const size_t & width,
-	const size_t & heigth,
+	const size_t & nrows,
+	const size_t & ncols,
+	const double& fillValue,
 	const Envelope & limits,
 	const PixelConvention & pixelType
 ):
-	_data(ublas::scalar_matrix< double >(width,heigth,NaN())),
+	_data( ublas::scalar_matrix< double >( nrows, ncols, fillValue ) ),
 	_limits(limits),
 	_pixelConvention(pixelType)
 {
@@ -92,5 +96,38 @@ Grid::~Grid()
 
 }
 
+
+///
+///
+///
+std::auto_ptr< TriangulatedSurface > Grid::toTrianguledSurface() const
+{
+	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface() ) ;
+	if ( nrows() <= 1 || ncols() <= 1 ){
+		return result ;
+	}
+
+	for ( size_t i = 0; i < nrows() - 1; i++ ){
+		for ( size_t j = 0; j < ncols() - 1; j++ ){
+			/*
+			 * a    b
+			 *
+			 * d    c
+			 */
+			Point a = point(i,j);
+			Point b = point(i,j+1);
+			Point c = point(i+1,j+1);
+			Point d = point(i+1,j);
+
+			if ( d.is3D() && c.is3D() && b.is3D() ){
+				result->addTriangle( new Triangle( d, c, b ) );
+			}
+			if ( d.is3D() && b.is3D() && a.is3D() ){
+				result->addTriangle( new Triangle( d, b, a ) );
+			}
+		}
+	}
+	return result ;
+}
 
 } // namespace SFCGAL

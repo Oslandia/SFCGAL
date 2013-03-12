@@ -66,8 +66,9 @@ namespace SFCGAL {
 		 * @brief default constructor
 		 */
 		Grid(
-			const size_t & width,
-			const size_t& heigth,
+			const size_t & nrows,
+			const size_t & ncols,
+			const double& fillValue = NaN(),
 			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
 			const PixelConvention & pixelType = PIXEL_IS_POINT
 		);
@@ -103,18 +104,18 @@ namespace SFCGAL {
 		/**
 		 * @brief get a point at a specific location
 		 */
-		inline Point point( const size_t & i, const size_t & j ) const {
+		inline Point point( const size_t & row, const size_t & col ) const {
 			if ( _pixelConvention == PIXEL_IS_POINT ){
 				return Point(
-					_limits.xMin() + i * dx(),
-					_limits.yMax() - j * dy(),
-					_data(i,j)
+					_limits.xMin() + col * dx(),
+					_limits.yMax() - row * dy(),
+					_data(row,col)
 				);
 			}else{
 				return Point(
-					_limits.xMin() + ( 0.5 + i ) * dx(),
-					_limits.yMax() - ( 0.5 + j ) * dy(),
-					_data(i,j)
+					_limits.xMin() + ( 0.5 + col ) * dx(),
+					_limits.yMax() - ( 0.5 + row ) * dy(),
+					_data(row,col)
 				);
 			}
 		}
@@ -141,31 +142,31 @@ namespace SFCGAL {
 			}
 		}
 
-
 		/**
 		 * @brief get Z for a given location
 		 */
-		inline const double & z( const size_t& i, const size_t& j ) const {
-			return _data(i,j) ;
+		inline const double & z( const size_t& row, const size_t& col ) const {
+			return _data(row,col) ;
 		}
 		/**
 		 * @brief get Z for a given location
 		 */
-		inline double & z( const size_t& i, const size_t& j ) {
-			return _data(i,j) ;
+		inline double & z( const size_t& row, const size_t& col ) {
+			return _data(row,col) ;
 		}
 
-		/**
-		 * @brief gets the width of the grid
-		 */
-		inline const size_t ncols() const {
-			return _data.size2() ;
-		}
+
 		/**
 		 * @brief gets the height of the grid
 		 */
 		inline const size_t nrows() const {
 			return _data.size1() ;
+		}
+		/**
+		 * @brief gets the width of the grid
+		 */
+		inline const size_t ncols() const {
+			return _data.size2() ;
 		}
 
 		/**
@@ -204,6 +205,14 @@ namespace SFCGAL {
 		inline const ublas::matrix< double > & data() const {
 			return _data ;
 		}
+
+
+		/**
+		 * @brief converts the Grid to a TriangulatedSurface
+		 */
+		std::auto_ptr< TriangulatedSurface > toTrianguledSurface() const ;
+
+
 	private:
 		/**
 		 * @brief grid data
