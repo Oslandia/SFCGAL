@@ -79,7 +79,7 @@ std::auto_ptr< Grid > readASC( std::istream& s )
 		xllcorner, xllcorner + cellsize * ncols,
 		yllcorner, yllcorner + cellsize * nrows
 	);
-	return std::auto_ptr< Grid >( new Grid( data, limits, Grid::PIXEL_IS_AREA ) ) ;
+	return std::auto_ptr< Grid >( new Grid( data, limits, PIXEL_IS_AREA ) ) ;
 }
 
 

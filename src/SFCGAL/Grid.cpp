@@ -28,7 +28,7 @@ namespace SFCGAL {
 Grid::Grid():
 	_data(),
 	_limits(Envelope(0.0,1.0,0.0,1.0)),
-	_pixelType(PIXEL_IS_POINT)
+	_pixelConvention(PIXEL_IS_POINT)
 {
 
 }
@@ -40,11 +40,11 @@ Grid::Grid(
 	const size_t & width,
 	const size_t & heigth,
 	const Envelope & limits,
-	const PixelType & pixelType
+	const PixelConvention & pixelType
 ):
 	_data(ublas::scalar_matrix< double >(width,heigth,NaN())),
 	_limits(limits),
-	_pixelType(pixelType)
+	_pixelConvention(pixelType)
 {
 
 }
@@ -56,11 +56,11 @@ Grid::Grid(
 Grid::Grid(
 	const ublas::matrix< double > & data,
 	const Envelope & limits,
-	const PixelType & pixelType
+	const PixelConvention & pixelType
 ):
 	_data(data),
 	_limits(limits),
-	_pixelType(pixelType)
+	_pixelConvention(pixelType)
 {
 
 }
@@ -80,7 +80,7 @@ Grid& Grid::operator = ( const Grid & other )
 {
 	_data      = other._data ;
 	_limits    = other._limits ;
-	_pixelType = other._pixelType ;
+	_pixelConvention = other._pixelConvention ;
 	return *this ;
 }
 

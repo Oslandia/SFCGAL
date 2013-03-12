@@ -29,6 +29,18 @@
 namespace SFCGAL {
 
 	/**
+	 * @brief represents a pixel convention for Grid data
+	 *
+	 * PIXEL_IS_POINT : Each value represents a point of the grid
+	 * PIXEL_IS_AREA : Each value corresponds to an area
+	 *
+	 */
+	typedef enum {
+		PIXEL_IS_POINT,
+		PIXEL_IS_AREA
+	} PixelConvention ;
+
+	/**
 	 * @brief represents a Grid.
 	 *
 	 * left-right, top-down orientation :
@@ -45,10 +57,6 @@ namespace SFCGAL {
 	 */
 	class Grid {
 	public:
-		typedef enum {
-			PIXEL_IS_POINT,
-			PIXEL_IS_AREA
-		} PixelType ;
 
 		/**
 		 * @brief default constructor
@@ -61,7 +69,7 @@ namespace SFCGAL {
 			const size_t & width,
 			const size_t& heigth,
 			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
-			const PixelType & pixelType = PIXEL_IS_POINT
+			const PixelConvention & pixelType = PIXEL_IS_POINT
 		);
 		/**
 		 * @brief copy constructor
@@ -69,7 +77,7 @@ namespace SFCGAL {
 		Grid(
 			const ublas::matrix< double > & data,
 			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
-			const PixelType & pixelType = PIXEL_IS_POINT
+			const PixelConvention & pixelType = PIXEL_IS_POINT
 		);
 		/**
 		 * @brief copy constructor
@@ -96,7 +104,7 @@ namespace SFCGAL {
 		 * @brief get a point at a specific location
 		 */
 		inline Point point( const size_t & i, const size_t & j ) const {
-			if ( _pixelType == PIXEL_IS_POINT ){
+			if ( _pixelConvention == PIXEL_IS_POINT ){
 				return Point(
 					_limits.xMin() + i * dx(),
 					_limits.yMax() - j * dy(),
@@ -115,7 +123,7 @@ namespace SFCGAL {
 		 * @brief get the width of a pixel
 		 */
 		inline double dx() const {
-			if ( _pixelType == PIXEL_IS_POINT ){
+			if ( _pixelConvention == PIXEL_IS_POINT ){
 				return _limits.boundsN(0).width() / ( _data.size2() - 1 ) ;
 			}else{
 				return _limits.boundsN(0).width() / ( _data.size2() ) ;
@@ -126,7 +134,7 @@ namespace SFCGAL {
 		 * @brief get the height of a pixel
 		 */
 		inline double dy() const {
-			if ( _pixelType == PIXEL_IS_POINT ){
+			if ( _pixelConvention == PIXEL_IS_POINT ){
 				return _limits.boundsN(1).width() / ( _data.size1() - 1 ) ;
 			}else{
 				return _limits.boundsN(1).width() / ( _data.size1() ) ;
@@ -165,18 +173,33 @@ namespace SFCGAL {
 		 */
 		inline const Envelope & limits() const { return _limits ; }
 		/**
-		 * @brief access to grid limits
+		 * @brief Sets the limits
 		 */
-		inline Envelope & limits() { return _limits ; }
+		inline void setLimits( const Envelope & limits ) {
+			_limits = limits ;
+		}
 
 		/**
-		 * @brief access to grid data
+		 * @brief get pixel type
+		 */
+		inline const PixelConvention & pixelConvention() const {
+			return _pixelConvention ;
+		}
+		/**
+		 * @brief set the pixel type
+		 */
+		inline void setPixelConvention( const PixelConvention & pixelConvention ){
+			_pixelConvention = pixelConvention ;
+		}
+
+		/**
+		 * @brief [advanced]access to grid data
 		 */
 		inline ublas::matrix< double > & data() {
 			return _data ;
 		}
 		/**
-		 * @brief access to grid data
+		 * @brief [advanced]access to grid data
 		 */
 		inline const ublas::matrix< double > & data() const {
 			return _data ;
@@ -193,7 +216,7 @@ namespace SFCGAL {
 		/**
 		 * @brief pixel type
 		 */
-		PixelType _pixelType ;
+		PixelConvention _pixelConvention ;
 	};
 
 } // namespace SFCGAL
