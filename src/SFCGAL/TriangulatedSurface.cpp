@@ -181,6 +181,14 @@ Triangle &   TriangulatedSurface::geometryN( size_t const& n )
 ///
 ///
 ///
+void TriangulatedSurface::reserve( const size_t & n )
+{
+	_triangles.reserve(n);
+}
+
+///
+///
+///
 void TriangulatedSurface::accept( GeometryVisitor & visitor )
 {
 	return visitor.visit(*this);

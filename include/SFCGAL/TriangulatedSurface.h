@@ -139,8 +139,9 @@ namespace SFCGAL {
 		virtual Triangle &           geometryN( size_t const& n ) ;
 
 
-		//const std::vector< Triangle > & triangles() const { return _triangles; }
-		//std::vector< Triangle > &       triangles() { return _triangles; }
+		//-- optimization
+
+		void reserve( const size_t & n ) ;
 
 		//-- iterators
 
