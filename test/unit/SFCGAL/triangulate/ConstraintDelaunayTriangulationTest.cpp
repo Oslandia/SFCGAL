@@ -63,12 +63,23 @@ BOOST_AUTO_TEST_CASE( testTriangulateSquare )
 	BOOST_CHECK_EQUAL( triangulation.numVertices(), 4U );
 	BOOST_CHECK_EQUAL( triangulation.numTriangles(), 2U );
 
+
+	/*
+	 * nesting level
+	 */
+	for ( All_faces_iterator it = triangulation.all_faces_begin(); it != triangulation.all_faces_end(); ++it ){
+		BOOST_CHECK_EQUAL( it->info().nestingLevel, -1 );
+	}
+
 	// check mark domains
 	triangulation.markDomains();
-	for ( All_faces_iterator it = triangulation.all_faces_begin();
-			it != triangulation.all_faces_end(); ++it ){
-
-		BOOST_CHECK_EQUAL( it->info().nestingLevel, 0 );
+	for ( All_faces_iterator it = triangulation.all_faces_begin(); it != triangulation.all_faces_end(); ++it ){
+		Face_handle face = it ;
+		if ( triangulation.isInfinite( face ) ){
+			BOOST_CHECK_EQUAL( it->info().nestingLevel, 0 );
+		}else{
+			BOOST_CHECK_EQUAL( it->info().nestingLevel, 1 );
+		}
 	}
 }
 

@@ -31,12 +31,13 @@
 using namespace boost::unit_test ;
 
 using namespace SFCGAL ;
+using namespace SFCGAL::triangulate ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_ConstraintDelaunayTriangulationTest )
 
 BOOST_AUTO_TEST_CASE( testTriangulateRGC )
 {
-	triangulate::ConstraintDelaunayTriangulation triangulation ;
+	ConstraintDelaunayTriangulation triangulation ;
 
 	/*
 	 * read points from file
@@ -57,8 +58,10 @@ BOOST_AUTO_TEST_CASE( testTriangulateRGC )
 
 	BOOST_CHECK_EQUAL( triangulation.numVertices(), 36566U );
 	BOOST_CHECK_EQUAL( triangulation.numTriangles(), 73114U );
-	BOOST_CHECK_EQUAL( triangulation.getTriangulatedSurface()->numTriangles(), 73114U );
-	BOOST_CHECK_CLOSE( algorithm::area( *triangulation.getTriangulatedSurface() ), 818056610000.0, 0.1 );
+
+	std::auto_ptr< TriangulatedSurface > triangulatedSurface = triangulation.getTriangulatedSurface() ;
+	BOOST_CHECK_EQUAL( triangulatedSurface->numTriangles(), 73114U );
+	BOOST_CHECK_CLOSE( algorithm::area( *triangulatedSurface ), 818056610000.0, 0.1 );
 }
 
 

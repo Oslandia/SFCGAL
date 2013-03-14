@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRIANGULATE_CONSTRAINTDELAUNAYTRIANGULATION_H_
 #define _SFCGAL_TRIANGULATE_CONSTRAINTDELAUNAYTRIANGULATION_H_
 
+#include <boost/optional.hpp>
+
 #include <SFCGAL/Coordinate.h>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
@@ -108,8 +110,37 @@ namespace triangulate {
 		 */
 		size_t	numTriangles() const ;
 
+
 		/**
-		 * get the resulting triangulated surface
+		 * @brief test if a projection plane is defined
+		 */
+		inline bool hasProjectionPlane() const {
+			return _projectionPlane.is_initialized() ;
+		}
+		/**
+		 * @brief define projection plane
+		 */
+		void setProjectionPlane( const Kernel::Plane_3 & projectionPlane ) ;
+		/**
+		 * @brief get the projection plane (OXY if not defined)
+		 */
+		Kernel::Plane_3 projectionPlane() const ;
+
+		/**
+		 * @brief test if the vertex is infinite
+		 */
+		inline bool isInfinite( Vertex_handle vertex ) const {
+			return _cdt.is_infinite( vertex ) ;
+		}
+		/**
+		 * @brief test if the face has infinite vertex
+		 */
+		inline bool isInfinite( Face_handle face ) const {
+			return _cdt.is_infinite( face ) ;
+		}
+
+		/**
+		 * get the resulting TriangulatedSurface
 		 */
 		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface() const ;
 
@@ -145,6 +176,15 @@ namespace triangulate {
 		 */
 		void markDomains() ;
 
+
+		/**
+		 * @brief [advanced]get the CGAL object
+		 */
+		inline CDT & cdt() { return _cdt ; }
+		/**
+		 * @brief [advanced]get the CGAL object
+		 */
+		inline const CDT & cdt() const { return _cdt ; }
 	private:
 		/**
 		 * @brief wrapped triangulation
@@ -152,9 +192,8 @@ namespace triangulate {
 		CDT _cdt ;
 		/**
 		 * @brief plan in which the triangulation is done
-		 * @todo take in account
 		 */
-		Kernel::Plane_3 _plane ;
+		boost::optional< Kernel::Plane_3 > _projectionPlane ;
 
 
 		/**

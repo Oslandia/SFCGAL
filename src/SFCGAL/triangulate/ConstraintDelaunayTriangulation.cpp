@@ -46,9 +46,16 @@ ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::
 			"try to add empty position to ConstraintDelaunayTriangulation"
 		));
 	}
-	Vertex_handle vertex = _cdt.insert( position.toPoint_2() );
-	vertex->info().original = position ;
-	return vertex ;
+
+	if ( _projectionPlane ){
+		Vertex_handle vertex = _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) );
+		vertex->info().original = position ;
+		return vertex ;
+	}else{
+		Vertex_handle vertex = _cdt.insert( position.toPoint_2() );
+		vertex->info().original = position ;
+		return vertex ;
+	}
 }
 
 ///
@@ -84,6 +91,27 @@ size_t	ConstraintDelaunayTriangulation::numVertices() const
 size_t	ConstraintDelaunayTriangulation::numTriangles() const
 {
 	return _cdt.number_of_faces() ;
+}
+
+///
+///
+///
+void ConstraintDelaunayTriangulation::setProjectionPlane( const Kernel::Plane_3 & projectionPlane )
+{
+	BOOST_ASSERT( ! projectionPlane.is_degenerate() ) ;
+	_projectionPlane = projectionPlane ;
+}
+
+///
+///
+///
+Kernel::Plane_3 ConstraintDelaunayTriangulation::projectionPlane() const
+{
+	if ( _projectionPlane ){
+		return *_projectionPlane ;
+	}else{
+		return Kernel::Plane_3( Kernel::RT(0), Kernel::RT(0), Kernel::RT(1), Kernel::RT(0) );
+	}
 }
 
 
