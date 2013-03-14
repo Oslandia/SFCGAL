@@ -140,6 +140,10 @@ namespace triangulate {
 		}
 
 		/**
+		 * @brief Append Triangles to a TriangulatedSurface
+		 */
+		void getTriangles( TriangulatedSurface & triangulatedSurface ) const ;
+		/**
 		 * get the resulting TriangulatedSurface
 		 */
 		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface() const ;

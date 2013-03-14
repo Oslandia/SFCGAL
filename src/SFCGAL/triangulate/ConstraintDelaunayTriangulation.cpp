@@ -178,14 +178,12 @@ void ConstraintDelaunayTriangulation::_markDomains(
 }
 
 
-
 ///
 ///
 ///
-std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
+void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triangulatedSurface ) const
 {
-	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
-	result->reserve( numTriangles() );
+	triangulatedSurface.reserve( triangulatedSurface.numTriangles() + numTriangles() );
 	for ( Finite_faces_iterator it = finite_faces_begin(); it != finite_faces_end(); ++it )
 	{
 		const Coordinate & a = it->vertex(0)->info().original ;
@@ -199,8 +197,17 @@ std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangu
 			) ) ;
 		}
 
-		result->addTriangle( new Triangle( Point(a), Point(b), Point(c) ) );
+		triangulatedSurface.addTriangle( new Triangle( Point(a), Point(b), Point(c) ) );
 	}
+}
+
+///
+///
+///
+std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
+{
+	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
+	getTriangles(*result);
 	return result ;
 }
 

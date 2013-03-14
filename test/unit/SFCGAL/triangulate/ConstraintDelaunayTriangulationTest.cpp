@@ -24,6 +24,8 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
 
+#include <SFCGAL/io/osg.h>
+
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 using namespace SFCGAL::triangulate ;
@@ -82,6 +84,27 @@ BOOST_AUTO_TEST_CASE( testTriangulateSquare )
 		}
 	}
 }
+
+
+
+
+BOOST_AUTO_TEST_CASE( testProjectionPlane )
+{
+	ConstraintDelaunayTriangulation triangulation ;
+	typedef ConstraintDelaunayTriangulation::Vertex_handle         Vertex_handle ;
+	typedef ConstraintDelaunayTriangulation::Face_handle           Face_handle ;
+
+	triangulation.setProjectionPlane( Kernel::Plane_3( Kernel::RT(1), Kernel::RT(0), Kernel::RT(0), Kernel::RT(0) ) );
+
+	triangulation.addVertex( Coordinate(1.0,0.0,0.0) ) ;
+	triangulation.addVertex( Coordinate(1.0,1.0,0.0) ) ;
+	triangulation.addVertex( Coordinate(1.0,1.0,1.0) ) ;
+	triangulation.addVertex( Coordinate(1.0,0.0,1.0) ) ;
+
+	BOOST_CHECK_EQUAL( triangulation.numVertices(), 4U );
+	BOOST_CHECK_EQUAL( triangulation.numTriangles(), 2U );
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()
