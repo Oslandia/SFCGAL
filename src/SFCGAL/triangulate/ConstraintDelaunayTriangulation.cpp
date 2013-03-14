@@ -181,11 +181,14 @@ void ConstraintDelaunayTriangulation::_markDomains(
 ///
 ///
 ///
-void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triangulatedSurface ) const
+void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triangulatedSurface, bool filterExteriorParts ) const
 {
 	triangulatedSurface.reserve( triangulatedSurface.numTriangles() + numTriangles() );
 	for ( Finite_faces_iterator it = finite_faces_begin(); it != finite_faces_end(); ++it )
 	{
+		if ( filterExteriorParts && ( it->info().nestingLevel % 2 == 0 ) ){
+			continue ;
+		}
 		const Coordinate & a = it->vertex(0)->info().original ;
 		const Coordinate & b = it->vertex(1)->info().original ;
 		const Coordinate & c = it->vertex(2)->info().original ;
@@ -204,10 +207,10 @@ void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triang
 ///
 ///
 ///
-std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
+std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface( bool filterExteriorParts ) const
 {
 	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
-	getTriangles(*result);
+	getTriangles(*result, false);
 	return result ;
 }
 

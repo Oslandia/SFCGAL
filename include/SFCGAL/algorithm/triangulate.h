@@ -23,10 +23,14 @@
 
 #include <SFCGAL/Geometry.h>
 
+#ifdef __GNUC__
+#warning "*** DEPRECATED: SFCGAL::algorithm::triangulate and SFCGAL::algorithm::triangulate2D are deprecated (remove SFCGAL/algorithm/triangulate.h)"
+#endif
+
 namespace SFCGAL {
 namespace algorithm {
 	/**
-	 * Convert a 2D/3D [Multi]Polygon to a TriangulatedSurface.
+	 * @brief Convert a 2D/3D [Multi]Polygon to a TriangulatedSurface.
 	 */
 	void triangulate( const Geometry & geometry, TriangulatedSurface & triangulatedSurface ) ;
 	/**

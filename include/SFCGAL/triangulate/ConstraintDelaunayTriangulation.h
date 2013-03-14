@@ -68,8 +68,8 @@ namespace triangulate {
 			}
 		};
 
-		typedef CGAL::Triangulation_vertex_base_with_info_2< VertexInfo, Kernel >            Triangulation_vertex_base ;
-		typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo, Kernel>                  Triangulation_face_base;
+		typedef CGAL::Triangulation_vertex_base_with_info_2< VertexInfo, Kernel >             Triangulation_vertex_base ;
+		typedef CGAL::Triangulation_face_base_with_info_2<FaceInfo, Kernel>                   Triangulation_face_base;
 		typedef CGAL::Constrained_triangulation_face_base_2<Kernel, Triangulation_face_base>  Constrained_triangulation_face_base;
 		typedef CGAL::Triangulation_data_structure_2< Triangulation_vertex_base,
 				Constrained_triangulation_face_base >                                          Triangulation_data_structure ;
@@ -142,11 +142,11 @@ namespace triangulate {
 		/**
 		 * @brief Append Triangles to a TriangulatedSurface
 		 */
-		void getTriangles( TriangulatedSurface & triangulatedSurface ) const ;
+		void getTriangles( TriangulatedSurface & triangulatedSurface, bool filterExteriorParts = false ) const ;
 		/**
 		 * get the resulting TriangulatedSurface
 		 */
-		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface() const ;
+		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface( bool filterExteriorParts = false ) const ;
 
 		/**
 		 * @brief get finite face iterator

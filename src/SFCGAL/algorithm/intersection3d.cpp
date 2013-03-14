@@ -27,6 +27,7 @@
 #include <SFCGAL/algorithm/detail/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionToMulti.h>
+#include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/tools/Registry.h>
 
 #include <CGAL/Triangle_3_Triangle_3_intersection.h>

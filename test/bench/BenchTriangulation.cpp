@@ -26,13 +26,13 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/generator/hoch.h>
 #include <SFCGAL/generator/disc.h>
+#include <SFCGAL/algorithm/triangulate.h>
 
 #include "../test_config.h"
 #include "Bench.h"
 
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
-
 
 #include <CGAL/point_generators_2.h>
 

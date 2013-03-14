@@ -222,7 +222,7 @@ Solid *   extrude( const TriangulatedSurface & g, const Kernel::Vector_3 & v )
 Solid *   extrude( const PolyhedralSurface & g, const Kernel::Vector_3 & v )
 {
 	TriangulatedSurface triangulatedSurface ;
-	triangulate( g, triangulatedSurface );
+	triangulate::triangulatePolygon3D( g, triangulatedSurface );
 	return extrude( triangulatedSurface, v ) ;
 }
 

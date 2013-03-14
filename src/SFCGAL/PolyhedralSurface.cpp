@@ -156,7 +156,7 @@ bool  PolyhedralSurface::isMeasured() const
 TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
 {
 	TriangulatedSurface result ;
-	algorithm::triangulate( *this, result );
+	triangulate::triangulatePolygon3D( *this, result );
 	return result ;
 }
 
