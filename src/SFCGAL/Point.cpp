@@ -77,6 +77,26 @@ Point::Point( const double & x, const double & y, const double & z ):
 
 }
 
+///
+///
+///
+Point::Point( const Kernel::Point_2 & other ):
+	_coordinate(other),
+	_m(NaN())
+{
+
+}
+
+///
+///
+///
+Point::Point( const Kernel::Point_3 & other ):
+	_coordinate(other),
+	_m(NaN())
+{
+
+}
+
 
 ///
 ///

@@ -38,7 +38,7 @@ namespace SFCGAL {
 namespace triangulate {
 
 	/**
-	 * @brief 2DZ constraint delaunay triangulation
+	 * @brief 2DZ constraint Delaunay triangulation
 	 */
 	class ConstraintDelaunayTriangulation {
 	public:

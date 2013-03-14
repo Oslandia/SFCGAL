@@ -64,24 +64,11 @@ namespace SFCGAL {
 		/**
 		 * Constructor from CGAL::Point_2<K>
 		 */
-		template < typename K >
-		Point( const CGAL::Point_2< K > & other ):
-			_coordinate(other),
-			_m(NaN())
-		{
-
-		}
-
+		Point( const Kernel::Point_2 & other ) ;
 		/**
 		 * Constructor from CGAL::Point_3<K>
 		 */
-		template < typename K >
-		Point( const CGAL::Point_3< K > & other ):
-			_coordinate(other),
-			_m(NaN())
-		{
-
-		}
+		Point( const Kernel::Point_3 & other ) ;
 
 
 		/**
