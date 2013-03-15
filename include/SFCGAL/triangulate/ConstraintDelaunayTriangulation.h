@@ -198,12 +198,6 @@ namespace triangulate {
 		 * @brief plan in which the triangulation is done
 		 */
 		boost::optional< Kernel::Plane_3 > _projectionPlane ;
-
-
-		/**
-		 * @brief helper method to mark domains
-		 */
-		void _markDomains( CDT::Face_handle start, int index, std::list< CDT::Edge >& border ) ;
 	};
 
 } // namespace triangulate

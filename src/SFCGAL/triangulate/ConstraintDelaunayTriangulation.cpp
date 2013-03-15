@@ -23,6 +23,9 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/TriangulatedSurface.h>
 
+
+#include <SFCGAL/triangulate/detail/markDomains.h>
+
 namespace SFCGAL {
 namespace triangulate {
 
@@ -120,62 +123,10 @@ Kernel::Plane_3 ConstraintDelaunayTriangulation::projectionPlane() const
 ///
 void ConstraintDelaunayTriangulation::markDomains()
 {
-	for ( CDT::All_faces_iterator it = _cdt.all_faces_begin(); it != _cdt.all_faces_end(); ++it ) {
-		it->info().nestingLevel = -1;
-	}
-
-	int index = 0;
-	std::list< CDT::Edge > border;
-	_markDomains( _cdt.infinite_face(), index++, border);
-	while ( ! border.empty() ) {
-		CDT::Edge e = border.front();
-		border.pop_front();
-		CDT::Face_handle n = e.first->neighbor(e.second);
-		if ( n->info().nestingLevel == -1 ) {
-			_markDomains( n, e.first->info().nestingLevel + 1, border );
-		}
-	}
+	detail::markDomains( _cdt );
 }
 
-///
-/// adapted from CGAL example
-///
-///explore set of facets connected with non constrained edges,
-///and attribute to each such set a nesting level.
-///We start from facets incident to the infinite vertex, with a nesting
-///level of 0. Then we recursively consider the non-explored facets incident
-///to constrained edges bounding the former set and increase the nesting level by 1.
-///Facets in the domain are those with an odd nesting level.
-void ConstraintDelaunayTriangulation::_markDomains(
-	CDT::Face_handle start,
-	int index,
-	std::list< CDT::Edge >& border
-)
-{
-	if (start->info().nestingLevel != -1) {
-		return;
-	}
-	std::list< CDT::Face_handle > queue;
-	queue.push_back(start);
 
-	while (!queue.empty()) {
-		CDT::Face_handle fh = queue.front();
-		queue.pop_front();
-		if (fh->info().nestingLevel == -1) {
-			fh->info().nestingLevel = index;
-			for (int i = 0; i < 3; i++) {
-				CDT::Edge e(fh, i);
-				CDT::Face_handle n = fh->neighbor(i);
-				if (n->info().nestingLevel == -1) {
-					if ( _cdt.is_constrained(e) )
-						border.push_back(e);
-					else
-						queue.push_back(n);
-				}
-			}
-		}
-	}
-}
 
 
 ///
