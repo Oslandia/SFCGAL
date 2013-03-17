@@ -24,8 +24,6 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/triangulate/triangulate2DZ.h>
 
-#include <SFCGAL/io/osg.h>
-
 #include <SFCGAL/all.h>
 
 using namespace boost::unit_test ;

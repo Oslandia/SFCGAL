@@ -24,8 +24,6 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
 
-#include <SFCGAL/io/osg.h>
-
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 using namespace SFCGAL::triangulate ;
