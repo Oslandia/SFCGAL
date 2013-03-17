@@ -20,8 +20,6 @@
  */
 #include <fstream>
 
-#include <sys/time.h>
-
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/generator/hoch.h>
