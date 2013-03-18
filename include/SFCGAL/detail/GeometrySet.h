@@ -134,6 +134,26 @@ namespace detail {
 		GeometrySet( const Geometry& g );
 
 		/**
+		 * Construct a GeometrySet from a Point
+		 */
+		GeometrySet( const typename TypeForDimension<Dim>::Point& g, int flags = 0 );
+
+		/**
+		 * Construct a GeometrySet from a Segment
+		 */
+		GeometrySet( const typename TypeForDimension<Dim>::Segment& g, int flags = 0 );
+
+		/**
+		 * Construct a GeometrySet from a Surface
+		 */
+		GeometrySet( const typename TypeForDimension<Dim>::Surface& g, int flags = 0 );
+
+		/**
+		 * Construct a GeometrySet from a Volume
+		 */
+		GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int flags = 0 );
+
+		/**
 		 * Add a geometry by decomposing it into CGAL primitives
 		 */
 		void addGeometry( const Geometry& g );

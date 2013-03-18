@@ -32,6 +32,8 @@
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 
+#include <CGAL/Point_inside_polyhedron_3.h>
+
 namespace SFCGAL {
 namespace algorithm {
     
@@ -43,18 +45,20 @@ namespace algorithm {
 
 		const MarkedPolyhedron* ext_poly = pa.as<MarkedPolyhedron>();
 		const CGAL::Segment_3<Kernel>* segment = pb.as<CGAL::Segment_3<Kernel> >();
-		Mesh_domain ext_domain( *ext_poly );
-		Mesh_domain::Is_in_domain is_in_ext( ext_domain );
 
-		std::cout << "solid vs segment" << *segment << std::endl;
-		bool source_inside = is_in_ext( segment->source() );
-		bool target_inside = is_in_ext( segment->target() );
-		std::cout << "source_inside: " << source_inside << std::endl;
-		std::cout << "target_inside: " << target_inside << std::endl;
+		MarkedPolyhedron *ext_poly_nc = const_cast<MarkedPolyhedron*>( ext_poly );
+		CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_ext( *ext_poly_nc );
+
+		GeometrySet<3> triangles;
+		GeometrySet<3> spoint( segment->source() );
+		GeometrySet<3> tpoint( segment->target() );
+		triangulate( *ext_poly, triangles );
+
+		bool source_inside = is_in_ext( segment->source() ) || intersects( triangles, spoint );
+		bool target_inside = is_in_ext( segment->target() ) || intersects( triangles, tpoint );
 
 		if ( source_inside && target_inside ) {
 			// the entire segment intersects the volume, return the segment
-			std::cout << "add the segment in output" << std::endl;
 			output.addPrimitive( pb );
 		}
 		else {
@@ -97,15 +101,12 @@ namespace algorithm {
 				output.addPrimitive( inter.segments().begin()->primitive() );
 			}
 		}
-		std::cout << "in intersection_solid_segment: " << output;
 	}
 
 
 	typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron, Kernel, CGAL::Tag_true> Split_visitor;
 	typedef std::vector<Kernel::Point_3> Polyline_3;
 
-	typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
-	
 	struct Is_not_marked{
 		bool operator()(MarkedPolyhedron::Halfedge_const_handle h) const{
 			return !h->mark;
@@ -123,24 +124,8 @@ namespace algorithm {
 		std::list<Polyline_3> polylines;
 		CGAL::Intersection_of_Polyhedra_3<MarkedPolyhedron,Kernel, Split_visitor> intersect_polys(visitor);
 		intersect_polys( polya, polyb, std::back_inserter(polylines) );
-		std::cout << "# of polylines: " << polylines.size() << std::endl;
-		#if 1
-		for ( std::list<Polyline_3>::const_iterator it = polylines.begin(); it != polylines.end(); ++it ) {
-			std::cout << "polyline: ";
-			for ( size_t j = 0; j < it->size(); ++j ) {
-				std::cout << (*it)[j] << ",";
-			}
-			std::cout << std::endl;
-		}
-		#endif
 
-		std::ofstream fa("polya.off");
-		std::ofstream fb("polyb.off");
-		fa << polya;
-		fb << polyb;
-
-		Mesh_domain ext_domain( polya );
-		Mesh_domain::Is_in_domain point_inside_q( ext_domain );
+		CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> point_inside_q( polya );
 		if ( polylines.size() == 0 ) {
 			// no surface intersection
 			// if one of the point of the triangle is inside the polyhedron,
@@ -149,7 +134,6 @@ namespace algorithm {
 				output.addPrimitive( tri );
 				return;
 			}
-			std::cout << "no intersection" << std::endl;
 			return;
 		}
 
@@ -158,9 +142,6 @@ namespace algorithm {
 		Is_not_marked criterion;
 		CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter(decomposition));
 
-		//		CGAL::Point_inside_polyhedron_3<Polyhedron, Kernel> point_inside_q( const_cast<Polyhedron&>(polyb) );
-
-		std::cout << "# of decomposition: " << decomposition.size() << std::endl;
 		for ( std::list<MarkedPolyhedron>::iterator it = decomposition.begin(); it != decomposition.end(); ++it ) {
 			std::ofstream decompo("decompo.off");
 			decompo << *it;
@@ -168,8 +149,6 @@ namespace algorithm {
 			// take a point on the component and tests if its inside the other polyhedron
 			//
 			CGAL::Point_3<Kernel> test_point;
-			std::cout << "# of facets: " << it->size_of_facets() << std::endl;
-			std::cout << "# of vertices: " << it->size_of_vertices() << std::endl;
 			if ( it->size_of_facets() == 1 ) {
 				//
 				// If we only have a facet, take the centroid (cannot take a point on the intersection)
@@ -187,26 +166,43 @@ namespace algorithm {
 					if ( !hit->is_border_edge() ) {
 						// take the center of the edge
 						test_point = CGAL::midpoint( hit->vertex()->point(), hit->prev()->vertex()->point() );
-						//						std::cout << "take the center of the edge as test_point " << test_point << std::endl;
 						break;
 					}
 				}
 			}
 			
-			std::cout << "test_point = " << test_point << std::endl;
 			// point inside volume or on surface
-			bool point_inside_volume =  point_inside_q( test_point );
-			std::cout << "point_inside_volume: " << point_inside_volume << std::endl;
+			bool point_is_inside = false;
+			// on surface test
+			{
+				// triangulate the polyhedron
+				GeometrySet<3> triangles;
+				GeometrySet<3> point( test_point );
 
-			if ( point_inside_volume ) {
-				//				if ( is_volume ) {
-				//					return surface_polyhedron_to_geometry( *it );
-				//				}
-				//				return planar_polyhedron_to_geometry( *it );
+				triangulate( polya, triangles );
+				bool point_on_surface = intersects( triangles, point );
 
+				if ( point_on_surface ) {
+					point_is_inside = true;
+				}
+				else {
+					// strictly inside test
+					bool point_inside_volume =  point_inside_q( test_point );
 
+					if ( point_inside_volume ) {
+						point_is_inside = true;
+					}
+				}
+			}
+			
+			//				if ( is_volume ) {
+			//					return surface_polyhedron_to_geometry( *it );
+			//				}
+			//				return planar_polyhedron_to_geometry( *it );
+			
+			
+			if ( point_is_inside ) {
 				// we know it is a planar intersection
-				std::cout << "flag_is_planar" << std::endl;
 				output.addPrimitive( *it, detail::FLAG_IS_PLANAR );
 				return;
 			}
@@ -254,7 +250,6 @@ namespace algorithm {
 	void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
 			   GeometrySet<3>& output, dim_t<3> )
 	{
-		std::cout << "intersection " << pa.handle.which() << " vs. " << pb.handle.which() << std::endl;
 		// everything vs a point
 		if ( pb.handle.which() == PrimitivePoint ) {
 			if ( algorithm::intersects( pa, pb ) ) {

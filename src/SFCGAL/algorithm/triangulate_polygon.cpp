@@ -477,6 +477,24 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 ///
 void triangulate( const MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& geometry )
 {
+	if ( polyhedron.is_pure_triangle() ) {
+		for ( MarkedPolyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {
+			MarkedPolyhedron::Facet::Halfedge_around_facet_const_circulator pit;
+		
+			pit = fit->facet_begin();
+			const CGAL::Point_3<Kernel>& pt1 = pit->vertex()->point();
+			++pit;
+			const CGAL::Point_3<Kernel>& pt2 = pit->vertex()->point();
+			++pit;
+			const CGAL::Point_3<Kernel>& pt3 = pit->vertex()->point();
+
+			CGAL::Triangle_3<Kernel> tri( pt1, pt2, pt3 );
+			geometry.addPrimitive( tri );
+		}
+		return;
+
+	}
+
 	Triangulation triangulation;
 	
 	for ( MarkedPolyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {

@@ -101,6 +101,30 @@ namespace detail {
 	}
 
 	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Point& g, int flags )
+	{
+		addPrimitive( g );
+	}
+
+	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Segment& g, int flags )
+	{
+		addPrimitive( g );
+	}
+
+	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Surface& g, int flags )
+	{
+		addPrimitive( g );
+	}
+
+	template <int Dim>
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int flags )
+	{
+		addPrimitive( g );
+	}
+
+	template <int Dim>
 	void GeometrySet<Dim>::addGeometry( const Geometry& g )
 	{
 		_decompose( g );
@@ -174,7 +198,6 @@ namespace detail {
 	template <int Dim>
 	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Volume& p, int flags )
 	{
-		std::cout << "volume flag: " << flags << std::endl;
 		_volumes.push_back( typename GeometrySet<Dim>::VolumeCollection::value_type(p, flags) );
 	}
 
@@ -311,20 +334,16 @@ namespace detail {
 		for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
 		      it != segments.end();
 		      ++it ) {
-			std::cout << "segment " << it->primitive() << std::endl;
 			if ( !first && lastSeg.target() != it->primitive().source() ) {
 				lines.push_back( ls );
 				ls = new LineString;
 				first = true;
-				std::cout << "new LineString" << std::endl;
 			}
 			if ( first ) {
 				ls->addPoint( new Point( it->primitive().source() ) );
-				std::cout << "add first point " << it->primitive().source() << std::endl;
 				first = false;
 			}
 			ls->addPoint( new Point( it->primitive().target() ) );
-			std::cout << "add point " << it->primitive().target() << std::endl;
 			lastSeg = it->primitive();
 		}
 		lines.push_back( ls );
@@ -370,14 +389,11 @@ namespace detail {
 
 	void recompose_volumes( const GeometrySet<3>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<3> )
 	{
-		std::cout << "recompose volumes" << std::endl;
 		if ( volumes.empty() ) {
 			return;
 		}
 		for ( GeometrySet<3>::VolumeCollection::const_iterator vit = volumes.begin(); vit != volumes.end(); ++vit ) {
-			std::cout << "flags: " << vit->flags() << std::endl;
 			if ( vit->flags() & detail::FLAG_IS_PLANAR ) {
-				std::cout << "is planar" << std::endl;
 				// extract the boundary
 				std::list<CGAL::Point_3<Kernel> > boundary;
 				for ( MarkedPolyhedron::Halfedge_const_iterator it = vit->primitive().halfedges_begin();
@@ -402,7 +418,6 @@ namespace detail {
 						boundary.push_front( p1 );
 					}
 				}
-				std::cout << "boundary size: " << boundary.size() << std::endl;
 				if ( boundary.size() == 3 ) {
 					// It is a triangle
 					
@@ -429,7 +444,6 @@ namespace detail {
 				output.push_back( new Solid( shell ) );
 			}
 		}
-		std::cout << "end recompose volumes" << std::endl;
 	}
 
 	template <int Dim>
@@ -528,7 +542,6 @@ namespace detail {
 	template <int Dim, class IT>
 	void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
 	{
-		std::cout << "filter covered " << std::endl;
 		for ( IT it = ibegin; it != iend; ++it ) {
 			GeometrySet<Dim> v1;
 			v1.addPrimitive( it->primitive() );
