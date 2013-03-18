@@ -330,9 +330,9 @@ public:
     if(N>0)
     {
       Vector v = p - grid_base;
-      int i = boost::math::round(v.x() / grid_dx);  
-      int j =  boost::math::round(v.y() / grid_dy);  
-      int k =  boost::math::round(v.z() / grid_dz);
+      int i = boost::math::round(CGAL::to_double(v.x()) / grid_dx);  
+      int j =  boost::math::round(CGAL::to_double(v.y()) / grid_dy);  
+      int k =  boost::math::round(CGAL::to_double(v.z()) / grid_dz);
 
       if(i>N-1)i=N-1;
       if(j>N-1)j=N-1;
@@ -346,7 +346,9 @@ public:
         std::cerr << "error"  << std::endl;
       }
       std::size_t M = (close_point.second)? 0 : 1; 
-      bool res = (tree.number_of_intersected_primitives(query)&1) == M;
+      int ni = tree.number_of_intersected_primitives(query);
+      std::cout << "nb intersecte dprimitives: " << ni << " M = " << M << std::endl;
+      bool res = (ni&1) == M;
       return res;
     } 
     else 
