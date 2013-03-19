@@ -150,19 +150,52 @@ namespace detail {
 		}
 	}
 
-	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const CGAL::Object& o )
+	template <>
+	void GeometrySet<3>::addPrimitive( const CGAL::Object& o )
 	{
-		typedef typename TypeForDimension<Dim>::Point TPoint;
-		typedef typename TypeForDimension<Dim>::Segment TSegment;
-		typedef typename TypeForDimension<Dim>::Surface TSurface;
-		typedef typename TypeForDimension<Dim>::Volume TVolume;
+		typedef typename TypeForDimension<3>::Point TPoint;
+		typedef typename TypeForDimension<3>::Segment TSegment;
+		typedef typename TypeForDimension<3>::Surface TSurface;
+		typedef typename TypeForDimension<3>::Volume TVolume;
 		if ( const TPoint * p = CGAL::object_cast<TPoint>( &o ) ) {
 			_points.push_back( TPoint( *p ) );
 		}
 		else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
 			std::copy( pts->begin(), pts->end(), std::back_inserter( _points ) );
 	        }
+		else if ( const TSegment * p = CGAL::object_cast<TSegment>( &o ) ) {
+			_segments.push_back( TSegment( *p ) );
+		}
+		else if ( const TSurface * p = CGAL::object_cast<TSurface>( &o ) ) {
+			_surfaces.push_back( TSurface( *p ) );
+		}
+		else if ( const TVolume * p = CGAL::object_cast<TVolume>( &o ) ) {
+			_volumes.push_back( TVolume( *p ) );
+		}
+	}
+
+	template <>
+	void GeometrySet<2>::addPrimitive( const CGAL::Object& o )
+	{
+		typedef typename TypeForDimension<2>::Point TPoint;
+		typedef typename TypeForDimension<2>::Segment TSegment;
+		typedef typename TypeForDimension<2>::Surface TSurface;
+		typedef typename TypeForDimension<2>::Volume TVolume;
+		if ( const TPoint * p = CGAL::object_cast<TPoint>( &o ) ) {
+			_points.push_back( TPoint( *p ) );
+		}
+		else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
+			std::copy( pts->begin(), pts->end(), std::back_inserter( _points ) );
+	        }
+		else if ( const CGAL::Triangle_2<Kernel>* tri = CGAL::object_cast<CGAL::Triangle_2<Kernel> >( &o ) ) {
+			// convert to a polygon
+			CGAL::Polygon_2<Kernel> poly;
+			poly.push_back( tri->vertex(0) );
+			poly.push_back( tri->vertex(1) );
+			poly.push_back( tri->vertex(2) );
+			CGAL::Polygon_with_holes_2<Kernel> polyh( poly );
+			_surfaces.push_back( polyh );
+		}
 		else if ( const TSegment * p = CGAL::object_cast<TSegment>( &o ) ) {
 			_segments.push_back( TSegment( *p ) );
 		}

@@ -49,6 +49,28 @@ namespace algorithm {
 			const CGAL::Polygon_with_holes_2<Kernel>* poly1 = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
 			const CGAL::Polygon_with_holes_2<Kernel>* poly2 = pb.as<CGAL::Polygon_with_holes_2<Kernel> >();
 
+			// shortcut for triangles
+			if ( poly1->holes_begin() == poly1->holes_end() &&
+			     poly1->outer_boundary().size() == 3 &&
+			     poly2->holes_begin() == poly2->holes_end() &&
+			     poly2->outer_boundary().size() == 3 ) {
+				CGAL::Polygon_2<Kernel>::Vertex_iterator vit1 = poly1->outer_boundary().vertices_begin();
+				CGAL::Point_2<Kernel> pa1 = *vit1++;
+				CGAL::Point_2<Kernel> pa2 = *vit1++;
+				CGAL::Point_2<Kernel> pa3 = *vit1;
+				CGAL::Triangle_2<Kernel> tri1( pa1, pa2, pa3 );
+
+				CGAL::Polygon_2<Kernel>::Vertex_iterator vit2 = poly2->outer_boundary().vertices_begin();
+				CGAL::Point_2<Kernel> pb1 = *vit2++;
+				CGAL::Point_2<Kernel> pb2 = *vit2++;
+				CGAL::Point_2<Kernel> pb3 = *vit2;
+				CGAL::Triangle_2<Kernel> tri2( pb1, pb2, pb3 );
+
+				CGAL::Object interObj = CGAL::intersection( tri1, tri2 );
+				output.addPrimitive( interObj );
+				return;
+			}
+
 			// CGAL::intersection does not work when the intersection is a point or a segment
 			// We have to call intersection on boundaries first
 
@@ -76,14 +98,7 @@ namespace algorithm {
 			const CGAL::Segment_2<Kernel> *seg1 = pa.as<CGAL::Segment_2<Kernel> >();
 			const CGAL::Segment_2<Kernel> *seg2 = pb.as<CGAL::Segment_2<Kernel> >();
 			CGAL::Object interObj = CGAL::intersection( *seg1, *seg2 );
-			CGAL::Segment_2<Kernel> interSeg;
-			CGAL::Point_2<Kernel> interPoint;
-			if ( CGAL::assign( interSeg, interObj ) ) {
-				output.segments().push_back( interSeg );
-			}
-			else if ( CGAL::assign( interPoint, interObj ) ) {
-				output.points().push_back( interPoint );
-			}
+			output.addPrimitive( interObj );
 		}
 		else if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSegment ) {
 			const CGAL::Polygon_with_holes_2<Kernel> *poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
