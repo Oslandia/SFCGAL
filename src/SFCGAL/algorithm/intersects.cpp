@@ -25,7 +25,7 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/triangulate.h>
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
 
 #include <CGAL/Polyhedral_mesh_domain_3.h>
@@ -36,8 +36,6 @@
 namespace SFCGAL {
 namespace algorithm
 {
-	using namespace SFCGAL::detail;
-    
 	//
 	// Type of pa must be of larger dimension than type of pb
 	bool _intersects( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb )
@@ -329,8 +327,8 @@ namespace algorithm
 	template <int Dim>
 	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b )
 	{
-		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename SFCGAL::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 

@@ -25,9 +25,8 @@
 
 namespace SFCGAL {
 	class Geometry;
-	namespace detail {
-		template <int Dim> class GeometrySet;
-	}
+	template <int Dim> class GeometrySet;
+
 	namespace algorithm {
 	/*
 	 * Intersection on 2D geometries.
@@ -40,7 +39,7 @@ namespace SFCGAL {
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 
 	template <int Dim>
-	void intersection( const SFCGAL::detail::GeometrySet<Dim>& a, const SFCGAL::detail::GeometrySet<Dim>& b, SFCGAL::detail::GeometrySet<Dim>& );
+	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& );
     }
 }
 

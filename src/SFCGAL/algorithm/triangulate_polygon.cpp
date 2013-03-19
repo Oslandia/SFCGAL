@@ -34,7 +34,7 @@
 #include <CGAL/Line_3.h>
 
 #include <SFCGAL/algorithm/plane.h>
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 
 #include <iostream>
 
@@ -475,7 +475,7 @@ void triangulate2D( const PolyhedralSurface & poly, TriangulatedSurface & triang
 ///
 /// input polyhedron must have its planes computed
 ///
-void triangulate( const MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& geometry )
+void triangulate( const MarkedPolyhedron& polyhedron, GeometrySet<3>& geometry )
 {
 	if ( polyhedron.is_pure_triangle() ) {
 		for ( MarkedPolyhedron::Facet_const_iterator fit = polyhedron.facets_begin(); fit != polyhedron.facets_end(); ++fit ) {
@@ -534,7 +534,7 @@ void triangulate( const MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& ge
 ///
 ///
 ///
-void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, detail::GeometrySet<2>& output )
+void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, GeometrySet<2>& output )
 {
 	Polygon poly( polygon );
 	TriangulatedSurface surf;

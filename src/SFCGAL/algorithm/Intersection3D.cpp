@@ -25,7 +25,7 @@
 #include <CGAL/intersection_of_Polyhedra_3_refinement_visitor.h>
 #include <CGAL/corefinement_operations.h>
 
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
@@ -37,8 +37,6 @@
 namespace SFCGAL {
 namespace algorithm {
     
-	using namespace SFCGAL::detail;
-
 	void _intersection_solid_segment( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb, GeometrySet<3>& output )
 	{
 		typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
@@ -203,7 +201,7 @@ namespace algorithm {
 			
 			if ( point_is_inside ) {
 				// we know it is a planar intersection
-				output.addPrimitive( *it, detail::FLAG_IS_PLANAR );
+				output.addPrimitive( *it, FLAG_IS_PLANAR );
 				return;
 			}
 		}

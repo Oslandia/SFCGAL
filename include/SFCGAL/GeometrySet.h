@@ -34,7 +34,6 @@
 
 namespace SFCGAL {
 	class Geometry;
-namespace detail {
 
 	enum PrimitiveType
 	{
@@ -257,7 +256,6 @@ namespace detail {
 	///
 	/// Display operator
 	std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
-}
 }
 
 #endif

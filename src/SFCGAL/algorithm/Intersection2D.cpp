@@ -24,7 +24,7 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/intersections.h>
 
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/triangulate.h>
@@ -32,8 +32,6 @@
 namespace SFCGAL {
 namespace algorithm {
     
-	using namespace SFCGAL::detail;
-
 	//
 	// must be called with pa's dimension larger than pb's
 	void intersection( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,

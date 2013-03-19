@@ -23,10 +23,9 @@
 
 namespace SFCGAL {
 	class Geometry;
-	namespace detail {
-		template <int Dim> class GeometrySet;
-		template <int Dim> class PrimitiveHandle;
-	}
+	template <int Dim> class GeometrySet;
+	template <int Dim> class PrimitiveHandle;
+
 	namespace algorithm {
 	/*
 	 * Intersection test on 2D geometries. Force projection to z=0 if needed
@@ -39,10 +38,10 @@ namespace SFCGAL {
 	bool intersects3D( const Geometry& ga, const Geometry& gb );
 
 	template <int Dim>
-	bool intersects( const SFCGAL::detail::GeometrySet<Dim>& a, const SFCGAL::detail::GeometrySet<Dim>& b );
+	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );
 
 	template <int Dim>
-	bool intersects( const SFCGAL::detail::PrimitiveHandle<Dim>& a, const SFCGAL::detail::PrimitiveHandle<Dim>& b );
+	bool intersects( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b );
 
     }
 }

@@ -28,9 +28,8 @@
 #include <SFCGAL/TypeForDimension.h>
 
 namespace SFCGAL {
-	namespace detail {
-		template <int Dim> class GeometrySet;
-	}
+	template <int Dim> class GeometrySet;
+
 namespace algorithm {
 	/**
 	 * Convert a 2D/3D [Multi]Polygon to a TriangulatedSurface.
@@ -76,11 +75,11 @@ namespace algorithm {
 	/**
 	 * Populate the GeometrySet<3> geometry with the triangulation (list of triangles) of polyhedron
 	 */
-	void triangulate( const MarkedPolyhedron& polyhedron, SFCGAL::detail::GeometrySet<3>& geometry );
+	void triangulate( const MarkedPolyhedron& polyhedron, GeometrySet<3>& geometry );
 	/**
 	 * Populate the GeometrySet<2> geometry with the triangulation (list of polygons) of polygon
 	 */
-	void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, SFCGAL::detail::GeometrySet<2>& geometry );
+	void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, GeometrySet<2>& geometry );
 }//algorithm
 }//SFCGAL
 

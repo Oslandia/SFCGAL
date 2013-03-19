@@ -26,7 +26,7 @@
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
 #include <SFCGAL/tools/Registry.h>
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -43,8 +43,6 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace algorithm
 {
-	using namespace SFCGAL::detail;
-
 	// see Intersection3D.cpp
 	void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
 			   GeometrySet<3>& output, dim_t<3> );
@@ -83,8 +81,8 @@ namespace algorithm
 	template <int Dim>
 	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
 	{
-		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename SFCGAL::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 
@@ -99,24 +97,20 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
-		using SFCGAL::detail::GeometrySet;
-
-		detail::GeometrySet<2> gsa( ga ), gsb( gb ), output;
+		GeometrySet<2> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
-		detail::GeometrySet<2> filtered;
+		GeometrySet<2> filtered;
 		output.filterCovered( filtered );
 		return filtered.recompose();
 	}
 
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
 	{
-		using SFCGAL::detail::GeometrySet;
-
-		detail::GeometrySet<3> gsa( ga ), gsb( gb ), output;
+		GeometrySet<3> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
-		detail::GeometrySet<3> filtered;
+		GeometrySet<3> filtered;
 		output.filterCovered( filtered );
 
 		return filtered.recompose();

@@ -24,15 +24,13 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/TypeForDimension.h>
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 
 #include <CGAL/box_intersection_d.h>
 
 namespace SFCGAL {
 namespace algorithm
 {
-	using namespace SFCGAL::detail;
-
 	//
 	// True if no points of pb is outside pa
 	template <int Dim>
@@ -82,8 +80,8 @@ namespace algorithm
 	template <int Dim>
 	bool covers( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b )
 	{
-		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename HandleCollection<Dim>::Type ahandles, bhandles;
+		typename BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 		if ( aboxes.empty() || bboxes.empty() ) {

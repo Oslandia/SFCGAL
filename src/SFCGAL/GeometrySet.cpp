@@ -19,7 +19,7 @@
  *
  */
 
-#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/GeometrySet.h>
 
 #include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Point.h>
@@ -34,7 +34,6 @@
 #include <SFCGAL/Solid.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/TypeForDimension.h>
-#include <SFCGAL/detail/GeometrySet.h>
 
 #include <SFCGAL/algorithm/covers.h>
 
@@ -42,7 +41,6 @@
 #include <CGAL/IO/Polyhedron_iostream.h>
 
 namespace SFCGAL {
-namespace detail {
 
 	void _decompose_triangle( const Triangle& tri, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
@@ -426,7 +424,7 @@ namespace detail {
 			return;
 		}
 		for ( GeometrySet<3>::VolumeCollection::const_iterator vit = volumes.begin(); vit != volumes.end(); ++vit ) {
-			if ( vit->flags() & detail::FLAG_IS_PLANAR ) {
+			if ( vit->flags() & FLAG_IS_PLANAR ) {
 				// extract the boundary
 				std::list<CGAL::Point_3<Kernel> > boundary;
 				for ( MarkedPolyhedron::Halfedge_const_iterator it = vit->primitive().halfedges_begin();
@@ -646,5 +644,4 @@ namespace detail {
 
 	template class GeometrySet<2>;
 	template class GeometrySet<3>;
-} // detail
 } // SFCGAL
