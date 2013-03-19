@@ -27,6 +27,7 @@
 #include <CGAL/Random.h>
 #include <CGAL/point_generators_3.h>
 #include <boost/logic/tribool.hpp>
+#include <boost/math/special_functions/round.hpp>
 
 namespace CGAL {
 
