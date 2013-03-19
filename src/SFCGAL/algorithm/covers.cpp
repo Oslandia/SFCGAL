@@ -119,5 +119,16 @@ namespace algorithm
 
 		return covers( gsa, gsb );
 	}
+
+	bool covers3D( const Geometry& ga, const Geometry& gb )
+	{
+		if ( ga.isEmpty() || gb.isEmpty() ) {
+			return false;
+		}
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
+
+		return covers( gsa, gsb );
+	}
 }
 }
