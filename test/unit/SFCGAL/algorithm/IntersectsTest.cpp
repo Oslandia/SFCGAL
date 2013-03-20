@@ -281,6 +281,8 @@ BOOST_AUTO_TEST_CASE( testLineStringLineStringIntersects )
 	
 	BOOST_CHECK_EQUAL( algorithm::intersects( *ls, *lsb ), true );
 	BOOST_CHECK_EQUAL( algorithm::intersects( *lsc, *ls ), false );
+	BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls, *lsb ), true );
+	BOOST_CHECK_EQUAL( algorithm::intersects3D( *lsc, *ls ), false );
     }
 }
 

@@ -268,6 +268,11 @@ namespace algorithm
 			const CGAL::Point_3<Kernel>* pt = pb.as<CGAL::Point_3<Kernel> >();
 			return seg->has_on( *pt );
 		}
+		else if ( pa.handle.which() == PrimitiveSegment && pb.handle.which() == PrimitiveSegment ) {
+			const CGAL::Segment_3<Kernel>* sega = pa.as<CGAL::Segment_3<Kernel> >();
+			const CGAL::Segment_3<Kernel>* segb = pb.as<CGAL::Segment_3<Kernel> >();
+			return CGAL::do_intersect( *sega, *segb );
+		}
 		if ( pa.handle.which() == PrimitiveVolume ) {
 			intersects_volume_x visitor( pa.as<MarkedPolyhedron >() );
 			return boost::apply_visitor( visitor, pb.handle );
