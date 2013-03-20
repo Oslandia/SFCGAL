@@ -174,6 +174,7 @@ namespace SFCGAL {
 	{
 		static const bool value = PrimitiveDimension<X>::value > PrimitiveDimension<Y>::value;
 	};
+
 }
 
 #endif

@@ -65,7 +65,7 @@ namespace algorithm {
 				CGAL::Triangle_2<Kernel> tri2( pb1, pb2, pb3 );
 
 				CGAL::Object interObj = CGAL::intersection( tri1, tri2 );
-				output.addPrimitive( interObj );
+				output.addPrimitive( interObj, /* pointsAsRing */ true );
 				return;
 			}
 

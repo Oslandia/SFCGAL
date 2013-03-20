@@ -32,6 +32,10 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Box_intersection_d/Box_with_handle_d.h>
 
+// comparison operator on segments, in order to be able to use them in a set
+bool operator< ( const CGAL::Segment_2<SFCGAL::Kernel>& sega, const CGAL::Segment_2<SFCGAL::Kernel>& segb );
+bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segment_3<SFCGAL::Kernel>& segb );
+
 namespace SFCGAL {
 	class Geometry;
 
@@ -104,6 +108,9 @@ namespace SFCGAL {
 			_primitive( other._primitive ),
 			_flags( other._flags )
 		{}
+		bool operator< ( const CollectionElement& other ) const {
+			return _primitive < other._primitive;
+		}
 	private:
 		Primitive _primitive;
 		int _flags;
@@ -120,8 +127,8 @@ namespace SFCGAL {
 	{
 	public:
 		// TODO: use a set instead of a list ?
-		typedef std::list<CollectionElement<typename Point_d<Dim>::Type> > PointCollection;
-		typedef std::list<CollectionElement<typename Segment_d<Dim>::Type> > SegmentCollection;
+		typedef std::set<CollectionElement<typename Point_d<Dim>::Type> > PointCollection;
+		typedef std::set<CollectionElement<typename Segment_d<Dim>::Type> > SegmentCollection;
 		typedef std::list<CollectionElement<typename Surface_d<Dim>::Type> > SurfaceCollection;
 		typedef std::list<CollectionElement<typename Volume_d<Dim>::Type> > VolumeCollection;
 
@@ -164,8 +171,9 @@ namespace SFCGAL {
 
 		/**
 		 * add a primitive from a CGAL::Object to the set
+		 * pointsAsRing : if set to true, build a polygon if o is a vector of points
 		 */
-		void addPrimitive( const CGAL::Object& o );
+		void addPrimitive( const CGAL::Object& o, bool pointsAsRing = false );
 
 		/**
 		 * add a point to the set
@@ -174,7 +182,7 @@ namespace SFCGAL {
 		template <class IT>
 		void addPoints( IT ibegin, IT iend )
 		{
-			std::copy( ibegin, iend, std::back_inserter(_points) );
+			std::copy( ibegin, iend, std::inserter(_points, _points.end()) );
 		}
 
 		/**
@@ -189,7 +197,7 @@ namespace SFCGAL {
 		template <class IT>
 		void addSegments( IT ibegin, IT iend )
 		{
-			std::copy( ibegin, iend, std::back_inserter(_segments) );
+			std::copy( ibegin, iend, std::inserter(_segments, _segments.end()) );
 		}
 
 		/**

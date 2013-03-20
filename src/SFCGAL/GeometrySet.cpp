@@ -40,6 +40,22 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
 
+bool operator< ( const CGAL::Segment_2<SFCGAL::Kernel>& sega, const CGAL::Segment_2<SFCGAL::Kernel>& segb )
+{
+	if ( sega.source() == segb.source() ) {
+		return sega.target() < segb.target();
+	}
+	return sega.source() < segb.source();
+}
+
+bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segment_3<SFCGAL::Kernel>& segb )
+{
+	if ( sega.source() == segb.source() ) {
+		return sega.target() < segb.target();
+	}
+	return sega.source() < segb.source();
+}
+
 namespace SFCGAL {
 
 	void _decompose_triangle( const Triangle& tri, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
@@ -134,10 +150,10 @@ namespace SFCGAL {
 		switch ( p.handle.which() )
 		{
 		case PrimitivePoint:
-			_points.push_back( *boost::get<const typename TypeForDimension<Dim>::Point*>(p.handle) );
+			_points.insert( *boost::get<const typename TypeForDimension<Dim>::Point*>(p.handle) );
 			break;
 		case PrimitiveSegment:
-			_segments.push_back( *boost::get<const typename TypeForDimension<Dim>::Segment*>(p.handle) );
+			_segments.insert( *boost::get<const typename TypeForDimension<Dim>::Segment*>(p.handle) );
 			break;
 		case PrimitiveSurface:
 			_surfaces.push_back( *boost::get<const typename TypeForDimension<Dim>::Surface*>(p.handle) );
@@ -149,20 +165,33 @@ namespace SFCGAL {
 	}
 
 	template <>
-	void GeometrySet<3>::addPrimitive( const CGAL::Object& o )
+	void GeometrySet<3>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
 	{
 		typedef typename TypeForDimension<3>::Point TPoint;
 		typedef typename TypeForDimension<3>::Segment TSegment;
 		typedef typename TypeForDimension<3>::Surface TSurface;
 		typedef typename TypeForDimension<3>::Volume TVolume;
 		if ( const TPoint * p = CGAL::object_cast<TPoint>( &o ) ) {
-			_points.push_back( TPoint( *p ) );
+			_points.insert( TPoint( *p ) );
 		}
 		else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
-			std::copy( pts->begin(), pts->end(), std::back_inserter( _points ) );
+			if ( pointsAsRing ) {
+				// if pointsAsRing is true, build a polygon out of points
+				// FIXME : we use triangulation here, which is not needed
+				// We should have created a (planar) Polyhedron directly out of the points
+				LineString ls;
+				for ( size_t i = 0; i < pts->size(); ++i ) {
+					ls.addPoint( (*pts)[i] );
+				}
+				Polygon poly(ls);
+				_decompose_polygon( poly, _surfaces, dim_t<3>() );
+			}
+			else {
+				std::copy( pts->begin(), pts->end(), std::inserter( _points, _points.end() ) );
+			}
 	        }
 		else if ( const TSegment * p = CGAL::object_cast<TSegment>( &o ) ) {
-			_segments.push_back( TSegment( *p ) );
+			_segments.insert( TSegment( *p ) );
 		}
 		else if ( const TSurface * p = CGAL::object_cast<TSurface>( &o ) ) {
 			_surfaces.push_back( TSurface( *p ) );
@@ -173,17 +202,28 @@ namespace SFCGAL {
 	}
 
 	template <>
-	void GeometrySet<2>::addPrimitive( const CGAL::Object& o )
+	void GeometrySet<2>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
 	{
 		typedef typename TypeForDimension<2>::Point TPoint;
 		typedef typename TypeForDimension<2>::Segment TSegment;
 		typedef typename TypeForDimension<2>::Surface TSurface;
 		typedef typename TypeForDimension<2>::Volume TVolume;
 		if ( const TPoint * p = CGAL::object_cast<TPoint>( &o ) ) {
-			_points.push_back( TPoint( *p ) );
+			_points.insert( TPoint( *p ) );
 		}
 		else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
-			std::copy( pts->begin(), pts->end(), std::back_inserter( _points ) );
+			if ( pointsAsRing ) {
+				// if pointsAsRing is true, build a polygon out of points
+				CGAL::Polygon_2<Kernel> poly;
+				for ( size_t i = 0; i < pts->size(); ++i ) {
+					poly.push_back( (*pts)[i] );
+				}
+				CGAL::Polygon_with_holes_2<Kernel> polyh( poly );
+				_surfaces.push_back( polyh );
+			}
+			else {
+				std::copy( pts->begin(), pts->end(), std::inserter( _points, _points.end() ) );
+			}
 	        }
 		else if ( const CGAL::Triangle_2<Kernel>* tri = CGAL::object_cast<CGAL::Triangle_2<Kernel> >( &o ) ) {
 			// convert to a polygon
@@ -195,7 +235,7 @@ namespace SFCGAL {
 			_surfaces.push_back( polyh );
 		}
 		else if ( const TSegment * p = CGAL::object_cast<TSegment>( &o ) ) {
-			_segments.push_back( TSegment( *p ) );
+			_segments.insert( TSegment( *p ) );
 		}
 		else if ( const TSurface * p = CGAL::object_cast<TSurface>( &o ) ) {
 			_surfaces.push_back( TSurface( *p ) );
@@ -208,15 +248,13 @@ namespace SFCGAL {
 	template <int Dim>
 	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Point& p, int flags )
 	{
-		_points.push_back( p );
-		_points.back().setFlags( flags );
+		_points.insert( CollectionElement<typename Point_d<Dim>::Type>(p, flags ) );
 	}
 
 	template <int Dim>
 	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Segment& p, int flags )
 	{
-		_segments.push_back( p );
-		_segments.back().setFlags( flags );
+		_segments.insert( CollectionElement<typename Segment_d<Dim>::Type>(p, flags ) );
 	}
 
 	template <int Dim>
@@ -244,14 +282,14 @@ namespace SFCGAL {
 		}
 		switch ( g.geometryTypeId() ) {
 		case TYPE_POINT:
-			_points.push_back( g.as<Point>().toPoint_d<Dim>() );
+			_points.insert( g.as<Point>().toPoint_d<Dim>() );
 			break;
 		case TYPE_LINESTRING: {
 			const LineString& ls = g.as<LineString>();
 			for ( size_t i = 0; i < ls.numPoints() - 1; ++i ) {
 				typename TypeForDimension<Dim>::Segment seg( ls.pointN(i).toPoint_d<Dim>(),
 									     ls.pointN(i+1).toPoint_d<Dim>() );
-				_segments.push_back( seg );
+				_segments.insert( seg );
 			}
 			break;
 		}
@@ -504,7 +542,7 @@ namespace SFCGAL {
 		for ( CGAL::Polygon_2<Kernel>::Vertex_iterator vit = poly.outer_boundary().vertices_begin();
 		      vit != poly.outer_boundary().vertices_end();
 		      ++vit ) {
-			points.push_back( *vit );
+			points.insert( *vit );
 		}
 		for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly.holes_begin();
 		      hit != poly.holes_end();
@@ -512,16 +550,16 @@ namespace SFCGAL {
 			for ( CGAL::Polygon_2<Kernel>::Vertex_iterator vit = hit->vertices_begin();
 			      vit != hit->vertices_end();
 			      ++vit ) {
-				points.push_back( *vit );
+				points.insert( *vit );
 			}
 		}
 	}
 
 	void _collect_points( const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>::PointCollection& points )
 	{
-		points.push_back( tri.vertex(0) );
-		points.push_back( tri.vertex(1) );
-		points.push_back( tri.vertex(2) );
+		points.insert( tri.vertex(0) );
+		points.insert( tri.vertex(1) );
+		points.insert( tri.vertex(2) );
 	}
 
 	void _collect_points( const NoVolume&, GeometrySet<2>::PointCollection& points )
@@ -534,7 +572,7 @@ namespace SFCGAL {
 		for ( MarkedPolyhedron::Vertex_const_iterator vit = poly.vertices_begin();
 		      vit != poly.vertices_end();
 		      ++vit ) {
-			points.push_back( vit->point() );
+			points.insert( vit->point() );
 		}
 	}
 
@@ -549,14 +587,13 @@ namespace SFCGAL {
 		switch ( pa.handle.which() ) {
 		case PrimitivePoint: {
 			const TPoint *pt = boost::get<const TPoint*>( pa.handle );
-			_points.push_back( *pt );
+			_points.insert( *pt );
 			break;
 		}
 		case PrimitiveSegment: {
 			const TSegment* seg = boost::get<const TSegment*>( pa.handle );
-			_points.push_back( seg->source() );
-			// TODO : store points in a set
-			_points.push_back( seg->target() );
+			_points.insert( seg->source() );
+			_points.insert( seg->target() );
 			break;
 		}
 		case PrimitiveSurface: {
