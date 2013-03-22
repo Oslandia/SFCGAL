@@ -32,13 +32,15 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/Box_intersection_d/Box_with_handle_d.h>
 
-// comparison operator on segments, in order to be able to use them in a set
+// comparison operator on segments, for use in a std::set
 bool operator< ( const CGAL::Segment_2<SFCGAL::Kernel>& sega, const CGAL::Segment_2<SFCGAL::Kernel>& segb );
 bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segment_3<SFCGAL::Kernel>& segb );
 
 namespace SFCGAL {
 	class Geometry;
 
+	///
+	/// Primitive type enumeration.
 	enum PrimitiveType
 	{
 		PrimitivePoint,
@@ -47,13 +49,17 @@ namespace SFCGAL {
 		PrimitiveVolume
 	};
 
+	///
+	/// Primitive handle. Holds a pointer to a primitive, through the 'handle' member
 	template <int Dim>
 	struct PrimitiveHandle
 	{
-		typedef boost::variant< const typename TypeForDimension<Dim>::Point*,
-					const typename TypeForDimension<Dim>::Segment*,
-					const typename TypeForDimension<Dim>::Surface*,
-					const typename TypeForDimension<Dim>::Volume* > Type;
+		//
+		// We use boost::variant here for convenience, whereas it is needed
+		typedef boost::variant< const typename Point_d<Dim>::Type*,
+					const typename Segment_d<Dim>::Type*,
+					const typename Surface_d<Dim>::Type*,
+					const typename Volume_d<Dim>::Type* > Type;
 		Type handle;
 
 		template <class T>
@@ -63,6 +69,8 @@ namespace SFCGAL {
 		inline const T* as() const { return boost::get<const T*>(handle); }
 	};
 
+	///
+	/// PrimitiveBox. Type used for CGAL::Box_intersection_d
 	template <int Dim>
 	struct PrimitiveBox
 	{
@@ -70,11 +78,16 @@ namespace SFCGAL {
 	};
 
 
+	///
+	/// BoxCollection for use with CGAL::Box_intersection_d
 	template <int Dim>
 	struct BoxCollection
 	{
 		typedef std::vector<typename PrimitiveBox<Dim>::Type> Type;
 	};
+
+	///
+	/// HandleCollection. Used to store PrimitiveHandle
 	template <int Dim>
 	struct HandleCollection
 	{
@@ -89,6 +102,10 @@ namespace SFCGAL {
 		// the polyhedron is planar => build a triangle or a polygon
 		FLAG_IS_PLANAR = 1
 	};
+
+	///
+	/// CollectionElement, a Primitive with flags
+	/// Primitive : Point_d, Segment_d, Surface_d, Volume_d
 	template <class Primitive>
 	class CollectionElement
 	{
@@ -115,6 +132,7 @@ namespace SFCGAL {
 		Primitive _primitive;
 		int _flags;
 	};
+
 	template <class Primitive>
 	std::ostream& operator<<( std::ostream& ostr, const CollectionElement<Primitive>& p )
 	{
@@ -122,12 +140,18 @@ namespace SFCGAL {
 		return ostr;
 	}
 
+	///
+	/// A GeometrySet represents a set of CGAL primitives.
+	/// Primitive are either of dimension 0 (points),
+	/// dimension 1 (segments), dimension 2 (surfaces, a.k.a. polygon or triangles)
+	/// or dimension 3 (polyhedron)
 	template <int Dim>
 	class GeometrySet
 	{
 	public:
-		// TODO: use a set instead of a list ?
+		// Points are stored in an ordered set
 		typedef std::set<CollectionElement<typename Point_d<Dim>::Type> > PointCollection;
+		// Segments are stored in an ordered set
 		typedef std::set<CollectionElement<typename Segment_d<Dim>::Type> > SegmentCollection;
 		typedef std::list<CollectionElement<typename Surface_d<Dim>::Type> > SurfaceCollection;
 		typedef std::list<CollectionElement<typename Volume_d<Dim>::Type> > VolumeCollection;
