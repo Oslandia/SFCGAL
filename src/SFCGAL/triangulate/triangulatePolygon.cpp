@@ -99,12 +99,12 @@ void triangulatePolygon3D(
 ///
 ///
 void triangulatePolygon3D(
-	const MultiPolygon & g,
+	const GeometryCollection & g,
 	TriangulatedSurface & triangulatedSurface
 )
 {
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		triangulatePolygon3D( g.polygonN(i), triangulatedSurface );
+		triangulatePolygon3D( g.geometryN(i), triangulatedSurface );
 	}
 }
 

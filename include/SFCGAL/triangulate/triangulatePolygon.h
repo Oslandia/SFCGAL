@@ -62,7 +62,7 @@ namespace triangulate {
 	 * @brief Triangulate a 3D MultiPolygon
 	 */
 	void triangulatePolygon3D(
-		const MultiPolygon & g,
+		const GeometryCollection & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
