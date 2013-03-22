@@ -69,6 +69,24 @@ Coordinate::Coordinate( const double & x, const double & y, const double & z )
 	}
 }
 
+///
+///
+///
+Coordinate::Coordinate( const Kernel::Point_2 & other ):
+	_storage( other )
+{
+
+}
+
+///
+///
+///
+Coordinate::Coordinate( const Kernel::Point_3 & other ):
+	_storage(other)
+{
+
+}
+
 
 ///
 ///

@@ -31,7 +31,8 @@ namespace SFCGAL {
 ///
 Point::Point():
 	Geometry(),
-	_coordinate()
+	_coordinate(),
+	_m(NaN())
 {
 }
 
@@ -39,7 +40,8 @@ Point::Point():
 ///
 ///
 Point::Point( const Coordinate & coordinate ):
-	_coordinate(coordinate)
+	_coordinate(coordinate),
+	_m(NaN())
 {
 
 }
@@ -48,7 +50,8 @@ Point::Point( const Coordinate & coordinate ):
 ///
 ///
 Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
-	_coordinate(x,y)
+	_coordinate(x,y),
+	_m(NaN())
 {
 
 }
@@ -57,7 +60,8 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
 ///
 ///
 Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
-	_coordinate(x,y,z)
+	_coordinate(x,y,z),
+	_m(NaN())
 {
 
 }
@@ -67,7 +71,28 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z )
 ///
 Point::Point( const double & x, const double & y, const double & z ):
 	Geometry(),
-	_coordinate(x,y,z)
+	_coordinate(x,y,z),
+	_m(NaN())
+{
+
+}
+
+///
+///
+///
+Point::Point( const Kernel::Point_2 & other ):
+	_coordinate(other),
+	_m(NaN())
+{
+
+}
+
+///
+///
+///
+Point::Point( const Kernel::Point_3 & other ):
+	_coordinate(other),
+	_m(NaN())
 {
 
 }
@@ -78,7 +103,8 @@ Point::Point( const double & x, const double & y, const double & z ):
 ///
 Point::Point( const Point & other ):
 	Geometry(),
-	_coordinate(other._coordinate)
+	_coordinate(other._coordinate),
+	_m(other._m)
 {
 
 }
@@ -89,6 +115,7 @@ Point::Point( const Point & other ):
 Point& Point::operator = ( const Point & other )
 {
 	_coordinate = other._coordinate ;
+	_m          = other._m ;
 	return *this ;
 }
 
@@ -138,7 +165,7 @@ int Point::dimension() const
 ///
 int Point::coordinateDimension() const
 {
-	return _coordinate.coordinateDimension() ;
+	return _coordinate.coordinateDimension() + isMeasured() ? 1 : 0 ;
 }
 
 
@@ -156,6 +183,14 @@ bool Point::isEmpty() const
 bool Point::is3D() const
 {
 	return _coordinate.is3D() ;
+}
+
+///
+///
+///
+bool  Point::isMeasured() const
+{
+	return ! isNaN(_m) ;
 }
 
 ///

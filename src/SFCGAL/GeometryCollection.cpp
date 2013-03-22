@@ -128,6 +128,14 @@ bool   GeometryCollection::is3D() const
 ///
 ///
 ///
+bool   GeometryCollection::isMeasured() const
+{
+	return ! isEmpty() && _geometries.front().isMeasured() ;
+}
+
+///
+///
+///
 size_t  GeometryCollection::numGeometries() const
 {
 	return _geometries.size();

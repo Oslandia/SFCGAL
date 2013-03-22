@@ -87,7 +87,8 @@ namespace SFCGAL {
 		virtual bool           isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
-
+		//-- SFCGAL::Geometry
+		virtual bool           isMeasured() const ;
 
 		/**
 		 * [SFA/OGC]Returns the number of points
@@ -138,8 +139,9 @@ namespace SFCGAL {
 		virtual Triangle &           geometryN( size_t const& n ) ;
 
 
-		//const std::vector< Triangle > & triangles() const { return _triangles; }
-		//std::vector< Triangle > &       triangles() { return _triangles; }
+		//-- optimization
+
+		void reserve( const size_t & n ) ;
 
 		//-- iterators
 

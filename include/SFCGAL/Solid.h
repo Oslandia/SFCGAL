@@ -94,6 +94,8 @@ namespace SFCGAL {
 		virtual bool           isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
+		//-- SFCGAL::Geometry
+		virtual bool           isMeasured() const ;
 
 		/**
 		 * Returns the exterior shell
@@ -177,14 +179,14 @@ namespace SFCGAL {
 			// Convert each shell of the solid to a polyhedron_3
 			// Then build a Nef_polyhedron by substraction of interior shells
 			TriangulatedSurface ext_tri;
-			algorithm::triangulate( this->exteriorShell(), ext_tri );
+			triangulate::triangulatePolygon3D( this->exteriorShell(), ext_tri );
 			
 			std::auto_ptr<Polyhedron> poly( ext_tri.toPolyhedron_3<K, Polyhedron>());
 			nef = CGAL::Nef_polyhedron_3<K>( *poly );
 			
 			for ( size_t i = 0; i < this->numInteriorShells(); i++ ) {
 				TriangulatedSurface tri;
-				algorithm::triangulate( this->interiorShellN(i), tri );
+				triangulate::triangulatePolygon3D( this->interiorShellN(i), tri );
 				
 				std::auto_ptr<Polyhedron> poly( tri.toPolyhedron_3<K, Polyhedron>());
 				CGAL::Nef_polyhedron_3<K> lnef( *poly );

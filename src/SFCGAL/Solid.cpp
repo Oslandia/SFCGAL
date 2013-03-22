@@ -151,6 +151,14 @@ bool  Solid::is3D() const
 ///
 ///
 ///
+bool  Solid::isMeasured() const
+{
+	return exteriorShell().isMeasured();
+}
+
+///
+///
+///
 void Solid::accept( GeometryVisitor & visitor )
 {
 	return visitor.visit(*this);

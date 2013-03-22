@@ -135,6 +135,15 @@ bool TriangulatedSurface::is3D() const
 ///
 ///
 ///
+bool TriangulatedSurface::isMeasured() const
+{
+	return ! _triangles.empty() && _triangles.front().isMeasured() ;
+}
+
+
+///
+///
+///
 void  TriangulatedSurface::addTriangles( const TriangulatedSurface & other )
 {
 	for ( TriangulatedSurface::const_iterator it = other.begin(); it != other.end(); ++it ){
@@ -167,6 +176,14 @@ Triangle &   TriangulatedSurface::geometryN( size_t const& n )
 {
 	BOOST_ASSERT( n < numGeometries() );
 	return _triangles[n];
+}
+
+///
+///
+///
+void TriangulatedSurface::reserve( const size_t & n )
+{
+	_triangles.reserve(n);
 }
 
 ///

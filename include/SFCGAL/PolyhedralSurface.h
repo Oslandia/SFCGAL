@@ -30,7 +30,7 @@
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 
 #include <CGAL/Polyhedron_3.h>
 
@@ -87,7 +87,8 @@ namespace SFCGAL {
 		virtual bool           isEmpty() const ;
 		//-- SFCGAL::Geometry
 		virtual bool           is3D() const ;
-
+		//-- SFCGAL::Geometry
+		virtual bool           isMeasured() const ;
 
 		/**
 		 * Convert PolyhedralSurface to TriangulatedSurface
@@ -143,7 +144,7 @@ namespace SFCGAL {
 		std::auto_ptr<Polyhedron> toPolyhedron_3() const
 		{
 			TriangulatedSurface tri;
-			algorithm::triangulate( *this, tri );
+			triangulate::triangulatePolygon3D( *this, tri );
 			return tri.toPolyhedron_3<K, Polyhedron>();
 		}
 

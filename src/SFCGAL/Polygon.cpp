@@ -185,6 +185,14 @@ bool   Polygon::is3D() const
 ///
 ///
 ///
+bool   Polygon::isMeasured() const
+{
+	return exteriorRing().isMeasured() ;
+}
+
+///
+///
+///
 void Polygon::reverse()
 {
 	for ( size_t i = 0; i < numRings(); i++ ){

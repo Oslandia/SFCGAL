@@ -643,12 +643,27 @@ bool WktReader::readPointCoordinate( Point & p )
 		BOOST_THROW_EXCEPTION( Exception( "WKT parse error, Coordinate dimension > 4" ) );
 	}
 
-	if ( coordinates.size() >= 3 && ! ( _isMeasured && ! _is3D ) ){
+	if ( _isMeasured && _is3D ){
+		// XYZM
+		if ( coordinates.size() != 4 ){
+			BOOST_THROW_EXCEPTION( Exception( "bad coordinate dimension" ) );
+		}
+		p = Point( coordinates[0], coordinates[1], coordinates[2] );
+		p.setM(coordinates[3].to_double());
+	}else if ( _isMeasured && ! _is3D ){
+		// XYM
+		if ( coordinates.size() != 3 ){
+			BOOST_THROW_EXCEPTION( Exception( "bad coordinate dimension (expecting XYM coordinates)" ) );
+		}
+		p = Point( coordinates[0], coordinates[1] );
+		p.setM(coordinates[2].to_double());
+	}else if ( coordinates.size() == 3 ){
+		// XYZ
 		p = Point( coordinates[0], coordinates[1], coordinates[2] );
 	}else{
+		// XY
 		p = Point( coordinates[0], coordinates[1] );
 	}
-
 
 	return true ;
 }

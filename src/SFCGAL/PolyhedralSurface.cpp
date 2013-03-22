@@ -155,6 +155,19 @@ bool  PolyhedralSurface::is3D() const
 	}
 }
 
+///
+///
+///
+bool  PolyhedralSurface::isMeasured() const
+{
+	if ( isEmpty() ){
+		return false ;
+	}else{
+		return _polygons.front().isMeasured() ;
+	}
+}
+
+
 
 ///
 ///
@@ -162,7 +175,7 @@ bool  PolyhedralSurface::is3D() const
 TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
 {
 	TriangulatedSurface result ;
-	algorithm::triangulate( *this, result );
+	triangulate::triangulatePolygon3D( *this, result );
 	return result ;
 }
 

@@ -24,8 +24,7 @@
 #include <SFCGAL/io/OsgFactory.h>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/algorithm/triangulate.h>
-
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/Exception.h>
 
 
@@ -136,14 +135,14 @@ namespace io {
 	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Polygon& g )
 	{
 		TriangulatedSurface surf;
-		algorithm::triangulate( g, surf );
+		triangulate::triangulatePolygon3D( g, surf );
 		addToGeometry( geometry, surf );
 	}
 
 	void OsgFactory::addToGeometry( osg::Geometry* geometry, const PolyhedralSurface& g )
 	{
 		TriangulatedSurface surf;
-		algorithm::triangulate( g, surf );
+		triangulate::triangulatePolygon3D( g, surf );
 		addToGeometry( geometry, surf );
 	}
 
@@ -151,7 +150,7 @@ namespace io {
 	{
 		TriangulatedSurface triangulatedSurface ;
 		for ( size_t i = 0; i < g.numShells(); i++ ){
-			algorithm::triangulate( g.shellN(i), triangulatedSurface );
+			triangulate::triangulatePolygon3D( g.shellN(i), triangulatedSurface );
 		}
 		addToGeometry( geometry, triangulatedSurface );
 	}

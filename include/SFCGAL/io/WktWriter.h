@@ -43,6 +43,11 @@ namespace io {
 		void write( const Geometry & g, bool exact = false ) ;
 
 	protected:
+		/**
+		 * write coordinate type (""|" Z"|" ZM")
+		 */
+		void writeCoordinateType( const Geometry& g );
+
 		void writeCoordinate( const Point& g );
 
 		void write( const Point & g ) ;
