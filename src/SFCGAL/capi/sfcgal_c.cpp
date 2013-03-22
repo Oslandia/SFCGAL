@@ -47,7 +47,8 @@
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/algorithm/extrude.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
+#include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/algorithm/minkowskiSum.h>
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
@@ -661,7 +662,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate( const sfcgal_geometry
 	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
 	try
 	{
-		SFCGAL::algorithm::triangulate( *g, *surf );
+		SFCGAL::triangulate::triangulatePolygon3D( *g, *surf );
 	}
 	catch ( std::exception& e )
 	{
@@ -679,7 +680,9 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2d( const sfcgal_geome
 	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
 	try
 	{
-		SFCGAL::algorithm::triangulate2D( *g, *surf );
+		SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
+		SFCGAL::triangulate::triangulate2DZ( *g, cdt );
+		cdt.getTriangles( *surf );
 	}
 	catch ( std::exception& e )
 	{

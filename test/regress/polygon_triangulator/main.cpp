@@ -29,7 +29,7 @@
 #include <SFCGAL/all.h>
 
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/algorithm/area.h>
 
 #include <boost/chrono.hpp>
@@ -158,7 +158,7 @@ int main( int argc, char* argv[] ){
 		try {
 			std::auto_ptr< Geometry > g;
 			g = io::readWkt( wkt ) ;
-			algorithm::triangulate( *g, triangulatedSurface ) ;
+			triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ;
 
 			//check area
 			double areaPolygons  = algorithm::area3D( *g ) ;

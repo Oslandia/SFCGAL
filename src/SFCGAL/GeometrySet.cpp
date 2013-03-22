@@ -84,7 +84,7 @@ namespace SFCGAL {
 	void _decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
 		TriangulatedSurface surf;
-		algorithm::triangulate( poly, surf );
+		triangulate::triangulatePolygon3D( poly, surf );
 		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
 			const Triangle& tri = surf.triangleN( i );
 			surfaces.push_back( CGAL::Triangle_3<Kernel>( tri.vertex(0).toPoint_3(),

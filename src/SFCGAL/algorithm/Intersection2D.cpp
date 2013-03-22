@@ -27,7 +27,7 @@
 #include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -117,7 +117,7 @@ namespace algorithm {
 
 			// if it s a regulat polygon, triangulate it and recurse call
 			GeometrySet<2> triangles, g;
-			algorithm::triangulate( *poly, triangles );
+			triangulate::triangulate( *poly, triangles );
 			g.addPrimitive( pb );
 
 			// recurse call

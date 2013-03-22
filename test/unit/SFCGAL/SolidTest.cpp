@@ -22,7 +22,6 @@
 
 #include <SFCGAL/Solid.h>
 #include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <boost/test/unit_test.hpp>

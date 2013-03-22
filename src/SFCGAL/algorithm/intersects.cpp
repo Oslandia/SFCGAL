@@ -24,7 +24,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
 #include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
 
@@ -249,7 +249,7 @@ namespace algorithm
 			g.addPrimitive( *geometry );
 
 			GeometrySet<3> triangles;
-			algorithm::triangulate( *polyhedron, triangles );
+			triangulate::triangulate( *polyhedron, triangles );
 
 			return intersects( g, triangles );
 		}

@@ -28,7 +28,7 @@
 #include <SFCGAL/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 
@@ -50,7 +50,7 @@ namespace algorithm {
 		GeometrySet<3> triangles;
 		GeometrySet<3> spoint( segment->source() );
 		GeometrySet<3> tpoint( segment->target() );
-		triangulate( *ext_poly, triangles );
+		triangulate::triangulate( *ext_poly, triangles );
 
 		bool source_inside = is_in_ext( segment->source() ) || intersects( triangles, spoint );
 		bool target_inside = is_in_ext( segment->target() ) || intersects( triangles, tpoint );
@@ -61,7 +61,7 @@ namespace algorithm {
 		}
 		else {
 			GeometrySet<3> triangles, g;
-			algorithm::triangulate( *ext_poly, triangles );
+			triangulate::triangulate( *ext_poly, triangles );
 			g.addPrimitive( pb );
 			GeometrySet<3> inter;
 
@@ -177,7 +177,7 @@ namespace algorithm {
 				GeometrySet<3> triangles;
 				GeometrySet<3> point( test_point );
 
-				triangulate( polya, triangles );
+				triangulate::triangulate( polya, triangles );
 				bool point_on_surface = intersects( triangles, point );
 
 				if ( point_on_surface ) {

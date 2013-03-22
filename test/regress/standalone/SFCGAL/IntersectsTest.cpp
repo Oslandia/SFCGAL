@@ -23,7 +23,6 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/triangulate.h>
 
 #include "../../../test_config.h"
 

@@ -22,7 +22,6 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
 #include <SFCGAL/tools/Registry.h>
