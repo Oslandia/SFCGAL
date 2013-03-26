@@ -70,7 +70,7 @@ namespace SFCGAL {
      * @warning code values have are important for WKB
      */
     enum GeometryType {
-//     TYPE_GEOMETRY            = 0, //abstract
+       TYPE_GEOMETRY            = 0, //abstract
        TYPE_POINT               = 1,
        TYPE_LINESTRING          = 2,
        TYPE_POLYGON             = 3,
@@ -78,13 +78,13 @@ namespace SFCGAL {
        TYPE_MULTILINESTRING     = 5,
        TYPE_MULTIPOLYGON        = 6,
        TYPE_GEOMETRYCOLLECTION  = 7,
-//     TYPE_CIRCULARSTRING      = 8,
-//     TYPE_COMPOUNDCURVE       = 9,
-//     TYPE_CURVEPOLYGON        = 10,
-//     TYPE_MULTICURVE          = 11, //abstract
-//     TYPE_MULTISURFACE        = 12, //abstract
-//     TYPE_CURVE               = 13, //abstract
-//     TYPE_SURFACE             = 14, //abstract
+       TYPE_CIRCULARSTRING      = 8, // not yet supported
+       TYPE_COMPOUNDCURVE       = 9, // not yet supported
+       TYPE_CURVEPOLYGON        = 10, // not yet supported
+       TYPE_MULTICURVE          = 11, //abstract
+       TYPE_MULTISURFACE        = 12, //abstract
+       TYPE_CURVE               = 13, //abstract
+       TYPE_SURFACE             = 14, //abstract
        TYPE_POLYHEDRALSURFACE   = 15,
        TYPE_TRIANGULATEDSURFACE = 16,
 
@@ -158,8 +158,6 @@ namespace SFCGAL {
        virtual bool         is3D() const = 0 ;
 
        //virtual bool         isSimple() const = 0 ;
-       //virtual bool isMeasured() const = 0 ;
-
 
        /**
         * [OGC/SFA]returns the WKT string
