@@ -58,13 +58,13 @@ void triangulatePolygon3D(
 	case TYPE_MULTISOLID:
 	case TYPE_GEOMETRYCOLLECTION:
 		return triangulatePolygon3D( g.as< GeometryCollection >(), triangulatedSurface );
+	default:
+		BOOST_THROW_EXCEPTION(
+				      Exception(
+						( boost::format( "can't triangulate 3d polygons for type '%1%'" ) % g.geometryType() ).str()
+						)
+				      );
 	}
-
-	BOOST_THROW_EXCEPTION(
-		Exception(
-			( boost::format( "can't triangulate 3d polygons for type '%1%'" ) % g.geometryType() ).str()
-		)
-	);
 }
 
 ///
