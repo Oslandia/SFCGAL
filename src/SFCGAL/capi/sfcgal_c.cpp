@@ -666,7 +666,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_force_z_up( const sfcgal_geometry_
 	return gb;
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate( const sfcgal_geometry_t* ga )
+extern "C" sfcgal_geometry_t* sfcgal_geometry_tesselate( const sfcgal_geometry_t* ga )
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
@@ -684,7 +684,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate( const sfcgal_geometry
 	return static_cast<SFCGAL::Geometry*>(surf);
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2d( const sfcgal_geometry_t* ga )
+extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* ga )
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
