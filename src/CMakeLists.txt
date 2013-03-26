@@ -1,5 +1,5 @@
 file( GLOB_RECURSE SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h" )
-file( GLOB_RECURSE SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp" )
+file( GLOB_RECURSE SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/*.cpp" )
 
 if( ${SFCGAL_USE_STATIC_LIBS} )
   add_definitions( "-fPIC" )

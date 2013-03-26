@@ -166,3 +166,6 @@ add_subdirectory( doc )
 install(DIRECTORY ./include DESTINATION .)
 
 
+#-- sfcgal-config
+add_executable( sfcgal-config src/SFCGAL/sfcgal-config.cpp )
+install( TARGETS sfcgal-config RUNTIME DESTINATION bin )
