@@ -47,7 +47,8 @@
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/algorithm/extrude.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/algorithm/tesselate.h>
+#include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/algorithm/minkowskiSum.h>
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
@@ -567,6 +568,7 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( intersection_3d, SFCGAL::algorithm
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( convexhull, SFCGAL::algorithm::convexHull )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( convexhull_3d, SFCGAL::algorithm::convexHull3D )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( straight_skeleton, SFCGAL::algorithm::straightSkeleton )
+SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesselate )
 
 #define SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( name, sfcgal_function ) \
 	extern "C" double sfcgal_geometry_##name( const sfcgal_geometry_t* ga ) \
@@ -665,31 +667,15 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_force_z_up( const sfcgal_geometry_
 	return gb;
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate( const sfcgal_geometry_t* ga )
+extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* ga )
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
 	try
 	{
-		SFCGAL::algorithm::triangulate( *g, *surf );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During triangulate(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return static_cast<SFCGAL::Geometry*>(surf);
-}
-
-extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2d( const sfcgal_geometry_t* ga )
-{
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
-	try
-	{
-		SFCGAL::algorithm::triangulate2D( *g, *surf );
+		SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
+		SFCGAL::triangulate::triangulate2DZ( *g, cdt );
+		cdt.getTriangles( *surf );
 	}
 	catch ( std::exception& e )
 	{

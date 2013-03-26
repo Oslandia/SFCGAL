@@ -18,42 +18,115 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 #include <SFCGAL/algorithm/covers.h>
-
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-
+#include <SFCGAL/Geometry.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/Kernel.h>
+#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/GeometrySet.h>
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+#include <CGAL/box_intersection_d.h>
 
 namespace SFCGAL {
 namespace algorithm
 {
-	bool covers( const Geometry& ga, const Geometry& gb )
+	//
+	// True if no points of pb is outside pa
+	template <int Dim>
+	bool covers( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb )
 	{
-		// deal with geometry collection
-		// call intersects on each geometry of the collection
-		const GeometryCollection* coll;
-		if ( (coll = dynamic_cast<const GeometryCollection*>( &ga )) ) {
-			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
-				if ( covers( coll->geometryN( i ), gb ) ) {
-					return true;
-				}
-			}
-			return false;
-		}
-		if ( (coll = dynamic_cast<const GeometryCollection*>( &gb )) ) {
-			for ( size_t i = 0; i < coll->numGeometries(); i++ ) {
-				if ( covers( ga, coll->geometryN( i ) ) ) {
-					return true;
-				}
-			}
+		typedef typename TypeForDimension<Dim>::Point TPoint;
+		typedef typename TypeForDimension<Dim>::Segment TSegment;
+		typedef typename TypeForDimension<Dim>::Surface TSurface;
+		typedef typename TypeForDimension<Dim>::Volume TVolume;
+
+		if ( pa.handle.which() < pb.handle.which() ) {
+			// no geometry can cover a geometry of greater dimension
 			return false;
 		}
 
-		// default behaviour: calls intersects (NOT VALID !)
-		return intersects( ga, gb );
+		// if one point of B does not intersect A, return false
+		// else return true
+		GeometrySet<Dim> ps;
+		ps.collectPoints( pb );
+		typename GeometrySet<Dim>::PointCollection& points = ps.points();
+		for ( typename GeometrySet<Dim>::PointCollection::const_iterator it = points.begin(); it != points.end(); ++it ) {
+			PrimitiveHandle<Dim> ppt( &it->primitive() );
+			if ( !algorithm::intersects( pa, ppt ) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	struct not_covered{};
+
+	template <int Dim>
+	struct covers_cb
+	{
+		bool* tested;
+		covers_cb( bool* t ) : tested(t) {}
+		void operator()( const typename PrimitiveBox<Dim>::Type& a,
+				 const typename PrimitiveBox<Dim>::Type& b )
+		{
+			*tested = true;
+			if ( !covers( *a.handle(), *b.handle() ) ) {
+				throw not_covered();
+			}
+		}
+	};
+
+	template <int Dim>
+	bool covers( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b )
+	{
+		typename HandleCollection<Dim>::Type ahandles, bhandles;
+		typename BoxCollection<Dim>::Type aboxes, bboxes;
+		a.computeBoundingBoxes( ahandles, aboxes );
+		b.computeBoundingBoxes( bhandles, bboxes );
+		if ( aboxes.empty() || bboxes.empty() ) {
+			return false;
+		}
+
+		bool tested = false;
+		covers_cb<Dim> cb( &tested );
+		try {
+			CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+						  bboxes.begin(), bboxes.end(),
+						  cb );
+		}
+		catch ( not_covered& e ) {
+			return false;
+		}
+		return *cb.tested;
+	}
+
+	template bool covers<2>( const GeometrySet<2>& a, const GeometrySet<2>& b );
+	template bool covers<3>( const GeometrySet<3>& a, const GeometrySet<3>& b );
+
+	template bool covers<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b );
+	template bool covers<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b );
+
+	bool covers( const Geometry& ga, const Geometry& gb )
+	{
+		if ( ga.isEmpty() || gb.isEmpty() ) {
+			return false;
+		}
+		GeometrySet<2> gsa( ga );
+		GeometrySet<2> gsb( gb );
+
+		return covers( gsa, gsb );
+	}
+
+	bool covers3D( const Geometry& ga, const Geometry& gb )
+	{
+		if ( ga.isEmpty() || gb.isEmpty() ) {
+			return false;
+		}
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
+
+		return covers( gsa, gsb );
 	}
 }
 }

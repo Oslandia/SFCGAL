@@ -7,6 +7,8 @@ target_link_libraries( example-${EXAMPLE_NAME}
 	${CGAL_LIBRARIES}
 	${MPFR_LIBRARIES} 
 	${GMP_LIBRARIES}
+	${OPENSCENEGRAPH_LIBRARIES}
 	${Boost_LIBRARIES}
 )
+set_target_properties( example-${EXAMPLE_NAME} PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS example-${EXAMPLE_NAME} DESTINATION bin )

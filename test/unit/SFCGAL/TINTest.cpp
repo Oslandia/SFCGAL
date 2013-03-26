@@ -22,7 +22,7 @@
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <boost/test/unit_test.hpp>
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( polyhedronConversionTest )
 	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
 
 	TriangulatedSurface tri;
-	algorithm::triangulate( *g, tri );
+	triangulate::triangulatePolygon3D( *g, tri );
 
 	std::auto_ptr<CGAL::Polyhedron_3<Kernel> > poly( tri.toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
 	// we check the two squares share a common edge

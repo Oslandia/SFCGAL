@@ -185,6 +185,14 @@ bool   Polygon::is3D() const
 ///
 ///
 ///
+bool   Polygon::isMeasured() const
+{
+	return exteriorRing().isMeasured() ;
+}
+
+///
+///
+///
 void Polygon::reverse()
 {
 	for ( size_t i = 0; i < numRings(); i++ ){
@@ -222,7 +230,11 @@ bool Polygon::isCounterClockWiseOriented() const
 ///
 CGAL::Polygon_2<Kernel> Polygon::toPolygon_2() const
 {
-	return exteriorRing().toPolygon_2();
+	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2();
+	if ( outer.orientation() == CGAL::CLOCKWISE ) {
+		outer.reverse_orientation();
+	}
+	return outer;
 }
 
 ///
@@ -232,9 +244,14 @@ CGAL::Polygon_with_holes_2<Kernel> Polygon::toPolygon_with_holes_2() const
 {
 	std::list<CGAL::Polygon_2<Kernel> > holes;
 	for ( size_t i = 0; i < numInteriorRings(); ++i ) {
-		holes.push_back( interiorRingN(i).toPolygon_2() );
+		CGAL::Polygon_2<Kernel> inner = interiorRingN(i).toPolygon_2();
+		if ( inner.orientation() == CGAL::COUNTERCLOCKWISE ) {
+			inner.reverse_orientation();
+		}
+		holes.push_back( inner );
 	}
-	return CGAL::Polygon_with_holes_2<Kernel>( exteriorRing().toPolygon_2(),
+	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2();
+	return CGAL::Polygon_with_holes_2<Kernel>( outer,
 						   holes.begin(),
 						   holes.end());
 }

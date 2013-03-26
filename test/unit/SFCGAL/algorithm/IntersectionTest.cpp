@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( testIntersectionLineString )
 
 BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
 {
-    Triangle tri( Point(0, 0), Point(1, 1), Point(1, 0));
+    Triangle tri( Point(0, 0), Point(1, 0), Point(1, 1));
     
     // A point on an edge
     BOOST_CHECK( *(algorithm::intersection( Point(0.5,0), tri)) == Point(0.5,0) );
@@ -89,16 +89,13 @@ BOOST_AUTO_TEST_CASE( testIntersectionTriangle )
     BOOST_CHECK( (algorithm::intersection( ls3, tri))->isEmpty() );
     
     // A triangle crossing, resulting in a triangle
-    Triangle tri2( Point(0.5, 0), Point(1.5, 1), Point(1.5, 0));
+    Triangle tri2( Point(0.5, 0), Point(1.5, 0), Point(1.5, 1));
     BOOST_CHECK( *(algorithm::intersection( tri2, tri)) == Triangle(Point(1, 0.5), Point(0.5, 0), Point(1,0)) );
     // A triangle crossing, resulting in a polygon
     Triangle tri3( Point(0, 0.5), Point(1, 0.5), Point(0, -0.5));
-    MultiPoint mp;
-    mp.addGeometry(Point(0.5, 0));
-    mp.addGeometry(Point(1, 0.5));
-    mp.addGeometry(Point(0.5, 0.5));
-    mp.addGeometry(Point(0, 0));
-    BOOST_CHECK( *(algorithm::intersection( tri3, tri)) == mp );
+
+    std::auto_ptr<Geometry> mp = io::readWkt( "POLYGON((0 0,0.5 0,1 0.5,0.5 0.5,0 0))" );
+    BOOST_CHECK( *(algorithm::intersection( tri3, tri ) ) == *mp );
     // A triangle outside
     Triangle tri4( Point(-3, 0), Point(-2, 1), Point(-2, 0));
     BOOST_CHECK( (algorithm::intersection( tri4, tri))->isEmpty() );
@@ -186,16 +183,6 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
     //
     // Point x cube
 
-    // intersection (2D) on solid is illegal
-    bool has_thrown = false;
-    try {
-	algorithm::intersection( Point(0, 0), *cube );
-    }
-    catch ( std::exception& e ) {
-	has_thrown = true;
-    }
-    BOOST_CHECK_EQUAL( has_thrown, true );
-
     // Consider cube with holes
     // TODO
 
@@ -228,14 +215,13 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	coll1.addGeometry( Point( 0, 0, 0 ));
 	coll1.addGeometry( Point( 1, 0, 0 ));
 	BOOST_CHECK( *algorithm::intersection3D( ls3, *cube ) == coll1 );
-	
+
 	// A linestring crossing on an edge
 	LineString ls4;
 	ls4.addPoint( Point(0.2, 0.0, 0.0));
 	ls4.addPoint( Point(0.8, 0.0, 0.0));
 	ls4.addPoint( Point(0.8, 0.5, 0.5));
 	BOOST_CHECK( *algorithm::intersection3D( ls4, *cube ) == ls4 );
-
 	// A linestring crossing on a vertex
 	LineString ls5;
 	ls5.addPoint( Point(-0.5, 0.0, 0.5));
@@ -254,20 +240,17 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
     //
     {
 	// A triangle partly inside
-	Triangle tri1(Point(-0.5, 0.5, 0), Point(0.5, 0.5, 0.5), Point(-0.5, 0.5, 1));
-	BOOST_CHECK( *(algorithm::intersection3D( tri1, *cube )) == *(io::readWkt("POLYGON((0 0.5 0.75,0.5 0.5 0.5,0 0.5 0.25,0 0.5 0.5,0 0.5 0.75))")) );
+	    Triangle tri1(Point(-0.5, 0.5, 0), Point(0.5, 0.5, 0.5), Point(-0.5, 0.5, 1));
+	    BOOST_CHECK( *(algorithm::intersection3D( tri1, *cube )) == *(io::readWkt("POLYGON((0 0.5 0.75,0.5 0.5 0.5,0 0.5 0.25,0 0.5 0.5,0 0.5 0.75))")) );
 	// A triangle completely inside
 	Triangle tri2(Point(0.2, 0.2, 0.2), Point(0.8, 0.2, 0.2), Point(0.8, 0.2, 0.8));
 	BOOST_CHECK( *(algorithm::intersection3D(tri2, *cube)) == tri2 );
-	
 	// A triangle completely outside
 	Triangle tri3(Point(-0.5, 1.5, 0), Point(0.5, 1.5, 0.5), Point(-0.5, 1.5, 1));
 	BOOST_CHECK( algorithm::intersection3D(tri3, *cube)->isEmpty());
 	
 	// A triangle partly touching a face
 	Triangle tri3b(Point(-0.5, 0.0, 0.0), Point(1.5, 0.0, 0.0), Point(0.0, 1.0, 0.0));
-	//	std::auto_ptr<Geometry> inter1 = algorithm::intersection3D( tri3b, *cube );
-	//	std::cout << inter1->asText() << std::endl;
 	BOOST_CHECK( algorithm::intersection3D( tri3b, *cube )->geometryTypeId() == TYPE_POLYGON );
 	
 	// A triangle touching a face
@@ -282,7 +265,7 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
 	Triangle tri6(Point(0.0, 0.0, 0.0), Point(-1.0, 1.0, 0.0), Point(-1.0, 0.0, 0.0));
 	BOOST_CHECK( *algorithm::intersection3D( tri6, *cube ) == Point(0, 0, 0) );
     }
-	
+
     // Polygon x Solid
     {
 	// special case : when the intersection is a multipoint or a multilinestring
@@ -309,7 +292,6 @@ BOOST_AUTO_TEST_CASE( testIntersectionSolid )
     }
 }
 
-
 BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
 {
 	// pôlygon with a doubled point (10 0)
@@ -330,5 +312,6 @@ BOOST_AUTO_TEST_CASE( testIntersectionCleanup )
 	BOOST_CHECK( gI->geometryTypeId() == SFCGAL::TYPE_GEOMETRYCOLLECTION );
 	BOOST_CHECK( gI->as<GeometryCollection>().numGeometries() == 2 );
 }
+
 BOOST_AUTO_TEST_SUITE_END()
 

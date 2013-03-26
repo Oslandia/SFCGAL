@@ -20,7 +20,6 @@
  */
 #include <fstream>
 
-#include <sys/time.h>
 
 #include <SFCGAL/all.h>
 

@@ -57,6 +57,25 @@ PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
 ///
 ///
 ///
+PolyhedralSurface::PolyhedralSurface( const MarkedPolyhedron& poly ) :
+	Surface()
+{
+	for ( MarkedPolyhedron::Facet_const_iterator fit = poly.facets_begin(); fit != poly.facets_end(); ++fit ) {
+		LineString* face = new LineString();
+		MarkedPolyhedron::Halfedge_around_facet_const_circulator hit = fit->facet_begin();
+		do {
+			face->addPoint( hit->vertex()->point() );
+			++hit;
+		} while ( hit != fit->facet_begin() );
+		// close the ring
+		face->addPoint( hit->vertex()->point() );
+		_polygons.push_back( new Polygon( face ) );
+	}
+}
+
+///
+///
+///
 PolyhedralSurface& PolyhedralSurface::operator = ( const PolyhedralSurface & other )
 {
 	_polygons = other._polygons ;
@@ -136,6 +155,19 @@ bool  PolyhedralSurface::is3D() const
 	}
 }
 
+///
+///
+///
+bool  PolyhedralSurface::isMeasured() const
+{
+	if ( isEmpty() ){
+		return false ;
+	}else{
+		return _polygons.front().isMeasured() ;
+	}
+}
+
+
 
 ///
 ///
@@ -143,7 +175,7 @@ bool  PolyhedralSurface::is3D() const
 TriangulatedSurface  PolyhedralSurface::toTriangulatedSurface() const
 {
 	TriangulatedSurface result ;
-	algorithm::triangulate( *this, result );
+	triangulate::triangulatePolygon3D( *this, result );
 	return result ;
 }
 

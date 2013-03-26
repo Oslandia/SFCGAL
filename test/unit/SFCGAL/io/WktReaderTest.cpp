@@ -53,6 +53,49 @@ BOOST_AUTO_TEST_CASE( pointXY )
 	BOOST_CHECK_EQUAL( g->as< Point >().y(), 6.0 );
 }
 
+BOOST_AUTO_TEST_CASE( pointXYZ_implicit )
+{
+	std::auto_ptr< Geometry > g( readWkt("POINT(4.0 5.0 6.0)") );
+	BOOST_CHECK( g->is< Point >() );
+	BOOST_CHECK( ! g->isEmpty() );
+
+	BOOST_CHECK( g->is3D() );
+	BOOST_CHECK( ! g->isMeasured() );
+
+	BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().z(), 6.0 );
+}
+
+BOOST_AUTO_TEST_CASE( pointXYZ_explicit )
+{
+	std::auto_ptr< Geometry > g( readWkt("POINT Z(4.0 5.0 6.0)") );
+	BOOST_CHECK( g->is< Point >() );
+	BOOST_CHECK( ! g->isEmpty() );
+
+	BOOST_CHECK( g->is3D() );
+	BOOST_CHECK( ! g->isMeasured() );
+
+	BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().z(), 6.0 );
+}
+
+
+BOOST_AUTO_TEST_CASE( pointXYM_explicit )
+{
+	std::auto_ptr< Geometry > g( readWkt("POINT M(4.0 5.0 6.0)") );
+	BOOST_CHECK( g->is< Point >() );
+	BOOST_CHECK( ! g->isEmpty() );
+
+	BOOST_CHECK( ! g->is3D() );
+	BOOST_CHECK( g->isMeasured() );
+
+	BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
+	BOOST_CHECK_EQUAL( g->as< Point >().m(), 6.0 );
+}
+
 //-- WKT LINESTRING
 
 

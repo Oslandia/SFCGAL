@@ -28,7 +28,7 @@
 
 #include <SFCGAL/transform/AffineTransform3.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
@@ -168,7 +168,7 @@ double distancePointPolygon3D( const Point & gA, const Polygon & gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 	TriangulatedSurface triangulateSurfaceB ;
-	triangulate( gB, triangulateSurfaceB ) ;
+	triangulate::triangulatePolygon3D( gB, triangulateSurfaceB ) ;
 	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceB, gA );
 }
 
@@ -293,7 +293,7 @@ double distanceLineStringPolygon3D( const LineString & gA, const Polygon & gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 	TriangulatedSurface triangulateSurfaceB ;
-	triangulate( gB, triangulateSurfaceB ) ;
+	triangulate::triangulatePolygon3D( gB, triangulateSurfaceB ) ;
 	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceB, gA );
 }
 
@@ -382,7 +382,7 @@ double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB )
 	}
 
 	TriangulatedSurface triangulateSurfaceA ;
-	triangulate( gA, triangulateSurfaceA ) ;
+	triangulate::triangulatePolygon3D( gA, triangulateSurfaceA ) ;
 	return distanceGeometryCollectionToGeometry3D( triangulateSurfaceA, gB );
 }
 

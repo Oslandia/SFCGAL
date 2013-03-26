@@ -33,16 +33,13 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	Point g;
 	BOOST_CHECK( g.isEmpty() ) ;
 	BOOST_CHECK( ! g.is3D() );
+	BOOST_CHECK( ! g.isMeasured() );
 
 	// no more access to double
-/*
-	BOOST_CHECK( isNaN( g.x() ) );
-	BOOST_CHECK( isNaN( g.y() ) );
-	BOOST_CHECK( isNaN( g.z() ) );
-*/
 	BOOST_CHECK_EQUAL( g.x(), 0 );
 	BOOST_CHECK_EQUAL( g.y(), 0 );
 	BOOST_CHECK_EQUAL( g.z(), 0 );
+	BOOST_CHECK( isNaN( g.m() ) );
 }
 
 BOOST_AUTO_TEST_CASE( testGeometryTypeId ){

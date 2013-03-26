@@ -160,6 +160,14 @@ bool  Triangle::is3D() const
 ///
 ///
 ///
+bool  Triangle::isMeasured() const
+{
+	return _vertices[0].isMeasured() ;
+}
+
+///
+///
+///
 void  Triangle::reverse()
 {
 	std::reverse( _vertices, _vertices + 3 );

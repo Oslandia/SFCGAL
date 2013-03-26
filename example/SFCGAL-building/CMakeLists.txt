@@ -15,5 +15,5 @@ if(SFCGAL_WITH_OSG)
 		${OPENSCENEGRAPH_LIBRARIES}
 	)
 endif()
-
+set_target_properties( example-${EXAMPLE_NAME} PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS example-${EXAMPLE_NAME} DESTINATION bin )

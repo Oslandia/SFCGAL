@@ -89,6 +89,17 @@ void WktWriter::write( const Geometry& g, bool exact )
 	BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
 }
 
+///
+///
+///
+void WktWriter::writeCoordinateType( const Geometry& g )
+{
+	if ( g.is3D() && g.isMeasured() ){
+		_s << " ZM";
+	}else if ( ! g.is3D() && g.isMeasured() ){
+		_s << " M";
+	}
+}
 
 ///
 ///
@@ -107,6 +118,11 @@ void WktWriter::writeCoordinate( const Point& g )
 			_s << " " << g.z() ;
 		}
 	}
+
+	// m coordinate
+	if ( g.isMeasured() ){
+		_s << " " << g.m() ;
+	}
 }
 
 ///
@@ -115,6 +131,7 @@ void WktWriter::writeCoordinate( const Point& g )
 void WktWriter::write( const Point & g )
 {
 	_s << "POINT" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -138,6 +155,7 @@ void WktWriter::writeInner( const Point & g )
 void WktWriter::write( const LineString & g )
 {
 	_s << "LINESTRING" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -167,6 +185,7 @@ void WktWriter::writeInner( const LineString & g )
 void WktWriter::write( const Polygon & g )
 {
 	_s << "POLYGON" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -194,6 +213,7 @@ void WktWriter::writeInner( const Polygon & g )
 void WktWriter::write( const GeometryCollection & g )
 {
 	_s << "GEOMETRYCOLLECTION" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -214,6 +234,7 @@ void WktWriter::write( const GeometryCollection & g )
 void WktWriter::write( const MultiPoint & g )
 {
 	_s << "MULTIPOINT" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -234,6 +255,7 @@ void WktWriter::write( const MultiPoint & g )
 void WktWriter::write( const MultiLineString & g )
 {
 	_s << "MULTILINESTRING" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -254,6 +276,7 @@ void WktWriter::write( const MultiLineString & g )
 void WktWriter::write( const MultiPolygon & g )
 {
 	_s << "MULTIPOLYGON" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -275,6 +298,7 @@ void WktWriter::write( const MultiPolygon & g )
 void WktWriter::write( const MultiSolid & g )
 {
 	_s << "MULTISOLID" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -295,6 +319,7 @@ void WktWriter::write( const MultiSolid & g )
 void WktWriter::write( const Triangle & g )
 {
 	_s << "POLYGON" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -326,6 +351,7 @@ void WktWriter::writeInner( const Triangle & g )
 void WktWriter::write( const TriangulatedSurface & g )
 {
 	_s << "TIN" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -348,6 +374,7 @@ void WktWriter::write( const TriangulatedSurface & g )
 void WktWriter::write( const PolyhedralSurface & g )
 {
 	_s << "POLYHEDRALSURFACE" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;
@@ -376,6 +403,7 @@ void WktWriter::writeInner( const PolyhedralSurface & g )
 void WktWriter::write( const Solid & g )
 {
 	_s << "SOLID" ;
+	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
 		return ;

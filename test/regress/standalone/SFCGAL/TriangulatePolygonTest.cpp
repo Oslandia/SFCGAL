@@ -27,7 +27,7 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/tools/Log.h>
 
-#include <SFCGAL/algorithm/triangulate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/algorithm/area.h>
 
 #include <boost/test/unit_test.hpp>
@@ -81,10 +81,10 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 		 */
 		TriangulatedSurface triangulatedSurface ;
 		if ( shouldThrowException ){
-			BOOST_CHECK_THROW( algorithm::triangulate( *g, triangulatedSurface ), Exception );
+			BOOST_CHECK_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ), Exception );
 			continue ;
 		}
-		BOOST_CHECK_NO_THROW( algorithm::triangulate( *g, triangulatedSurface ) ) ;
+		BOOST_CHECK_NO_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ) ;
 
 		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numGeometries() );
 

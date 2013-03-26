@@ -28,7 +28,6 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
-#include <SFCGAL/algorithm/triangulate.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/Transform.h>
 

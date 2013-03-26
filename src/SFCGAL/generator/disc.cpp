@@ -18,8 +18,14 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+#ifdef _MSC_VER
+#  define _USE_MATH_DEFINES
+#endif
+
 #include <SFCGAL/generator/disc.h>
 #include <SFCGAL/all.h>
+#include <cmath>
 
 namespace SFCGAL {
 namespace generator {
@@ -39,7 +45,7 @@ std::auto_ptr< Polygon > disc(
 
 	double dTheta = M_PI_4 / nQuadrantSegments ;
 	for ( size_t i = 0; i < nQuadrantSegments * 4; i++ ){
-		Kernel::Vector_2 p = center.toVector_2() + Kernel::Vector_2( cos(i*dTheta), sin(i*dTheta) ) ;
+		Kernel::Vector_2 p = center.toVector_2() + radius * Kernel::Vector_2( cos(i*dTheta), sin(i*dTheta) ) ;
 		exteriorRing->addPoint( new Point( p.x(), p.y() ) ) ;
 	}
 	exteriorRing->addPoint( exteriorRing->startPoint() ) ;

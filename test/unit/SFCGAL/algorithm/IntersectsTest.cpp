@@ -32,7 +32,6 @@
 using namespace SFCGAL ;
 using namespace boost::unit_test ;
 
-
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectsTest )
 
 BOOST_AUTO_TEST_CASE( testPointPointIntersects )
@@ -187,6 +186,45 @@ BOOST_AUTO_TEST_CASE( testPointPolygonWithHoleIntersects )
     BOOST_CHECK_EQUAL( algorithm::intersects( pte, *g ), false );
 }
 
+BOOST_AUTO_TEST_CASE( testLineStringPolygonWithHoleIntersects )
+{
+    // a square
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,4.0 0.0,4.0 4.0,0.0 4.0,0.0 0.0),(2 2,2 3,3 3,3 2,2 2))" ) );
+
+    // line on a vertex
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(-1 0,0 0)"), *g ), true );
+    // line on an edge
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(0 0,1 0)"), *g ), true );
+    // line on a boundary
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(2 2,3 2)"), *g ), true );
+    // line inside
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(0.5 0.5,3 2)"), *g ), true );
+
+    // line in a hole
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(2.1 2.1,2.5 2.5)"), *g ), false );
+    // line outside
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("LINESTRING(5 5,6 6)"), *g ), false );
+}
+
+BOOST_AUTO_TEST_CASE( testPolygonPolygonWithHoleIntersects )
+{
+    // a square
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,4.0 0.0,4.0 4.0,0.0 4.0,0.0 0.0),(2 2,2 3,3 3,3 2,2 2))" ) );
+
+    // polygon touching
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((-1 0,0 0,0 1,-1 1,-1 0))"), *g ), true );
+    // polygon crossing
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((1.5 1.5,2.5 1.5,2.5 2.5,1.5 2.5,1.5 1.5))"), *g ), true );
+
+    // polygon A in B's hole
+    BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))"), *g ), false );
+    // polygon B in A's hole
+    BOOST_CHECK_EQUAL( algorithm::intersects( *g, *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))") ), false );
+
+    // polygon outside
+    BOOST_CHECK_EQUAL( algorithm::intersects( *g, *io::readWkt("POLYGON((20.1 20.1,20.5 20.1,20.5 20.5,20.1 20.5,20.1 20.1))") ), false );
+}
+
 BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
 {
 	Point pta( 0.0, 0.0, 0.0 );
@@ -243,6 +281,8 @@ BOOST_AUTO_TEST_CASE( testLineStringLineStringIntersects )
 	
 	BOOST_CHECK_EQUAL( algorithm::intersects( *ls, *lsb ), true );
 	BOOST_CHECK_EQUAL( algorithm::intersects( *lsc, *ls ), false );
+	BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls, *lsb ), true );
+	BOOST_CHECK_EQUAL( algorithm::intersects3D( *lsc, *ls ), false );
     }
 }
 
