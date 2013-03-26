@@ -104,14 +104,13 @@ void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & trian
 		return ;
 	case TYPE_SOLID:
 	case TYPE_MULTISOLID:
-		//not supported
-		break;
+	default:
+		BOOST_THROW_EXCEPTION(
+				      Exception(
+						( boost::format( "can't process 2DZ triangulation for type '%1%'" ) % g.geometryType() ).str()
+						)
+				      );
 	}
-	BOOST_THROW_EXCEPTION(
-		Exception(
-			( boost::format( "can't process 2DZ triangulation for type '%1%'" ) % g.geometryType() ).str()
-		)
-	);
 }
 
 
