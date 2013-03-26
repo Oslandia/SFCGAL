@@ -109,6 +109,8 @@ sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const sfcgal_geome
 const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geometry_t*, int i );
 /* copy vertex */
 void                      sfcgal_triangle_set_vertex( sfcgal_geometry_t*, int i, const sfcgal_geometry_t* );
+void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t*, int i, double x, double y );
+void                      sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t*, int i, double x, double y, double z );
 
 /**
  * Polygon
