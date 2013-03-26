@@ -224,6 +224,16 @@ extern "C" void sfcgal_triangle_set_vertex( sfcgal_geometry_t* geom, int i, cons
 	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = *down_const_cast<const SFCGAL::Point>(point);
 }
 
+extern "C" void sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t* geom, int i, double x, double y )
+{
+	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y );
+}
+
+extern "C" void sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* geom, int i, double x, double y, double z )
+{
+	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y, z );
+}
+
 /**
  * Polygon
  */
