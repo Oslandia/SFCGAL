@@ -293,6 +293,11 @@ void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t, sfcgal_free_handler_t );
 
 void sfcgal_init();
 
+/*
+ * Get version
+ */
+const char* sfcgal_version();
+
 #ifdef __cplusplus
 }
 #endif

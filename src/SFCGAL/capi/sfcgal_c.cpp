@@ -20,6 +20,7 @@
  */
 
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/version.h>
 #include <SFCGAL/Point.h>
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Triangle.h>
@@ -108,6 +109,11 @@ extern "C" void sfcgal_init()
 	__sfcgal_error_handler = printf;
 	__sfcgal_alloc_handler = malloc;
 	__sfcgal_free_handler = free;
+}
+
+extern "C" const char* sfcgal_version()
+{
+	return SFCGAL::Version();
 }
 
 extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry_t* geom )

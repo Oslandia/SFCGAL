@@ -27,5 +27,9 @@
 
 #define SFCGAL_VERSION "@SFCGAL_VERSION@"
 
+namespace SFCGAL {
+    const char* Version();
+}
+
 #endif
 
