@@ -1,7 +1,7 @@
 /**
  *   SFCGAL
  *
- *   Copyright (C) 2012-2013 Oslandia <contact@oslandia.com>
+ *   Copyright (C) 2012-2013 Oslandia <infos@oslandia.com>
  *   Copyright (C) 2012-2013 IGN (http://www.ign.fr)
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,16 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_VERSION_H_
-#define _SFCGAL_VERSION_H_
-
-#define SFCGAL_VERSION_MAJOR @SFCGAL_VERSION_MAJOR@
-#define SFCGAL_VERSION_MINOR @SFCGAL_VERSION_MINOR@
-#define SFCGAL_VERSION_PATCH @SFCGAL_VERSION_PATCH@
-
-#define SFCGAL_VERSION "@SFCGAL_VERSION@"
+#include <SFCGAL/version.h>
 
 namespace SFCGAL {
-    const char* Version();
-}
 
-#endif
+	const char _sfcgal_version[] = SFCGAL_VERSION;
+
+	const char* Version()
+	{
+		return _sfcgal_version;
+	}
+
+}//SFCGAL
 
