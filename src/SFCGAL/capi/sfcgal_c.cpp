@@ -598,11 +598,11 @@ SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesse
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area, SFCGAL::algorithm::area )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area_3d, SFCGAL::algorithm::area3D )
 
-extern "C" int sfcgal_geometry_has_plane( const sfcgal_geometry_t* ga ) 
+extern "C" int sfcgal_geometry_is_planar( const sfcgal_geometry_t* ga ) 
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
-		SFCGAL_ERROR( "has_plane() only applies to polygons" );
+		SFCGAL_ERROR( "is_planar() only applies to polygons" );
 		return -1;
 	}
 
@@ -613,7 +613,7 @@ extern "C" int sfcgal_geometry_has_plane( const sfcgal_geometry_t* ga )
 	}
 	catch ( std::exception& e )
 	{
-		SFCGAL_WARNING( "During has_plane(A) :" );
+		SFCGAL_WARNING( "During is_planar(A) :" );
 		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
 		SFCGAL_ERROR( "%s", e.what() );
 		return -1.0;
@@ -621,11 +621,18 @@ extern "C" int sfcgal_geometry_has_plane( const sfcgal_geometry_t* ga )
 	return r ? 1 : 0;
 }
 
-extern "C" int sfcgal_geometry_pointing_up( const sfcgal_geometry_t* ga ) 
+/**
+ * Get geometry orientation.
+ * Returns:
+ * -1 for a counter clock wise orientation,
+ * 1 for a clock wise orientation,
+ * 0 for invalid or undetermined orientation
+ */
+extern "C" int sfcgal_geometry_orientation( const sfcgal_geometry_t* ga ) 
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
-		SFCGAL_ERROR( "pointing_up() only applies to polygons" );
+		SFCGAL_ERROR( "orientation() only applies to polygons" );
 		return -1;
 	}
 
@@ -636,12 +643,12 @@ extern "C" int sfcgal_geometry_pointing_up( const sfcgal_geometry_t* ga )
 	}
 	catch ( std::exception& e )
 	{
-		SFCGAL_WARNING( "During pointing_up(A) :" );
+		SFCGAL_WARNING( "During orientation(A) :" );
 		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
 		SFCGAL_ERROR( "%s", e.what() );
 		return -1.0;
 	}
-	return r ? 1 : 0;
+	return r ? -1 : 1;
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_make_solid( const sfcgal_geometry_t* ga ) 

@@ -244,8 +244,8 @@ sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_geometry_t*
 sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* );
 double                      sfcgal_geometry_area( const sfcgal_geometry_t* );
 double                      sfcgal_geometry_area_3d( const sfcgal_geometry_t* );
-int                         sfcgal_geometry_has_plane( const sfcgal_geometry_t* );
-int                         sfcgal_geometry_pointing_up( const sfcgal_geometry_t* );
+int                         sfcgal_geometry_is_planar( const sfcgal_geometry_t* );
+int                         sfcgal_geometry_orientation( const sfcgal_geometry_t* );
 sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* );
 sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* );
 sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t*, double, double, double );
