@@ -250,7 +250,8 @@ sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* 
 sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* );
 sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t*, double, double, double );
 sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_force_z_up( const sfcgal_geometry_t* );
+sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_geometry_t* );
+sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_geometry_t* );
 double                      sfcgal_geometry_distance( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
 double                      sfcgal_geometry_distance_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
 sfcgal_geometry_t*          sfcgal_geometry_copy( const sfcgal_geometry_t* );

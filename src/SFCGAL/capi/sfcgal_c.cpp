@@ -54,6 +54,7 @@
 #include <SFCGAL/algorithm/straightSkeleton.h>
 
 #include <SFCGAL/transform/ForceZOrderPoints.h>
+#include <SFCGAL/transform/ForceOrderPoints.h>
 #include <SFCGAL/transform/RoundTransform.h>
 
 //
@@ -648,18 +649,37 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_make_solid( const sfcgal_geometry_
 	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid( g->as<const SFCGAL::PolyhedralSurface>() ));
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_force_z_up( const sfcgal_geometry_t* ga ) 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_force_lhr( const sfcgal_geometry_t* ga ) 
 {
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	SFCGAL::Geometry* gb = g->clone();
-	SFCGAL::transform::ForceZOrderPoints forceZ;
+	SFCGAL::transform::ForceOrderPoints force( /* ccw */ true );
 	try
 	{
-		gb->accept( forceZ );
+		gb->accept( force );
 	}
 	catch ( std::exception& e )
 	{
-		SFCGAL_WARNING( "During force_z_up(A) :" );
+		SFCGAL_WARNING( "During force_lhr(A) :" );
+		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
+	return gb;
+}
+
+extern "C" sfcgal_geometry_t* sfcgal_geometry_force_rhr( const sfcgal_geometry_t* ga ) 
+{
+	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
+	SFCGAL::Geometry* gb = g->clone();
+	SFCGAL::transform::ForceOrderPoints force( /* ccw */ false );
+	try
+	{
+		gb->accept( force );
+	}
+	catch ( std::exception& e )
+	{
+		SFCGAL_WARNING( "During force_rhr(A) :" );
 		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
 		SFCGAL_ERROR( "%s", e.what() );
 		return 0;
