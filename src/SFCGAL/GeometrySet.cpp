@@ -273,6 +273,9 @@ namespace SFCGAL {
 	template <int Dim>
 	void GeometrySet<Dim>::_decompose( const Geometry& g )
 	{
+		if ( g.isEmpty() ) {
+			return;
+		}
 		if ( g.is<GeometryCollection>() ) {
 			const GeometryCollection& collect = g.as<GeometryCollection>();
 			for ( size_t i = 0; i < g.numGeometries(); ++i ) {

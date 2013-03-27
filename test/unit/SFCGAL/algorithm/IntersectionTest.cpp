@@ -304,13 +304,21 @@ BOOST_AUTO_TEST_CASE( testIntersectionDegenerateSegment )
 
 BOOST_AUTO_TEST_CASE( testIntersectionCleanup )
 {
-	// pôlygon with a doubled point (10 0)
+	// polygon with a doubled point (10 0)
 	std::auto_ptr<Geometry> gA = io::readWkt("LINESTRING(0 0,0 10,10 10,10 0)");
 	std::auto_ptr<Geometry> gB = io::readWkt("LINESTRING(10 10 4,10 0 5,0 0 5)");
 
 	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
 	BOOST_CHECK( gI->geometryTypeId() == SFCGAL::TYPE_GEOMETRYCOLLECTION );
 	BOOST_CHECK( gI->as<GeometryCollection>().numGeometries() == 2 );
+}
+
+BOOST_AUTO_TEST_CASE( testIntersectionEmpty )
+{
+	std::auto_ptr<Geometry> gA = io::readWkt("POLYGON EMPTY");
+	std::auto_ptr<Geometry> gB = io::readWkt("LINESTRING(10 10 4,10 0 5,0 0 5)");
+
+	std::auto_ptr<Geometry> gI = algorithm::intersection( *gA, *gB );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
