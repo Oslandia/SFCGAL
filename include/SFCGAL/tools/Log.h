@@ -1,7 +1,7 @@
 /**
  *   SFCGAL
  *
- *   Copyright (C) 2012-2013 Oslandia <contact@oslandia.com>
+ *   Copyright (C) 2012-2013 Oslandia <infos@oslandia.com>
  *   Copyright (C) 2012-2013 IGN (http://www.ign.fr)
  *
  *   This program is free software: you can redistribute it and/or modify
