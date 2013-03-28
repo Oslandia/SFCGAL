@@ -15,6 +15,8 @@ set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VE
 include( PrecompiledHeader )
 option( Use_precompiled_headers "Use precompiled headers" OFF )
 
+include( Libtoolize )
+
 #-----------------------------------------------------------
 # dependencies
 #-----------------------------------------------------------
@@ -165,6 +167,9 @@ add_subdirectory( doc )
 #-- install directories
 install(DIRECTORY ./include DESTINATION .)
 
+
+#-- create a libtool file for SFCGAL (needed by PostGIS)
+create_libtool_file( SFCGAL /lib )
 
 #-- sfcgal-config
 if ( ${CMAKE_BUILD_TYPE} STREQUAL Debug )
