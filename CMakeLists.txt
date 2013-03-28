@@ -172,7 +172,7 @@ install(DIRECTORY ./include DESTINATION .)
 create_libtool_file( SFCGAL /lib )
 
 #-- sfcgal-config
-if ( ${CMAKE_BUILD_TYPE} STREQUAL Debug )
+if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
   set( SFCGAL_LIB_NAME "SFCGAL${CMAKE_DEBUG_POSTFIX}" )
 else()
   set( SFCGAL_LIB_NAME "SFCGAL" )
