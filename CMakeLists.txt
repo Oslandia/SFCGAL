@@ -129,7 +129,7 @@ configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURC
 
 
 #note : not available on windows without export/import
-OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" ON )
+OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
 
 
 #-- build the library
@@ -167,5 +167,11 @@ install(DIRECTORY ./include DESTINATION .)
 
 
 #-- sfcgal-config
-add_executable( sfcgal-config src/SFCGAL/sfcgal-config.cpp )
-install( TARGETS sfcgal-config RUNTIME DESTINATION bin )
+if ( ${CMAKE_BUILD_TYPE} STREQUAL Debug )
+  set( SFCGAL_LIB_NAME "SFCGAL${CMAKE_DEBUG_POSTFIX}" )
+else()
+  set( SFCGAL_LIB_NAME "SFCGAL" )
+endif()
+#set( SFCGAL_LIB_NAME ${${CMAKE_BUILD_TYPE}
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/sfcgal-config.in ${CMAKE_CURRENT_BINARY_DIR}/sfcgal-config @ONLY)
+install( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sfcgal-config DESTINATION bin )
