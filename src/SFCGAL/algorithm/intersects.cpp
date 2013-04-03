@@ -295,12 +295,6 @@ namespace algorithm
 		return false;
 	}
 
-	template <int Dim>
-	bool intersects( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb )
-	{
-		return _intersects( pa, pb );
-	}
-
 	//
 	// We deal here with symmetric call
 	template <int Dim>
@@ -313,6 +307,12 @@ namespace algorithm
 		else {
 			return _intersects( pb, pa );
 		}
+	}
+
+	template <int Dim>
+	bool intersects( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb )
+	{
+		return dispatch_intersects_sym( pa, pb );
 	}
 
 	struct found_an_intersection{};

@@ -18,32 +18,25 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef SFCGAL_INTERSECTION_ALGORITHM
-#define SFCGAL_INTERSECTION_ALGORITHM
+#ifndef SFCGAL_DIFFERENCE_ALGORITHM
+#define SFCGAL_DIFFERENCE_ALGORITHM
 
 #include <memory>
 
 namespace SFCGAL {
-class Geometry;
-template <int Dim> class GeometrySet;
-template <int Dim> class PrimitiveHandle;
-
+	class Geometry;
+	template <int Dim> class GeometrySet;
 namespace algorithm {
 	/*
-	 * Intersection on 2D geometries.
+	 * Difference between two 2D geometries.
 	 */
-	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
+	std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
 	
 	/*
-	 * Intersection on 3D geometries. Assume z = 0 if needed
+	 * Difference between two geometry sets
 	 */
-	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
-	
 	template <int Dim>
-	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& );
-
-	template <int Dim>
-	void intersection( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b, GeometrySet<Dim>& );
+	void difference( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output );
     }
 }
 

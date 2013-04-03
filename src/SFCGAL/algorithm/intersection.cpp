@@ -64,6 +64,15 @@ namespace algorithm
 	}
 
 	template <int Dim>
+	void intersection( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb, GeometrySet<Dim>& output )
+	{
+		dispatch_intersection_sym( pa, pb, output );
+	}
+
+	template void intersection<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b, GeometrySet<2>& );
+	template void intersection<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
+
+	template <int Dim>
 	struct intersection_cb
 	{
 		intersection_cb( GeometrySet<Dim>& out ) : output(out) {}
