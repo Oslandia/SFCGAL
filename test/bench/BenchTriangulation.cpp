@@ -37,6 +37,7 @@
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
+using namespace SFCGAL::triangulate ;
 
 #define N_POINTS 100000
 
@@ -54,12 +55,11 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation )
 		Kernel::Point_2 p = *(++g) ;
 		multiPoint.addGeometry( new Point( p ) ) ;
 	}
-
-	bench().start( boost::format("triangulate %s points") % N_POINTS );
-	TriangulatedSurface triangulatedSurface ;
-	SFCGAL::triangulate::triangulatePolygon3D( multiPoint, triangulatedSurface ) ;
+	bench().start( boost::format("triangulate2DZ %s points") % N_POINTS );
+	ConstraintDelaunayTriangulation cdt = triangulate2DZ( multiPoint ) ;
 	bench().stop();
 }
+
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 {
