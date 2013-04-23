@@ -20,6 +20,7 @@
  */
 #include <SFCGAL/algorithm/straightSkeleton.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/algorithm/orientation.h>
 
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 
@@ -70,13 +71,13 @@ void straightSkeletonToMultiLineString(
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
 {
 	switch ( g.geometryTypeId() ){
 	case TYPE_POLYGON:
-		return straightSkeleton( g.as< Polygon >() ) ;
+		return straightSkeleton( g.as< Polygon >(), autoOrientation ) ;
 	case TYPE_MULTIPOLYGON:
-		return straightSkeleton( g.as< MultiPolygon >() ) ;
+		return straightSkeleton( g.as< MultiPolygon >(), autoOrientation ) ;
 	default:
 		return std::auto_ptr< MultiLineString >( new MultiLineString );
 	}
@@ -86,7 +87,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g )
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g )
+std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	if ( g.isEmpty() ){
@@ -94,6 +95,9 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g )
 	}
 
 	Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
+	if ( autoOrientation ){
+		algorithm::makeValidOrientation( polygon ) ;
+	}
 	boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 	straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	return result ;
@@ -103,11 +107,14 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g )
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g )
+std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		Polygon_with_holes_2 polygon = g.polygonN(i).toPolygon_with_holes_2() ;
+		if ( autoOrientation ){
+			algorithm::makeValidOrientation( polygon ) ;
+		}
 		boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 		straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	}
