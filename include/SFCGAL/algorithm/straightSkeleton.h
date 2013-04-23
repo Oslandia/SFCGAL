@@ -34,16 +34,18 @@ namespace SFCGAL {
 namespace algorithm {
 	/**
 	 * @brief build a 2D straight skeleton for a Polygon
+	 * @param g input geometry
+	 * @param autoOrientation check and fix polygon orientation
 	 */
-	std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g ) ;
+	std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true ) ;
 	/**
 	 * @brief build a 2D straight skeleton for a Polygon
 	 */
-	std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g ) ;
+	std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation = true ) ;
 	/**
 	 * @brief build a 2D straight skeleton for a Polygon
 	 */
-	std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g ) ;
+	std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation = true ) ;
 
 }//namespace algorithm
 }//namespace SFCGAL
