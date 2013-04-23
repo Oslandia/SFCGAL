@@ -34,6 +34,52 @@ namespace algorithm {
 ///
 ///
 ///
+void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon )
+{
+	if ( polygon.orientation() != CGAL::COUNTERCLOCKWISE ){
+		polygon.reverse_orientation() ;
+	}
+}
+
+///
+///
+///
+void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon )
+{
+	typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
+
+	if ( polygon.outer_boundary().orientation() != CGAL::COUNTERCLOCKWISE ){
+		polygon.outer_boundary().reverse_orientation() ;
+	}
+	for ( Polygon_with_holes_2::Hole_iterator it = polygon.holes_begin(); it != polygon.holes_end(); ++it ){
+		if ( it->orientation() != CGAL::CLOCKWISE ){
+			it->reverse_orientation() ;
+		}
+	}
+}
+
+///
+///
+///
+void makeValidOrientation( Polygon & polygon )
+{
+	for ( size_t i = 0; i < polygon.numRings(); i++ ){
+		LineString & ring = polygon.ringN(i);
+		if ( i == 0 ){
+			if ( ring.toPolygon_2().orientation() != CGAL::COUNTERCLOCKWISE ){
+				ring.reverse() ;
+			}
+		}else{
+			if ( ring.toPolygon_2().orientation() != CGAL::CLOCKWISE ){
+				ring.reverse();
+			}
+		}
+	}
+}
+
+///
+///
+///
 bool hasConsistentOrientation3D( const TriangulatedSurface & g )
 {
 	using namespace graph ;
