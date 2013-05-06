@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSeg
 	lineString.addPoint( Point(0.0,0.0) );
 	BOOST_CHECK_EQUAL( point.distance( lineString ), 5.0 );
 }
-BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSegments3D )
+BOOST_AUTO_TEST_CASE( testDistancePointLineString3D_pointOnLineString_collapsedSegments )
 {
 	Point point(0.0,3.0,4.0);
 	LineString lineString ;
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString_zeroLengthSegments )
 	BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
 }
 // LineString / LineString 3D
-BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString_zeroLengthSegments3D )
+BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString3D_zeroLengthSegments )
 {
 	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0 0.0,0.0 0.0 0.0)") );
 	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(0.0 3.0 4.0,0.0 3.0 4.0)") );

@@ -370,6 +370,7 @@ double distanceGeometryCollectionToGeometry( const Geometry & gA, const Geometry
 ///
 double distancePointSegment( const Point & p, const Point & a, const Point & b )
 {
+	// empty already checked
 	BOOST_ASSERT( ! p.isEmpty() );
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
@@ -392,6 +393,7 @@ double distancePointSegment( const Point & p, const Point & a, const Point & b )
 ///
 double distanceSegmentSegment( const Point & a, const Point & b, const Point & c, const Point & d )
 {
+	// empty already checked
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
 	BOOST_ASSERT( ! c.isEmpty() );
