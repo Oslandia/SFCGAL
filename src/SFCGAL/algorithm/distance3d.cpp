@@ -137,8 +137,6 @@ double distancePointLineString3D( const Point & gA, const LineString& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < gB.numSegments(); i++ ){
 		dMin = std::min( dMin, distancePointSegment3D( gA, gB.pointN(i), gB.pointN(i+1) ) );
@@ -241,10 +239,8 @@ double distanceLineStringLineString3D( const LineString & gA, const LineString& 
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gA.numPoints() >= 2 );
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-	size_t nsA = gA.numPoints() - 1 ;
-	size_t nsB = gB.numPoints() - 1 ;
+	size_t nsA = gA.numSegments() ;
+	size_t nsB = gB.numSegments() ;
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < nsA; i++ ){
@@ -269,8 +265,6 @@ double distanceLineStringTriangle3D( const LineString & gA, const Triangle& gB )
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
-
-	BOOST_ASSERT( gA.numPoints() >= 2 );
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 
@@ -470,6 +464,7 @@ double distanceGeometryCollectionToGeometry3D( const Geometry & gA, const Geomet
 ///
 double distancePointSegment3D( const Point & p, const Point & a, const Point & b )
 {
+	// empty already checked
 	BOOST_ASSERT( ! p.isEmpty() );
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
@@ -524,6 +519,7 @@ squared_distance_t squaredDistancePointTriangle3D(
 ///
 double distancePointTriangle3D( const Point & p_, const Point& a_, const Point& b_, const Point& c_ )
 {
+	// empty already checked
 	BOOST_ASSERT( ! p_.isEmpty() );
 	BOOST_ASSERT( ! a_.isEmpty() );
 	BOOST_ASSERT( ! b_.isEmpty() );
@@ -545,6 +541,7 @@ double distancePointTriangle3D( const Point & p_, const Point& a_, const Point& 
 ///
 double distanceSegmentSegment3D( const Point & a, const Point & b, const Point & c, const Point & d )
 {
+	// empty already checked
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
 	BOOST_ASSERT( ! c.isEmpty() );
@@ -600,6 +597,13 @@ double distanceSegmentTriangle3D( const Point & sA_, const Point & sB_,
 	const Point & tA_, const Point & tB_, const Point & tC_
 )
 {
+	// empty already checked
+	BOOST_ASSERT( ! sA_.isEmpty() );
+	BOOST_ASSERT( ! sB_.isEmpty() );
+	BOOST_ASSERT( ! tA_.isEmpty() );
+	BOOST_ASSERT( ! tB_.isEmpty() );
+	BOOST_ASSERT( ! tC_.isEmpty() );
+
 	Point_3 sA = sA_.toPoint_3();
 	Point_3 sB = sB_.toPoint_3();
 	Segment_3 sAB( sA, sB );
