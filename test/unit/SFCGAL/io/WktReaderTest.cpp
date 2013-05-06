@@ -135,6 +135,17 @@ BOOST_AUTO_TEST_CASE( polygonEmpty )
 }
 
 
+// 4 points polygon (triangle)
+BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
+{
+	std::auto_ptr< Geometry > g( readWkt("POLYGON((0 0,1 0,1 1,0 0))") );
+	BOOST_CHECK( g->is< Polygon >() );
+	BOOST_CHECK( ! g->isEmpty() );
+	BOOST_CHECK_EQUAL( g->as< Polygon >().exteriorRing().numPoints(), 4U );
+}
+
+
+
 
 //-- WKT MULTIPOINT
 

@@ -48,7 +48,7 @@ namespace algorithm {
 ///
 double distance3D( const Geometry & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distance3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distance3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	switch ( gA.geometryTypeId() ){
 	case TYPE_POINT:
@@ -56,8 +56,10 @@ double distance3D( const Geometry & gA, const Geometry& gB )
 	case TYPE_LINESTRING:
 		return distanceLineStringGeometry3D( gA.as< LineString >(), gB );
 	case TYPE_POLYGON:
+		//SFCGAL_DEBUG( boost::format("gA is a Polygon (%s)") % gA.geometryTypeId() );
 		return distancePolygonGeometry3D( gA.as< Polygon >(), gB );
 	case TYPE_TRIANGLE:
+		//SFCGAL_DEBUG( boost::format("gA is a Triangle (%s)") % gA.geometryTypeId() );
 		return distanceTriangleGeometry3D( gA.as< Triangle >(), gB );
 	case TYPE_SOLID:
 		return distanceSolidGeometry3D( gA.as< Solid >(), gB );
@@ -83,7 +85,7 @@ double distance3D( const Geometry & gA, const Geometry& gB )
 ///
 double distancePointGeometry3D( const Point & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distancePointGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distancePointGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	switch ( gB.geometryTypeId() ){
 	case TYPE_POINT:
@@ -201,7 +203,7 @@ double distancePointSolid3D( const Point & gA, const Solid& gB )
 ///
 double distanceLineStringGeometry3D( const LineString & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distanceLineStringGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distanceLineStringGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	switch ( gB.geometryTypeId() ){
 		case TYPE_POINT:
@@ -315,7 +317,7 @@ double distanceLineStringSolid3D( const LineString & gA, const Solid & gB )
 ///
 double distanceTriangleGeometry3D( const Triangle & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distanceTriangleGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distanceTriangleGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	switch ( gB.geometryTypeId() ){
 		case TYPE_POINT:
@@ -369,7 +371,7 @@ double distanceTriangleSolid3D( const Triangle & gA, const Solid& gB )
 ///
 double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
@@ -386,7 +388,7 @@ double distancePolygonGeometry3D( const Polygon & gA, const Geometry& gB )
 ///
 double distanceSolidGeometry3D( const Solid & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distanceSolidGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distanceSolidGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	switch ( gB.geometryTypeId() ){
 		case TYPE_POINT:
@@ -420,7 +422,7 @@ double distanceSolidGeometry3D( const Solid & gA, const Geometry& gB )
 ///
 double distanceSolidSolid3D( const Solid & gA, const Solid& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distancePolygonGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
@@ -445,7 +447,7 @@ double distanceSolidSolid3D( const Solid & gA, const Solid& gB )
 ///
 double distanceGeometryCollectionToGeometry3D( const Geometry & gA, const Geometry& gB )
 {
-	SFCGAL_DEBUG( boost::format("dispatch distanceGeometryCollectionToGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
+	//SFCGAL_DEBUG( boost::format("dispatch distanceGeometryCollectionToGeometry3D(%s,%s)") % gA.asText() % gB.asText() );
 
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
@@ -526,11 +528,9 @@ double distancePointTriangle3D( const Point & p_, const Point& a_, const Point& 
 	BOOST_ASSERT( ! c_.isEmpty() );
 
 	Point_3 p = p_.toPoint_3();
-	Point_3 a = a_.toPoint_3();
-	Point_3 b = b_.toPoint_3();
-	Point_3 c = c_.toPoint_3();
+	Triangle_3 abc( a_.toPoint_3(), b_.toPoint_3(), c_.toPoint_3() ) ;
 
-	squared_distance_t dMin = distancePointTriangle3D(p,a,b,c);
+	squared_distance_t dMin = squaredDistancePointTriangle3D( p, abc );
 	return CGAL::sqrt( CGAL::to_double( dMin ) ) ;
 }
 
