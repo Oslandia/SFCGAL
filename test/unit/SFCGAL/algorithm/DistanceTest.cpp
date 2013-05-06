@@ -128,6 +128,14 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSeg
 	lineString.addPoint( Point(0.0,0.0) );
 	BOOST_CHECK_EQUAL( point.distance( lineString ), 5.0 );
 }
+BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSegments3D )
+{
+	Point point(0.0,3.0,4.0);
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0,0.0) );
+	lineString.addPoint( Point(0.0,0.0,0.0) );
+	BOOST_CHECK_EQUAL( point.distance3D( lineString ), 5.0 );
+}
 
 
 
@@ -155,6 +163,20 @@ BOOST_AUTO_TEST_CASE( testDistancePointPolygon_pointOutOfPolygon )
 	BOOST_CHECK_EQUAL( gA->distance( *gB ), sqrt(2.0)/2.0 );
 }
 
+// LineString / LineString 2D
+BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString_zeroLengthSegments )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0,0.0 0.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(3.0 4.0,3.0 4.0)") );
+	BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
+}
+// LineString / LineString 3D
+BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString_zeroLengthSegments3D )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0 0.0,0.0 0.0 0.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(0.0 3.0 4.0,0.0 3.0 4.0)") );
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 5.0 );
+}
 
 // LineString / Triangle
 BOOST_AUTO_TEST_CASE( testDistance3DLineStringTriangle_lineStringInTriangle )

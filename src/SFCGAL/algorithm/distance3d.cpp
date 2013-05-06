@@ -137,8 +137,6 @@ double distancePointLineString3D( const Point & gA, const LineString& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < gB.numSegments(); i++ ){
 		dMin = std::min( dMin, distancePointSegment3D( gA, gB.pointN(i), gB.pointN(i+1) ) );
@@ -241,10 +239,8 @@ double distanceLineStringLineString3D( const LineString & gA, const LineString& 
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gA.numPoints() >= 2 );
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-	size_t nsA = gA.numPoints() - 1 ;
-	size_t nsB = gB.numPoints() - 1 ;
+	size_t nsA = gA.numSegments() ;
+	size_t nsB = gB.numSegments() ;
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < nsA; i++ ){
@@ -269,8 +265,6 @@ double distanceLineStringTriangle3D( const LineString & gA, const Triangle& gB )
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
-
-	BOOST_ASSERT( gA.numPoints() >= 2 );
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 
