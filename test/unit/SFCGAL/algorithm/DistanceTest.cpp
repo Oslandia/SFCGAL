@@ -113,6 +113,24 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString )
 	);
 	BOOST_CHECK_EQUAL( point.distance( lineString ), 0.0 );
 }
+BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_badLineStringDefinition )
+{
+	Point point(3.0,4.0);
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0) );
+	BOOST_CHECK_EQUAL( point.distance( lineString ), std::numeric_limits< double >::infinity() );
+}
+BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSegments )
+{
+	Point point(3.0,4.0);
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0) );
+	lineString.addPoint( Point(0.0,0.0) );
+	BOOST_CHECK_EQUAL( point.distance( lineString ), 5.0 );
+}
+
+
+
 BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOutOfLineString )
 {
 	Point point(0.0,1.0);

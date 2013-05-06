@@ -143,6 +143,12 @@ BOOST_AUTO_TEST_CASE( testNumSegments_empty )
 	LineString g ;
 	BOOST_CHECK_EQUAL( g.numSegments(), 0U );
 }
+BOOST_AUTO_TEST_CASE( testNumSegments_onlyOnePoint )
+{
+	LineString g ;
+	g.addPoint( Point(0.0,0.0) );
+	BOOST_CHECK_EQUAL( g.numSegments(), 0U );
+}
 BOOST_AUTO_TEST_CASE( testNumSegments_twoPoints )
 {
 	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
