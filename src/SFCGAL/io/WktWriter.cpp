@@ -318,7 +318,7 @@ void WktWriter::write( const MultiSolid & g )
 ///
 void WktWriter::write( const Triangle & g )
 {
-	_s << "POLYGON" ;
+	_s << "TRIANGLE" ;
 	writeCoordinateType(g);
 	if ( g.isEmpty() ){
 		_s << " EMPTY" ;
