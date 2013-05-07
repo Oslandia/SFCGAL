@@ -126,10 +126,9 @@ double distancePointLineString( const Point & gA, const LineString& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-	size_t numSegments = gB.numPoints() - 1 ;
+	size_t numSegments = gB.numSegments() ;
 
-	double dMin = SFCGAL::NaN() ;
+	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < numSegments; i++ ){
 		double d = distancePointSegment( gA, gB.pointN(i), gB.pointN(i+1) );
 		if ( i == 0 || d < dMin ){
@@ -216,10 +215,8 @@ double distanceLineStringLineString( const LineString & gA, const LineString& gB
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	BOOST_ASSERT( gA.numPoints() >= 2 );
-	BOOST_ASSERT( gB.numPoints() >= 2 );
-	size_t nsA = gA.numPoints() - 1 ;
-	size_t nsB = gB.numPoints() - 1 ;
+	size_t nsA = gA.numSegments() ;
+	size_t nsB = gB.numSegments() ;
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < nsA; i++ ){
@@ -373,6 +370,7 @@ double distanceGeometryCollectionToGeometry( const Geometry & gA, const Geometry
 ///
 double distancePointSegment( const Point & p, const Point & a, const Point & b )
 {
+	// empty already checked
 	BOOST_ASSERT( ! p.isEmpty() );
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
@@ -395,6 +393,7 @@ double distancePointSegment( const Point & p, const Point & a, const Point & b )
 ///
 double distanceSegmentSegment( const Point & a, const Point & b, const Point & c, const Point & d )
 {
+	// empty already checked
 	BOOST_ASSERT( ! a.isEmpty() );
 	BOOST_ASSERT( ! b.isEmpty() );
 	BOOST_ASSERT( ! c.isEmpty() );

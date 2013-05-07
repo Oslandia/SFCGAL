@@ -22,6 +22,7 @@
 #include <SFCGAL/all.h>
 
 #include <SFCGAL/algorithm/force3D.h>
+#include <SFCGAL/algorithm/orientation.h>
 
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 
@@ -89,17 +90,7 @@ std::auto_ptr< Geometry > building(
 	Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
 
 	// fix orientation
-	{
-		if ( polygon.outer_boundary().orientation() != CGAL::COUNTERCLOCKWISE ){
-			polygon.outer_boundary().reverse_orientation() ;
-		}
-		for ( Polygon_with_holes_2::Hole_iterator it = polygon.holes_begin(); it != polygon.holes_end(); ++it ){
-			if ( it->orientation() != CGAL::CLOCKWISE ){
-				it->reverse_orientation() ;
-			}
-		}
-	}
-
+	algorithm::makeValidOrientation( polygon ) ;
 
 	boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 

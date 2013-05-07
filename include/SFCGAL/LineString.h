@@ -105,7 +105,7 @@ namespace SFCGAL {
 		inline size_t          numPoints() const { return _points.size(); }
 		/**
 		 * Returns the number of segments
-		 * @warning not standard
+		 * @warning not standard, returns zero if LineString contains only one point
 		 */
 		size_t                  numSegments() const ;
 

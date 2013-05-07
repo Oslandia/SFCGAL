@@ -21,10 +21,29 @@
 #ifndef _SFCGAL_ALGORITHM_ORIENTATION_H_
 #define _SFCGAL_ALGORITHM_ORIENTATION_H_
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
+
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_with_holes_2.h>
 
 namespace SFCGAL {
 namespace algorithm {
+
+	/**
+	 * Make valid 2D orientation
+	 */
+    void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon ) ;
+	/**
+	 * Make valid 2D orientation
+	 */
+    void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon ) ;
+	/**
+	 * Make valid 2D orientation
+	 */
+    void makeValidOrientation( Polygon & polygon ) ;
+
+
 	/**
 	 * Test if a Geometry has a consistent orientation
 	 */

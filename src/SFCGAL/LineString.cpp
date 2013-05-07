@@ -172,9 +172,9 @@ size_t LineString::numSegments() const
 {
 	if ( _points.empty() ){
 		return 0 ;
+	}else{
+		return _points.size() - 1 ;
 	}
-	BOOST_ASSERT( numPoints() >= 2U );
-	return numPoints() - 1 ;
 }
 
 ///
