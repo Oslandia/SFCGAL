@@ -251,6 +251,9 @@ CGAL::Polygon_with_holes_2<Kernel> Polygon::toPolygon_with_holes_2() const
 		holes.push_back( inner );
 	}
 	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2();
+	if ( outer.orientation() == CGAL::CLOCKWISE ) {
+		outer.reverse_orientation();
+	}
 	return CGAL::Polygon_with_holes_2<Kernel>( outer,
 						   holes.begin(),
 						   holes.end());
