@@ -209,9 +209,14 @@ Solid *   extrude( const TriangulatedSurface & g, const Kernel::Vector_3 & v )
 	//boundary
 	std::auto_ptr< Geometry > boundary( g.boundary() ) ;
 	BOOST_ASSERT( boundary.get() != NULL );
-	std::auto_ptr< Geometry > extrudedBoundary( extrude(*boundary, v) ) ;
-	BOOST_ASSERT( extrudedBoundary->is< PolyhedralSurface >() );
-	result->exteriorShell().addPolygons( extrudedBoundary->as< PolyhedralSurface >() );
+
+	// closed surface extruded
+	if ( ! boundary->isEmpty() ){
+		std::auto_ptr< Geometry > extrudedBoundary( extrude(*boundary, v) ) ;
+		BOOST_ASSERT( extrudedBoundary->is< PolyhedralSurface >() );
+		result->exteriorShell().addPolygons( extrudedBoundary->as< PolyhedralSurface >() );
+	}
+
 
 	return result.release() ;
 }
