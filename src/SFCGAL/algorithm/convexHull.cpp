@@ -76,19 +76,18 @@ std::auto_ptr<Geometry> convexHull( const Geometry & g )
 	    return std::auto_ptr<Geometry>(new Point( *epoints.begin() ));
 	}
 	else if ( epoints.size() == 2 ) {
-	    return std::auto_ptr<Geometry>(new LineString( Point(*epoints.begin()), Point( *epoints.end()) ));
+		std::list<Point_2>::const_iterator it = epoints.begin();
+		return std::auto_ptr<Geometry>(new LineString( Point(*it++), Point(*it++) ));
 	}
-	#if 0
 	// GEOS does not seem to return triangles
 	else if ( epoints.size() == 3 ) {
 	    std::list<Point_2>::const_iterator it = epoints.begin();
 	    Point_2 p( *it++ );
 	    Point_2 q( *it++ );
 	    Point_2 r( *it++ );
-	    return new Triangle(p, q, r);
+	    return std::auto_ptr<Geometry>( new Triangle(p, q, r) ) ;
 	}
-	#endif
-	else if ( epoints.size() > 2 ) {
+	else if ( epoints.size() > 3 ) {
 	    Polygon* poly = new Polygon;
 	    for ( std::list<Point_2>::const_iterator it = epoints.begin(); it != epoints.end(); ++it ) {
 		poly->exteriorRing().addPoint( *it );
@@ -128,7 +127,9 @@ std::auto_ptr<Geometry> convexHull3D( const Geometry & g )
 	CGAL::Object hull;
 	CGAL::convex_hull_3( points.begin(), points.end(), hull ) ;
 
-	if (const Point_3 * point = object_cast< Point_3 >(&hull)) {
+	if ( hull.empty() ){
+		return std::auto_ptr<Geometry>( new GeometryCollection() );
+	} else if (const Point_3 * point = object_cast< Point_3 >(&hull)) {
 		return std::auto_ptr<Geometry>( new Point( *point ) );
 	} else if (const Segment_3 * segment = object_cast< Segment_3 >(&hull)) {
 		return std::auto_ptr<Geometry>( new LineString( Point( segment->start() ), Point( segment->end() ) ));
