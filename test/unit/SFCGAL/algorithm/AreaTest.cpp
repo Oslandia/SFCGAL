@@ -47,6 +47,38 @@ BOOST_AUTO_TEST_CASE( testEmpty2D3D )
 	}
 }
 
+
+
+BOOST_AUTO_TEST_CASE( testSignedArea2D_lineString )
+{
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0) );
+	lineString.addPoint( Point(1.0,0.0) );
+	lineString.addPoint( Point(1.0,1.0) );
+	lineString.addPoint( Point(0.0,1.0) );
+	lineString.addPoint( lineString.startPoint() );
+
+	BOOST_CHECK_EQUAL( algorithm::signedArea( lineString ),  1.0 );
+	lineString.reverse() ;
+	BOOST_CHECK_EQUAL( algorithm::signedArea( lineString ), -1.0 );
+}
+
+BOOST_AUTO_TEST_CASE( testSignedArea2D_triangle )
+{
+	Triangle triangle(
+		Point(0.0,0.0),
+		Point(1.0,0.0),
+		Point(1.0,1.0)
+	) ;
+
+	BOOST_CHECK_EQUAL( algorithm::signedArea( triangle ),  0.5 );
+	triangle.reverse() ;
+	BOOST_CHECK_EQUAL( algorithm::signedArea( triangle ), -0.5 );
+}
+
+
+
+
 // must return 0.0
 BOOST_AUTO_TEST_CASE( testPoint2D3D )
 {
@@ -59,7 +91,6 @@ BOOST_AUTO_TEST_CASE( testLineString2D3D )
 	BOOST_CHECK_EQUAL( algorithm::area( LineString(Point(0.0,0.0),Point(1.0,1.0)) ), 0.0 );
 	BOOST_CHECK_EQUAL( algorithm::area3D( LineString(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0)) ), 0.0 );
 }
-
 
 
 BOOST_AUTO_TEST_CASE( testArea3D_Triangle1 )
