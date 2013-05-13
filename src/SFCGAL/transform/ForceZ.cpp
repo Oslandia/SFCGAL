@@ -39,7 +39,7 @@ ForceZ::ForceZ( const Kernel::FT & defaultZ ):
 ///
 void ForceZ::transform( Point & p )
 {
-	if ( ! p.is3D() ){
+	if ( ! p.isEmpty() && ! p.is3D() ){
 		p = Point( p.x(), p.y(), _defaultZ );
 	}
 }
