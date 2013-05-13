@@ -29,11 +29,12 @@ namespace algorithm {
 
 	/**
 	 * extrude a Geometry with a direction
-	 * @todo GeometryCollection, PolyhedralSurface, TriangulatedSurface (require boundary)
 	 */
 	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 	/**
 	 * @brief extrude a Geometry by a given vector
+	 * @todo Improve 3D surface extrude (Extrude only faces whose dot( v, normal ) > 0 and use Polyhedron union to
+	 *         get output geometries with a clean topology)
 	 */
 	std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
 
