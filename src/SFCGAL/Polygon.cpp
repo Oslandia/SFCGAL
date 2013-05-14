@@ -228,32 +228,26 @@ bool Polygon::isCounterClockWiseOriented() const
 ///
 ///
 ///
-CGAL::Polygon_2<Kernel> Polygon::toPolygon_2() const
+CGAL::Polygon_2<Kernel> Polygon::toPolygon_2( bool fixOrientation ) const
 {
-	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2();
-	if ( outer.orientation() == CGAL::CLOCKWISE ) {
-		outer.reverse_orientation();
-	}
-	return outer;
+	return exteriorRing().toPolygon_2( fixOrientation );
 }
 
 ///
 ///
 ///
-CGAL::Polygon_with_holes_2<Kernel> Polygon::toPolygon_with_holes_2() const
+CGAL::Polygon_with_holes_2<Kernel> Polygon::toPolygon_with_holes_2( bool fixOrientation ) const
 {
 	std::list<CGAL::Polygon_2<Kernel> > holes;
 	for ( size_t i = 0; i < numInteriorRings(); ++i ) {
-		CGAL::Polygon_2<Kernel> inner = interiorRingN(i).toPolygon_2();
-		if ( inner.orientation() == CGAL::COUNTERCLOCKWISE ) {
+		// note that the orientation is fixed here to avoid double reverse for interior rings
+		CGAL::Polygon_2<Kernel> inner = interiorRingN(i).toPolygon_2( false );
+		if ( fixOrientation && inner.orientation() == CGAL::COUNTERCLOCKWISE ) {
 			inner.reverse_orientation();
 		}
 		holes.push_back( inner );
 	}
-	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2();
-	if ( outer.orientation() == CGAL::CLOCKWISE ) {
-		outer.reverse_orientation();
-	}
+	CGAL::Polygon_2<Kernel> outer = exteriorRing().toPolygon_2( fixOrientation );
 	return CGAL::Polygon_with_holes_2<Kernel>( outer,
 						   holes.begin(),
 						   holes.end());
