@@ -67,5 +67,27 @@ BOOST_AUTO_TEST_CASE( test3DLengthLineString )
 	BOOST_CHECK_EQUAL( algorithm::length3D( *io::readWkt("LINESTRING(0.0 0.0 0.0,0.0 1.0 0.0,0.0 1.0 1.0)" ) ), 2.0 );
 }
 
+
+//-- invalid type 2D
+
+BOOST_AUTO_TEST_CASE( testLength_invalidType )
+{
+	std::vector< std::string > wkts ;
+	wkts.push_back( "POINT(3.0 4.0)" );
+	wkts.push_back( "TRIANGLE((0.0 0.0,1.0 0.0,1.0 1.0,0.0 0.0))" );
+	wkts.push_back( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 0.0))" );
+
+	for ( size_t i = 0; i < wkts.size(); i++ ){
+		BOOST_TEST_MESSAGE( wkts[i] );
+		BOOST_CHECK_EQUAL( algorithm::length( *io::readWkt( wkts[i] ) ), 0.0 );
+		BOOST_CHECK_EQUAL( algorithm::length3D( *io::readWkt( wkts[i] ) ), 0.0 );
+	}
+
+}
+//-- invalid type 3D
+
+
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
