@@ -70,7 +70,7 @@ namespace SFCGAL {
      * @warning code values have are important for WKB
      */
     enum GeometryType {
-       TYPE_GEOMETRY            = 0, //abstract
+ //      TYPE_GEOMETRY            = 0, //abstract
        TYPE_POINT               = 1,
        TYPE_LINESTRING          = 2,
        TYPE_POLYGON             = 3,
@@ -78,13 +78,13 @@ namespace SFCGAL {
        TYPE_MULTILINESTRING     = 5,
        TYPE_MULTIPOLYGON        = 6,
        TYPE_GEOMETRYCOLLECTION  = 7,
-       TYPE_CIRCULARSTRING      = 8, // not yet supported
-       TYPE_COMPOUNDCURVE       = 9, // not yet supported
-       TYPE_CURVEPOLYGON        = 10, // not yet supported
-       TYPE_MULTICURVE          = 11, //abstract
-       TYPE_MULTISURFACE        = 12, //abstract
-       TYPE_CURVE               = 13, //abstract
-       TYPE_SURFACE             = 14, //abstract
+//     TYPE_CIRCULARSTRING      = 8, // not yet supported
+//     TYPE_COMPOUNDCURVE       = 9, // not yet supported
+//     TYPE_CURVEPOLYGON        = 10, // not yet supported
+//     TYPE_MULTICURVE          = 11, //abstract
+//     TYPE_MULTISURFACE        = 12, //abstract
+//     TYPE_CURVE               = 13, //abstract
+//     TYPE_SURFACE             = 14, //abstract
        TYPE_POLYHEDRALSURFACE   = 15,
        TYPE_TRIANGULATEDSURFACE = 16,
 
@@ -119,11 +119,6 @@ namespace SFCGAL {
         * @brief Get a deep copy of the geometry
         */
        virtual Geometry *  clone() const = 0 ;
-
-       /**
-        * @brief Factory method. Returns a SFCGAL::Geometry from a CGAL geometry
-        */
-       static Geometry* fromCGAL( const CGAL::Object& obj );
 
        /**
         * @brief [OGC/SFA]returns the geometry type
@@ -182,8 +177,6 @@ namespace SFCGAL {
         * @brief [OGC/SFA]Returns the boundary of the geometry
         */
        virtual Geometry*    boundary() const ;
-
-       //inline int SRID() const ;
 
        /**
         * @brief Computes the distance to an other geometry
