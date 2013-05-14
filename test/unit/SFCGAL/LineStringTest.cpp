@@ -202,7 +202,26 @@ BOOST_AUTO_TEST_CASE( testToPolygon_2_Empty ){
 	CGAL::Polygon_2< Kernel > polygon = g.toPolygon_2();
 	BOOST_CHECK( polygon.is_empty() );
 }
+BOOST_AUTO_TEST_CASE( testToPolygon_2_checkOrientation ){
+	LineString g ;
+	g.addPoint( Point(0.0,0.0) );
+	g.addPoint( Point(1.0,1.0) );
+	g.addPoint( Point(1.0,0.0) );
+	g.addPoint( g.startPoint() );
 
+	//keep orientation
+	{
+		CGAL::Polygon_2< Kernel > polygon = g.toPolygon_2(false);
+		BOOST_CHECK( ! polygon.is_empty() );
+		BOOST_CHECK( polygon.is_clockwise_oriented() );
+	}
+	//fix orientation
+	{
+		CGAL::Polygon_2< Kernel > polygon = g.toPolygon_2(true);
+		BOOST_CHECK( ! polygon.is_empty() );
+		BOOST_CHECK( polygon.is_counterclockwise_oriented() );
+	}
+}
 
 
 //-- Geometry tests
