@@ -23,6 +23,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include <SFCGAL/LineString.h>
+#include <SFCGAL/Envelope.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/GeometryCollection.h>
 
 using namespace SFCGAL ;
 using namespace boost::unit_test ;
@@ -67,48 +70,7 @@ BOOST_AUTO_TEST_CASE( twoPointsConstructor )
 ///LineString( LineString const& other ) ;
 ///LineString& operator = ( const LineString & other ) ;
 ///~LineString() ;
-///virtual LineString *   clone() const ;
 
-///virtual GeometryType   geometryTypeId() const ;
-BOOST_AUTO_TEST_CASE( testGeometryTypeId )
-{
-	LineString g;
-	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_LINESTRING );
-}
-///virtual std::string    geometryType() const ;
-BOOST_AUTO_TEST_CASE( testGeometryType )
-{
-	LineString g;
-	BOOST_CHECK_EQUAL( g.geometryType(), "LineString" );
-}
-
-
-///virtual int            dimension() const ;
-///virtual int            coordinateDimension() const ;
-///virtual bool           isEmpty() const ;
-BOOST_AUTO_TEST_CASE( testIsEmpty_true )
-{
-	LineString g;
-	BOOST_CHECK( g.isEmpty() );
-}
-BOOST_AUTO_TEST_CASE( testIsEmpty_false )
-{
-	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
-	BOOST_CHECK( ! g.isEmpty() );
-}
-
-///virtual bool           is3D() const ;
-BOOST_AUTO_TEST_CASE( testIs3D_false )
-{
-	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
-	BOOST_CHECK( ! g.is3D() );
-}
-BOOST_AUTO_TEST_CASE( testIs3D_true )
-{
-	LineString g( Point(0.0,0.0,0.0), Point(1.0,1.0,1.0) );
-	BOOST_CHECK( g.is3D() );
-}
-///virtual bool           isMeasured() const ;
 
 ///void clear() ;
 BOOST_AUTO_TEST_CASE( testClear )
@@ -241,25 +203,102 @@ BOOST_AUTO_TEST_CASE( testToPolygon_2_Empty ){
 	BOOST_CHECK( polygon.is_empty() );
 }
 
-// is< LineString >()
-BOOST_AUTO_TEST_CASE( isLineString )
+
+
+//-- Geometry tests
+
+
+//virtual Geometry *   Geometry::clone() const = 0 ;
+BOOST_AUTO_TEST_CASE( testClone )
 {
-	LineString g;
-	BOOST_CHECK( g.is< LineString >() );
+	LineString g ;
+	g.addPoint( Point(0.0,0.0) );
+	g.addPoint( Point(1.0,1.0) );
+	std::auto_ptr< Geometry > copy( g.clone() );
+	BOOST_REQUIRE( copy->is< LineString >() );
+	BOOST_CHECK_EQUAL( copy->as< LineString >().numPoints(), 2U );
+}
+
+//virtual Geometry*    Geometry::boundary() const ;
+BOOST_AUTO_TEST_CASE( testBoundary_empty )
+{
+	LineString g ;
+	std::auto_ptr< Geometry > boundary( g.boundary() );
+	BOOST_CHECK( boundary->isEmpty() );
+	BOOST_CHECK( boundary->is< GeometryCollection >() );
+}
+BOOST_AUTO_TEST_CASE( testBoundary_3points )
+{
+	LineString g ;
+	g.addPoint( Point(0.0,0.0) );
+	g.addPoint( Point(1.0,1.0) );
+	g.addPoint( Point(2.0,2.0) );
+
+	std::auto_ptr< Geometry > boundary( g.boundary() );
+	BOOST_CHECK( ! boundary->isEmpty() );
+	BOOST_REQUIRE( boundary->is< MultiPoint >() );
+	BOOST_CHECK_EQUAL( boundary->numGeometries(), 2U );
+}
+BOOST_AUTO_TEST_CASE( testBoundary_closed )
+{
+	LineString g ;
+	g.addPoint( Point(0.0,0.0) );
+	g.addPoint( Point(1.0,1.0) );
+	g.addPoint( Point(2.0,2.0) );
+	g.addPoint( g.startPoint() );
+
+	std::auto_ptr< Geometry > boundary( g.boundary() );
+	BOOST_CHECK( boundary->isEmpty() );
+	BOOST_CHECK( boundary->is< GeometryCollection >() );
 }
 
 
+//Envelope             Geometry::envelope() const ;
+BOOST_AUTO_TEST_CASE( testEnvelope_empty )
+{
+	BOOST_CHECK( LineString().envelope().isEmpty() );
+}
+BOOST_AUTO_TEST_CASE( testEnvelope_2D )
+{
+	LineString g ;
+	g.addPoint( Point(1.0,5.0) );
+	g.addPoint( Point(2.0,7.0) );
+	g.addPoint( Point(3.0,9.0) );
 
+	Envelope box = g.envelope() ;
+	BOOST_CHECK( ! box.isEmpty() );
+	BOOST_CHECK( ! box.is3D() );
 
-//-- asText
+	BOOST_CHECK_EQUAL( box.xMin(), 1.0 );
+	BOOST_CHECK_EQUAL( box.xMax(), 3.0 );
+	BOOST_CHECK_EQUAL( box.yMin(), 5.0 );
+	BOOST_CHECK_EQUAL( box.yMax(), 9.0 );
+}
+BOOST_AUTO_TEST_CASE( testEnvelope_3D )
+{
+	LineString g ;
+	g.addPoint( Point(1.0,5.0,11.0) );
+	g.addPoint( Point(2.0,7.0,15.0) );
+	g.addPoint( Point(3.0,9.0,17.0) );
 
+	Envelope box = g.envelope() ;
+	BOOST_CHECK( ! box.isEmpty() );
+	BOOST_CHECK( box.is3D() );
+
+	BOOST_CHECK_EQUAL( box.xMin(), 1.0 );
+	BOOST_CHECK_EQUAL( box.xMax(), 3.0 );
+	BOOST_CHECK_EQUAL( box.yMin(), 5.0 );
+	BOOST_CHECK_EQUAL( box.yMax(), 9.0 );
+	BOOST_CHECK_EQUAL( box.zMin(), 11.0 );
+	BOOST_CHECK_EQUAL( box.zMax(), 17.0 );
+}
+
+//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
 BOOST_AUTO_TEST_CASE( asTextEmpty )
 {
 	LineString g;
 	BOOST_CHECK_EQUAL( g.asText(1), "LINESTRING EMPTY" );
 }
-
-
 BOOST_AUTO_TEST_CASE( asText2d )
 {
 	LineString g(
@@ -277,7 +316,58 @@ BOOST_AUTO_TEST_CASE( asText3d )
 	BOOST_CHECK_EQUAL( g.asText(3), "LINESTRING(2.000 3.000 7.000,4.000 5.000 8.000)" );
 }
 
+//virtual std::string  Geometry::geometryType() const = 0 ;
+BOOST_AUTO_TEST_CASE( testGeometryType )
+{
+	LineString g;
+	BOOST_CHECK_EQUAL( g.geometryType(), "LineString" );
+}
 
+//virtual GeometryType Geometry::geometryTypeId() const = 0 ;
+BOOST_AUTO_TEST_CASE( testGeometryTypeId )
+{
+	LineString g;
+	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_LINESTRING );
+}
+
+//virtual int          Geometry::dimension() const = 0 ;
+//virtual int          Geometry::coordinateDimension() const = 0 ;
+
+//virtual bool         Geometry::isEmpty() const = 0 ;
+BOOST_AUTO_TEST_CASE( testIsEmpty_true )
+{
+	LineString g;
+	BOOST_CHECK( g.isEmpty() );
+}
+BOOST_AUTO_TEST_CASE( testIsEmpty_false )
+{
+	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
+	BOOST_CHECK( ! g.isEmpty() );
+}
+
+//virtual bool         Geometry::is3D() const = 0 ;
+BOOST_AUTO_TEST_CASE( testIs3D_false )
+{
+	LineString g( Point(0.0,0.0), Point(1.0,1.0) );
+	BOOST_CHECK( ! g.is3D() );
+}
+BOOST_AUTO_TEST_CASE( testIs3D_true )
+{
+	LineString g( Point(0.0,0.0,0.0), Point(1.0,1.0,1.0) );
+	BOOST_CHECK( g.is3D() );
+}
+
+//virtual bool         Geometry::isMeasured() const = 0 ;
+//virtual bool         Geometry::isSimple() const = 0 ;
+
+//template < typename Derived > inline bool Geometry::is() const
+BOOST_AUTO_TEST_CASE( isLineString )
+{
+	LineString g;
+	BOOST_CHECK( g.is< LineString >() );
+}
+//template < typename Derived > inline const Derived &  Geometry::as() const
+//template < typename Derived > inline Derived &        Geometry::as()
 
 
 
