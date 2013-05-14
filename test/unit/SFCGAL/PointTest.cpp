@@ -19,7 +19,10 @@
  *
  */
 #include <SFCGAL/Kernel.h>
+
 #include <SFCGAL/Point.h>
+#include <SFCGAL/Envelope.h>
+#include <SFCGAL/GeometryCollection.h>
 
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
@@ -140,8 +143,49 @@ BOOST_AUTO_TEST_CASE( testClone )
 	BOOST_CHECK_EQUAL( copy->as< Point >().x(), 3.0 );
 	BOOST_CHECK_EQUAL( copy->as< Point >().y(), 4.0 );
 }
+
 //virtual Geometry*    Geometry::boundary() const ;
+BOOST_AUTO_TEST_CASE( testBoundary )
+{
+	Point p(3.0,4.0);
+	std::auto_ptr< Geometry > boundary( p.boundary() );
+	BOOST_CHECK( boundary->isEmpty() );
+	BOOST_CHECK( boundary->is< GeometryCollection >() );
+}
+
 //Envelope             Geometry::envelope() const ;
+BOOST_AUTO_TEST_CASE( testEnvelope_empty )
+{
+	BOOST_CHECK( Point().envelope().isEmpty() );
+}
+BOOST_AUTO_TEST_CASE( testEnvelope_2D )
+{
+	Point g(3.0,4.0);
+	Envelope box = g.envelope() ;
+	BOOST_CHECK( ! box.isEmpty() );
+	BOOST_CHECK( ! box.is3D() );
+
+	BOOST_CHECK_EQUAL( box.xMin(), 3.0 );
+	BOOST_CHECK_EQUAL( box.xMax(), 3.0 );
+	BOOST_CHECK_EQUAL( box.yMin(), 4.0 );
+	BOOST_CHECK_EQUAL( box.yMax(), 4.0 );
+}
+BOOST_AUTO_TEST_CASE( testEnvelope_3D )
+{
+	Point g(3.0,4.0,5.0);
+	Envelope box = g.envelope() ;
+	BOOST_CHECK( ! box.isEmpty() );
+	BOOST_CHECK( box.is3D() );
+
+	BOOST_CHECK_EQUAL( box.xMin(), 3.0 );
+	BOOST_CHECK_EQUAL( box.xMax(), 3.0 );
+	BOOST_CHECK_EQUAL( box.yMin(), 4.0 );
+	BOOST_CHECK_EQUAL( box.yMax(), 4.0 );
+	BOOST_CHECK_EQUAL( box.zMin(), 5.0 );
+	BOOST_CHECK_EQUAL( box.zMax(), 5.0 );
+}
+
+
 //std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
 BOOST_AUTO_TEST_CASE( asTextEmpty )
 {
