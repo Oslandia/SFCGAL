@@ -47,7 +47,9 @@ namespace transform {
 		 */
 		virtual void transform( Point & p )
 		{
-			p = Point( p.toPoint_3().transform( _transform ) ) ;
+			if ( ! p.isEmpty() ){
+				p = Point( p.toPoint_3().transform( _transform ) ) ;
+			}
 		}
 
 		virtual void transform( LineString & ls )
