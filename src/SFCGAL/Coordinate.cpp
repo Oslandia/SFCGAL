@@ -115,14 +115,28 @@ Coordinate::~Coordinate()
 }
 
 
+class CoordinateDimensionVisitor : public boost::static_visitor<int>
+{
+public:
+	int operator()( const Coordinate::Empty& ) const {
+		return 0;
+	}
+	int operator()( const Kernel::Point_2& ) const {
+		return 2;
+		}
+	int operator()( const Kernel::Point_3& ) const {
+		return 3;
+	}
+};
+
+
 ///
 ///
 ///
 int Coordinate::coordinateDimension() const
 {
-	if ( _storage.which() == 2 )
-		return 3;
-	return _storage.which() * 2;
+	CoordinateDimensionVisitor visitor;
+	return boost::apply_visitor( visitor, _storage );
 }
 
 

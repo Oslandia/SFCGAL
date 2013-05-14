@@ -28,6 +28,8 @@ using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_PointTest )
 
+
+//Point() ;
 BOOST_AUTO_TEST_CASE( defaultConstructor )
 {
 	Point g;
@@ -42,12 +44,9 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	BOOST_CHECK( isNaN( g.m() ) );
 }
 
-BOOST_AUTO_TEST_CASE( testGeometryTypeId ){
-	Point g;
-	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_POINT );
-}
+//Point( const Coordinate & coordinate ) ;
 
-
+//Point( const Kernel::FT & x, const Kernel::FT & y ) ;
 BOOST_AUTO_TEST_CASE( xyConstructor )
 {
 	Point g(2.0,3.0);
@@ -56,6 +55,9 @@ BOOST_AUTO_TEST_CASE( xyConstructor )
 	BOOST_CHECK_EQUAL( g.x(), 2.0 );
 	BOOST_CHECK_EQUAL( g.y(), 3.0 );
 }
+
+//Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
+//Point( const double & x, const double & y, const double & z = NaN() ) ;
 BOOST_AUTO_TEST_CASE( xyzConstructor )
 {
 	Point g(2.0,3.0,4.0);
@@ -65,10 +67,38 @@ BOOST_AUTO_TEST_CASE( xyzConstructor )
 	BOOST_CHECK_EQUAL( g.y(), 3.0 );
 	BOOST_CHECK_EQUAL( g.z(), 4.0 );
 }
+//Point( const Kernel::Point_2 & other ) ;
+//Point( const Kernel::Point_3 & other ) ;
+//Point( const Point & other ) ;
+//Point& operator = ( const Point & other ) ;
+//~Point() ;
 
 
-//-- toVector_2
+//-- tested in Coordinate
+//inline Kernel::RT x() const { return _coordinate.x() ; }
+//inline Kernel::RT y() const { return _coordinate.y() ; }
+//inline Kernel::RT z() const { return _coordinate.z() ; }
 
+//inline double    m() const { return _m ; }
+//inline void      setM( const double & m ) { _m = m ; }
+BOOST_AUTO_TEST_CASE( testGetSetM )
+{
+	Point p(3.0,4.0);
+	BOOST_CHECK( ! p.isMeasured() );
+	BOOST_CHECK( isNaN( p.m() ) );
+	p.setM(5.0);
+	BOOST_CHECK_EQUAL( p.m(), 5.0 );
+}
+
+//bool operator < ( const Point & other ) const ;
+//bool operator == ( const Point & other ) const ;
+//bool operator != ( const Point & other ) const ;
+
+
+//inline Kernel::Vector_2 toVector_2() const
+//inline Kernel::Vector_3 toVector_3() const
+//inline Kernel::Point_2 toPoint_2() const
+//inline Kernel::Point_3 toPoint_3() const
 BOOST_AUTO_TEST_CASE( emptyToVector_2 )
 {
 	Point g ;
@@ -76,7 +106,6 @@ BOOST_AUTO_TEST_CASE( emptyToVector_2 )
 	BOOST_CHECK_EQUAL( CGAL::to_double( p.x() ), 0.0 );
 	BOOST_CHECK_EQUAL( CGAL::to_double( p.y() ), 0.0 );
 }
-
 BOOST_AUTO_TEST_CASE( xyToVector_2 )
 {
 	Point g( 3.0, 4.0 );
@@ -84,7 +113,6 @@ BOOST_AUTO_TEST_CASE( xyToVector_2 )
 	BOOST_CHECK_EQUAL( CGAL::to_double( p.x() ), 3.0 );
 	BOOST_CHECK_EQUAL( CGAL::to_double( p.y() ), 4.0 );
 }
-
 BOOST_AUTO_TEST_CASE( xyToVector_3 )
 {
 	Point g( 3.0, 4.0 );
@@ -96,14 +124,30 @@ BOOST_AUTO_TEST_CASE( xyToVector_3 )
 }
 
 
-//-- asText
+//template <int D> typename TypeForDimension<D>::Point toPoint_d() const;
+//inline Coordinate &       coordinate() { return _coordinate; }
+//inline const Coordinate & coordinate() const { return _coordinate; }
 
+
+//-- SFCGAL::Geometry
+
+//virtual Geometry *   Geometry::clone() const = 0 ;
+BOOST_AUTO_TEST_CASE( testClone )
+{
+	Point p(3.0,4.0);
+	std::auto_ptr< Geometry > copy( p.clone() );
+	BOOST_REQUIRE( copy->is< Point >() );
+	BOOST_CHECK_EQUAL( copy->as< Point >().x(), 3.0 );
+	BOOST_CHECK_EQUAL( copy->as< Point >().y(), 4.0 );
+}
+//virtual Geometry*    Geometry::boundary() const ;
+//Envelope             Geometry::envelope() const ;
+//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
 BOOST_AUTO_TEST_CASE( asTextEmpty )
 {
 	Point g;
 	BOOST_CHECK_EQUAL( g.asText(1), "POINT EMPTY" );
 }
-
 BOOST_AUTO_TEST_CASE( asText2d )
 {
 	Point g(2.0,3.0);
@@ -115,13 +159,72 @@ BOOST_AUTO_TEST_CASE( asText3d )
 	BOOST_CHECK_EQUAL( g.asText(3), "POINT(2.000 3.000 4.000)" );
 }
 
-//-- isPoint
+//virtual std::string  Geometry::geometryType() const = 0 ;
+BOOST_AUTO_TEST_CASE( testGeometryType )
+{
+	Point g;
+	BOOST_CHECK_EQUAL( g.geometryType(), "Point" );
+}
+//virtual GeometryType Geometry::geometryTypeId() const = 0 ;
+BOOST_AUTO_TEST_CASE( testGeometryTypeId )
+{
+	Point g;
+	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_POINT );
+}
 
+//virtual int          Geometry::dimension() const = 0 ;
+BOOST_AUTO_TEST_CASE( testDimension )
+{
+	Point g;
+	BOOST_CHECK_EQUAL( g.dimension(), 0 );
+}
+
+//virtual int          Geometry::coordinateDimension() const = 0 ;
+BOOST_AUTO_TEST_CASE( testCoordinateDimension )
+{
+	BOOST_CHECK_EQUAL( Point().coordinateDimension(), 0 );
+	BOOST_CHECK_EQUAL( Point(2.0,3.0).coordinateDimension(), 2 );
+	BOOST_CHECK_EQUAL( Point(2.0,3.0,4.0).coordinateDimension(), 3 );
+}
+//virtual bool         Geometry::isEmpty() const = 0 ;
+BOOST_AUTO_TEST_CASE( testIsEmpty )
+{
+	BOOST_CHECK( Point().isEmpty() );
+	BOOST_CHECK( ! Point(2.0,3.0).isEmpty() );
+}
+//virtual bool         Geometry::is3D() const = 0 ;
+BOOST_AUTO_TEST_CASE( testIs3D )
+{
+	BOOST_CHECK( ! Point().is3D() );
+	BOOST_CHECK( ! Point(2.0,3.0).is3D() );
+	BOOST_CHECK( Point(2.0,3.0,4.0).is3D() );
+}
+//virtual bool         Geometry::isMeasured() const = 0 ;
+BOOST_AUTO_TEST_CASE( testIsMeasured )
+{
+	BOOST_CHECK( ! Point().isMeasured() );
+	BOOST_CHECK( ! Point(2.0,3.0).isMeasured() );
+	BOOST_CHECK( ! Point(2.0,3.0,4.0).isMeasured() );
+	BOOST_CHECK( Point(2.0,3.0,4.0,5.0).isMeasured() );
+}
+
+//TODO
+//virtual bool         Geometry::isSimple() const = 0 ;
+
+//template < typename Derived > inline bool Geometry::is() const
 BOOST_AUTO_TEST_CASE( isPoint )
 {
 	Point g;
 	BOOST_CHECK( g.is< Point >() );
 }
+//template < typename Derived > inline const Derived &  Geometry::as() const
+//template < typename Derived > inline Derived &        Geometry::as()
+BOOST_AUTO_TEST_CASE( asPoint )
+{
+	std::auto_ptr< Geometry > g( new Point() );
+	BOOST_CHECK( g->as< Point >().isEmpty() );
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()
