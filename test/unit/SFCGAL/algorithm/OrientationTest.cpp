@@ -32,12 +32,16 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_OrientationTest )
 
-//-- hasConsistentOrientation
+//void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon ) ;
+//void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon ) ;
+//void makeValidOrientation( Polygon & polygon ) ;
 
-BOOST_AUTO_TEST_CASE( hasConsistentOrientation3D_basicTriangles )
+
+//bool hasConsistentOrientation3D( const TriangulatedSurface & g ) ;
+BOOST_AUTO_TEST_CASE( testHasConsistentOrientation3D_basicTriangles )
 {
-	Triangle triangle( Point(0.0,0.0,0.0), Point(0.0,0.0,1.0), Point(0.0,1.0, 0.0) );
 	TriangulatedSurface triangulatedSurface;
+	BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 	triangulatedSurface.addTriangle(
 		Triangle(
 			Point(0.0,0.0,0.0),
@@ -64,6 +68,104 @@ BOOST_AUTO_TEST_CASE( hasConsistentOrientation3D_basicTriangles )
 		)
 	);
 	BOOST_CHECK( ! algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
+}
+
+
+
+//bool hasConsistentOrientation3D( const PolyhedralSurface & g ) ;
+
+BOOST_AUTO_TEST_CASE( testHasConsistentOrientation3D_basicPolygons )
+{
+	PolyhedralSurface polyhedralSurface ;
+	BOOST_CHECK( algorithm::hasConsistentOrientation3D( polyhedralSurface ) );
+
+	//base polygon
+	{
+		LineString ring ;
+		ring.addPoint( Point(0.0,0.0,0.0) );
+		ring.addPoint( Point(1.0,0.0,0.0) );
+		ring.addPoint( Point(1.0,1.0,0.0) );
+		ring.addPoint( Point(0.0,1.0,0.0) );
+		ring.addPoint( ring.startPoint() ) ;
+
+		polyhedralSurface.addPolygon( Polygon( ring ) );
+	}
+	BOOST_CHECK( algorithm::hasConsistentOrientation3D( polyhedralSurface ) );
+
+	//right polygon
+	{
+		LineString ring ;
+		ring.addPoint( Point(1.0,0.0,0.0) );
+		ring.addPoint( Point(1.0,0.0,1.0) );
+		ring.addPoint( Point(1.0,1.0,1.0) );
+		ring.addPoint( Point(1.0,1.0,0.0) );
+		ring.addPoint( ring.startPoint() ) ;
+
+		polyhedralSurface.addPolygon( Polygon( ring ) );
+	}
+	BOOST_CHECK( algorithm::hasConsistentOrientation3D( polyhedralSurface ) );
+
+	//left polygon (bad orientation)
+	{
+		LineString ring ;
+		ring.addPoint( Point(0.0,0.0,0.0) );
+		ring.addPoint( Point(0.0,0.0,1.0) );
+		ring.addPoint( Point(0.0,1.0,1.0) );
+		ring.addPoint( Point(0.0,1.0,0.0) );
+		ring.addPoint( ring.startPoint() ) ;
+
+		polyhedralSurface.addPolygon( Polygon( ring ) );
+	}
+	BOOST_CHECK( ! algorithm::hasConsistentOrientation3D( polyhedralSurface ) );
+}
+
+
+
+//void makeConsistentOrientation3D( TriangulatedSurface & g ) ;
+
+//bool isCounterClockWiseOriented( const Polygon& );
+BOOST_AUTO_TEST_CASE( testIsCounterClockWiseOriented_Polygon )
+{
+	LineString ring ;
+	ring.addPoint( Point(0.0,0.0) );
+	ring.addPoint( Point(1.0,0.0) );
+	ring.addPoint( Point(1.0,1.0) );
+	ring.addPoint( Point(0.0,1.0) );
+	ring.addPoint( ring.startPoint() ) ;
+
+	Polygon polygon( ring ) ;
+	BOOST_CHECK( algorithm::isCounterClockWiseOriented(polygon) );
+	polygon.exteriorRing().reverse();
+	BOOST_CHECK( ! algorithm::isCounterClockWiseOriented(polygon) );
+}
+
+//bool isCounterClockWiseOriented( const Triangle& );
+BOOST_AUTO_TEST_CASE( testIsCounterClockWiseOriented_Triangle )
+{
+	Triangle triangle(
+		Point(0.0,0.0),
+		Point(1.0,0.0),
+		Point(1.0,1.0)
+	);
+	BOOST_CHECK( algorithm::isCounterClockWiseOriented(triangle) );
+	triangle.reverse();
+	BOOST_CHECK( ! algorithm::isCounterClockWiseOriented(triangle) );
+}
+
+
+//bool isCounterClockWiseOriented( const LineString& );
+BOOST_AUTO_TEST_CASE( testIsCounterClockWiseOriented_LineString )
+{
+	LineString ring ;
+	ring.addPoint( Point(0.0,0.0) ) ;
+	ring.addPoint( Point(1.0,0.0) ) ;
+	ring.addPoint( Point(1.0,1.0) ) ;
+	ring.addPoint( Point(0.0,1.0) ) ;
+	ring.addPoint( ring.startPoint() ) ;
+
+	BOOST_CHECK( algorithm::isCounterClockWiseOriented(ring) );
+	ring.reverse();
+	BOOST_CHECK( ! algorithm::isCounterClockWiseOriented(ring) );
 }
 
 
