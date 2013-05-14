@@ -129,11 +129,7 @@ BOOST_AUTO_TEST_CASE( testBoundary )
 //Envelope             Geometry::envelope() const ;
 BOOST_AUTO_TEST_CASE( testEnvelope_empty )
 {
-	Kernel::Point_2 a(0.0,-1.0);
-	Kernel::Point_2 b(0.5,0.2);
-	Kernel::Point_2 c(1.0,1.5);
-
-	Triangle g( Kernel::Triangle_2(a,b,c) ) ;
+	Triangle g ;
 
 	Envelope bbox = g.envelope() ;
 	BOOST_CHECK( bbox.isEmpty() );
