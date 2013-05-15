@@ -176,7 +176,7 @@ namespace SFCGAL {
        /**
         * @brief [OGC/SFA]Returns the boundary of the geometry
         */
-       virtual Geometry*    boundary() const ;
+       virtual std::auto_ptr< Geometry > boundary() const ;
 
        /**
         * @brief Computes the distance to an other geometry

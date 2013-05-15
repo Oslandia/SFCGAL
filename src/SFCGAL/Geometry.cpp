@@ -79,11 +79,11 @@ Envelope   Geometry::envelope() const
 ///
 ///
 ///
-Geometry* Geometry::boundary() const
+std::auto_ptr< Geometry > Geometry::boundary() const
 {
 	algorithm::BoundaryVisitor visitor ;
 	accept(visitor);
-	return visitor.releaseBoundary() ;
+	return std::auto_ptr< Geometry >( visitor.releaseBoundary() ) ;
 }
 
 
