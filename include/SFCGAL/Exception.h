@@ -21,10 +21,10 @@
 #ifndef _IGN_EXCEPTION_H_
 #define _IGN_EXCEPTION_H_
 
-#include <boost/exception/all.hpp>
-
 #include <string>
 
+#include <boost/exception/all.hpp>
+#include <boost/format.hpp>
 
 namespace SFCGAL {
 
