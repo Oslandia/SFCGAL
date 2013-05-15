@@ -166,6 +166,15 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
+
+		//-- helpers
+
+		/**
+		 * @brief Converts a TriangulatedSurface to a CGAL::Polyhedron_3
+		 */
+		template < typename K, typename Polyhedron >
+		std::auto_ptr<Polyhedron> toPolyhedron_3() const;
+
 		/**
 		 * Serializer
 		 */
@@ -177,12 +186,6 @@ namespace SFCGAL {
 		}
 	private:
 		boost::ptr_vector< Triangle > _triangles ;
-
-	public:
-		///
-		/// Converts a TriangulatedSurface to a CGAL::Polyhedron_3
-		template < typename K, typename Polyhedron >
-		std::auto_ptr<Polyhedron> toPolyhedron_3() const;
 	};
 }
 
