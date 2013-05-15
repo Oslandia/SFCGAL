@@ -3,6 +3,17 @@ project( SFCGAL )
 
 set( CMAKE_DEBUG_POSTFIX "d" )
 
+#----------------------------------------------------------------------------
+# build options
+#----------------------------------------------------------------------------
+option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
+option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" OFF )
+option( SFCGAL_BUILD_UNIT_TESTS "build unit tests" OFF )
+option( SFCGAL_BUILD_REGRESS_TESTS "build regress tests" OFF )
+option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
+option( SFCGAL_BUILD_TOOLS "build tools" OFF )
+option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
+
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
@@ -43,7 +54,16 @@ if( ${Boost_USE_MULTITHREAD} )
 else()
 	message( STATUS "Boost_USE_MULTITHREAD=OFF" )
 endif()
-find_package( Boost COMPONENTS chrono program_options unit_test_framework filesystem date_time system thread serialization timer REQUIRED )
+
+#-- minimalist build allowed with boost version older than 1.48
+set( SFCGAL_Boost_COMPONENTS system thread serialization )
+if ( SFCGAL_BUILD_UNIT_TESTS OR SFCGAL_BUILD_REGRESS_TESTS )
+	set( SFCGAL_Boost_COMPONENTS unit_test_framework date_time ${SFCGAL_Boost_COMPONENTS} )
+endif()
+if ( SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_TOOLS OR SFCGAL_BUILD_VIEWER )
+	set( SFCGAL_Boost_COMPONENTS chrono program_options filesystem timer ${SFCGAL_Boost_COMPONENTS} )
+endif()
+find_package( Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED )
 
 
 #-- GMP (facultative)  -------------------------------------
@@ -96,7 +116,6 @@ link_directories(
 )
 
 #-- optional OpenSceneGraph support
-option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" OFF )
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
 	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
@@ -141,20 +160,17 @@ add_subdirectory( src )
 add_subdirectory( test )
 
 #-- build examples
-option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
-if( ${SFCGAL_BUILD_EXAMPLES} )
+if( SFCGAL_BUILD_EXAMPLES )
 	add_subdirectory( example )
 endif()
 
 #-- build tools
-option( SFCGAL_BUILD_TOOLS "build tools" ON )
-if( ${SFCGAL_BUILD_TOOLS} )
+if( SFCGAL_BUILD_TOOLS )
 	add_subdirectory( tools )
 endif()
 
 #-- viewer 
-option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
-if( ${SFCGAL_BUILD_VIEWER} )
+if( SFCGAL_BUILD_VIEWER )
 	if ( NOT SFCGAL_BUILD_OSG )
 		message( FATAL_ERROR "can't build viewer without OSG support (set SFCGAL_BUILD_OSG to ON)" )
 	endif()

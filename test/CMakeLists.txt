@@ -7,13 +7,16 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 #-- build unit tests
-add_subdirectory( unit )
+if( SFCGAL_BUILD_UNIT_TESTS )
+	add_subdirectory( unit )
+endif()
 
 #-- build regression tests
-add_subdirectory( regress )
+if( SFCGAL_BUILD_REGRESS_TESTS )
+	add_subdirectory( regress )
+endif()
 
-option( SFCGAL_BUILD_BENCH "Build benchmarks" ON )
-if( ${SFCGAL_BUILD_BENCH} )
+if( SFCGAL_BUILD_BENCH )
 	add_subdirectory( bench )
 endif()
 
