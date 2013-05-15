@@ -19,6 +19,10 @@
  *
  */
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/PolyhedralSurface.h>
 
 namespace SFCGAL {
 
@@ -170,6 +174,141 @@ bool Envelope::overlaps( const Envelope& a, const Envelope& b )
 	CGAL::Bbox_2 bbox = b.toBbox_2();
 	return CGAL::do_overlap( abox, bbox );
 }
+
+///
+///
+///
+std::auto_ptr< LineString > Envelope::toRing() const
+{
+	std::auto_ptr< LineString > ring( new LineString() ) ;
+	if ( isEmpty() ){
+		return ring ;
+	}
+
+	ring->addPoint( new Point( xMin(), yMin() ) );
+	ring->addPoint( new Point( xMax(), yMin() ) );
+	ring->addPoint( new Point( xMax(), yMax() ) );
+	ring->addPoint( new Point( xMin(), yMax() ) );
+	ring->addPoint( ring->startPoint() );
+
+	return ring ;
+}
+
+///
+///
+///
+std::auto_ptr< Polygon > Envelope::toPolygon() const
+{
+	return std::auto_ptr< Polygon >( new Polygon( toRing().release() ) ) ;
+}
+
+
+///
+///
+///
+std::auto_ptr< PolyhedralSurface >   Envelope::toShell() const
+{
+	std::auto_ptr< PolyhedralSurface > shell( new PolyhedralSurface() ) ;
+
+	if ( ! is3D() ){
+		return shell ;
+	}
+
+	Point a( xMin(), yMin(), zMin() );
+	Point b( xMax(), yMin(), zMin() );
+	Point c( xMax(), yMax(), zMin() );
+	Point d( xMin(), yMax(), zMin() );
+
+	Point e( xMin(), yMin(), zMax() );
+	Point f( xMax(), yMin(), zMax() );
+	Point g( xMax(), yMax(), zMax() );
+	Point h( xMin(), yMax(), zMax() );
+
+	//bottom : a,d,c,b
+	{
+		LineString ring ;
+		ring.addPoint(a);
+		ring.addPoint(d);
+		ring.addPoint(c);
+		ring.addPoint(b);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	//top : e,f,g,h
+	{
+		LineString ring ;
+		ring.addPoint(e);
+		ring.addPoint(f);
+		ring.addPoint(g);
+		ring.addPoint(h);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	//front : a,b,f,e
+	{
+		LineString ring ;
+		ring.addPoint(a);
+		ring.addPoint(b);
+		ring.addPoint(f);
+		ring.addPoint(e);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	//back : c,d,h,g
+	{
+		LineString ring ;
+		ring.addPoint(c);
+		ring.addPoint(d);
+		ring.addPoint(h);
+		ring.addPoint(g);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	//right : b,c,g,f
+	{
+		LineString ring ;
+		ring.addPoint(b);
+		ring.addPoint(c);
+		ring.addPoint(g);
+		ring.addPoint(f);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	//left : a,e,h,d
+	{
+		LineString ring ;
+		ring.addPoint(a);
+		ring.addPoint(e);
+		ring.addPoint(h);
+		ring.addPoint(d);
+		ring.addPoint( ring.startPoint() );
+
+		shell->addPolygon( Polygon( ring ) ) ;
+	}
+
+	return shell ;
+}
+
+///
+///
+///
+std::auto_ptr< Solid >  Envelope::toSolid() const
+{
+	return std::auto_ptr< Solid >(
+		new Solid( toShell().release() )
+	);
+}
+
 
 ///
 ///

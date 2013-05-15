@@ -21,6 +21,7 @@
 #ifndef _SFCGAL_ENVELOPE_H_
 #define _SFCGAL_ENVELOPE_H_
 
+#include <memory>
 #include <boost/assert.hpp>
 
 #include <CGAL/Bbox_2.h>
@@ -30,6 +31,11 @@
 #include <SFCGAL/Coordinate.h>
 
 namespace SFCGAL {
+
+	class LineString ;
+	class Polygon ;
+	class Solid ;
+	class PolyhedralSurface ;
 
 	/**
 	 * Represents a bounding box
@@ -100,7 +106,6 @@ namespace SFCGAL {
 		inline const double& yMax() const { return _bounds[1].upper(); }
 		inline const double& zMax() const { return _bounds[2].upper(); }
 
-
 		/**
 		 * returns the n-th bound
 		 */
@@ -157,6 +162,32 @@ namespace SFCGAL {
 		 * Global binary operator on Envelopes. Test if A's bounding box overlaps B's
 		 */
 		static bool overlaps( const Envelope& a, const Envelope& b );
+
+
+		//-- helpers
+
+		/**
+		 * @brief convenience method to convert to 2D Polygon ring
+		 * @warning empty LineString for empty Envelope, may be X or Y collapsed
+		 */
+		std::auto_ptr< LineString > toRing() const ;
+		/**
+		 * @brief convenience method to convert to 2D Polygon
+		 * @warning empty Polygon for empty Envelope, may be X or Y collapsed
+		 */
+		std::auto_ptr< Polygon >    toPolygon() const ;
+
+		/**
+		 * @brief convenience method to convert to 3D Shell
+		 * @warning empty Solid for empty or non 3D Envelope, may be X, Y or Z collapsed
+		 */
+		std::auto_ptr< PolyhedralSurface >   toShell() const ;
+		/**
+		 * @brief convenience method to convert to 3D Solid
+		 * @warning empty Solid for empty or non 3D Envelope, may be X, Y or Z collapsed
+		 */
+		std::auto_ptr< Solid >      toSolid() const ;
+
 
 		/*
 		 * Display method
