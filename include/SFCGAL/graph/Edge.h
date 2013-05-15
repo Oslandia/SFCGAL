@@ -26,7 +26,7 @@ namespace SFCGAL {
 namespace graph {
 
 	/**
-	 * An edge in a GeometryGraph with minimal requirements (some algorithms could need
+	 * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
 	 * more informations)
 	 */
 	struct Edge {

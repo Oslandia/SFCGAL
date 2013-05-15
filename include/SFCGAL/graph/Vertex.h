@@ -27,7 +27,7 @@ namespace SFCGAL {
 namespace graph {
 
 	/**
-	 * A vertex in a GeometryGraph with minimal requirements (some algorithms could need
+	 * @brief [private]A vertex in a GeometryGraph with minimal requirements (some algorithms could need
 	 * a richer class)
 	 */
 	struct Vertex {

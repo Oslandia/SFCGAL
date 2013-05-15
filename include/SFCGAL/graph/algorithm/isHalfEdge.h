@@ -37,7 +37,7 @@ namespace algorithm {
 
 
 	/**
-	 * Test if a bidirectional graph is an half-edge (in order to validate orientation)
+	 * @brief [private]Test if a bidirectional graph is an half-edge (in order to validate orientation)
 	 */
 	template < typename V, typename E >
 	bool isHalfEdge( const GeometryGraphT<V,E> & graph ){

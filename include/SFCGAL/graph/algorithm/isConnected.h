@@ -32,7 +32,7 @@ namespace graph {
 namespace algorithm {
 
 	/**
-	 * Test if a bidirectional graph is connected (all node reachable using direct or reverse edges)
+	 * @brief [private]Test if a bidirectional graph is connected (all node reachable using direct or reverse edges)
 	 */
 	template < typename V, typename E >
 	bool isConnected( const GeometryGraphT<V,E> & graph ){
