@@ -56,9 +56,9 @@ else()
 endif()
 
 #-- minimalist build allowed with boost version older than 1.48
-set( SFCGAL_Boost_COMPONENTS system thread serialization )
+set( SFCGAL_Boost_COMPONENTS date_time system thread serialization )
 if ( SFCGAL_BUILD_UNIT_TESTS OR SFCGAL_BUILD_REGRESS_TESTS )
-	set( SFCGAL_Boost_COMPONENTS unit_test_framework date_time ${SFCGAL_Boost_COMPONENTS} )
+	set( SFCGAL_Boost_COMPONENTS unit_test_framework ${SFCGAL_Boost_COMPONENTS} )
 endif()
 if ( SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_TOOLS OR SFCGAL_BUILD_VIEWER )
 	set( SFCGAL_Boost_COMPONENTS chrono program_options filesystem timer ${SFCGAL_Boost_COMPONENTS} )
