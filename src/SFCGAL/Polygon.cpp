@@ -94,6 +94,19 @@ Polygon::Polygon( Polygon const& other ):
 ///
 ///
 ///
+Polygon::Polygon( const CGAL::Polygon_2< Kernel >& other )
+{
+	_rings.push_back( new LineString() );
+	CGAL::Polygon_2<Kernel>::Edge_const_iterator ei;
+	for ( ei = other.edges_begin(); ei != other.edges_end(); ++ei ) {
+		_rings.back().addPoint( ei->source() );
+	}
+}
+
+
+///
+///
+///
 Polygon::Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly )
 {
 	_rings.push_back( new LineString() );

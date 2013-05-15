@@ -72,7 +72,11 @@ namespace SFCGAL {
 		/**
 		 * Constructor from CGAL::Polygon_with_holes_2<K>
 		 */
-		Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly );
+		Polygon( const CGAL::Polygon_2< Kernel >& other );
+		/**
+		 * Constructor from CGAL::Polygon_with_holes_2<K>
+		 */
+		Polygon( const CGAL::Polygon_with_holes_2< Kernel >& other );
 
 		/**
 		 * assign operator
