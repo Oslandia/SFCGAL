@@ -72,7 +72,11 @@ namespace SFCGAL {
 		/**
 		 * Constructor from CGAL::Polygon_with_holes_2<K>
 		 */
-		Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly );
+		Polygon( const CGAL::Polygon_2< Kernel >& other );
+		/**
+		 * Constructor from CGAL::Polygon_with_holes_2<K>
+		 */
+		Polygon( const CGAL::Polygon_with_holes_2< Kernel >& other );
 
 		/**
 		 * assign operator
@@ -223,14 +227,17 @@ namespace SFCGAL {
 
 
 		/*
-		 * Convert to CGAL::Polygon_2. Does not consider holes, if any
+		 * @brief Convert to CGAL::Polygon_2. Does not consider holes, if any
+		 * @param forceCounterClocksize force exterior ring orientation to counter clocksize
 		 */
-		CGAL::Polygon_2<Kernel> toPolygon_2() const;
+		CGAL::Polygon_2<Kernel> toPolygon_2( bool fixOrientation = true ) const;
 
 		/*
-		 * Convert to CGAL::Polygon_with_holes_2.
+		 * @brief Convert to CGAL::Polygon_with_holes_2.
+		 * @param forceCounterClocksize force exterior ring orientation to counter clocksize and
+		 *           interior ring to clocksize.
 		 */
-		CGAL::Polygon_with_holes_2<Kernel> toPolygon_with_holes_2() const;
+		CGAL::Polygon_with_holes_2<Kernel> toPolygon_with_holes_2( bool fixOrientation = true ) const;
 
 		//-- visitors
 

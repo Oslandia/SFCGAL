@@ -92,7 +92,7 @@ Kernel::FT signedArea( const Triangle & g )
 ///
 Kernel::FT signedArea( const LineString & g )
 {
-	return g.toPolygon_2().area() ;
+	return g.toPolygon_2(false).area() ;
 }
 
 ///
@@ -110,7 +110,7 @@ double area( const Polygon & g )
 {
 	Kernel::RT result = 0.0 ;
 	for ( size_t i = 0; i < g.numRings(); i++ ){
-		Kernel::FT ringArea = signedArea( g.ringN(i) ) ;
+		Kernel::FT ringArea = CGAL::abs( signedArea( g.ringN(i) ) ) ;
 		if ( i == 0 ){
 			//exterior ring
 			result += CGAL::abs( ringArea );

@@ -47,6 +47,38 @@ BOOST_AUTO_TEST_CASE( testEmpty2D3D )
 	}
 }
 
+
+
+BOOST_AUTO_TEST_CASE( testSignedArea2D_lineString )
+{
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0) );
+	lineString.addPoint( Point(1.0,0.0) );
+	lineString.addPoint( Point(1.0,1.0) );
+	lineString.addPoint( Point(0.0,1.0) );
+	lineString.addPoint( lineString.startPoint() );
+
+	BOOST_CHECK_EQUAL( algorithm::signedArea( lineString ),  1.0 );
+	lineString.reverse() ;
+	BOOST_CHECK_EQUAL( algorithm::signedArea( lineString ), -1.0 );
+}
+
+BOOST_AUTO_TEST_CASE( testSignedArea2D_triangle )
+{
+	Triangle triangle(
+		Point(0.0,0.0),
+		Point(1.0,0.0),
+		Point(1.0,1.0)
+	) ;
+
+	BOOST_CHECK_EQUAL( algorithm::signedArea( triangle ),  0.5 );
+	triangle.reverse() ;
+	BOOST_CHECK_EQUAL( algorithm::signedArea( triangle ), -0.5 );
+}
+
+
+
+
 // must return 0.0
 BOOST_AUTO_TEST_CASE( testPoint2D3D )
 {
@@ -58,6 +90,51 @@ BOOST_AUTO_TEST_CASE( testLineString2D3D )
 {
 	BOOST_CHECK_EQUAL( algorithm::area( LineString(Point(0.0,0.0),Point(1.0,1.0)) ), 0.0 );
 	BOOST_CHECK_EQUAL( algorithm::area3D( LineString(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0)) ), 0.0 );
+}
+
+// must return 0.0
+BOOST_AUTO_TEST_CASE( testArea2D_PolygonWithHoleWithBadOrientation )
+{
+	Polygon polygon ;
+
+	// exterior ring
+	{
+		LineString ring ;
+		ring.addPoint( Point(0.0,0.0) );
+		ring.addPoint( Point(5.0,0.0) );
+		ring.addPoint( Point(5.0,5.0) );
+		ring.addPoint( Point(0.0,5.0) );
+		ring.addPoint( ring.startPoint() );
+
+		polygon.setExteriorRing( ring );
+	}
+
+	// hole 1
+	{
+		LineString ring ;
+		ring.addPoint( Point(1.0,1.0) );
+		ring.addPoint( Point(2.0,1.0) );
+		ring.addPoint( Point(2.0,2.0) );
+		ring.addPoint( Point(1.0,2.0) );
+		ring.addPoint( ring.startPoint() );
+
+		polygon.addRing( ring );
+	}
+
+	// hole 2
+	{
+		LineString ring ;
+		ring.addPoint( Point(3.0,3.0) );
+		ring.addPoint( Point(4.0,3.0) );
+		ring.addPoint( Point(4.0,4.0) );
+		ring.addPoint( Point(3.0,4.0) );
+		ring.addPoint( ring.startPoint() );
+
+		polygon.addRing( ring );
+	}
+
+	// 5x5 - 1 - 1 = 23
+	BOOST_CHECK_EQUAL( algorithm::area3D( polygon ), 23.0 );
 }
 
 

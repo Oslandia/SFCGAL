@@ -74,6 +74,8 @@ void straightSkeletonToMultiLineString(
 std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
 {
 	switch ( g.geometryTypeId() ){
+	case TYPE_TRIANGLE:
+		return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
 	case TYPE_POLYGON:
 		return straightSkeleton( g.as< Polygon >(), autoOrientation ) ;
 	case TYPE_MULTIPOLYGON:
@@ -95,9 +97,6 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOr
 	}
 
 	Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
-	if ( autoOrientation ){
-		algorithm::makeValidOrientation( polygon ) ;
-	}
 	boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 	straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	return result ;
@@ -112,9 +111,6 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool a
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		Polygon_with_holes_2 polygon = g.polygonN(i).toPolygon_with_holes_2() ;
-		if ( autoOrientation ){
-			algorithm::makeValidOrientation( polygon ) ;
-		}
 		boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 		straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	}

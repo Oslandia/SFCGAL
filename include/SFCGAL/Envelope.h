@@ -33,6 +33,7 @@ namespace SFCGAL {
 
 	/**
 	 * Represents a bounding box
+	 * @todo add asText instead of "print"?
 	 */
 	class Envelope {
 	public:

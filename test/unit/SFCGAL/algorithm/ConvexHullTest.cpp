@@ -31,7 +31,77 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_ConvexHullTest )
 
-BOOST_AUTO_TEST_CASE( testPoint )
+// algorithm::convexHull
+
+BOOST_AUTO_TEST_CASE( testConvexHull2D_Empty )
+{
+	GeometryCollection collect;
+	collect.addGeometry( Polygon() );
+	collect.addGeometry( Polygon() );
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( collect ) );
+	BOOST_CHECK( hull->isEmpty() );
+}
+
+
+BOOST_AUTO_TEST_CASE( testConvexHull2D_ColinearProduceLineString )
+{
+	LineString lineString ;
+	lineString.addPoint( Point(0.0,0.0) );
+	lineString.addPoint( Point(1.0,1.0) );
+	lineString.addPoint( Point(2.0,2.0) );
+
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
+	BOOST_REQUIRE( hull->is< LineString >() );
+	BOOST_CHECK_EQUAL( hull->as< LineString >().numPoints(), 2U );
+
+	std::string hullWKT = hull->asText(1) ;
+	BOOST_CHECK(
+			( hullWKT == "LINESTRING(0.0 0.0,2.0 2.0)" )
+		||  ( hullWKT == "LINESTRING(2.0 2.0,0.0 0.0)" )
+	);
+}
+
+BOOST_AUTO_TEST_CASE( testConvexHull2D_Triangle )
+{
+	std::vector< Point > points ;
+	points.push_back( Point(0.0,0.0) );
+	points.push_back( Point(0.5,0.5) );
+	points.push_back( Point(1.0,0.0) );
+	points.push_back( Point(0.0,1.0) );
+
+	LineString lineString( points ) ;
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
+	BOOST_CHECK( hull->is<Triangle>() );
+}
+
+BOOST_AUTO_TEST_CASE( testConvexHull2D_Polygon )
+{
+	std::vector< Point > points ;
+	points.push_back( Point(0.0,0.0) );
+	points.push_back( Point(1.0,0.0) );
+	points.push_back( Point(1.0,1.0) );
+	points.push_back( Point(0.0,1.0) );
+
+	LineString lineString( points ) ;
+	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
+	BOOST_CHECK( hull->is<Polygon>() );
+}
+
+
+
+// algorithm::convexHull3D
+
+BOOST_AUTO_TEST_CASE( testConvexHull3D_Empty )
+{
+	GeometryCollection collect;
+	collect.addGeometry( Polygon() );
+	collect.addGeometry( Polygon() );
+	std::auto_ptr< Geometry > hull( algorithm::convexHull3D( collect ) );
+	BOOST_CHECK( hull->isEmpty() );
+}
+
+
+BOOST_AUTO_TEST_CASE( testConvexHull3D_Point )
 {
 	Point p(1.0,2.0,3.0);
 	std::auto_ptr< Geometry > hull( algorithm::convexHull3D(p) );
@@ -44,7 +114,7 @@ BOOST_AUTO_TEST_CASE( testPoint )
 /*
  * @todo Test if points are collinear
  */
-BOOST_AUTO_TEST_CASE( testLineStringCollinear )
+BOOST_AUTO_TEST_CASE( testConvexHull3D_LineStringCollinear )
 {
 	std::vector< Point > points ;
 	points.push_back( Point(0.0,0.0,0.0)  );
@@ -57,7 +127,7 @@ BOOST_AUTO_TEST_CASE( testLineStringCollinear )
 	BOOST_CHECK( hull->is< LineString >() );
 }
 
-BOOST_AUTO_TEST_CASE( testLineStringCoplanar )
+BOOST_AUTO_TEST_CASE( testConvexHull3D_LineStringCoplanar )
 {
 	std::vector< Point > points ;
 	points.push_back( Point(0.0,0.0,1.0)  );
@@ -74,7 +144,7 @@ BOOST_AUTO_TEST_CASE( testLineStringCoplanar )
 
 
 
-BOOST_AUTO_TEST_CASE( testTetrahedron )
+BOOST_AUTO_TEST_CASE( testConvexHull3D_Tetrahedron )
 {
 	std::vector< Point > points ;
 	points.push_back( Point(0.0,0.0,0.0) );
@@ -90,27 +160,8 @@ BOOST_AUTO_TEST_CASE( testTetrahedron )
 }
 
 
-BOOST_AUTO_TEST_CASE( testConvexHull2D )
-{
-	std::vector< Point > points ;
-	points.push_back( Point(0.0,0.0) );
-	points.push_back( Point(0.5,0.5) );
-	points.push_back( Point(1.0,0.0) );
-	points.push_back( Point(0.0,1.0) );
 
-	LineString lineString( points ) ;
-	std::auto_ptr< Geometry > hull( algorithm::convexHull( lineString ) );
-	BOOST_CHECK( hull->is<Polygon>() );
-}
 
-BOOST_AUTO_TEST_CASE( testConvexHullEmpty )
-{
-	GeometryCollection collect;
-	collect.addGeometry( Polygon() );
-	collect.addGeometry( Polygon() );
-	std::auto_ptr< Geometry > hull( algorithm::convexHull( collect ) );
-	BOOST_CHECK( hull->isEmpty() );
-}
 
 BOOST_AUTO_TEST_SUITE_END()
 
