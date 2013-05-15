@@ -1,6 +1,6 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile @ONLY)
 
-find_package(Doxygen)
+find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
 	add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}

@@ -34,6 +34,8 @@ namespace SFCGAL {
 namespace algorithm {
 	/**
 	 * @brief build a 2D straight skeleton for a Polygon
+	 * @todo add supports for TriangulatedSurface and PolyhedralSurface
+	 * @todo output M as distance to border?
 	 * @param g input geometry
 	 * @param autoOrientation check and fix polygon orientation
 	 */

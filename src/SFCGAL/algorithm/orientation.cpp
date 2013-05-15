@@ -130,10 +130,10 @@ bool isCounterClockWiseOriented( const LineString& ls )
 	// Compute the 'z' part of the Newell's formula
 	// and test against 0
 	Kernel::FT z = 0 ;
-	for ( size_t i = 0; i < ls.numPoints() - 1; ++i )
+	for ( size_t i = 0; i < ls.numSegments(); ++i )
 	{
 		const Point& pi = ls.pointN(i);
-		const Point& pj = ls.pointN( (i+1) % ls.numPoints() );
+		const Point& pj = ls.pointN(i+1);
 		z += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
 	}
 	return z > 0;

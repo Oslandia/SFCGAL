@@ -170,7 +170,8 @@ bool  Triangle::isMeasured() const
 ///
 void  Triangle::reverse()
 {
-	std::reverse( _vertices, _vertices + 3 );
+	//note : first point kept to simplify testing
+	std::swap( _vertices[1], _vertices[2] );
 }
 
 

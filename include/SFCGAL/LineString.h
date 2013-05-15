@@ -264,9 +264,10 @@ namespace SFCGAL {
 		}
 
 		/*
-		 * Convert to CGAL::Polygon_2
+		 * @brief Convert to CGAL::Polygon_2
+		 * @param forceCounterClocksize force exterior ring orientation (counter clocksize)
 		 */
-		CGAL::Polygon_2< Kernel > toPolygon_2() const;
+		CGAL::Polygon_2< Kernel > toPolygon_2( bool fixOrientation = true ) const;
 
 		//-- visitors
 

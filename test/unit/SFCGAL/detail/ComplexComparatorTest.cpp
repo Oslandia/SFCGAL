@@ -18,34 +18,29 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <SFCGAL/algorithm/translate.h>
-#include <SFCGAL/all.h>
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <boost/test/unit_test.hpp>
+
+#include <SFCGAL/detail/ComplexComparator.h>
+#include <SFCGAL/numeric.h>
+
+using namespace SFCGAL ;
+using namespace SFCGAL::detail ;
+
+// always after CGAL
+using namespace boost::unit_test ;
 
 
-namespace SFCGAL {
-namespace algorithm {
+BOOST_AUTO_TEST_SUITE( SFCGAL_detail_ComplexComparatorTest )
 
-///
-///
-///
-void       translate( Geometry & g, const Kernel::Vector_3 & v )
+BOOST_AUTO_TEST_CASE( testComparator )
 {
-	transform::AffineTransform3< Kernel > visitor(
-		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
-	);
-	g.accept( visitor ) ;
+	ComplexComparator less ;
+
+	BOOST_CHECK( ! less( std::complex< double >(1.0,0.0), std::complex< double >(0.0,0.0) ) );
+	BOOST_CHECK( ! less( std::complex< double >(0.0,0.0), std::complex< double >(0.0,0.0) ) );
+	BOOST_CHECK( less( std::complex< double >(0.0,0.0), std::complex< double >(1.0,0.0) ) );
+	BOOST_CHECK( less( std::complex< double >(0.0,0.0), std::complex< double >(0.0,1.0) ) );
 }
 
-///
-///
-///
-void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
-{
-	translate( g, Kernel::Vector_3(dx,dy,dz) );
-}
-
-} // namespace algorithm
-} // namespace SFCGAL
-
+BOOST_AUTO_TEST_SUITE_END()
 

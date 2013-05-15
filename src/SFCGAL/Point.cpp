@@ -59,9 +59,9 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
 ///
 ///
 ///
-Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
+Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double& m ):
 	_coordinate(x,y,z),
-	_m(NaN())
+	_m(m)
 {
 
 }
@@ -69,10 +69,10 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z )
 ///
 ///
 ///
-Point::Point( const double & x, const double & y, const double & z ):
+Point::Point( const double & x, const double & y, const double & z, const double & m ):
 	Geometry(),
 	_coordinate(x,y,z),
-	_m(NaN())
+	_m(m)
 {
 
 }
@@ -165,7 +165,7 @@ int Point::dimension() const
 ///
 int Point::coordinateDimension() const
 {
-	return _coordinate.coordinateDimension() + isMeasured() ? 1 : 0 ;
+	return _coordinate.coordinateDimension() + ( isMeasured() ? 1 : 0 ) ;
 }
 
 

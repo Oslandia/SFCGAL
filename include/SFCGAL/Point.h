@@ -55,11 +55,11 @@ namespace SFCGAL {
 		/**
 		 * XY Constructor with exact coordinates
 		 */
-		Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
+		Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double & m = NaN() ) ;
 		/**
 		 * XY[Z] constructor
 		 */
-		Point( const double & x, const double & y, const double & z = NaN() ) ;
+		Point( const double & x, const double & y, const double & z = NaN(), const double & m = NaN() ) ;
 
 		/**
 		 * Constructor from CGAL::Point_2<K>
