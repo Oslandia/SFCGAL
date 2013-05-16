@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_TESSELATE_H_
 #define _SFCGAL_ALGORITHM_TESSELATE_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
@@ -30,7 +32,7 @@ namespace algorithm {
 	 * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
 	 * points, lines, etc.
 	 */
-	std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
+	SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
 
 }//algorithm
 }//SFCGAL

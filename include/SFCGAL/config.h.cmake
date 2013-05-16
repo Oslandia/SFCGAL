@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_CONFIG_H_
 #define _SFCGAL_CONFIG_H_
 
+#include <SFCGAL/export.h>
+
 /**
  * indicates if GMP is available
  */

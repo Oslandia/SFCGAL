@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_REGISTRY_H_
 #define _SFCGAL_REGISTRY_H_
 
+#include <SFCGAL/config.h>
+
 #include <string>
 #include <map>
 #include <vector>
@@ -35,7 +37,7 @@ namespace tools {
 	/**
 	 * Registry for dynamic information about SFCGAL library
 	 */
-	class Registry {
+	class SFCGAL_API Registry {
 	public:
 		typedef std::vector< Geometry* >::iterator       prototype_iterator ;
 		typedef std::vector< Geometry* >::const_iterator const_prototype_iterator ;

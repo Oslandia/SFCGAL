@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_GEOMETRY_H_
 #define _SFCGAL_GEOMETRY_H_
 
+#include <SFCGAL/config.h>
+
 #include <boost/shared_ptr.hpp>
 
 #include <memory>
@@ -111,7 +113,7 @@ namespace SFCGAL {
      *
      * @todo store bbox?
      */
-    class Geometry {
+    class SFCGAL_API Geometry {
     public:
        virtual ~Geometry();
 
@@ -268,8 +270,8 @@ namespace SFCGAL {
     /**
      * Equality operator
      */
-    bool operator==( const Geometry&, const Geometry& );
+    SFCGAL_API bool operator==( const Geometry&, const Geometry& );
 
-}
+} // namespace SFCGAL
 
 #endif

@@ -25,6 +25,8 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/variant.hpp>
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/TypeForDimension.h>
 
@@ -284,10 +286,10 @@ namespace SFCGAL {
 
 	///
 	/// Display operator
-	std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
+	SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
 	///
 	/// Display operator
-	std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
+	SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
 }
 
 #endif

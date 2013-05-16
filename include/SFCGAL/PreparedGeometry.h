@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_PREPARED_GEOMETRY_H_
 #define _SFCGAL_PREPARED_GEOMETRY_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Envelope.h>
 
 #include <boost/serialization/split_member.hpp>
@@ -41,7 +43,7 @@ typedef uint32_t srid_t;
  *
  * It is noncopyable since it stores a std::auto_ptr<SFCGAL::Geometry>
  */
-class PreparedGeometry : public boost::noncopyable
+class SFCGAL_API PreparedGeometry : public boost::noncopyable
 {
  public:
 	/**

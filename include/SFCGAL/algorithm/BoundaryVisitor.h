@@ -53,7 +53,7 @@ namespace algorithm {
 	 * @todo MultiSolid : faced elimination
 	 *
 	 */
-	class BoundaryVisitor : public ConstGeometryVisitor {
+	class SFCGAL_API BoundaryVisitor : public ConstGeometryVisitor {
 	public:
 
 		virtual void visit( const Point & g ) ;

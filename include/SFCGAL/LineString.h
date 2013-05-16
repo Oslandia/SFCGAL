@@ -39,7 +39,7 @@ namespace SFCGAL {
 	 *
 	 * @todo template < size_t N >?
 	 */
-	class LineString : public Geometry {
+	class SFCGAL_API LineString : public Geometry {
 	public:
 		typedef boost::ptr_vector< Point >::iterator       iterator ;
 		typedef boost::ptr_vector< Point >::const_iterator const_iterator ;

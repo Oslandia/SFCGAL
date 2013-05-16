@@ -21,6 +21,8 @@
 #ifndef SFCGAL_COVERS_ALGORITHM
 #define SFCGAL_COVERS_ALGORITHM
 
+#include <SFCGAL/config.h>
+
 #include <vector>
 
 namespace SFCGAL {
@@ -34,17 +36,17 @@ namespace SFCGAL {
 	/*
 	 * Cover test on 2D geometries. Checks if gA covers gB. Force projection to z=0 if needed
 	 */
-	bool covers( const Geometry& ga, const Geometry& gb );
+	SFCGAL_API bool covers( const Geometry& ga, const Geometry& gb );
 
 	/*
 	 * Cover test on 3D geometries. Checks if gA covers gB. Assume z = 0 if needed
 	 */
-	bool covers3D( const Geometry& ga, const Geometry& gb );
+	SFCGAL_API bool covers3D( const Geometry& ga, const Geometry& gb );
 
 	/*
 	 * Cover test on a list of points against a Solid.  Checks if the solid covers one of the points
 	 */
-	bool covers3D( const Solid& solid, std::vector<const Point*>& pts );
+	SFCGAL_API bool covers3D( const Solid& solid, std::vector<const Point*>& pts );
 
 	template <int Dim>
 	bool covers( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );

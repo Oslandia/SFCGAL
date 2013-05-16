@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_DETAIL_GETPOINTSVISITOR_H_
 #define _SFCGAL_DETAIL_GETPOINTSVISITOR_H_
 
+#include <SFCGAL/config.h>
+
 #include <vector>
 #include <SFCGAL/GeometryVisitor.h>
 
@@ -30,7 +32,7 @@ namespace detail {
 	/**
 	 * Get the list of points from a Geometry
 	 */
-	class GetPointsVisitor : public ConstGeometryVisitor {
+	class SFCGAL_API GetPointsVisitor : public ConstGeometryVisitor {
 	public:
 		virtual void visit( const Point & g ) ;
 		virtual void visit( const LineString & g ) ;

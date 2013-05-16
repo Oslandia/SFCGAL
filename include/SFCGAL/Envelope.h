@@ -27,6 +27,8 @@
 #include <CGAL/Bbox_2.h>
 #include <CGAL/Bbox_3.h>
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/detail/Interval.h>
 #include <SFCGAL/Coordinate.h>
 
@@ -41,7 +43,7 @@ namespace SFCGAL {
 	 * Represents a bounding box
 	 * @todo add asText instead of "print"?
 	 */
-	class Envelope {
+	class SFCGAL_API Envelope {
 	public:
 		/**
 		 * default constructor (empty bounding box)
@@ -204,7 +206,7 @@ namespace SFCGAL {
 	/**
 	 * Global comparison operator on Envelope
 	 */
-	bool operator==( const Envelope&, const Envelope& );
+	SFCGAL_API bool operator==( const Envelope&, const Envelope& );
 
 }//SFCGAL
 

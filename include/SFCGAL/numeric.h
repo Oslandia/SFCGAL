@@ -24,22 +24,24 @@
 #include <limits>
 #include <cmath>
 
+#include <SFCGAL/export.h>
+
 #include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
 	/**
 	 * shortcut to get NaN for double
 	 */
-	inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
+	SFCGAL_API inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
 	/**
 	 * shortcut to test NaN for double
 	 */
-	inline bool   isNaN( const double & value ){ return value != value ; }
+	SFCGAL_API inline bool   isNaN( const double & value ){ return value != value ; }
 
 	/**
 	 * @brief round a double to the nearest integer
 	 */
-	inline double round( const double & v ){
+	SFCGAL_API inline double round( const double & v ){
 		if ( v < 0.0 ){
 			return ::ceil( v - 0.5 ) ;
 		}else{
@@ -51,15 +53,15 @@ namespace SFCGAL {
 	/**
 	 * @brief floor a rational to an integer
 	 */
-	CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
 	/**
 	 * @brief ceil a rational to an integer
 	 */
-	CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
 	/**
 	 * @brief round a rational to an integer
 	 */
-	CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
 
 }//SFCGAL
 

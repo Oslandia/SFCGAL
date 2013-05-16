@@ -34,7 +34,7 @@ namespace SFCGAL {
 	/**
 	 * A GeometryCollection in SFA.
 	 */
-	class GeometryCollection : public Geometry {
+	class SFCGAL_API GeometryCollection : public Geometry {
 	public:
 		typedef boost::ptr_vector< Geometry >::iterator       iterator ;
 		typedef boost::ptr_vector< Geometry >::const_iterator const_iterator ;

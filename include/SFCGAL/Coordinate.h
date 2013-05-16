@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_COORDINATE_H_
 #define _SFCGAL_COORDINATE_H_
 
+#include <SFCGAL/config.h>
+
 #include <boost/assert.hpp>
 #include <boost/array.hpp>
 #include <boost/variant.hpp>
@@ -36,7 +38,7 @@ namespace SFCGAL {
 	 * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Kernel::Point_2,
 	 * or a Kernel::Point_3)
 	 */
-	class Coordinate {
+	class SFCGAL_API Coordinate {
 	public:
 		/**
 		 * Empty Coordinate constructor

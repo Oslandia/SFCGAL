@@ -21,6 +21,8 @@
 #ifndef SFCGAL_COLLECTION_TO_MULTI_ALGORITHM
 #define SFCGAL_COLLECTION_TO_MULTI_ALGORITHM
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/GeometryCollection.h>
 
@@ -32,7 +34,7 @@ namespace SFCGAL {
 	     *
 	     * @warning Ownership is taken from the parameter
 	     */
-	    std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> coll );
+	    SFCGAL_API std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> coll );
     }
 }
 

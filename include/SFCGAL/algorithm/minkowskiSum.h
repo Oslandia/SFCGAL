@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_MINKOWSKISUM_H_
 #define _SFCGAL_ALGORITHM_MINKOWSKISUM_H_
 
+#include <SFCGAL/config.h>
+
 #include <memory>
 #include <SFCGAL/Geometry.h>
 
@@ -32,7 +34,7 @@ namespace algorithm {
 	 *
 	 * @todo missing cases (union)
 	 */
-	std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+	SFCGAL_API std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
 
 } // namespace algorithm
