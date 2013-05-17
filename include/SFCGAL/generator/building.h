@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_GENERATOR_BUILDING_H_
 #define _SFCGAL_GENERATOR_BUILDING_H_
 
+#include <SFCGAL/config.h>
+
 #include <memory>
 
 #include <SFCGAL/Kernel.h>
@@ -38,7 +40,7 @@ namespace generator {
 	 *
 	 * @warning only supports Polygon and MultiPolygon
 	 */
-	std::auto_ptr< Geometry > building(
+	SFCGAL_API std::auto_ptr< Geometry > building(
 		const Geometry & g,
 		const Kernel::FT& wallHeight,
 		const Kernel::FT& roofSlope

@@ -22,12 +22,15 @@
 #ifdef SFCGAL_USE_STATIC_LIBS
 // static libraries
 #  define SFCGAL_API 
+#  define SFCGAL_API_TEMPLATE 
 #else
 // shared libraries
 #  ifdef SFCGAL_BUILD_SHARED
 #     define SFCGAL_API SFCGAL_API_EXPORT
+#     define SFCGAL_API_TEMPLATE SFCGAL_API_TEMPLATE_EXPORT
 #  else
 #     define SFCGAL_API SFCGAL_API_IMPORT
+#     define SFCGAL_API_TEMPLATE SFCGAL_API_TEMPLATE_IMPORT
 #  endif
 #endif
 
