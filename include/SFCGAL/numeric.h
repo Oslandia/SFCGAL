@@ -32,16 +32,16 @@ namespace SFCGAL {
 	/**
 	 * shortcut to get NaN for double
 	 */
-	SFCGAL_API inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
+	inline double NaN() { return std::numeric_limits< double >::quiet_NaN(); }
 	/**
 	 * shortcut to test NaN for double
 	 */
-	SFCGAL_API inline bool   isNaN( const double & value ){ return value != value ; }
+	inline bool   isNaN( const double & value ){ return value != value ; }
 
 	/**
 	 * @brief round a double to the nearest integer
 	 */
-	SFCGAL_API inline double round( const double & v ){
+	inline double round( const double & v ){
 		if ( v < 0.0 ){
 			return ::ceil( v - 0.5 ) ;
 		}else{
