@@ -21,6 +21,7 @@
 #ifndef _SFCGAL_GRAPH_EDGE_H_
 #define _SFCGAL_GRAPH_EDGE_H_
 
+#include <SFCGAL/config.h>
 
 namespace SFCGAL {
 namespace graph {
@@ -29,7 +30,7 @@ namespace graph {
 	 * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
 	 * more informations)
 	 */
-	struct Edge {
+	struct SFCGAL_API Edge {
 		Edge( const int & face_ = -1 );
 
 		int face ;
