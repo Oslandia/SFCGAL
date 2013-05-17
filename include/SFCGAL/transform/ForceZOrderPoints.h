@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRANSFORM_FORCEZ_ORDER_POINTS_H_
 #define _SFCGAL_TRANSFORM_FORCEZ_ORDER_POINTS_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
@@ -31,7 +33,7 @@ namespace transform {
 	/**
 	 * Force Z. If the 2D surface is pointing down, reverse its points
 	 */
-	class ForceZOrderPoints : public Transform {
+	class SFCGAL_API ForceZOrderPoints : public Transform {
 	public:
 		/**
 		 * Constructor with a default Z value

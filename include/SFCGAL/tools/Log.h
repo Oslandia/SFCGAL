@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_LOG_H_
 #define _SFCGAL_LOG_H_
 
+#include <SFCGAL/config.h>
+
 #include <string>
 #include <boost/format.hpp>
 
@@ -82,7 +84,7 @@ namespace SFCGAL {
 	 *
 	 * @warning saved_lines and co removed (dangerous for memory and could be done in a LogWriter).
 	 */
-	class Logger
+	class SFCGAL_API Logger
 	{
 	public:
 		/**
@@ -169,7 +171,7 @@ namespace SFCGAL {
 	/**
 	 * get the logger
 	 */
-	Logger & logger() ;
+	SFCGAL_API Logger & logger() ;
 
 
 }//SFCGAL

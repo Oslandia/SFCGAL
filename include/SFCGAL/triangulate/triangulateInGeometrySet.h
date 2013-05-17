@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRIANGULATE_IN_GEOMETRY_SET_H_
 #define _SFCGAL_TRIANGULATE_IN_GEOMETRY_SET_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/GeometrySet.h>
 
 namespace SFCGAL {
@@ -29,11 +31,11 @@ namespace triangulate {
 	/**
 	 * Populate the GeometrySet<3> geometry with the triangulation (list of triangles) of a polyhedron
 	 */
-	void triangulate( const MarkedPolyhedron& polyhedron, GeometrySet<3>& geometry );
+	SFCGAL_API void triangulate( const MarkedPolyhedron& polyhedron, GeometrySet<3>& geometry );
 	/**
 	 * Populate the GeometrySet<2> geometry with the triangulation (list of polygons) of a polygon
 	 */
-	void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, GeometrySet<2>& geometry );
+	SFCGAL_API void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, GeometrySet<2>& geometry );
 
 }//algorithm
 }//SFCGAL

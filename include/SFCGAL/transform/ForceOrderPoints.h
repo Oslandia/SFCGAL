@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRANSFORM_FORCE_ORDER_POINTS_H_
 #define _SFCGAL_TRANSFORM_FORCE_ORDER_POINTS_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
@@ -31,7 +33,7 @@ namespace transform {
 	/**
 	 * If the 2D surface is pointing down, reverse its points
 	 */
-	class ForceOrderPoints : public Transform {
+	class SFCGAL_API ForceOrderPoints : public Transform {
 	public:
 		/**
 		 * Pass the forced orientation as parameter
