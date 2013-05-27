@@ -32,6 +32,7 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/Solid.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/TypeForDimension.h>
 
@@ -528,15 +529,42 @@ namespace SFCGAL {
 		recompose_surfaces( _surfaces, geometries, dim_t<Dim>() );
 		recompose_volumes( _volumes, geometries, dim_t<Dim>() );
 
+		if ( geometries.empty() ) {
+			return std::auto_ptr<Geometry>( new GeometryCollection );
+		}
 		if ( geometries.size() == 1 ) {
 			return std::auto_ptr<Geometry>( geometries[0] );
 		}
 		// else we have a mix of different types
-		GeometryCollection* ret = new GeometryCollection;
+		bool hasCommonType = true;
+		int commonType = geometries[0]->geometryTypeId();
+		for ( size_t i = 0; i < geometries.size(); ++i ) {
+			if ( geometries[i]->geometryTypeId() != commonType ) {
+				hasCommonType = false;
+				break;
+			}
+		}
+		GeometryCollection* ret;
+		if ( hasCommonType ) {
+			if ( commonType == TYPE_POINT ) {
+				ret = new MultiPoint;
+			}
+			else if ( commonType == TYPE_LINESTRING ) {
+				ret = new MultiLineString;
+			}
+			else if ( commonType == TYPE_POLYGON ) {
+				ret = new MultiPolygon;
+			}
+			else if ( commonType == TYPE_SOLID ) {
+				ret = new MultiSolid;
+			}
+		}
+		else {
+			ret = new GeometryCollection;
+		}
 		for ( size_t i = 0; i < geometries.size(); ++i ) {
 			ret->addGeometry( geometries[i] );
 		}
-		// TODO: create multipoint, multilinestring, etc. when possible
 		return std::auto_ptr<Geometry>( ret );
 	}
 
