@@ -39,7 +39,7 @@ if( NOT ${Boost_USE_AUTO_LINK} )
 endif()
 
 option( Boost_USE_STATIC_LIBS "boost use dynamic libraries" OFF )
-if( ${Boost_USE_STATIC_LIBS} )
+if( Boost_USE_STATIC_LIBS )
 	message( STATUS "Boost_USE_STATIC_LIBS=ON" )
 	add_definitions( "-DBOOST_THREAD_USE_LIB" )
 else()
@@ -56,7 +56,7 @@ else()
 endif()
 
 #-- minimalist build allowed with boost version older than 1.48
-set( SFCGAL_Boost_COMPONENTS date_time system thread serialization )
+set( SFCGAL_Boost_COMPONENTS date_time thread system serialization )
 #-- unit test
 if ( SFCGAL_BUILD_UNIT_TESTS OR SFCGAL_BUILD_REGRESS_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework ${SFCGAL_Boost_COMPONENTS} )

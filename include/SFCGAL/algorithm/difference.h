@@ -22,6 +22,7 @@
 #define SFCGAL_DIFFERENCE_ALGORITHM
 
 #include <memory>
+#include <SFCGAL/export.h>
 
 namespace SFCGAL {
 	class Geometry;
@@ -30,7 +31,7 @@ namespace algorithm {
 	/*
 	 * Difference between two 2D geometries.
 	 */
-	std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
+	SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
 	
 	/*
 	 * Difference between two geometry sets
