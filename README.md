@@ -25,36 +25,30 @@ Compilation
 -----------
 
 * Use cmake or cmake-gui
+
+Build options (ON/OFF cmake variable)
+
+<pre>
+SFCGAL_BUILD_UNIT_TESTS : Build unit tests
+SFCGAL_BUILD_REGRESS_TESTS : Build regress tests
+SFCGAL_BUILD_BENCH : Build bench tests
+SFCGAL_BUILD_EXAMPLES : Build examples
+SFCGAL_BUILD_OSG : Build components depending on OpenSceneGraph
+SFCGAL_BUILD_VIEWER : Build basic viewer
+</pre>
+
+Dependencies location (environment variables)
+
+<pre>
+GMP_DIR : GMP location
+MPFR_DIR : MPFR location
+CGAL_DIR : CGAL location
+BOOST_ROOT : Boost location
+</pre>
+
 * make / make install
 
 CGAL uses a lot of templated constructions. The whole building process may then take a while.
-
-
-* Build options (ON/OFF cmake variable)
-
-
-SFCGAL_BUILD_UNIT_TESTS : Build unit tests
-
-SFCGAL_BUILD_REGRESS_TESTS : Build regress tests
-
-SFCGAL_BUILD_BENCH : Build bench tests
-
-SFCGAL_BUILD_EXAMPLES : Build examples
-
-SFCGAL_BUILD_OSG : Build components depending on OpenSceneGraph
-
-SFCGAL_BUILD_VIEWER : Build basic viewer
-
-
-* Dependencies location (environment variables)
-
-GMP_DIR : GMP location
-
-MPFR_DIR : MPFR location
-
-CGAL_DIR : CGAL location
-
-BOOST_ROOT : Boost location
 
 
 Documentation
