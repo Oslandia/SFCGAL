@@ -18,7 +18,7 @@ Requirements
 Optional dependencies (viewer and 3D format export)
 
 * OpenSceneGraph (version >= 3.1)
-* Qt
+* Qt4
 
 
 Compilation
