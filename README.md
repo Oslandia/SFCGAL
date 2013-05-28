@@ -81,7 +81,7 @@ Troubleshouting
 Windows/MinGW
 --
 
-* Build failed with MinGW and boost 1.46.1 (problem with boost thread fixed in boost 1.47.0)
+* MinGW fail to build boost thread for version 1.46.1 (fixed in boost 1.47.0, please upgrade your boost version)
 * Use the same cmake option for boost with CGAL and SFCGAL (particularly Boost_USE_STATIC_LIBS=OFF)
 * Missing boost definitions in CGAL-4.1 to use static libraries (dllexport/dllimport)
 
