@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_EXTRUDE_H_
 #define _SFCGAL_ALGORITHM_EXTRUDE_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
 
@@ -30,13 +32,13 @@ namespace algorithm {
 	/**
 	 * extrude a Geometry with a direction
 	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
+	SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 	/**
 	 * @brief extrude a Geometry by a given vector
 	 * @todo Improve 3D surface extrude (Extrude only faces whose dot( v, normal ) > 0 and use Polyhedron union to
 	 *         get output geometries with a clean topology)
 	 */
-	std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
+	SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
 
 
 }//algorithm

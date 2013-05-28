@@ -38,7 +38,7 @@ namespace SFCGAL {
 	/// TypeForKernel<K, 2>::Point is equivalent to CGAL::Point_2<K> for instance
 	/// TypeForDimension<2>::Bbox is equivalent to CGAL::Bbox_2
 	
-	struct NoVolume {};
+	struct SFCGAL_API NoVolume {};
 
 	///
 	/// Generic traits, default dimension is 2
@@ -71,7 +71,7 @@ namespace SFCGAL {
 	};
 	
 	// An items type using my halfedge.
-	struct Items_with_mark_on_hedge : public CGAL::Polyhedron_items_3 
+	struct SFCGAL_API Items_with_mark_on_hedge : public CGAL::Polyhedron_items_3 
 	{
 		template <class Refs, class Traits>
 		struct Halfedge_wrapper {

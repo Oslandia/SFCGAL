@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_SERIALIZATION_
 #define _SFCGAL_SERIALIZATION_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/PreparedGeometry.h>
@@ -37,13 +39,13 @@ namespace SFCGAL {
 
 namespace io {
 
-	class BinarySerializer : public boost::archive::binary_oarchive
+	class SFCGAL_API BinarySerializer : public boost::archive::binary_oarchive
 	{
 	public:
 		BinarySerializer( std::ostream& ostr );
 	};
 
-	class BinaryUnserializer : public boost::archive::binary_iarchive
+	class SFCGAL_API BinaryUnserializer : public boost::archive::binary_iarchive
 	{
 	public:
 		BinaryUnserializer( std::istream& istr );
@@ -53,23 +55,23 @@ namespace io {
 	 * Convert a Geometry to its binary representation
 	 * @warning resulting string may contain 0s
 	 */
-	std::string writeBinaryGeometry( const SFCGAL::Geometry& );
+	SFCGAL_API std::string writeBinaryGeometry( const SFCGAL::Geometry& );
 
 	/**
 	 * Convert a PreparedGeometry to its binary representation
 	 * @warning resulting string may contain 0s
 	 */
-	std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
+	SFCGAL_API std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
 
 	/**
 	 * Read a Geometry from a binary representation
 	 */
-	std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
+	SFCGAL_API std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
 
 	/**
 	 * Read a PreparedGeometry from a binary representation
 	 */
-	std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
+	SFCGAL_API std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
 }
 }
 
@@ -79,22 +81,22 @@ namespace serialization {
 	/**
 	 * Serialization of Gmpz for text archives
 	 */
-	void save( boost::archive::text_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version);
+	SFCGAL_API void save( boost::archive::text_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version);
 
 	/**
 	 * Serialization of Gmpz for binary archives
 	 */
-	void save ( boost::archive::binary_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version);
+	SFCGAL_API void save ( boost::archive::binary_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version);
 
 	/**
 	 * Unserialization of Gmpz for text archives
 	 */
-	void load( boost::archive::text_iarchive & ar, CGAL::Gmpz & z, const unsigned int version);
+	SFCGAL_API void load( boost::archive::text_iarchive & ar, CGAL::Gmpz & z, const unsigned int version);
 
 	/**
 	 * Unserialization of Gmpz for binary archives
 	 */
-	void load( boost::archive::binary_iarchive & ar, CGAL::Gmpz & z, const unsigned int version);
+	SFCGAL_API void load( boost::archive::binary_iarchive & ar, CGAL::Gmpz & z, const unsigned int version);
 
 	template<class Archive>
 	void serialize(Archive & ar, CGAL::Gmpz & z, const unsigned int version)

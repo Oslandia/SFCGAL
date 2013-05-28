@@ -21,6 +21,8 @@
 #ifndef SFCGAL_COLLECTION_HOMOGENIZE_ALGORITHM
 #define SFCGAL_COLLECTION_HOMOGENIZE_ALGORITHM
 
+#include <SFCGAL/config.h>
+
 #include <memory>
 
 #include <SFCGAL/Geometry.h>
@@ -35,7 +37,7 @@ namespace SFCGAL {
 	     *
 	     * @warning Ownership is taken from the parameter
 	     */
-	    std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> coll );
+	    SFCGAL_API std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> coll );
     }
 }
 

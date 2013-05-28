@@ -21,6 +21,7 @@
 #ifndef _SFCGAL_ALGORITHM_LENGTH_H_
 #define _SFCGAL_ALGORITHM_LENGTH_H_
 
+#include <SFCGAL/config.h>
 
 namespace SFCGAL {
 	class Geometry ;
@@ -34,29 +35,29 @@ namespace algorithm {
 	/**
 	 * @brief Compute the 2D length for a Geometry (0 for incompatible types)
 	 */
-	double length( const Geometry & g ) ;
+	SFCGAL_API double length( const Geometry & g ) ;
 	/**
 	 * @brief Compute the 2D length for a LineString
 	 */
-	double length( const LineString & g ) ;
+	SFCGAL_API double length( const LineString & g ) ;
 	/**
 	 * @brief Compute the 2D length for a GeometryCollection
 	 */
-	double length( const GeometryCollection & g ) ;
+	SFCGAL_API double length( const GeometryCollection & g ) ;
 
 	/**
 	 * @brief Compute the 2D length for a geometry
 	 * @return the length of the Geometry, 0 for incompatible types
 	 */
-	double length3D( const Geometry & g ) ;
+	SFCGAL_API double length3D( const Geometry & g ) ;
 	/**
 	 * @brief Compute the 3D length for a LineString
 	 */
-	double length3D( const LineString & g ) ;
+	SFCGAL_API double length3D( const LineString & g ) ;
 	/**
 	 * @brief Compute the 3D length for a GeometryCollection
 	 */
-	double length3D( const GeometryCollection & g ) ;
+	SFCGAL_API double length3D( const GeometryCollection & g ) ;
 
 
 }//algorithm

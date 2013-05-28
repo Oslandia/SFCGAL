@@ -28,7 +28,7 @@ namespace SFCGAL {
 namespace graph {
 
 	/**
-	 * Convert Geometries to a GeometryGraph. Identifier in the Graph are returned in order to
+	 * @brief [private]Convert Geometries to a GeometryGraph. Identifier in the Graph are returned in order to
 	 * allow the user to keep identify the geometry.
 	 *
 	 * @todo wrap vertex_descriptor, std::vector< edge_descriptor >, etc. in SharedPoint, SharedLineString, SharedPolygon, etc.

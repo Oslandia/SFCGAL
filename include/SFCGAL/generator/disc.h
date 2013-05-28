@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_GENERATOR_DISC_H_
 #define _SFCGAL_GENERATOR_DISC_H_
 
+#include <SFCGAL/config.h>
+
 #include <memory>
 
 namespace SFCGAL {
@@ -34,7 +36,7 @@ namespace generator {
 	/**
 	 * Generate a discrete circle
 	 */
-	std::auto_ptr< Polygon > disc(
+	SFCGAL_API std::auto_ptr< Polygon > disc(
 		const Point& center,
 		const double & radius,
 		const unsigned int & nQuadrantSegments = 8U

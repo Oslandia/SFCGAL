@@ -56,7 +56,7 @@ namespace SFCGAL {
 	 *
 	 * NaN represents undefined values
 	 */
-	class Grid {
+	class SFCGAL_API Grid {
 	public:
 
 		/**

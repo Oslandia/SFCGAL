@@ -36,7 +36,7 @@ namespace SFCGAL {
 	 *
 	 * @ŧodo add lineString() etc.
 	 */
-	class MultiLineString : public GeometryCollection {
+	class SFCGAL_API MultiLineString : public GeometryCollection {
 	public:
 		/**
 		 * Empty MultiLineString constructor

@@ -36,7 +36,7 @@ namespace SFCGAL {
 	 *
 	 * @ŧodo add pointN() etc.
 	 */
-	class MultiPoint : public GeometryCollection {
+	class SFCGAL_API MultiPoint : public GeometryCollection {
 	public:
 		/**
 		 * Empty MultiPoint constructor

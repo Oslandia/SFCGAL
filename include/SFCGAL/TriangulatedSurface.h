@@ -28,6 +28,7 @@
 #include <boost/serialization/base_object.hpp>
 #include <boost/ptr_container/serialize_ptr_vector.hpp>
 
+
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
 
@@ -46,7 +47,7 @@ namespace SFCGAL {
 	 *
 	 * @warning CGAL::Triangulation_3 contains tetrahedron
 	 */
-	class TriangulatedSurface : public Surface {
+	class SFCGAL_API TriangulatedSurface : public Surface {
 	public:
 		typedef boost::ptr_vector< Triangle >::iterator       iterator ;
 		typedef boost::ptr_vector< Triangle >::const_iterator const_iterator ;
@@ -166,6 +167,15 @@ namespace SFCGAL {
 		//-- SFCGAL::Geometry
 		virtual void accept( ConstGeometryVisitor & visitor ) const ;
 
+
+		//-- helpers
+
+		/**
+		 * @brief Converts a TriangulatedSurface to a CGAL::Polyhedron_3
+		 */
+		template < typename K, typename Polyhedron >
+		std::auto_ptr<Polyhedron> toPolyhedron_3() const;
+
 		/**
 		 * Serializer
 		 */
@@ -177,12 +187,6 @@ namespace SFCGAL {
 		}
 	private:
 		boost::ptr_vector< Triangle > _triangles ;
-
-	public:
-		///
-		/// Converts a TriangulatedSurface to a CGAL::Polyhedron_3
-		template < typename K, typename Polyhedron >
-		std::auto_ptr<Polyhedron> toPolyhedron_3() const;
 	};
 }
 

@@ -1,7 +1,10 @@
 #ifndef _SFCGAL_IO_ASC_H_
 #define _SFCGAL_IO_ASC_H_
 
+#include <SFCGAL/config.h>
+
 #include <sstream>
+
 #include <SFCGAL/Grid.h>
 
 namespace SFCGAL {
@@ -12,7 +15,7 @@ namespace io {
 	 *
 	 * @see http://en.wikipedia.org/wiki/Esri_grid
 	 */
-	std::auto_ptr< Grid > readASC( std::istream& s ) ;
+	SFCGAL_API std::auto_ptr< Grid > readASC( std::istream& s ) ;
 
 
 } // namespace io

@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_IO_WKT_H_
 #define _SFCGAL_IO_WKT_H_
 
+#include <SFCGAL/config.h>
+
 #include <sstream>
 #include <string>
 #include <memory>
@@ -34,15 +36,15 @@ namespace io {
 	/**
 	 * Read a WKT geometry from an input stream
 	 */
-	std::auto_ptr< Geometry > readWkt( std::istream & s ) ;
+	SFCGAL_API std::auto_ptr< Geometry > readWkt( std::istream & s ) ;
 	/**
 	 * Read a WKT geometry from a string
 	 */
-	std::auto_ptr< Geometry > readWkt( const std::string & s ) ;
+	SFCGAL_API std::auto_ptr< Geometry > readWkt( const std::string & s ) ;
 	/**
 	 * Read a WKT geometry from a char*
 	 */
-	std::auto_ptr< Geometry > readWkt( const char*, size_t );
+	SFCGAL_API std::auto_ptr< Geometry > readWkt( const char*, size_t );
 }
 }
 

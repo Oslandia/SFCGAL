@@ -1,15 +1,16 @@
 #ifndef _SFCGAL_VIEWER_PLUGINS_PSQLPLUGIN_H_
 #define _SFCGAL_VIEWER_PLUGINS_PSQLPLUGIN_H_
 
+#ifndef Q_MOC_RUN
 #include <boost/scoped_ptr.hpp>
+#include <osg/Geode>
+#endif
 
 #include <QtGui/QDockWidget>
 #include <QtGui/QPlainTextEdit>
 #include <QtGui/QPushButton>
 #include <QtGui/QListWidget>
 #include <QtGui/QLineEdit>
-
-#include <osg/Geode>
 
 #include <SFCGAL/viewer/ViewerPlugin.h>
 

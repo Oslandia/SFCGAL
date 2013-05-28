@@ -45,7 +45,7 @@ namespace SFCGAL {
 	 *
 	 * @todo template < size_t N >?
 	 */
-	class Solid : public Geometry {
+	class SFCGAL_API Solid : public Geometry {
 	public:
 		typedef boost::ptr_vector< PolyhedralSurface >::iterator       iterator ;
 		typedef boost::ptr_vector< PolyhedralSurface >::const_iterator const_iterator ;

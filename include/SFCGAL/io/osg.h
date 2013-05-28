@@ -29,7 +29,7 @@ namespace io {
 	 *
 	 * @todo list of geometrie?
 	 */
-	void osgWriteFile( const Geometry & g, const std::string& filepath ) ;
+	SFCGAL_API void osgWriteFile( const Geometry & g, const std::string& filepath ) ;
 
 } // namespace io
 } // namespace SFCGAL

@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRIANGULATE_TRIANGULATEPOLYGON_H_
 #define _SFCGAL_TRIANGULATE_TRIANGULATEPOLYGON_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
@@ -33,49 +35,49 @@ namespace triangulate {
 	 * @param triangulatedSurface resulting TriangulatedSurface
 	 * @param usePolygonPlanes use polygon plane or Triangulate in OXY plane
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const Geometry & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate a 3D Polygon
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const Polygon & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate a 3D Triangle (copy triangle)
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const Triangle & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate a 3D TriangulatedSurface (copy triangles)
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const TriangulatedSurface & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate a 3D MultiPolygon
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const GeometryCollection & g,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate 3D polygons in a PolyhedralSurface.
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const PolyhedralSurface & polyhedralSurface,
 		TriangulatedSurface & triangulatedSurface
 	);
 	/**
 	 * @brief Triangulate a Solid
 	 */
-	void triangulatePolygon3D(
+	SFCGAL_API void triangulatePolygon3D(
 		const Solid & g,
 		TriangulatedSurface & triangulatedSurface
 	);

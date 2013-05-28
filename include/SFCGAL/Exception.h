@@ -21,6 +21,8 @@
 #ifndef _IGN_EXCEPTION_H_
 #define _IGN_EXCEPTION_H_
 
+#include <SFCGAL/config.h>
+
 #include <string>
 
 #include <boost/exception/all.hpp>
@@ -35,7 +37,7 @@ namespace SFCGAL {
 	 * BOOST_THROW_EXCEPTION( Exception("invalid geometry") );
 	 * \endcode
 	 */
-	class Exception : public virtual boost::exception, public virtual  std::exception {
+	class SFCGAL_API Exception : public virtual boost::exception, public virtual  std::exception {
 	public:
 		Exception() throw();
 		Exception( std::string const& message ) throw();
@@ -52,10 +54,8 @@ namespace SFCGAL {
 	protected:
 		std::string _message;
 	};
-}
-
-
-
+	
+} // namespace SFCGAL
 
 #endif
 

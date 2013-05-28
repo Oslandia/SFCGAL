@@ -21,6 +21,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Solid.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
@@ -106,6 +109,19 @@ BOOST_AUTO_TEST_CASE( testExpandToInclude )
 	BOOST_CHECK( box.boundsN(0) == detail::Interval(0.0,1.0) );
 	BOOST_CHECK( box.boundsN(1) == detail::Interval(0.0,2.0) );
 	BOOST_CHECK( box.boundsN(2) == detail::Interval(0.0) );
+}
+
+
+//std::auto_ptr< LineString > toRing() const ;
+BOOST_AUTO_TEST_CASE( testToRing ){
+	Envelope box(0.0,1.0,2.0,3.0);
+	BOOST_CHECK_EQUAL( box.toRing()->asText(0), "LINESTRING(0 2,1 2,1 3,0 3,0 2)" );
+}
+
+//std::auto_ptr< Polygon >    toPolygon() const ;
+BOOST_AUTO_TEST_CASE( testToPolygon ){
+	Envelope box(0.0,1.0,2.0,3.0,4.0,5.0);
+	BOOST_CHECK_EQUAL( box.toSolid()->asText(0), "SOLID((((0 2 4,0 3 4,1 3 4,1 2 4,0 2 4)),((0 2 5,1 2 5,1 3 5,0 3 5,0 2 5)),((0 2 4,1 2 4,1 2 5,0 2 5,0 2 4)),((1 3 4,0 3 4,0 3 5,1 3 5,1 3 4)),((1 2 4,1 3 4,1 3 5,1 2 5,1 2 4)),((0 2 4,0 2 5,0 3 5,0 3 4,0 2 4))))" );
 }
 
 
