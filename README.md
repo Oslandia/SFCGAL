@@ -71,14 +71,33 @@ In addition to the main SFCGAL library, the following optional components are pa
 * a unit test suite, see the test/unit directory
 * a regression test suite, see the test/regress directory
 * a benchmark suite, see the test/bench directory
-* a 3D viewer, based on OpenSceneGraph and QT
+* a 3D viewer, based on OpenSceneGraph and Qt
 
 
 
 Troubleshouting
 --------------------
 
+Windows/MinGW
+--
+
 * Build failed with MinGW and boost 1.46.1 (problem with boost thread fixed in boost 1.47.0)
+* Use the same cmake option for boost with CGAL and SFCGAL (particularly Boost_USE_STATIC_LIBS=OFF)
+* Missing boost definitions in CGAL-4.1 to use static libraries (dllexport/dllimport)
+
+Patch CGAL-4.1/CMakeLists.txt with the following lines to build with boost static libraries (Boost_USE_STATIC_LIBS=ON). 
+
+<pre>
+option( Boost_USE_STATIC_LIBS "boost use dynamic libraries" OFF )
+if( Boost_USE_STATIC_LIBS )
+  message( STATUS "Boost_USE_STATIC_LIBS=ON" )
+	add_definitions( "-DBOOST_THREAD_USE_LIB" )
+else()
+	message( STATUS "Boost_USE_STATIC_LIBS=OFF" )
+	add_definitions( "-DBOOST_ALL_DYN_LINK" )
+endif()
+</pre>
+
 
 
 
