@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRANSFORM_ROUNDTRANSFORM_H_
 #define _SFCGAL_TRANSFORM_ROUNDTRANSFORM_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
@@ -30,7 +32,7 @@ namespace transform {
 	/**
 	 * Round the coordinates of a Geometry
 	 */
-	class RoundTransform : public Transform {
+	class SFCGAL_API RoundTransform : public Transform {
 	public:
 		/**
 		 * Constructor with a scale factor (default is nearest integer)

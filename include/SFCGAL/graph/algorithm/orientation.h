@@ -29,7 +29,7 @@ namespace graph {
 namespace algorithm {
 
 	/**
-	 * Study orientation between two EdgeStrings
+	 * @brief [private]Study orientation between two EdgeStrings
 	 * @return true on success
 	 */
 	template < typename Graph >

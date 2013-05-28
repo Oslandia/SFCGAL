@@ -42,7 +42,7 @@ namespace SFCGAL {
 	 * @todo template < size_t N >?
 	 * @todo do better than a "polygon soup" or add topological view?
 	 */
-	class PolyhedralSurface : public Surface {
+	class SFCGAL_API PolyhedralSurface : public Surface {
 	public:
 		typedef boost::ptr_vector< Polygon >::iterator       iterator ;
 		typedef boost::ptr_vector< Polygon >::const_iterator const_iterator ;

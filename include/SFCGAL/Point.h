@@ -38,7 +38,7 @@ namespace SFCGAL {
 
 	 * @todo strong typing on coordinate dimension?
 	 */
-	class Point : public Geometry {
+	class SFCGAL_API Point : public Geometry {
 	public:
 		/**
 		 * Empty point constructor

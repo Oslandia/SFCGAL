@@ -23,6 +23,7 @@
 
 #include <boost/optional.hpp>
 
+#include <SFCGAL/config.h>
 #include <SFCGAL/Coordinate.h>
 
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
@@ -40,7 +41,7 @@ namespace triangulate {
 	/**
 	 * @brief 2DZ constraint Delaunay triangulation
 	 */
-	class ConstraintDelaunayTriangulation {
+	class SFCGAL_API ConstraintDelaunayTriangulation {
 	public:
 		/**
 		 * @brief vertex info in triangulation

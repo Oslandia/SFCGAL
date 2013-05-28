@@ -23,6 +23,7 @@
 
 #include <sstream>
 
+#include <SFCGAL/config.h>
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
@@ -33,7 +34,7 @@ namespace io {
 	 *
 	 * @warning Triangles are transformed into polygons
 	 */
-	class WktWriter {
+	class SFCGAL_API WktWriter {
 	public:
 		WktWriter( std::ostream & s ) ;
 

@@ -20,6 +20,9 @@
  */
 #ifndef _SFCGAL_CAPI_H_
 #define _SFCGAL_CAPI_H_
+
+#include <SFCGAL/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -64,125 +67,125 @@ typedef enum {
 	SFCGAL_TYPE_MULTISOLID          = 102
 } sfcgal_geometry_type_t ;
 
-sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geometry_t* );
-int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
-int                       sfcgal_geometry_is_empty( const sfcgal_geometry_t* );
-sfcgal_geometry_t*        sfcgal_geometry_clone( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geometry_t* );
+SFCGAL_API int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
+SFCGAL_API int                       sfcgal_geometry_is_empty( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*        sfcgal_geometry_clone( const sfcgal_geometry_t* );
 
-void                      sfcgal_geometry_delete( sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_geometry_delete( sfcgal_geometry_t* );
 
 /* buffer is allocated and must be freed by the caller */
-void                      sfcgal_geometry_as_text( const sfcgal_geometry_t*, char** buffer, size_t* len );
+SFCGAL_API void                      sfcgal_geometry_as_text( const sfcgal_geometry_t*, char** buffer, size_t* len );
 
 /**
  * Point
  */
-sfcgal_geometry_t*        sfcgal_point_create();
-sfcgal_geometry_t*        sfcgal_point_create_from_xy( double x, double y );
-sfcgal_geometry_t*        sfcgal_point_create_from_xyz( double x, double y, double z );
+SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create_from_xy( double x, double y );
+SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create_from_xyz( double x, double y, double z );
 
-double                    sfcgal_point_x( const sfcgal_geometry_t* );
-double                    sfcgal_point_y( const sfcgal_geometry_t* );
-double                    sfcgal_point_z( const sfcgal_geometry_t* );
+SFCGAL_API double                    sfcgal_point_x( const sfcgal_geometry_t* );
+SFCGAL_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
+SFCGAL_API double                    sfcgal_point_z( const sfcgal_geometry_t* );
 
 /**
  * LineString
  */
-sfcgal_geometry_t*        sfcgal_linestring_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_linestring_create();
 
-size_t                    sfcgal_linestring_num_points( const sfcgal_geometry_t* );
+SFCGAL_API size_t                    sfcgal_linestring_num_points( const sfcgal_geometry_t* );
 /* return a const reference to a point */
-const sfcgal_geometry_t*  sfcgal_linestring_point_n( const sfcgal_geometry_t*, size_t i );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_linestring_point_n( const sfcgal_geometry_t*, size_t i );
 /* add a point, takes ownership */
-void                      sfcgal_linestring_add_point( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_linestring_add_point( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 /**
  * Triangle
  */
-sfcgal_geometry_t*        sfcgal_triangle_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create();
 /** copy points passed in arguments */
-sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const sfcgal_geometry_t*,
+SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const sfcgal_geometry_t*,
 							      const sfcgal_geometry_t*,
 							      const sfcgal_geometry_t*);
 
 /* return a const reference */
-const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geometry_t*, int i );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geometry_t*, int i );
 /* copy vertex */
-void                      sfcgal_triangle_set_vertex( sfcgal_geometry_t*, int i, const sfcgal_geometry_t* );
-void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t*, int i, double x, double y );
-void                      sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t*, int i, double x, double y, double z );
+SFCGAL_API void                      sfcgal_triangle_set_vertex( sfcgal_geometry_t*, int i, const sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t*, int i, double x, double y );
+SFCGAL_API void                      sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t*, int i, double x, double y, double z );
 
 /**
  * Polygon
  */
-sfcgal_geometry_t*        sfcgal_polygon_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create();
 /* takes ownership of the exterior ring */
-sfcgal_geometry_t*        sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* );
 
-const sfcgal_geometry_t*  sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* );
 
-size_t                    sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* );
-const sfcgal_geometry_t*  sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t*, size_t );
+SFCGAL_API size_t                    sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t*, size_t );
 
 /* takes ownership */
-void                      sfcgal_polygon_add_interior_ring( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_polygon_add_interior_ring( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 /**
  * Geometry collection
  */
 
-sfcgal_geometry_t*        sfcgal_geometry_collection_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_geometry_collection_create();
 
-size_t                    sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* );
-const sfcgal_geometry_t*  sfcgal_geometry_collection_geometry_n( const sfcgal_geometry_t*, size_t i );
+SFCGAL_API size_t                    sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_geometry_collection_geometry_n( const sfcgal_geometry_t*, size_t i );
 
 /* takes ownership */
-void                      sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 /**
  * Multi-*
  */
-sfcgal_geometry_t*        sfcgal_multi_point_create();
-sfcgal_geometry_t*        sfcgal_multi_linestring_create();
-sfcgal_geometry_t*        sfcgal_multi_polygon_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_point_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_linestring_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_polygon_create();
 
 /**
  * Polyhedral surface
  */
 
-sfcgal_geometry_t*        sfcgal_polyhedral_surface_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_polyhedral_surface_create();
 
-size_t                    sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* );
-const sfcgal_geometry_t*  sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t*, size_t i );
+SFCGAL_API size_t                    sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t*, size_t i );
 
 /* takes ownership */
-void                      sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 /**
  * Triangulated surface
  */
 
-sfcgal_geometry_t*        sfcgal_triangulated_surface_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_triangulated_surface_create();
 
-size_t                    sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* );
-const sfcgal_geometry_t*  sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t*, size_t i );
+SFCGAL_API size_t                    sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t*, size_t i );
 
 /* takes ownership */
-void                      sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 /**
  * Solid
  */
 
-sfcgal_geometry_t*        sfcgal_solid_create();
+SFCGAL_API sfcgal_geometry_t*        sfcgal_solid_create();
 /* takes ownership of the given exterior shell */
-sfcgal_geometry_t*        sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*        sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* );
 
-size_t                    sfcgal_solid_num_shells( const sfcgal_geometry_t* );
-const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry_t*, size_t i );
+SFCGAL_API size_t                    sfcgal_solid_num_shells( const sfcgal_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry_t*, size_t i );
 
 /* takes ownership */
-void                      sfcgal_solid_add_shell( sfcgal_geometry_t*, sfcgal_geometry_t* );
+SFCGAL_API void                      sfcgal_solid_add_shell( sfcgal_geometry_t*, sfcgal_geometry_t* );
 
 	
 /*--------------------------------------------------------------------------------------*
@@ -194,22 +197,22 @@ void                      sfcgal_solid_add_shell( sfcgal_geometry_t*, sfcgal_geo
 typedef void sfcgal_prepared_geometry_t;
 typedef uint32_t srid_t;
 
-sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create();
+SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create();
 /* takes ownership of the given geometry */
-sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geometry( sfcgal_geometry_t*, srid_t srid );
+SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geometry( sfcgal_geometry_t*, srid_t srid );
 
 /* will also delete the underlying geometry */
-void                        sfcgal_prepared_geometry_delete( sfcgal_prepared_geometry_t* );
+SFCGAL_API void                        sfcgal_prepared_geometry_delete( sfcgal_prepared_geometry_t* );
 
-const sfcgal_geometry_t*    sfcgal_prepared_geometry_geometry( const sfcgal_prepared_geometry_t* );
+SFCGAL_API const sfcgal_geometry_t*    sfcgal_prepared_geometry_geometry( const sfcgal_prepared_geometry_t* );
 /* takes ownership of the given geometry */
-void                        sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t*, sfcgal_geometry_t * );
+SFCGAL_API void                        sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t*, sfcgal_geometry_t * );
 
-srid_t                      sfcgal_prepared_geometry_srid( const sfcgal_prepared_geometry_t* );
-void                        sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t*, srid_t );
+SFCGAL_API srid_t                      sfcgal_prepared_geometry_srid( const sfcgal_prepared_geometry_t* );
+SFCGAL_API void                        sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t*, srid_t );
 
 /* returned string must be deleted by the caller */
-void                        sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t*, int num_decimals, char **buffer, size_t* len );
+SFCGAL_API void                        sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t*, int num_decimals, char **buffer, size_t* len );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -220,15 +223,15 @@ void                        sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepa
 /**
  * io::readWKT
  */
-sfcgal_geometry_t*          sfcgal_io_read_wkt( const char*, size_t len );
-sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char*, size_t len );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_io_read_wkt( const char*, size_t len );
+SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char*, size_t len );
 
 /**
  * Serialization
  */
 /* allocates into char**, must be freed by the caller */
-void                        sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_t*, char**, size_t* );
-sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char*, size_t l );
+SFCGAL_API void                        sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_t*, char**, size_t* );
+SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char*, size_t l );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -236,29 +239,29 @@ sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char*, size_t 
  *
  *--------------------------------------------------------------------------------------*/
 
-int                         sfcgal_geometry_intersects( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-int                         sfcgal_geometry_intersects_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_intersection( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* );
-double                      sfcgal_geometry_area( const sfcgal_geometry_t* );
-double                      sfcgal_geometry_area_3d( const sfcgal_geometry_t* );
-int                         sfcgal_geometry_is_planar( const sfcgal_geometry_t* );
-int                         sfcgal_geometry_orientation( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t*, double, double, double );
-sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_geometry_t* );
-double                      sfcgal_geometry_distance( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-double                      sfcgal_geometry_distance_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_copy( const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_round( const sfcgal_geometry_t*, int );
-sfcgal_geometry_t*          sfcgal_geometry_minkowski_sum( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
-sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfcgal_geometry_t*, double radius );
-sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* );
+SFCGAL_API int                         sfcgal_geometry_intersects( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API int                         sfcgal_geometry_intersects_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* );
+SFCGAL_API double                      sfcgal_geometry_area( const sfcgal_geometry_t* );
+SFCGAL_API double                      sfcgal_geometry_area_3d( const sfcgal_geometry_t* );
+SFCGAL_API int                         sfcgal_geometry_is_planar( const sfcgal_geometry_t* );
+SFCGAL_API int                         sfcgal_geometry_orientation( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t*, double, double, double );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_geometry_t* );
+SFCGAL_API double                      sfcgal_geometry_distance( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API double                      sfcgal_geometry_distance_3d( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_copy( const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_round( const sfcgal_geometry_t*, int );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_minkowski_sum( const sfcgal_geometry_t*, const sfcgal_geometry_t* );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfcgal_geometry_t*, double radius );
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -272,7 +275,7 @@ sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geom
 
 typedef int ( *sfcgal_error_handler_t ) ( const char *, ... );
 
-void sfcgal_set_error_handlers( sfcgal_error_handler_t, sfcgal_error_handler_t );
+SFCGAL_API void sfcgal_set_error_handlers( sfcgal_error_handler_t, sfcgal_error_handler_t );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -283,7 +286,7 @@ void sfcgal_set_error_handlers( sfcgal_error_handler_t, sfcgal_error_handler_t )
 typedef void* ( *sfcgal_alloc_handler_t ) (size_t);
 typedef void ( *sfcgal_free_handler_t ) (void*);
 
-void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t, sfcgal_free_handler_t );
+SFCGAL_API void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t, sfcgal_free_handler_t );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -291,12 +294,12 @@ void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t, sfcgal_free_handler_t );
  *
  *--------------------------------------------------------------------------------------*/
 
-void sfcgal_init();
+SFCGAL_API void sfcgal_init();
 
 /*
  * Get version
  */
-const char* sfcgal_version();
+SFCGAL_API const char* sfcgal_version();
 
 #ifdef __cplusplus
 }

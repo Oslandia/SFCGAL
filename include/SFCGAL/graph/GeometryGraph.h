@@ -49,7 +49,7 @@ namespace graph {
 
 	/**
 	 *
-	 * Represents the vertices and edges for a list of geometries.
+	 * @brief [private]Represents the vertices and edges for a list of geometries.
 	 *
 	 * A boost::adjancency_list is wrapped in order to be able to annex some informations
 	 * and to provide basic functionalities.

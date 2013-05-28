@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_CONSISTENTORIENTATIONBUILDER_H_
 #define _SFCGAL_ALGORITHM_CONSISTENTORIENTATIONBUILDER_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 
 #include <SFCGAL/graph/GeometryGraph.h>
@@ -32,7 +34,7 @@ namespace algorithm {
 	/**
 	 * Make orientation consistent in a triangle set
 	 */
-	class ConsistentOrientationBuilder {
+	class SFCGAL_API ConsistentOrientationBuilder {
 	public:
 		typedef graph::GeometryGraph::vertex_descriptor        vertex_descriptor ;
 		typedef graph::GeometryGraph::edge_descriptor          edge_descriptor ;

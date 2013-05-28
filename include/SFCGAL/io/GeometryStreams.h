@@ -23,6 +23,8 @@
 
 #include <ostream>
 
+#include <SFCGAL/config.h>
+
 namespace SFCGAL {
 
 	class Envelope;
@@ -31,12 +33,12 @@ namespace SFCGAL {
 	/**
 	 * Ostream operator for Envelope;
 	 */
-	std::ostream& operator<< (std::ostream&, const Envelope& );
+	SFCGAL_API std::ostream& operator<< (std::ostream&, const Envelope& );
 
 	/**
 	 * Ostream operator for Geometry;
 	 */
-	std::ostream& operator<< (std::ostream&, const Geometry& );
+	SFCGAL_API std::ostream& operator<< (std::ostream&, const Geometry& );
 }
 
 #endif

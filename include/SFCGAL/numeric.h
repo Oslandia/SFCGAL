@@ -24,6 +24,8 @@
 #include <limits>
 #include <cmath>
 
+#include <SFCGAL/export.h>
+
 #include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
@@ -51,15 +53,15 @@ namespace SFCGAL {
 	/**
 	 * @brief floor a rational to an integer
 	 */
-	CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz floor( const CGAL::Gmpq & v ) ;
 	/**
 	 * @brief ceil a rational to an integer
 	 */
-	CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz ceil( const CGAL::Gmpq & v ) ;
 	/**
 	 * @brief round a rational to an integer
 	 */
-	CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
+	SFCGAL_API CGAL::Gmpz round( const CGAL::Gmpq & v ) ;
 
 }//SFCGAL
 

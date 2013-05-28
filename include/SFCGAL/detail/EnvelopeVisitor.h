@@ -21,9 +21,11 @@
 #ifndef _SFCGAL_DETAIL_ENVELOPEVISITOR_H_
 #define _SFCGAL_DETAIL_ENVELOPEVISITOR_H_
 
-#include <vector>
+#include <SFCGAL/config.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/GeometryVisitor.h>
+
+#include <vector>
 
 namespace SFCGAL {
 namespace detail {
@@ -33,7 +35,7 @@ namespace detail {
 	 *
 	 * @todo ConstPointVisitor
 	 */
-	class EnvelopeVisitor : public ConstGeometryVisitor {
+	class SFCGAL_API EnvelopeVisitor : public ConstGeometryVisitor {
 	public:
 		EnvelopeVisitor( Envelope & envelope_ );
 

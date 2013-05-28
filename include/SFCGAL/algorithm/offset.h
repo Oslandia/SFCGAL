@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_OFFSET_H_
 #define _SFCGAL_ALGORITHM_OFFSET_H_
 
+#include <SFCGAL/config.h>
+
 #include <memory>
 
 namespace SFCGAL {
@@ -36,7 +38,7 @@ namespace algorithm {
 	 *
 	 * @warning test in order to compare with minkowski sum
 	 */
-	std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r ) ;
+	SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r ) ;
 
 
 }//namespace algorithm

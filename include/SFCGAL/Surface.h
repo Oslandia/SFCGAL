@@ -30,7 +30,7 @@ namespace SFCGAL {
 	 *
 	 * @todo template < size_t N >?
 	 */
-	class Surface : public Geometry {
+	class SFCGAL_API Surface : public Geometry {
 	public:
 		/**
 		 * destructor

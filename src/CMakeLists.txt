@@ -1,7 +1,7 @@
 file( GLOB_RECURSE SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h" )
 file( GLOB_RECURSE SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/*.cpp" )
 
-if( ${SFCGAL_USE_STATIC_LIBS} )
+if( SFCGAL_USE_STATIC_LIBS )
   add_definitions( "-fPIC" )
   add_library(
     SFCGAL
@@ -10,6 +10,7 @@ if( ${SFCGAL_USE_STATIC_LIBS} )
     )
 
 else()
+  add_definitions( "-DSFCGAL_BUILD_SHARED" )
   add_library(
     SFCGAL SHARED
     ${SFCGAL_HEADERS}
@@ -17,6 +18,8 @@ else()
     )
 endif()
 
+
+target_link_libraries( SFCGAL ${CGAL_LIBRARIES} )
 if( ${SFCGAL_WITH_GMP} )
 	target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_GMP} )
@@ -26,9 +29,6 @@ endif( ${SFCGAL_WITH_MPFR} )
 if( ${SFCGAL_WITH_OSG} )
 	 target_link_libraries( SFCGAL ${OPENSCENEGRAPH_LIBRARIES} )
 endif()
-
-target_link_libraries( SFCGAL ${CGAL_LIBRARIES} )
-
 target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
 
 if ( ${Use_precompiled_headers} )

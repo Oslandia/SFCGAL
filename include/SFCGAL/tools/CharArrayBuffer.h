@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TOOLS_CHARARRAYBUFFER_H_
 #define _SFCGAL_TOOLS_CHARARRAYBUFFER_H_
 
+#include <SFCGAL/config.h>
+
 #include <streambuf>
 
 
@@ -29,7 +31,7 @@
 ///
 /// http://www.mr-edd.co.uk/blog/beginners_guide_streambuf
 ///
-class CharArrayBuffer : public std::streambuf
+class SFCGAL_API CharArrayBuffer : public std::streambuf
 {
     public:
         CharArrayBuffer(const char *begin, const char *end);

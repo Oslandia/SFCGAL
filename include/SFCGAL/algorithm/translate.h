@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRANSLATE_H_
 #define _SFCGAL_TRANSLATE_H_
 
+#include <SFCGAL/export.h>
+
 #include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
@@ -33,11 +35,11 @@ namespace algorithm {
 	/**
 	 * @brief translate a geometry from a given vector
 	 */
-	void       translate( Geometry & g, const Kernel::Vector_3 & v ) ;
+	SFCGAL_API void       translate( Geometry & g, const Kernel::Vector_3 & v ) ;
 	/**
 	 * @brief translate a geometry from a given vector
 	 */
-	void       translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
+	SFCGAL_API void       translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 } // namespace algorithm
 } // namespace SFCGAL

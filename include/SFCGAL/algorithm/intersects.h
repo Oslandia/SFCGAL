@@ -21,6 +21,8 @@
 #ifndef SFCGAL_INTERSECTS_ALGORITHM
 #define SFCGAL_INTERSECTS_ALGORITHM
 
+#include <SFCGAL/config.h>
+
 namespace SFCGAL {
 	class Geometry;
 	template <int Dim> class GeometrySet;
@@ -30,12 +32,12 @@ namespace SFCGAL {
 	/*
 	 * Intersection test on 2D geometries. Force projection to z=0 if needed
 	 */
-	bool intersects( const Geometry& ga, const Geometry& gb );
+	SFCGAL_API bool intersects( const Geometry& ga, const Geometry& gb );
 
 	/*
 	 * Intersection test on 3D geometries. Assume z = 0 if needed
 	 */
-	bool intersects3D( const Geometry& ga, const Geometry& gb );
+	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb );
 
 	template <int Dim>
 	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );

@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRANSFORM_FORCEZ_H_
 #define _SFCGAL_TRANSFORM_FORCEZ_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
@@ -30,7 +32,7 @@ namespace transform {
 	/**
 	 * Force Z definitions
 	 */
-	class ForceZ : public Transform {
+	class SFCGAL_API ForceZ : public Transform {
 	public:
 		/**
 		 * Constructor with a default Z value

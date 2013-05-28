@@ -23,6 +23,8 @@
 
 #include <sstream>
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/PreparedGeometry.h>
 
@@ -37,7 +39,7 @@ namespace io {
 	 * @warning M is ignored
 	 * @ŧodo take M in account?
 	 */
-	class WktReader {
+	class SFCGAL_API WktReader {
 	public:
 		/**
 		 * read WKT from input stream

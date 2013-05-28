@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_NORMAL_H_
 #define _SFCGAL_ALGORITHM_NORMAL_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {

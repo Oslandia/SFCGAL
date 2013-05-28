@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
 #define _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
 
+#include <SFCGAL/config.h>
+
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
 
@@ -29,11 +31,11 @@ namespace triangulate {
 	/**
 	 * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, a projectionPlane may be provided)
 	 */
-	void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & triangulate );
+	SFCGAL_API void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & triangulate );
 	/**
 	 * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, project points in OXY plane)
 	 */
-	ConstraintDelaunayTriangulation triangulate2DZ( const Geometry & g );
+	SFCGAL_API ConstraintDelaunayTriangulation triangulate2DZ( const Geometry & g );
 
 }//algorithm
 }//SFCGAL
