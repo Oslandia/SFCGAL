@@ -3,7 +3,7 @@
 #include <SFCGAL/config.h>
 
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/generator/building.h>
+#include <SFCGAL/detail/generator/building.h>
 
 // optional osg support for outputs
 #ifdef SFCGAL_WITH_OSG

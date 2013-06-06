@@ -24,8 +24,8 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/distance.h>
 
-#include <SFCGAL/tools/Registry.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Registry.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 using namespace SFCGAL ;
 

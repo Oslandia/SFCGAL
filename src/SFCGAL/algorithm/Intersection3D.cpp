@@ -25,10 +25,10 @@
 #include <CGAL/intersection_of_Polyhedra_3_refinement_visitor.h>
 #include <CGAL/corefinement_operations.h>
 
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
+#include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 

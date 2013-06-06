@@ -3,7 +3,7 @@
 #include <boost/format.hpp>
 
 #include <SFCGAL/Exception.h>
-#include <SFCGAL/tools/InputStreamReader.h>
+#include <SFCGAL/detail/tools/InputStreamReader.h>
 
 namespace SFCGAL {
 namespace io {

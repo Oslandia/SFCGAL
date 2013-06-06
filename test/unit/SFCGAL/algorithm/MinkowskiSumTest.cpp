@@ -24,9 +24,9 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/minkowskiSum.h>
-#include <SFCGAL/generator/hoch.h>
+#include <SFCGAL/detail/generator/hoch.h>
 
-#include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/tools/Registry.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

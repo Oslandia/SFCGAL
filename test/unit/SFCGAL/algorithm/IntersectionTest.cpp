@@ -24,10 +24,10 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/io/GeometryStreams.h>
 #include <SFCGAL/all.h>
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform3.h>
 
 #include <boost/test/unit_test.hpp>
 

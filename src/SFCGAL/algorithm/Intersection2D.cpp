@@ -24,10 +24,10 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/intersections.h>
 
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
+#include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
 namespace SFCGAL {
 namespace algorithm {

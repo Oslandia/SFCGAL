@@ -27,7 +27,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
-#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/detail/TypeForDimension.h>
 
 #include <CGAL/Triangle_2.h>
 #include <CGAL/Triangle_3.h>

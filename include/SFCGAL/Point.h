@@ -24,7 +24,7 @@
 #include <SFCGAL/Coordinate.h>
 
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/detail/TypeForDimension.h>
 
 #include <boost/serialization/base_object.hpp>
 

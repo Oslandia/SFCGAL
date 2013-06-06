@@ -29,7 +29,7 @@
 #include <osgDB/Registry>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerWindow.h>

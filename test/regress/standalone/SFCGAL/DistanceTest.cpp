@@ -28,7 +28,7 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

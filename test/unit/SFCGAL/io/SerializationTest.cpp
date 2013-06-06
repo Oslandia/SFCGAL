@@ -23,7 +23,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/io/Serialization.h>
+#include <SFCGAL/detail/io/Serialization.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/ewkt.h>
 

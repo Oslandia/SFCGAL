@@ -22,11 +22,11 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/Exception.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform3.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 

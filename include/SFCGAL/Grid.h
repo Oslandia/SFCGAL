@@ -21,7 +21,7 @@
 #ifndef _SFCGAL_GRID_H_
 #define _SFCGAL_GRID_H_
 
-#include <SFCGAL/ublas.h>
+#include <SFCGAL/detail/ublas.h>
 
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/Point.h>

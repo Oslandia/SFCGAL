@@ -7,7 +7,7 @@
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/extrude.h>
 
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 
 
 

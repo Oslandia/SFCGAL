@@ -25,9 +25,9 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform3.h>
 
 using namespace SFCGAL ;
 using namespace boost::unit_test ;

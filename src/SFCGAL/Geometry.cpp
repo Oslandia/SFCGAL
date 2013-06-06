@@ -22,7 +22,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/GeometryVisitor.h>
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
@@ -31,7 +31,7 @@
 
 #include <SFCGAL/detail/EnvelopeVisitor.h>
 
-#include <SFCGAL/transform/RoundTransform.h>
+#include <SFCGAL/detail/transform/RoundTransform.h>
 
 #include <SFCGAL/Kernel.h>
 

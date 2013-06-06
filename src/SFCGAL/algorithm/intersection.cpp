@@ -24,8 +24,8 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
-#include <SFCGAL/tools/Registry.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/tools/Registry.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>

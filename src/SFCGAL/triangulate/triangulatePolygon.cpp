@@ -23,7 +23,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 
-#include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
+#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 #include <SFCGAL/algorithm/plane.h>
 

@@ -22,11 +22,11 @@
 
 #include <SFCGAL/algorithm/ConsistentOrientationBuilder.h>
 
-#include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/graph/GeometryGraphBuilder.h>
-#include <SFCGAL/graph/algorithm/isHalfEdge.h>
+#include <SFCGAL/detail/graph/GeometryGraph.h>
+#include <SFCGAL/detail/graph/GeometryGraphBuilder.h>
+#include <SFCGAL/detail/graph/algorithm/isHalfEdge.h>
 
-#include <SFCGAL/graph/algorithm/orientation.h>
+#include <SFCGAL/detail/graph/algorithm/orientation.h>
 
 namespace SFCGAL {
 namespace algorithm {

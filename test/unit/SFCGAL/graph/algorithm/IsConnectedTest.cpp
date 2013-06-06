@@ -20,8 +20,8 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/graph/algorithm/isConnected.h>
+#include <SFCGAL/detail/graph/GeometryGraph.h>
+#include <SFCGAL/detail/graph/algorithm/isConnected.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

@@ -25,7 +25,7 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 namespace SFCGAL {
 

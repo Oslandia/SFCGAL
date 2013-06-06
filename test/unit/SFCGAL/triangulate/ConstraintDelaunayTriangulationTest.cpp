@@ -22,7 +22,7 @@
 
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
+#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

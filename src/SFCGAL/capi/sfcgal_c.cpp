@@ -38,7 +38,7 @@
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/ewkt.h>
-#include <SFCGAL/io/Serialization.h>
+#include <SFCGAL/detail/io/Serialization.h>
 
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
@@ -54,9 +54,9 @@
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
 
-#include <SFCGAL/transform/ForceZOrderPoints.h>
-#include <SFCGAL/transform/ForceOrderPoints.h>
-#include <SFCGAL/transform/RoundTransform.h>
+#include <SFCGAL/detail/transform/ForceZOrderPoints.h>
+#include <SFCGAL/detail/transform/ForceOrderPoints.h>
+#include <SFCGAL/detail/transform/RoundTransform.h>
 
 //
 // Note about sfcgal_geometry_t pointers: they are basically void* pointers that represent

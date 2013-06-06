@@ -23,7 +23,7 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/extrude.h>
-#include <SFCGAL/transform/ForceZ.h>
+#include <SFCGAL/detail/transform/ForceZ.h>
 #include <SFCGAL/io/wkt.h>
 
 using namespace SFCGAL ;

@@ -19,7 +19,7 @@
  *
  */
 #include <SFCGAL/algorithm/ConsistentOrientationBuilder.h>
-#include <SFCGAL/graph/algorithm/orientation.h>
+#include <SFCGAL/detail/graph/algorithm/orientation.h>
 
 namespace SFCGAL {
 namespace algorithm {

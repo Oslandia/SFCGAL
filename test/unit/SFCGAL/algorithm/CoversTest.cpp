@@ -25,7 +25,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/algorithm/covers.h>
 
 using namespace SFCGAL ;

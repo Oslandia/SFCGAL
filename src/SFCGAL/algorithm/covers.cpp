@@ -23,8 +23,8 @@
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/TypeForDimension.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/TypeForDimension.h>
+#include <SFCGAL/detail/GeometrySet.h>
 
 #include <CGAL/box_intersection_d.h>
 

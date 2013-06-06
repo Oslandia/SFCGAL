@@ -23,7 +23,7 @@
 
 #include <boost/format.hpp>
 
-//#include <SFCGAL/ublas.h>
+//#include <SFCGAL/detail/ublas.h>
 
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/Polygon.h>

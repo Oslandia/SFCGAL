@@ -24,8 +24,8 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
-#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
 
 #include <CGAL/Polyhedral_mesh_domain_3.h>

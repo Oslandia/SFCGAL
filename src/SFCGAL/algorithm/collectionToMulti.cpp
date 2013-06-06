@@ -19,7 +19,7 @@
  *
  */
 #include <SFCGAL/algorithm/collectionToMulti.h>
-#include <SFCGAL/transform/ForceZ.h>
+#include <SFCGAL/detail/transform/ForceZ.h>
 #include <SFCGAL/all.h>
 
 namespace SFCGAL {

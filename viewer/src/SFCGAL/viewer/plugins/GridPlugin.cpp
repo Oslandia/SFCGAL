@@ -25,7 +25,7 @@
 #include <fstream>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>

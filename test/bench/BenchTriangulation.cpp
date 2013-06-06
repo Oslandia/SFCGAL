@@ -22,8 +22,8 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/generator/hoch.h>
-#include <SFCGAL/generator/disc.h>
+#include <SFCGAL/detail/generator/hoch.h>
+#include <SFCGAL/detail/generator/disc.h>
 #include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 

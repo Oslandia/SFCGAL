@@ -25,7 +25,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/algorithm/area.h>

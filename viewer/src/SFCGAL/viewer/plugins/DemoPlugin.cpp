@@ -32,7 +32,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 #include <SFCGAL/algorithm/extrude.h>
 #include <SFCGAL/algorithm/convexHull.h>
 

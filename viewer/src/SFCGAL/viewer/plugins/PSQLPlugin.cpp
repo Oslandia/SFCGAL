@@ -21,7 +21,7 @@
 #include <SFCGAL/viewer/plugins/PSQLPlugin.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/ViewerWidget.h>
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <SFCGAL/all.h>

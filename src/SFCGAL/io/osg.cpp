@@ -1,7 +1,7 @@
 #include <SFCGAL/config.h>
 #ifdef SFCGAL_WITH_OSG
 
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <osg/Geometry>
 #include <osg/Group>

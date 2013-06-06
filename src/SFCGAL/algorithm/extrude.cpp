@@ -25,7 +25,7 @@
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/algorithm/force3D.h>
 
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 
 namespace SFCGAL {

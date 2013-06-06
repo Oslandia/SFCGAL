@@ -26,7 +26,7 @@
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/area.h>
 
-#include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/tools/Registry.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

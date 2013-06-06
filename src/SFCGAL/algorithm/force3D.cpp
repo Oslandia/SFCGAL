@@ -1,5 +1,5 @@
 #include <SFCGAL/algorithm/force3D.h>
-#include <SFCGAL/transform/ForceZ.h>
+#include <SFCGAL/detail/transform/ForceZ.h>
 
 namespace SFCGAL {
 namespace algorithm {

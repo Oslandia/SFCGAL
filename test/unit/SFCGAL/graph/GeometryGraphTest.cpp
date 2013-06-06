@@ -21,7 +21,7 @@
 #include <boost/test/unit_test.hpp>
 
 
-#include <SFCGAL/graph/GeometryGraph.h>
+#include <SFCGAL/detail/graph/GeometryGraph.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;

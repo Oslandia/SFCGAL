@@ -20,7 +20,7 @@
  */
 #include <SFCGAL/PreparedGeometry.h>
 
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 
 namespace SFCGAL
 {
