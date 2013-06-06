@@ -26,6 +26,7 @@
 #include <boost/exception/all.hpp>
 
 namespace SFCGAL {
+namespace detail {
 namespace io {
 
 ///
@@ -429,6 +430,7 @@ void WktWriter::writeInner( const Solid & g )
 
 
 }//io
+}//detail
 }//SFCGAL
 
 

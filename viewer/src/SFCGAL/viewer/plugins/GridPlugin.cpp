@@ -78,7 +78,7 @@ void GridPlugin::loadGridXYZ()
 	ifs.close();
 
 	//create OSG geometry
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 	osg::Geode * geode = new osg::Geode();
 	geode->setName( filename.toStdString() );
 

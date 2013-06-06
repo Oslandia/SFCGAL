@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 //	g->as< Polygon >().ringN(1).reverse();
 //	std::auto_ptr< Geometry > ext( algorithm::extrude(*g,0.0,0.0,1.0) );
 //
-//	io::OsgFactory factory ;
+//	detail::io::OsgFactory factory ;
 //
 //	osg::Geometry * osgGeometry = factory.createGeometry( *ext ) ;
 //

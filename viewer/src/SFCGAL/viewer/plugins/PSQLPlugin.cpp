@@ -356,7 +356,7 @@ namespace plugins {
 			return 0;
 		}
 		
-		io::OsgFactory factory;
+		detail::io::OsgFactory factory;
 		osg::ref_ptr<osg::Geode> geode( new osg::Geode );
 		
 		try {

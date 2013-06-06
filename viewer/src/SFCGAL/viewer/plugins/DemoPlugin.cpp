@@ -75,7 +75,7 @@ void DemoPlugin::demoExtrude()
 	std::auto_ptr< Geometry > ext( algorithm::extrude(*g,0.,0.,h) );
 
 	//create osg::Geode
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 	osg::Geometry * osgGeometry = factory.createGeometry( *ext );
 	osg::Geode* geode = new osg::Geode;
 	geode->setName( wkt.toStdString() );
@@ -101,7 +101,7 @@ void DemoPlugin::demoConvexhull()
 	std::auto_ptr< Geometry > hull( algorithm::convexHull3D(*g) );
 
 	//create osg::Geode
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 	osg::Geometry * osgGeometry = factory.createGeometry( *hull );
 	osg::Geode* geode = new osg::Geode;
 	geode->setName( wkt.toStdString() );
@@ -139,7 +139,7 @@ void DemoPlugin::demoSpiral()
 	/*
 	 * Convert to osg::Geometry
 	 */
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 	osg::Geometry * osgGeometry = factory.createGeometry( g );
 
 
@@ -172,7 +172,7 @@ void DemoPlugin::demoWkt()
 
 	//parse
 	std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 
 	osg::Geometry * osgGeometry = factory.createGeometry( *g );
 	osg::Geode* geode = new osg::Geode;

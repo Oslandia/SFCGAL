@@ -31,6 +31,7 @@
 #include <SFCGAL/detail/tools/InputStreamReader.h>
 
 namespace SFCGAL {
+namespace detail {
 namespace io {
 
 	/**
@@ -161,6 +162,7 @@ namespace io {
 	};
 
 }//io
+}//detail
 }//SFCGAL
 
 #endif

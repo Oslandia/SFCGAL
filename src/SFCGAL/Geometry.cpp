@@ -56,7 +56,7 @@ std::string Geometry::asText( const int & numDecimals ) const
 		oss << std::fixed ;
 		oss.precision( numDecimals );
 	}
-	io::WktWriter writer( oss );
+	detail::io::WktWriter writer( oss );
 	bool exact = false;
 	if ( numDecimals == -1 ) {
 		exact = true;

@@ -17,7 +17,7 @@ namespace io {
 ///
 void osgWriteFile( const Geometry & g, const std::string& filepath )
 {
-	OsgFactory factory ;
+	detail::OsgFactory factory ;
 	osg::ref_ptr< osg::Geometry > osgGeometry = factory.createGeometry( g );
 	osg::ref_ptr< osg::Geode > geode = new osg::Geode;
 	geode->setName( g.geometryType() );

@@ -26,6 +26,7 @@
 #include <SFCGAL/Exception.h>
 
 namespace SFCGAL {
+namespace detail {
 namespace io {
 
 ///
@@ -685,5 +686,6 @@ std::string WktReader::parseErrorMessage()
 
 
 }//io
+}//detail
 }//SFCGAL
 

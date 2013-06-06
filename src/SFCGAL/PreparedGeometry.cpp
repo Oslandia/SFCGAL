@@ -85,7 +85,7 @@ namespace SFCGAL
 			oss << "SRID=" << _srid << ";";
 		}
 
-		io::WktWriter writer( oss );
+		detail::io::WktWriter writer( oss );
 		bool exactWrite = false;
 		if ( numDecimals == -1 ) {
 			exactWrite = true;

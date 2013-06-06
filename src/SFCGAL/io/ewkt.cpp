@@ -24,6 +24,8 @@
 #include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/detail/tools/CharArrayBuffer.h>
 
+using namespace SFCGAL::detail::io;
+
 namespace SFCGAL {
 namespace io {
 

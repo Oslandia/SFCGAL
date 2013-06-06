@@ -29,6 +29,7 @@
 
 
 namespace SFCGAL {
+namespace detail {
 namespace io {
 
 	void OsgFactory::addToGeometry( osg::Geometry* geometry, const Geometry& g )
@@ -210,6 +211,7 @@ size_t OsgFactory::createVertex( osg::Vec3Array * vertices, const osg::Vec3 & g 
 }
 
 }//io
+}//detail
 }//SFCGAL
 
 
