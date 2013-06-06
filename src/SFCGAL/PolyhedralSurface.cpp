@@ -21,6 +21,8 @@
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/GeometryVisitor.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 
 ///

@@ -29,6 +29,8 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace algorithm {
     

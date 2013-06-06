@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( constructorWithSize )
 
 BOOST_AUTO_TEST_CASE( constructorWithMatrix )
 {
-	ublas::matrix< double > data = ublas::identity_matrix< double >( 5 );
+	detail::ublas::matrix< double > data = detail::ublas::identity_matrix< double >( 5 );
 	Grid g( data );
 	BOOST_CHECK_EQUAL( g.pixelConvention(), PIXEL_IS_POINT );
 	BOOST_CHECK_EQUAL( g.nrows(), 5U );

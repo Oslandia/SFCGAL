@@ -27,8 +27,10 @@
 
 namespace SFCGAL {
 class Geometry;
-template <int Dim> class GeometrySet;
-template <int Dim> class PrimitiveHandle;
+ namespace detail {
+	 template <int Dim> class GeometrySet;
+	 template <int Dim> class PrimitiveHandle;
+ }
 
 namespace algorithm {
 	/*
@@ -42,10 +44,10 @@ namespace algorithm {
 	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 	
 	template <int Dim>
-	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& );
+	void intersection( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& );
 
 	template <int Dim>
-	void intersection( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b, GeometrySet<Dim>& );
+	void intersection( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b, detail::GeometrySet<Dim>& );
     }
 }
 

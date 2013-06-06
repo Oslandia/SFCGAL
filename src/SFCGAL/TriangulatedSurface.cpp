@@ -297,7 +297,7 @@ std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
 	return std::auto_ptr<Polyhedron>( poly );
 }
 
-template SFCGAL_API std::auto_ptr< MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, MarkedPolyhedron >() const;
+template SFCGAL_API std::auto_ptr< detail::MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, detail::MarkedPolyhedron >() const;
 template SFCGAL_API std::auto_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
 
 }//SFCGAL

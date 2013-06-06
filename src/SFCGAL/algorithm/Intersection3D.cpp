@@ -34,6 +34,8 @@
 
 #include <CGAL/Point_inside_polyhedron_3.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace algorithm {
     

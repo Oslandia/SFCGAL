@@ -26,7 +26,9 @@
 
 namespace SFCGAL {
 	class Geometry;
-	template <int Dim> class GeometrySet;
+	namespace detail {
+		template <int Dim> class GeometrySet;
+	}
 namespace algorithm {
 	/*
 	 * Difference between two 2D geometries.
@@ -37,7 +39,7 @@ namespace algorithm {
 	 * Difference between two geometry sets
 	 */
 	template <int Dim>
-	void difference( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output );
+	void difference( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& output );
     }
 }
 

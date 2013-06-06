@@ -5,6 +5,8 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/detail/tools/InputStreamReader.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace io {
 

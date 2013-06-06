@@ -185,7 +185,7 @@ namespace SFCGAL {
 		 * @brief Converts to CGAL::Point_2 or CGAL::Point_3
 		 */
 		template <int D>
-		typename TypeForDimension<D>::Point toPoint_d() const;
+		typename detail::TypeForDimension<D>::Point toPoint_d() const;
 
 		inline Coordinate &       coordinate() { return _coordinate; }
 		inline const Coordinate & coordinate() const { return _coordinate; }

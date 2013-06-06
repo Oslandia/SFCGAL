@@ -39,7 +39,8 @@ bool operator< ( const CGAL::Segment_2<SFCGAL::Kernel>& sega, const CGAL::Segmen
 bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segment_3<SFCGAL::Kernel>& segb );
 
 namespace SFCGAL {
-	class Geometry;
+  class Geometry;
+  namespace detail {
 
 	///
 	/// Primitive type enumeration.
@@ -290,6 +291,7 @@ namespace SFCGAL {
 	///
 	/// Display operator
 	SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
-}
+  } // namespace detail
+} // namespace SFCGAL
 
 #endif

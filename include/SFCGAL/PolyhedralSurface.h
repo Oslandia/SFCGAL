@@ -58,7 +58,7 @@ namespace SFCGAL {
 		/**
 		 * Constructor from a CGAL::Polyhedron_3
 		 */
-		PolyhedralSurface( const MarkedPolyhedron& poly );
+		PolyhedralSurface( const detail::MarkedPolyhedron& poly );
 		/**
 		 * Copy constructor
 		 */

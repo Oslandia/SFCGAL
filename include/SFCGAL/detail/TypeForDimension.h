@@ -29,6 +29,7 @@
 #include <CGAL/Polyhedron_3.h>
 
 namespace SFCGAL {
+  namespace detail {
 	///
 	/// Type traits for CGAL types.
 	///
@@ -175,6 +176,7 @@ namespace SFCGAL {
 		static const bool value = PrimitiveDimension<X>::value > PrimitiveDimension<Y>::value;
 	};
 
-}
+  } // namespace detail
+} // namespace SFCGAL
 
 #endif

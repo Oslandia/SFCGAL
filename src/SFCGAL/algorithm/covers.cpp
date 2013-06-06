@@ -28,6 +28,8 @@
 
 #include <CGAL/box_intersection_d.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace algorithm
 {

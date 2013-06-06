@@ -33,6 +33,8 @@
 
 //#define CACHE_TRIANGULATION
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace algorithm
 {
@@ -332,8 +334,8 @@ namespace algorithm
 	template <int Dim>
 	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b )
 	{
-		typename SFCGAL::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 

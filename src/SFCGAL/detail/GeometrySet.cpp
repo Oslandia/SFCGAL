@@ -58,6 +58,7 @@ bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segmen
 }
 
 namespace SFCGAL {
+	namespace detail {
 
 	void _decompose_triangle( const Triangle& tri, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
@@ -712,4 +713,5 @@ namespace SFCGAL {
 
 	template class GeometrySet<2>;
 	template class GeometrySet<3>;
+} // detail
 } // SFCGAL

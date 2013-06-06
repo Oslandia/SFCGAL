@@ -77,7 +77,7 @@ namespace SFCGAL {
 		 * @brief copy constructor
 		 */
 		Grid(
-			const ublas::matrix< double > & data,
+		        const detail::ublas::matrix< double > & data,
 			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
 			const PixelConvention & pixelType = PIXEL_IS_POINT
 		);
@@ -197,13 +197,13 @@ namespace SFCGAL {
 		/**
 		 * @brief [advanced]access to grid data
 		 */
-		inline ublas::matrix< double > & data() {
+		inline detail::ublas::matrix< double > & data() {
 			return _data ;
 		}
 		/**
 		 * @brief [advanced]access to grid data
 		 */
-		inline const ublas::matrix< double > & data() const {
+		inline const detail::ublas::matrix< double > & data() const {
 			return _data ;
 		}
 
@@ -218,7 +218,7 @@ namespace SFCGAL {
 		/**
 		 * @brief grid data
 		 */
-		ublas::matrix< double > _data ;
+		detail::ublas::matrix< double > _data ;
 		/**
 		 * @brief grid extent
 		 */

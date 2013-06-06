@@ -27,6 +27,8 @@
 #include <CGAL/Delaunay_triangulation_2.h>
 #include <CGAL/Triangulation_vertex_base_with_info_2.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 namespace triangulate {
 

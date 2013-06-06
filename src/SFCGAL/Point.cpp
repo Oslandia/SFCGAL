@@ -23,6 +23,7 @@
 
 #include <SFCGAL/Exception.h>
 
+using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 

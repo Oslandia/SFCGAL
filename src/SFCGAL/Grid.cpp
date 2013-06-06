@@ -23,6 +23,8 @@
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/TriangulatedSurface.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 
 ///

@@ -136,9 +136,9 @@ namespace SFCGAL {
 		 * Convert to CGAL::Triangle_2 or CGAL::Triangle_2
 		 */
 		template < int D >
-		inline typename TypeForDimension<D>::Triangle toTriangle_d() const
+		  inline typename detail::TypeForDimension<D>::Triangle toTriangle_d() const
 		{
-		    return typename TypeForDimension<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
+		  return typename detail::TypeForDimension<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
 		}
 
 		//-- visitors
