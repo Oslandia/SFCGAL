@@ -37,55 +37,55 @@ bool isValid( const LineString & l, const double & toleranceAbs )
 
 bool isValid( const Polygon & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const Triangle & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const Solid & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const MultiLineString & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const MultiPolygon & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const MultiSolid & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const GeometryCollection & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const TriangulatedSurface & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
 bool isValid( const PolyhedralSurface & l, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception( ( boost::format("%s is not implemented") % __PRETTY_FUNCTION__ ).str() ));
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
     return true;
 }
 
