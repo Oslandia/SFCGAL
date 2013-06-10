@@ -82,8 +82,8 @@ inline const T* down_const_cast( const sfcgal_geometry_t* p )
 	return static_cast<const T*>(reinterpret_cast<const SFCGAL::Geometry*>(p));
 }
 
-static sfcgal_error_handler_t __sfcgal_warning_handler;
-static sfcgal_error_handler_t __sfcgal_error_handler;
+static sfcgal_error_handler_t __sfcgal_warning_handler = printf;
+static sfcgal_error_handler_t __sfcgal_error_handler = printf;
 
 #define SFCGAL_WARNING __sfcgal_warning_handler
 #define SFCGAL_ERROR __sfcgal_error_handler
@@ -94,8 +94,8 @@ extern "C" void sfcgal_set_error_handlers( sfcgal_error_handler_t warning_handle
 	__sfcgal_error_handler = error_handler;
 }
 
-static sfcgal_alloc_handler_t __sfcgal_alloc_handler;
-static sfcgal_free_handler_t __sfcgal_free_handler;
+static sfcgal_alloc_handler_t __sfcgal_alloc_handler = malloc;
+static sfcgal_free_handler_t __sfcgal_free_handler = free;
 
 extern "C" void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t alloc_handler, sfcgal_free_handler_t free_handler )
 {
@@ -105,10 +105,7 @@ extern "C" void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t alloc_handler,
 
 extern "C" void sfcgal_init()
 {
-	__sfcgal_warning_handler = printf;
-	__sfcgal_error_handler = printf;
-	__sfcgal_alloc_handler = malloc;
-	__sfcgal_free_handler = free;
+	// Empty for now
 }
 
 extern "C" const char* sfcgal_version()
@@ -633,7 +630,7 @@ extern "C" int sfcgal_geometry_orientation( const sfcgal_geometry_t* ga )
 	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
 	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
 		SFCGAL_ERROR( "orientation() only applies to polygons" );
-		return -1;
+		return 0;
 	}
 
 	bool r;
@@ -739,12 +736,6 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_extrude( const sfcgal_geometry_t* 
 		return 0;
 	}
 	return result.release();
-}
-
-extern "C" sfcgal_geometry_t* sfcgal_geometry_copy( const sfcgal_geometry_t* ga )
-{
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	return g->clone();
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_round( const sfcgal_geometry_t* ga, int scale )

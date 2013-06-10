@@ -63,6 +63,10 @@
  * On the other hand, it leads to convert between Triangle and Polygon and to duplicate some codes (area for example) so that it could to change
  * that and conform.
  *
+ * @defgroup public_api Public C++ API
+ * @defgroup capi Public C API
+ *
+ * @defgroup detail Implementation details
  *
  *
  */
