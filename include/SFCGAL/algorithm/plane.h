@@ -32,6 +32,83 @@
 namespace SFCGAL {
 namespace algorithm {
 
+
+    /**
+     * Test if a set of points lie in the same plane
+     */
+    inline
+    bool isPlane3D( const LineString & l, const double & toleranceAbs )
+    {
+        if (l.isEmpty()) return true;
+/*
+        // the present approach is to find a good plane by:
+        // - computing the centroid C of the point set
+        // - finding the farest point F from C
+        // - finding the farest point G from (CF)
+        // - we define the unit normal N to the plane from CFxCG
+        // - we check that points Xi are in the plane CXi.N < tolerance
+        //
+        // note that we could compute the covarence matrix of the points and use SVD
+        // but we would need a lib for that, and it may be overkill
+
+		typedef CGAL::Point_3< Kernel > Point_3 ;
+		typedef CGAL::Vector_3< Kernel > Vector_3 ;
+
+        const LineString::const_iterator end = l.end();
+
+        // centroid
+        Vector_3 c;
+        int numPoint = 0;
+        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
+            c = c + x->toVector_3() ;
+            ++numPoint;
+        }
+        BOOST_ASSERT( numPoint );
+        c = c / numPoint;
+
+        // farest point from centroid
+        Vector_3 f=c;
+        Kernel::FT maxDistanceSq = 0;
+        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
+            const Vector_3 cx = x->toVector_3() - c ;
+            const Kernel::FT dSq = cx * cx ;
+            if ( dSq > maxDistanceSq ) {
+                f = x->toVector_3() ;
+                maxDistanceSq = dSq ;
+            }
+        }
+
+        const Kernel::FT maxDistance = CGAL::sqrt( maxDistanceSq );
+        if ( CGAL::to_double( maxDistance ) < toleranceAbs ) return true; // all points in the same location
+
+        // farest point from line
+        Point_3 g=c;
+        const Vector_3 cf( c, f ) ; // direction of (CF)
+        const Vector_3 d = cf / maxDistance ; // normalised direction of (CF)
+        maxDistanceSq = 0; // watch out, we reuse the variable
+        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
+            const Vector_3 cx = x->toVector_3() - c ;
+            const Vector_3 cp = ( cx * d ) * d ; // projection of x on line
+            const Kernel::FT dSq = (cx - cp ).squared_length() ;
+            if ( dSq > maxDistanceSq ) {
+                g = x->toPoint_3 ;
+                maxDistanceSq = dSq ;
+            }
+        }
+
+        if ( double(CGAL::to_double( CGAL::sqrt( maxDistanceSq ) ) ) < toleranceAbs ) return true; // all points aligned
+        const Vector_3 n = CGAL::cross_product( cf, Vector_3( c, g ) );
+        const Vector_3 nNormed = n / Kernel::FT( CGAL::sqrt( n ) );
+        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
+            const Vector_3 cx = x->toVector_3() - c ;
+            if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) return false; // point out of plane
+        }
+
+*/
+        BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+        return true;
+    }
+
 	/**
 	 * Test if a 3D plane can be extracted from a Polygon
 	 */

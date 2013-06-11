@@ -40,6 +40,12 @@ BOOST_AUTO_TEST_CASE( testPlane1 )
 	BOOST_CHECK_EQUAL( plane.c(), 2.0 );
 }
 
+BOOST_AUTO_TEST_CASE( testPlane )
+{
+	std::auto_ptr<Geometry> g( io::readWkt("LINESTRING(0 0 0,1 0 0,1 1 0,0 1 0,0 0 0)") );
+    const LineString* l = dynamic_cast<LineString*>(g.get());
+	BOOST_CHECK( algorithm::isPlane3D( *l, 1.e-9 ) );
+}
 
 
 

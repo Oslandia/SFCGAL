@@ -21,7 +21,9 @@
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/length.h>
 #include <SFCGAL/algorithm/orientation.h>
+#include <SFCGAL/algorithm/distance.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/detail/GetPointsVisitor.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -59,15 +61,35 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
     // Closed simple rings
     const Polygon::const_iterator end = p.end();
     for ( Polygon::const_iterator r=p.begin(); r!=end; ++r ){
-        if ( r->numPoints() < 4 ) return Validity::invalid("not enought points in Polygon ring");
-        if ( selfIntersects( *r ) ) return Validity::invalid("ring self intersection");
+        if ( r->numPoints() < 4 ) {
+            return Validity::invalid("not enought points in Polygon ring");
+        }
+        if ( distancePointPoint( r->startPoint(), r->endPoint() ) > toleranceAbs ) {
+            return Validity::invalid("ring is not closed");
+        }
+        if ( selfIntersects( *r ) ) {
+            return Validity::invalid("ring self intersects");
+        }
     } 
 
-    // Orientation, in 2D, clockwise for interior, oposit for exterior
-    if ( !p.is3D() )
-    {
-        if (!isCounterClockWiseOriented( p )) return Validity::invalid("exterior ring is oriented clockwize");
+    // Orientation, in 2D, clockwise for interior, opposit for exterior
+    if ( !p.is3D() ) {
+        if (!isCounterClockWiseOriented( p.exteriorRing() )) {
+            return Validity::invalid("exterior ring is oriented clockwize");
+        }
+        for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
+            if ( isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
+                return Validity::invalid("interior ring is oriented counterclockwize");
+            }
+        }
     }
+    else {
+        // check if the polygone is plane (all points in the same plane    
+        SFCGAL::detail::GetPointsVisitor getPointVisitor;
+        p.accept( getPointVisitor );
+    }
+
+
 
     
 
@@ -154,12 +176,13 @@ const Validity isValid( const Geometry& g )
 
 void checkValidity( const Geometry& g )
 {
-	const Validity v = isValid(g);
-	if ( !v ) {
-		BOOST_THROW_EXCEPTION(Exception(
-						( boost::format("%s is invalid : %s") % g.asText() % v.reason() ).str()
-						));
-	}
+   const Validity v = isValid(g);
+   if ( !v ) {
+       BOOST_THROW_EXCEPTION(Exception(
+          ( boost::format("%s is invalid : %s") % g.asText() % v.reason() ).str()
+       ));
+   }
 }
+
 } // namespace algorithm
 } // namespace SFCGAL
