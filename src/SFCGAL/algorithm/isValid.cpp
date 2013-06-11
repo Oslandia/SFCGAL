@@ -29,81 +29,103 @@ namespace algorithm {
  * in individual functions for implementation, an assertion !empty is present for this reason
  */
 
-bool isValid( const LineString & l, const double & toleranceAbs )
+const Validity isValid( const LineString & l, const double & toleranceAbs )
 {
     BOOST_ASSERT( !l.isEmpty() );
-    return length3D( l ) > toleranceAbs;
+    return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid("LineString has no length");
 }
 
-bool isValid( const Polygon & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const Polygon & p, const double & toleranceAbs, const double & toleranceRel )
+{
+    BOOST_ASSERT( !p.isEmpty() );
+    // Au moins 4 points par ring (couvert par simplicité, mais à peut-être à conserver car pas cher à tester)
+    // Surface d'un ring non nulle (couvert par simplicité)
+    // Rings fermants
+    // Rings simple (Pas d'adjacence d'un ring avec lui même et pas d'intersection)
+    // Rings correctement orientés
+    // Si ring(s) interne(s) pas plus d'un point de contact entre ring externe et ring interne
+    // Si ring(s) interne(s) chaque ring interne doit etre strictement interne au ring externe
+    // Si rings internes, pas plus de 1 point de contact entre chaque ring interne
+
+    // question: si 3 rings internes avec chacune un point de contact avec 2 autres, est-ce valide ? Non, l'intérieur doit être connecté.
+
+    // Closed simple rings
+    const Polygon::const_iterator end = p.end();
+    for ( Polygon::const_iterator r=p.begin(); r!=end; ++r ){
+        if ( r->numPoints() < 4 ) return Validity::invalid("not enought points in Plygon ring");
+        
+    } 
+
+    
+
+
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    return Validity::valid();
+}
+
+const Validity isValid( const Triangle & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const Triangle & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const Solid & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const Solid & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiLineString & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const MultiLineString & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiPolygon & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const MultiPolygon & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiSolid & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const MultiSolid & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const GeometryCollection & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const GeometryCollection & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const TriangulatedSurface & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
-bool isValid( const TriangulatedSurface & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const PolyhedralSurface & l, const double & toleranceAbs, const double & toleranceRel )
 {
     BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
-}
-
-bool isValid( const PolyhedralSurface & l, const double & toleranceAbs, const double & toleranceRel )
-{
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
+    return Validity::valid();
 }
 
 
-bool isValid( const Geometry& g )
+const Validity isValid( const Geometry& g )
 {
-	if ( g.isEmpty() ) return true;
+	if ( g.isEmpty() ) return Validity::valid();
 
     const double toleranceAbs = 1e-9;
     const double toleranceRel = 1e-4;
 
 	switch ( g.geometryTypeId() ){
-		case TYPE_POINT:              return true;
+        case TYPE_POINT:              return Validity::valid();
 		case TYPE_LINESTRING:         return isValid( g.as< LineString >(),          toleranceAbs ) ;
 		case TYPE_POLYGON:            return isValid( g.as< Polygon >(),             toleranceAbs, toleranceRel ) ;
 		case TYPE_TRIANGLE:           return isValid( g.as< Triangle >(),            toleranceAbs, toleranceRel ) ;
 		case TYPE_SOLID:              return isValid( g.as< Solid >(),               toleranceAbs, toleranceRel ) ;
-		case TYPE_MULTIPOINT:         return true;
+        case TYPE_MULTIPOINT:         return Validity::valid();
 		case TYPE_MULTILINESTRING:    return isValid( g.as< MultiLineString >(),     toleranceAbs, toleranceRel ) ;
 		case TYPE_MULTIPOLYGON:       return isValid( g.as< MultiPolygon >(),        toleranceAbs, toleranceRel ) ;
 		case TYPE_MULTISOLID:         return isValid( g.as< MultiSolid >(),          toleranceAbs, toleranceRel ) ;
@@ -114,7 +136,7 @@ bool isValid( const Geometry& g )
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("isValid( %s ) is not defined") % g.geometryType() ).str()
 	));
-    return false; // to avoid warning
+    return Validity::invalid(( boost::format("isValid( %s ) is not defined") % g.geometryType() ).str()); // to avoid warning
 }
 } // namespace algorithm
 } // namespace SFCGAL

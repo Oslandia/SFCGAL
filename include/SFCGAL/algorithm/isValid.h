@@ -21,9 +21,8 @@
 #ifndef _SFCGAL_ALGORITHM_ISVALID_H_
 #define _SFCGAL_ALGORITHM_ISVALID_H_
 
-#include <SFCGAL/Exception.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/Geometry.h>
+#include <SFCGAL/Validity.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -31,7 +30,7 @@ namespace algorithm {
 	/**
 	 * @brief Check validity of a geometry
 	 */
-    bool isValid( const Geometry & g );
+    const Validity isValid( const Geometry & g );
 
 }//algorithm
 }//SFCGAL
