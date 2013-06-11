@@ -33,19 +33,29 @@ class Geometry;
  }
 
 namespace algorithm {
-	/*
+	/**
 	 * Intersection on 2D geometries.
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
 	
-	/*
+	/**
 	 * Intersection on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 	
+	/**
+	 * @ingroup detail
+	 */
 	template <int Dim>
 	void intersection( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& );
 
+	/**
+	 * @ingroup detail
+	 */
 	template <int Dim>
 	void intersection( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b, detail::GeometrySet<Dim>& );
     }

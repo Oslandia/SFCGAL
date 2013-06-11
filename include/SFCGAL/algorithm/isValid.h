@@ -29,8 +29,24 @@ namespace algorithm {
 
 	/**
 	 * @brief Check validity of a geometry
+	 * @ingroup public_api
 	 */
     const Validity isValid( const Geometry & g );
+
+    /**
+     * Asserts the validity of a given Geometry. If the Geometry is invalid, throws
+     * @ingroup public_api
+     */
+    void checkValidity( const Geometry& g );
+
+/**
+ * Macro used to by-pass validity check
+ */
+#ifndef SFCGAL_NEVER_CHECK_VALIDITY
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) SFCGAL::algorithm::checkValidity(g)
+#else
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)
+#endif
 
 }//algorithm
 }//SFCGAL

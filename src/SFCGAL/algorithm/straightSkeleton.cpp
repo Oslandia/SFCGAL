@@ -21,6 +21,7 @@
 #include <SFCGAL/algorithm/straightSkeleton.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/orientation.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 
@@ -73,6 +74,8 @@ void straightSkeletonToMultiLineString(
 ///
 std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
 {
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
 	switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
 		return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
@@ -84,7 +87,6 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 		return std::auto_ptr< MultiLineString >( new MultiLineString );
 	}
 }
-
 
 ///
 ///

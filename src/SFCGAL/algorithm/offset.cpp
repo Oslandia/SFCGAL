@@ -21,6 +21,7 @@
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/detail/polygonSetToMultiPolygon.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 
 #include <CGAL/Polygon_2.h>
@@ -292,6 +293,8 @@ void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & p
 ///
 std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r )
 {
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
 	Offset_polygon_set_2 polygonSet ;
 	offset( g, r, polygonSet ) ;
 	return polygonSetToMultiPolygon( polygonSet, 8 );

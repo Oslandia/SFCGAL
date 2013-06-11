@@ -24,6 +24,7 @@
 #include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/algorithm/force3D.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <SFCGAL/detail/tools/Log.h>
 
@@ -291,9 +292,9 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & 
 ///
 std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
 	return extrude( g, Kernel::Vector_3(dx,dy,dz) ) ;
 }
-
 
 }//algorithm
 }//SFCGAL

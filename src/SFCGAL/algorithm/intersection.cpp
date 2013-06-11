@@ -26,6 +26,7 @@
 #include <SFCGAL/algorithm/collectionHomogenize.h>
 #include <SFCGAL/detail/tools/Registry.h>
 #include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -107,6 +108,9 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+
 		GeometrySet<2> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
@@ -117,6 +121,9 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+
 		GeometrySet<3> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
 
