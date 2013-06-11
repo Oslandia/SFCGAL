@@ -20,6 +20,7 @@
  */
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/length.h>
+#include <SFCGAL/algorithm/orientation.h>
 #include <SFCGAL/all.h>
 
 namespace SFCGAL {
@@ -28,6 +29,12 @@ namespace algorithm {
 /** @note empty geometries are valid, but the test is only performed in the interface function
  * in individual functions for implementation, an assertion !empty is present for this reason
  */
+
+bool selfIntersects(const LineString & l)
+{
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    return true;
+}
 
 const Validity isValid( const LineString & l, const double & toleranceAbs )
 {
@@ -52,9 +59,15 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
     // Closed simple rings
     const Polygon::const_iterator end = p.end();
     for ( Polygon::const_iterator r=p.begin(); r!=end; ++r ){
-        if ( r->numPoints() < 4 ) return Validity::invalid("not enought points in Plygon ring");
-        
+        if ( r->numPoints() < 4 ) return Validity::invalid("not enought points in Polygon ring");
+        if ( selfIntersects( *r ) ) return Validity::invalid("ring self intersection");
     } 
+
+    // Orientation, in 2D, clockwise for interior, oposit for exterior
+    if ( !p.is3D() )
+    {
+        if (!isCounterClockWiseOriented( p )) return Validity::invalid("exterior ring is oriented clockwize");
+    }
 
     
 

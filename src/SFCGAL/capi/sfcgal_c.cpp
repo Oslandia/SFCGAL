@@ -70,23 +70,27 @@
 // SFCGAL::PreparedGeometry has no vtable and can thus be manipuled through reinterpret_cast without
 // problem
 
-template <class T>
-inline T* down_cast( sfcgal_geometry_t* p )
-{
-	return static_cast<T*>(reinterpret_cast<SFCGAL::Geometry*>(p));
-}
-
-template <class T>
-inline const T* down_const_cast( const sfcgal_geometry_t* p )
-{
-	return static_cast<const T*>(reinterpret_cast<const SFCGAL::Geometry*>(p));
-}
-
 static sfcgal_error_handler_t __sfcgal_warning_handler = printf;
 static sfcgal_error_handler_t __sfcgal_error_handler = printf;
 
 #define SFCGAL_WARNING __sfcgal_warning_handler
 #define SFCGAL_ERROR __sfcgal_error_handler
+
+template <class T>
+inline T* down_cast( sfcgal_geometry_t* p )
+{
+	T* q = dynamic_cast<T*>(reinterpret_cast<SFCGAL::Geometry*>(p));
+    if (!q) BOOST_THROW_EXCEPTION( SFCGAL::Exception("wrong geometry type") );
+    return q;
+}
+
+template <class T>
+inline const T* down_const_cast( const sfcgal_geometry_t* p )
+{
+	const T* q = dynamic_cast<const T*>(reinterpret_cast<const SFCGAL::Geometry*>(p));
+    if (!q) BOOST_THROW_EXCEPTION( SFCGAL::Exception("wrong geometry type") );
+    return q;
+}
 
 extern "C" void sfcgal_set_error_handlers( sfcgal_error_handler_t warning_handler, sfcgal_error_handler_t error_handler )
 {
@@ -165,17 +169,35 @@ extern "C" sfcgal_geometry_t* sfcgal_point_create_from_xyz( double x, double y, 
 
 extern "C" double sfcgal_point_x( const sfcgal_geometry_t* geom )
 {
-	return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->x());
+    try {
+        return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->x());
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" double sfcgal_point_y( const sfcgal_geometry_t* geom )
 {
-	return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->y());
+    try {
+        return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->y());
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
 {
-	return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->z());
+    try {
+        return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->z());
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 /**
@@ -188,17 +210,34 @@ extern "C" sfcgal_geometry_t* sfcgal_linestring_create()
 
 extern "C" size_t sfcgal_linestring_num_points( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::LineString>(geom)->numPoints();
+    try {
+        return down_const_cast<SFCGAL::LineString>(geom)->numPoints();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_linestring_point_n( const sfcgal_geometry_t* geom, size_t i )
 {
-	return static_cast<const SFCGAL::Geometry*>(&(down_const_cast<SFCGAL::LineString>(geom)->pointN( i )));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&(down_const_cast<SFCGAL::LineString>(geom)->pointN( i )));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_linestring_add_point( sfcgal_geometry_t* geom, sfcgal_geometry_t* point )
 {
-	down_cast<SFCGAL::LineString>(geom)->addPoint( down_cast<SFCGAL::Point>(point) );
+    try {
+        down_cast<SFCGAL::LineString>(geom)->addPoint( down_cast<SFCGAL::Point>(point) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -213,30 +252,57 @@ extern "C" sfcgal_geometry_t* sfcgal_triangle_create_from_points( const sfcgal_g
 								  const sfcgal_geometry_t* pb,
 								  const sfcgal_geometry_t* pc)
 {
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Triangle( *down_const_cast<SFCGAL::Point>(pa),
+    try {
+        return static_cast<SFCGAL::Geometry*>(new SFCGAL::Triangle( *down_const_cast<SFCGAL::Point>(pa),
 								    *down_const_cast<SFCGAL::Point>(pb),
 								    *down_const_cast<SFCGAL::Point>(pc)));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 
 extern "C" const sfcgal_geometry_t* sfcgal_triangle_vertex( const sfcgal_geometry_t* geom, int i )
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Triangle>(geom)->vertex(i));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Triangle>(geom)->vertex(i));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_triangle_set_vertex( sfcgal_geometry_t* geom, int i, const sfcgal_geometry_t* point )
 {
-	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = *down_const_cast<const SFCGAL::Point>(point);
+    try {
+        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = *down_const_cast<const SFCGAL::Point>(point);
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 extern "C" void sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t* geom, int i, double x, double y )
 {
-	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y );
+    try {
+        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 extern "C" void sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* geom, int i, double x, double y, double z )
 {
-	down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y, z );
+    try {
+        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y, z );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -249,27 +315,56 @@ extern "C" sfcgal_geometry_t* sfcgal_polygon_create()
 
 extern "C" sfcgal_geometry_t* sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* ring )
 {
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Polygon( down_cast<SFCGAL::LineString>(ring) ));
+    try {
+        return static_cast<SFCGAL::Geometry*>(new SFCGAL::Polygon( down_cast<SFCGAL::LineString>(ring) ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* geom )
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->exteriorRing());
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->exteriorRing());
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" size_t sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::Polygon>( geom )->numInteriorRings();
+    try {
+        return down_const_cast<SFCGAL::Polygon>( geom )->numInteriorRings();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t* geom, size_t i)
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->interiorRingN( i ));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->interiorRingN( i ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_polygon_add_interior_ring( sfcgal_geometry_t* geom, sfcgal_geometry_t* ring )
 {
-	down_cast<SFCGAL::Polygon>( geom )->addRing( down_cast<SFCGAL::LineString>(ring) );
+    try {
+        down_cast<SFCGAL::Polygon>( geom )->addRing( down_cast<SFCGAL::LineString>(ring) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -283,18 +378,35 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_collection_create()
 
 extern "C" size_t sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::GeometryCollection>( geom )->numGeometries();
+    try {
+        return down_const_cast<SFCGAL::GeometryCollection>( geom )->numGeometries();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_geometry_collection_geometry_n( const sfcgal_geometry_t* geom, size_t i )
 {
-	const SFCGAL::GeometryCollection* g = down_const_cast<SFCGAL::GeometryCollection>( geom );
-	return static_cast<const SFCGAL::Geometry*>(&g->geometryN( i ));
+    try {
+        const SFCGAL::GeometryCollection* g = down_const_cast<SFCGAL::GeometryCollection>( geom );
+        return static_cast<const SFCGAL::Geometry*>(&g->geometryN( i ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t* geom, sfcgal_geometry_t* ngeom )
 {
-	down_cast<SFCGAL::GeometryCollection>( geom )->addGeometry( reinterpret_cast<SFCGAL::Geometry*>(ngeom) );
+    try {
+        down_cast<SFCGAL::GeometryCollection>( geom )->addGeometry( reinterpret_cast<SFCGAL::Geometry*>(ngeom) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -326,17 +438,34 @@ extern "C" sfcgal_geometry_t* sfcgal_polyhedral_surface_create()
 
 extern "C" size_t sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::PolyhedralSurface>( geom )->numPolygons();
+    try {
+        return down_const_cast<SFCGAL::PolyhedralSurface>( geom )->numPolygons();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t* geom, size_t i )
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::PolyhedralSurface>( geom )->polygonN( i ));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::PolyhedralSurface>( geom )->polygonN( i ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t* geom, sfcgal_geometry_t* poly )
 {
-	return down_cast<SFCGAL::PolyhedralSurface>( geom )->addPolygon( down_cast<SFCGAL::Polygon>(poly) );
+    try {
+        return down_cast<SFCGAL::PolyhedralSurface>( geom )->addPolygon( down_cast<SFCGAL::Polygon>(poly) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -350,17 +479,34 @@ extern "C" sfcgal_geometry_t* sfcgal_triangulated_surface_create()
 
 extern "C" size_t sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::TriangulatedSurface>( geom )->numTriangles();
+    try {
+        return down_const_cast<SFCGAL::TriangulatedSurface>( geom )->numTriangles();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t* geom, size_t i )
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::TriangulatedSurface>( geom )->triangleN( i ));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::TriangulatedSurface>( geom )->triangleN( i ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t* geom, sfcgal_geometry_t* triangle )
 {
-	down_cast<SFCGAL::TriangulatedSurface>( geom )->addTriangle( down_cast<SFCGAL::Triangle>(triangle) );
+    try {
+        down_cast<SFCGAL::TriangulatedSurface>( geom )->addTriangle( down_cast<SFCGAL::Triangle>(triangle) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 /**
@@ -374,22 +520,45 @@ extern "C" sfcgal_geometry_t* sfcgal_solid_create()
 
 extern "C" sfcgal_geometry_t* sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* shell )
 {
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid( down_cast<SFCGAL::PolyhedralSurface>(shell) ));
+    try {
+        return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid( down_cast<SFCGAL::PolyhedralSurface>(shell) ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" size_t sfcgal_solid_num_shells( const sfcgal_geometry_t* geom )
 {
-	return down_const_cast<SFCGAL::Solid>( geom )->numShells();
+    try {
+        return down_const_cast<SFCGAL::Solid>( geom )->numShells();
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_solid_shell_n( const sfcgal_geometry_t* geom, size_t i )
 {
-	return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Solid>( geom )->shellN( i ));
+    try {
+        return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Solid>( geom )->shellN( i ));
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+		return 0;
+	}
 }
 
 extern "C" void sfcgal_solid_add_interior_shell( sfcgal_geometry_t* geom , sfcgal_geometry_t* shell )
 {
-	down_cast<SFCGAL::Solid>( geom )->addInteriorShell( down_cast<SFCGAL::PolyhedralSurface>( shell ) );
+    try {
+        down_cast<SFCGAL::Solid>( geom )->addInteriorShell( down_cast<SFCGAL::PolyhedralSurface>( shell ) );
+    }
+	catch ( std::exception& e ) {
+		SFCGAL_ERROR( "%s", e.what() );
+	}
 }
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create()
