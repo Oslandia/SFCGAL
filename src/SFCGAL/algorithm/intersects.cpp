@@ -24,6 +24,7 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/covers.h>
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
@@ -359,6 +360,9 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+
 		GeometrySet<2> gsa( ga );
 		GeometrySet<2> gsb( gb );
 
@@ -367,11 +371,13 @@ namespace algorithm
 
 	bool intersects3D( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+
 		GeometrySet<3> gsa( ga );
 		GeometrySet<3> gsb( gb );
 
 		return intersects( gsa, gsb );
 	}
-
 }
 }

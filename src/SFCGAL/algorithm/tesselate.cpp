@@ -22,6 +22,7 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -41,6 +42,8 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g )
 
 	case TYPE_POLYGON:
 	case TYPE_POLYHEDRALSURFACE: {
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
 		TriangulatedSurface* triSurf = new TriangulatedSurface();
 		triangulate::triangulatePolygon3D( g, *triSurf );
 		return std::auto_ptr<Geometry>( triSurf );

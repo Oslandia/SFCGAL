@@ -40,8 +40,11 @@ namespace algorithm {
 	 * @todo output M as distance to border?
 	 * @param g input geometry
 	 * @param autoOrientation check and fix polygon orientation
+	 * @ingroup public_api
+	 * @pre g is a valid geometry
 	 */
 	SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true ) ;
+
 	/**
 	 * @brief build a 2D straight skeleton for a Polygon
 	 */

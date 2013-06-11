@@ -31,6 +31,8 @@ namespace algorithm {
 	/**
 	 * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
 	 * points, lines, etc.
+	 * @pre g is a valid geometry
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
 

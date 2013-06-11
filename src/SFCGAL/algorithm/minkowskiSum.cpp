@@ -19,6 +19,7 @@
  *
  */
 #include <SFCGAL/algorithm/minkowskiSum.h>
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/all.h>
 
 #include <SFCGAL/detail/polygonSetToMultiPolygon.h>
@@ -101,8 +102,6 @@ void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2<
 			% gA.geometryType() ).str()
 	));
 }
-
-
 
 /*
  * append gA+gB into the polygonSet
@@ -235,6 +234,9 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_s
 ///
 std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB )
 {
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( gA );
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( gB );
+
 	Polygon_set_2 polygonSet ;
 	minkowskiSum( gA, gB.toPolygon_2(), polygonSet ) ;
 	return detail::polygonSetToMultiPolygon( polygonSet ) ;

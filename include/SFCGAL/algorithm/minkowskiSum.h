@@ -33,9 +33,11 @@ namespace algorithm {
 	 * @brief 2D minkowski sum (p+q)
 	 *
 	 * @todo missing cases (union)
+	 * @pre gA and gB are valid geometries
+	 * @warning the validity is assumed. No check is done.
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
-
 
 } // namespace algorithm
 } // namespace SFCGAL

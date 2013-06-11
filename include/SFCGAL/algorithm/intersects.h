@@ -31,19 +31,32 @@ namespace SFCGAL {
 	}
 
 	namespace algorithm {
-	/*
-	 * Intersection test on 2D geometries. Force projection to z=0 if needed
+
+	/**
+	 * Robust intersection test on 2D geometries. Force projection to z=0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API bool intersects( const Geometry& ga, const Geometry& gb );
 
-	/*
-	 * Intersection test on 3D geometries. Assume z = 0 if needed
+	/**
+	 * Robust intersection test on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb );
 
+	/**
+	 * Intersection test on GeometrySet
+	 * @ingroup detail
+	 */
 	template <int Dim>
 	bool intersects( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b );
 
+	/**
+	 * Intersection test on a PrimitiveHandle
+	 * @ingroup detail
+	 */
 	template <int Dim>
 	bool intersects( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
 
