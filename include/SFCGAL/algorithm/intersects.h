@@ -62,13 +62,13 @@ namespace SFCGAL {
 	bool intersects( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
 
 	/**
-	 * Self intersection test for 2D LineString 
+	 * Self intersection test for 2D LineString (false if only endpoint touch)
 	 * @ingroup detail
 	 */
     bool selfIntersects(const LineString & l);
 
 	/**
-	 * Self intersection test for 3D LineString 
+	 * Self intersection test for 3D LineString (false if only endpoints touch)
 	 * @ingroup detail
 	 */
     bool selfIntersects3D(const LineString & l);

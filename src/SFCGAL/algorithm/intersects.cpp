@@ -29,6 +29,7 @@
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/Exception.h>
+#include <SFCGAL/LineString.h>
 
 #include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
@@ -381,16 +382,49 @@ namespace algorithm
 		return intersects( gsa, gsb );
 	}
 
-bool selfIntersects(const LineString & l)
-{
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
-}
+    template< int Dim >
+    std::auto_ptr< Geometry > intersectionLineSegments( const Point & p11, const Point & p12, const Point & p21, const Point & p22 )
+    {
+        std::auto_ptr< Geometry > inter;
+        BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+        return inter;
+    }
 
-bool selfIntersects3D(const LineString & l)
-{
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
-}
+    template< int Dim >
+    bool selfIntersectsImpl(const LineString & l)
+    {
+        const size_t numSegments = l.numSegments();
+        if ( numSegments < 2 ) return false; // one segment cannot intersect
+
+        // test any two pairs of segments
+        for ( size_t i = 0; i != numSegments; ++i ) {
+            // first line segment is point i and i+1
+            for ( size_t j = i + 1; j < numSegments; ++j ) {
+                // second line segment is point j and j+1
+                std::auto_ptr< Geometry > inter = 
+                    intersectionLineSegments< Dim >( 
+                        l.pointN( i ), l.pointN( i + 1 ),
+                        l.pointN( j ), l.pointN( j + 1 )
+                    ) 
+                ;
+                if ( inter.get() && inter->is< LineString >() ) return true; // segments overlap
+                else if ( inter.get() && inter->is< Point >() 
+                        && !( (i == 0) 
+                            && (j + 1 == numSegments) 
+                            && inter->as< Point >() == l.startPoint()
+                            && inter->as< Point >() == l.endPoint() ) ) return true; // contact point that is not a contact between startPoint and endPoint
+            }
+        }
+        
+        return false;
+    }
+
+    bool selfIntersects(const LineString & l){
+        return selfIntersectsImpl<2>( l );
+    }
+    bool selfIntersects3D(const LineString & l)
+    {
+        return selfIntersectsImpl<3>( l );
+    }
 }
 }
