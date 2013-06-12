@@ -78,7 +78,7 @@ namespace algorithm {
             }
         }
 
-        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) {
+        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
             // std::cout << "all points in the same location\n";
             return true;
         }
@@ -97,7 +97,7 @@ namespace algorithm {
             }
         }
 
-        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) {
+        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
             // std::cout << "all points aligned\n";
             return true;
         }
