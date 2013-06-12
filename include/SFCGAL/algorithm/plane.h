@@ -40,7 +40,7 @@ namespace algorithm {
     bool isPlane3D( const LineString & l, const double & toleranceAbs )
     {
         if (l.isEmpty()) return true;
-/*
+
         // the present approach is to find a good plane by:
         // - computing the centroid C of the point set
         // - finding the farest point F from C
@@ -67,7 +67,7 @@ namespace algorithm {
         c = c / numPoint;
 
         // farest point from centroid
-        Vector_3 f=c;
+        Vector_3 f = c ;
         Kernel::FT maxDistanceSq = 0;
         for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
             const Vector_3 cx = x->toVector_3() - c ;
@@ -78,34 +78,30 @@ namespace algorithm {
             }
         }
 
-        const Kernel::FT maxDistance = CGAL::sqrt( maxDistanceSq );
-        if ( CGAL::to_double( maxDistance ) < toleranceAbs ) return true; // all points in the same location
+        if ( CGAL::to_double( maxDistanceSq ) < 2*toleranceAbs ) return true; // all points in the same location
 
         // farest point from line
-        Point_3 g=c;
-        const Vector_3 cf( c, f ) ; // direction of (CF)
-        const Vector_3 d = cf / maxDistance ; // normalised direction of (CF)
+        Vector_3 g=c;
+        const Vector_3 cf = f - c ; // direction of (CF)
         maxDistanceSq = 0; // watch out, we reuse the variable
         for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
             const Vector_3 cx = x->toVector_3() - c ;
-            const Vector_3 cp = ( cx * d ) * d ; // projection of x on line
+            const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line
             const Kernel::FT dSq = (cx - cp ).squared_length() ;
             if ( dSq > maxDistanceSq ) {
-                g = x->toPoint_3 ;
+                g = x->toVector_3() ;
                 maxDistanceSq = dSq ;
             }
         }
 
-        if ( double(CGAL::to_double( CGAL::sqrt( maxDistanceSq ) ) ) < toleranceAbs ) return true; // all points aligned
-        const Vector_3 n = CGAL::cross_product( cf, Vector_3( c, g ) );
-        const Vector_3 nNormed = n / Kernel::FT( CGAL::sqrt( n ) );
+        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) return true; // all points aligned
+        const Vector_3 n = CGAL::cross_product( cf, g - c );
+        const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
         for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
             const Vector_3 cx = x->toVector_3() - c ;
             if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) return false; // point out of plane
         }
 
-*/
-        BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
         return true;
     }
 
