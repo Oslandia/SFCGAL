@@ -57,7 +57,7 @@ namespace algorithm {
         const LineString::const_iterator end = l.end();
 
         // centroid
-        Vector_3 c;
+        Vector_3 c(0,0,0);
         int numPoint = 0;
         for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
             c = c + x->toVector_3() ;
@@ -78,7 +78,10 @@ namespace algorithm {
             }
         }
 
-        if ( CGAL::to_double( maxDistanceSq ) < 2*toleranceAbs ) return true; // all points in the same location
+        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) {
+            // std::cout << "all points in the same location\n";
+            return true;
+        }
 
         // farest point from line
         Vector_3 g=c;
@@ -94,14 +97,22 @@ namespace algorithm {
             }
         }
 
-        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) return true; // all points aligned
+        if ( CGAL::to_double( maxDistanceSq ) < toleranceAbs ) {
+            // std::cout << "all points aligned\n";
+            return true;
+        }
+
         const Vector_3 n = CGAL::cross_product( cf, g - c );
         const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
         for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
             const Vector_3 cx = x->toVector_3() - c ;
-            if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) return false; // point out of plane
+            if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
+                // std::cout << "point out of plane\n";
+                return false; 
+            }
         }
 
+        // std::cout << "plane general case\n";
         return true;
     }
 
