@@ -22,6 +22,8 @@
 #define _SFCGAL_CAPI_H_
 
 #include <SFCGAL/config.h>
+#include <stdint.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
