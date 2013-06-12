@@ -28,6 +28,7 @@
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/Exception.h>
 
 #include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
@@ -379,5 +380,17 @@ namespace algorithm
 
 		return intersects( gsa, gsb );
 	}
+
+bool selfIntersects(const LineString & l)
+{
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    return true;
+}
+
+bool selfIntersects3D(const LineString & l)
+{
+    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    return true;
+}
 }
 }

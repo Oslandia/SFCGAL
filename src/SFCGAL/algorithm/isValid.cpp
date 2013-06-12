@@ -19,24 +19,27 @@
  *
  */
 #include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/length.h>
 #include <SFCGAL/algorithm/orientation.h>
 #include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
+#include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
 namespace algorithm {
 
-/** @note empty geometries are valid, but the test is only performed in the interface function
+/** 
+ * @note empty geometries are valid, but the test is only performed in the interface function
  * in individual functions for implementation, an assertion !empty is present for this reason
  */
 
-bool selfIntersects(const LineString & l)
-{
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return true;
-}
 
 const Validity isValid( const LineString & l, const double & toleranceAbs )
 {
@@ -67,34 +70,85 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
         if ( distancePointPoint( r->startPoint(), r->endPoint() ) > toleranceAbs ) {
             return Validity::invalid("ring is not closed");
         }
-        if ( selfIntersects( *r ) ) {
+        if ( p.is3D() ? selfIntersects3D( *r ) : selfIntersects( *r ) ) {
             return Validity::invalid("ring self intersects");
         }
     } 
 
-    // Orientation, in 2D, clockwise for interior, opposit for exterior
+    // Orientation in 2D
     if ( !p.is3D() ) {
+        // Orientation counterclockwise for exterior ring, clockwise for interior
         if (!isCounterClockWiseOriented( p.exteriorRing() )) {
             return Validity::invalid("exterior ring is oriented clockwize");
         }
         for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
             if ( isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
-                return Validity::invalid("interior ring is oriented counterclockwize");
+                return Validity::invalid( ( boost::format("interior ring %d is oriented counterclockwize") % r ).str() );
             }
         }
     }
+    // Orientation in 3D 
     else {
-        // check if the polygone is plane (all points in the same plane    
-        SFCGAL::detail::GetPointsVisitor getPointVisitor;
-        p.accept( getPointVisitor );
+        // Polygone must be planar (all points in the same plane)
+        if ( !isPlane3D< Kernel >( p, toleranceAbs ) ) {
+            return Validity::invalid("points don't lie in the same plane");
+        }
+
+        // interior rings must be oriented opposit to exterior;
+        if ( p.hasInteriorRings() ) {
+            const CGAL::Vector_3< Kernel > nExt = normal3D< Kernel >( p.exteriorRing() );
+            for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
+                const CGAL::Vector_3< Kernel > nInt = normal3D< Kernel>( p.interiorRingN( r ) );
+                if ( nExt * nInt > 0 ) {
+                    return Validity::invalid( ( boost::format("interior ring %d is oriented in the same direction as exterior ring") % r ).str() );
+                }
+            }
+        }
     }
 
+    // Rings must not share more than one point (no intersection)
+    const size_t numRings =  p.numRings();
+    for (size_t ri=0; ri < numRings; ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
+        size_t numTouchingPoints = 0;
+        for (size_t rj=rj+1; rj < numRings; ++rj) {
+            std::auto_ptr<Geometry> inter = p.is3D()
+                ? intersection3D( p.ringN( ri ), p.ringN( rj ) )
+                : intersection( p.ringN( ri ), p.ringN( rj ) );
+            if ( ! inter->isEmpty() && ! inter->is< Point >() ) {
+                return Validity::invalid( ( boost::format("intersection between ring %d and %d") % ri % rj ).str() );
+            }
+            else if ( inter->is< Point >() ) {
+                ++numTouchingPoints;
+            }
+        }
+        if ( numTouchingPoints > 1 ) {
+            SFCGAL_WARNING( ( boost::format("ring %d has %d touching points, interior may not be connected") % ri % numTouchingPoints ).str() );
+        }
+    }
 
+    if ( p.hasInteriorRings() ) {
+        // Interior rings must be interior to exterior ring
+        for (size_t r=0; r < p.numInteriorRings(); ++r) { // no need for numRings-1, the next loop won't be entered for the last ring
+            if ( p.is3D() 
+                    ? !covers3D( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) )
+                    : !covers( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) ) 
+               ) {
+               return Validity::invalid( ( boost::format("exterior ring doesn't cover interior ring %d") % r ).str() );
+            }
+        }
 
-    
-
-
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+        // Interior ring must not cover one another
+        for (size_t ri=0; ri < p.numInteriorRings(); ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
+            for (size_t rj=ri+1; rj < p.numInteriorRings(); ++rj) {
+                if ( p.is3D() 
+                        ? covers3D( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) )
+                        : covers( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) ) 
+                   ) {
+                   return Validity::invalid( ( boost::format("interior ring %d covers interior ring %d") % ri % rj ).str() ); 
+                }
+            }
+        }
+    }
     return Validity::valid();
 }
 

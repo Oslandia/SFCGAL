@@ -25,6 +25,7 @@
 
 namespace SFCGAL {
 	class Geometry;
+	class LineString;
 	namespace detail {
 		template <int Dim> class GeometrySet;
 		template <int Dim> class PrimitiveHandle;
@@ -60,6 +61,17 @@ namespace SFCGAL {
 	template <int Dim>
 	bool intersects( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
 
+	/**
+	 * Self intersection test for 2D LineString 
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const LineString & l);
+
+	/**
+	 * Self intersection test for 3D LineString 
+	 * @ingroup detail
+	 */
+    bool selfIntersects3D(const LineString & l);
     }
 }
 

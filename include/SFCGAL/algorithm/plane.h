@@ -37,7 +37,7 @@ namespace algorithm {
     /**
      * Test if all points of a geometry lie in the same plane
      */
-    inline
+	template < typename Kernel >
     bool isPlane3D( const Geometry & geom,const double & toleranceAbs )
     {
         if ( geom.isEmpty() ) return true;
@@ -77,10 +77,10 @@ namespace algorithm {
 
         // farest point from centroid
         Vector_3 f = c ;
-        Kernel::FT maxDistanceSq = 0;
+        typename Kernel::FT maxDistanceSq = 0;
         for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
             const Vector_3 cx = (*x)->toVector_3() - c ;
-            const Kernel::FT dSq = cx * cx ;
+            const typename Kernel::FT dSq = cx * cx ;
             if ( dSq > maxDistanceSq ) {
                 f = (*x)->toVector_3() ;
                 maxDistanceSq = dSq ;
@@ -99,7 +99,7 @@ namespace algorithm {
         for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
             const Vector_3 cx = (*x)->toVector_3() - c ;
             const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line
-            const Kernel::FT dSq = (cx - cp ).squared_length() ;
+            const typename Kernel::FT dSq = (cx - cp ).squared_length() ;
             if ( dSq > maxDistanceSq ) {
                 g = (*x)->toVector_3() ;
                 maxDistanceSq = dSq ;

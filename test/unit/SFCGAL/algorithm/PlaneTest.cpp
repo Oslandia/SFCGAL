@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( testPlane )
         std::auto_ptr<Geometry> g( io::readWkt(test[t]._wkt) );
         const LineString* l = dynamic_cast<LineString*>(g.get());
         BOOST_CHECK_MESSAGE( 
-            algorithm::isPlane3D( *l, 1.e-9 ) == test[t]._isPlane,
+            algorithm::isPlane3D< Kernel >( *l, 1.e-9 ) == test[t]._isPlane,
             ( boost::format("LineString %d: %s %s") % t % test[t]._wkt % (test[t]._isPlane ? "is plane" : "isn't plane") )  
         );
     }
