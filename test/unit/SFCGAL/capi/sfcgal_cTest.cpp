@@ -29,21 +29,39 @@ using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_sfcgal_cTest )
 
+bool hasError = false;
+
+int on_error(const char* msg, ...)
+{
+	hasError = true;
+	return 0;
+}
+
 /// Coordinate() ;
 BOOST_AUTO_TEST_CASE( testErrorOnBadGeometryType )
 {
+    sfcgal_set_error_handlers( printf, on_error );
+
     std::auto_ptr<Geometry> l( io::readWkt("LINESTRING(0 0, 0 1)") );
     std::auto_ptr<Geometry> p( io::readWkt("POINT(0 2)") );
     sfcgal_geometry_t* gl = l.get();
     
+    hasError = false;
     BOOST_CHECK_EQUAL( 2, sfcgal_linestring_num_points( gl ) ); // should succeed
+    BOOST_CHECK( hasError == false );
+
+    hasError = false;
     BOOST_CHECK( sfcgal_triangle_vertex( gl, 0 ) == 0 ); // should fail
-    std::cerr << "... wrong geometry type is expected\n";
+    BOOST_CHECK( hasError == true );
+
     sfcgal_geometry_t* gp = p.release();
+    hasError = false;
     sfcgal_linestring_add_point( gl, gp ); // should succeed
+    BOOST_CHECK( hasError == false );
+
+    hasError = false;
     sfcgal_linestring_add_point( gl, gl ); // should fail
-    std::cerr << "... wrong geometry type is expected\n";
-    
+    BOOST_CHECK( hasError == true );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
