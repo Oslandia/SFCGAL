@@ -28,18 +28,27 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/detail/GetPointsVisitor.h>
 
 namespace SFCGAL {
 namespace algorithm {
 
 
     /**
-     * Test if a set of points lie in the same plane
+     * Test if all points of a geometry lie in the same plane
      */
     inline
-    bool isPlane3D( const LineString & l, const double & toleranceAbs )
+    bool isPlane3D( const Geometry & geom,const double & toleranceAbs )
     {
-        if (l.isEmpty()) return true;
+        if ( geom.isEmpty() ) return true;
+
+        using namespace SFCGAL::detail;
+        GetPointsVisitor v;
+        const_cast< Geometry & >(geom).accept( v );
+
+        if ( v.points.size() == 0 ) {
+            return true;
+        }
 
         // the present approach is to find a good plane by:
         // - computing the centroid C of the point set
@@ -54,13 +63,13 @@ namespace algorithm {
 		typedef CGAL::Point_3< Kernel > Point_3 ;
 		typedef CGAL::Vector_3< Kernel > Vector_3 ;
 
-        const LineString::const_iterator end = l.end();
+        const GetPointsVisitor::const_iterator end = v.points.end();
 
         // centroid
         Vector_3 c(0,0,0);
         int numPoint = 0;
-        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
-            c = c + x->toVector_3() ;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            c = c + (*x)->toVector_3() ;
             ++numPoint;
         }
         BOOST_ASSERT( numPoint );
@@ -69,11 +78,11 @@ namespace algorithm {
         // farest point from centroid
         Vector_3 f = c ;
         Kernel::FT maxDistanceSq = 0;
-        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
-            const Vector_3 cx = x->toVector_3() - c ;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
             const Kernel::FT dSq = cx * cx ;
             if ( dSq > maxDistanceSq ) {
-                f = x->toVector_3() ;
+                f = (*x)->toVector_3() ;
                 maxDistanceSq = dSq ;
             }
         }
@@ -87,12 +96,12 @@ namespace algorithm {
         Vector_3 g=c;
         const Vector_3 cf = f - c ; // direction of (CF)
         maxDistanceSq = 0; // watch out, we reuse the variable
-        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
-            const Vector_3 cx = x->toVector_3() - c ;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
             const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line
             const Kernel::FT dSq = (cx - cp ).squared_length() ;
             if ( dSq > maxDistanceSq ) {
-                g = x->toVector_3() ;
+                g = (*x)->toVector_3() ;
                 maxDistanceSq = dSq ;
             }
         }
@@ -104,8 +113,8 @@ namespace algorithm {
 
         const Vector_3 n = CGAL::cross_product( cf, g - c );
         const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
-        for ( LineString::const_iterator x = l.begin(); x != end; ++x ) {
-            const Vector_3 cx = x->toVector_3() - c ;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
             if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
                 // std::cout << "point out of plane\n";
                 return false; 
