@@ -33,98 +33,6 @@
 namespace SFCGAL {
 namespace algorithm {
 
-
-    /**
-     * Test if all points of a geometry lie in the same plane
-     */
-	template < typename Kernel >
-    bool isPlane3D( const Geometry & geom,const double & toleranceAbs )
-    {
-        if ( geom.isEmpty() ) return true;
-
-        using namespace SFCGAL::detail;
-        GetPointsVisitor v;
-        const_cast< Geometry & >(geom).accept( v );
-
-        if ( v.points.size() == 0 ) {
-            return true;
-        }
-
-        // the present approach is to find a good plane by:
-        // - computing the centroid C of the point set
-        // - finding the farest point F from C
-        // - finding the farest point G from (CF)
-        // - we define the unit normal N to the plane from CFxCG
-        // - we check that points Xi are in the plane CXi.N < tolerance
-        //
-        // note that we could compute the covarence matrix of the points and use SVD
-        // but we would need a lib for that, and it may be overkill
-
-		typedef CGAL::Point_3< Kernel > Point_3 ;
-		typedef CGAL::Vector_3< Kernel > Vector_3 ;
-
-        const GetPointsVisitor::const_iterator end = v.points.end();
-
-        // centroid
-        Vector_3 c(0,0,0);
-        int numPoint = 0;
-        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-            c = c + (*x)->toVector_3() ;
-            ++numPoint;
-        }
-        BOOST_ASSERT( numPoint );
-        c = c / numPoint;
-
-        // farest point from centroid
-        Vector_3 f = c ;
-        typename Kernel::FT maxDistanceSq = 0;
-        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-            const Vector_3 cx = (*x)->toVector_3() - c ;
-            const typename Kernel::FT dSq = cx * cx ;
-            if ( dSq > maxDistanceSq ) {
-                f = (*x)->toVector_3() ;
-                maxDistanceSq = dSq ;
-            }
-        }
-
-        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
-            // std::cout << "all points in the same location\n";
-            return true;
-        }
-
-        // farest point from line
-        Vector_3 g=c;
-        const Vector_3 cf = f - c ; // direction of (CF)
-        maxDistanceSq = 0; // watch out, we reuse the variable
-        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-            const Vector_3 cx = (*x)->toVector_3() - c ;
-            const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line
-            const typename Kernel::FT dSq = (cx - cp ).squared_length() ;
-            if ( dSq > maxDistanceSq ) {
-                g = (*x)->toVector_3() ;
-                maxDistanceSq = dSq ;
-            }
-        }
-
-        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
-            // std::cout << "all points aligned\n";
-            return true;
-        }
-
-        const Vector_3 n = CGAL::cross_product( cf, g - c );
-        const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
-        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-            const Vector_3 cx = (*x)->toVector_3() - c ;
-            if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
-                // std::cout << "point out of plane\n";
-                return false; 
-            }
-        }
-
-        // std::cout << "plane general case\n";
-        return true;
-    }
-
 	/**
 	 * Test if a 3D plane can be extracted from a Polygon
 	 */
@@ -202,6 +110,98 @@ namespace algorithm {
 		return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN(0).toPoint_3(), normal );
 	}
 
+
+
+    /**
+     * Test if all points of a geometry lie in the same plane
+	 * @ingroup detail
+     */
+	template < typename Kernel >
+    bool isPlane3D( const Geometry & geom,const double & toleranceAbs )
+    {
+        if ( geom.isEmpty() ) return true;
+
+        using namespace SFCGAL::detail;
+        GetPointsVisitor v;
+        const_cast< Geometry & >(geom).accept( v );
+
+        if ( v.points.size() == 0 ) {
+            return true;
+        }
+
+        // the present approach is to find a good plane by:
+        // - computing the centroid C of the point set
+        // - finding the farest point F from C
+        // - finding the farest point G from (CF)
+        // - we define the unit normal N to the plane from CFxCG
+        // - we check that points Xi are in the plane CXi.N < tolerance
+        //
+        // note that we could compute the covarence matrix of the points and use SVD
+        // but we would need a lib for that, and it may be overkill
+
+		typedef CGAL::Vector_3< Kernel > Vector_3 ;
+
+        const GetPointsVisitor::const_iterator end = v.points.end();
+
+        // centroid
+        Vector_3 c(0,0,0);
+        int numPoint = 0;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            c = c + (*x)->toVector_3() ;
+            ++numPoint;
+        }
+        BOOST_ASSERT( numPoint );
+        c = c / numPoint;
+
+        // farest point from centroid
+        Vector_3 f = c ;
+        typename Kernel::FT maxDistanceSq = 0;
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
+            const typename Kernel::FT dSq = cx * cx ;
+            if ( dSq > maxDistanceSq ) {
+                f = (*x)->toVector_3() ;
+                maxDistanceSq = dSq ;
+            }
+        }
+
+        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
+            // std::cout << "all points in the same location\n";
+            return true;
+        }
+
+        // farest point from line
+        Vector_3 g=c;
+        const Vector_3 cf = f - c ; // direction of (CF)
+        maxDistanceSq = 0; // watch out, we reuse the variable
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
+            const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line (CF)
+            const typename Kernel::FT dSq = (cx - cp ).squared_length() ;
+            if ( dSq > maxDistanceSq ) {
+                g = (*x)->toVector_3() ;
+                maxDistanceSq = dSq ;
+            }
+        }
+
+        if ( std::sqrt( CGAL::to_double( maxDistanceSq ) ) < toleranceAbs ) {
+            // std::cout << "all points aligned\n";
+            return true;
+        }
+
+        const Vector_3 n = CGAL::cross_product( cf, g - c );
+        const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
+        for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+            const Vector_3 cx = (*x)->toVector_3() - c ;
+            if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
+                // std::cout << "point out of plane\n";
+                return false; 
+            }
+        }
+
+        // std::cout << "plane general case\n";
+        return true;
+    }
 
 
 }//algorithm

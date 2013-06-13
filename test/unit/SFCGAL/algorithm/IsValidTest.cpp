@@ -20,6 +20,8 @@
  */
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
@@ -27,6 +29,36 @@
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
+
+// print each ring has a different polygon
+void vtk( const Polygon & poly, const std::string & file)
+{
+    std::stringstream pointStr;
+    std::stringstream polyStr;
+    size_t numPoints=0;
+    size_t numData=0;
+    for ( size_t r=0; r!=poly.numRings(); ++r ) {
+        polyStr << poly.ringN(r).numPoints();
+        for ( size_t p=0; p!=poly.ringN(r).numPoints(); ++p ) {
+            pointStr << poly.ringN(r).pointN(p).x() << " " << poly.ringN(r).pointN(p).y() << " " << poly.ringN(r).pointN(p).z() << "\n";
+            polyStr << " " << numPoints;
+            ++numPoints;
+            ++numData;
+        }
+        ++numData;
+        polyStr << "\n";
+    }
+    std::ofstream out(file.c_str());
+    out << "# vtk DataFile Version 1.0\n"
+        << "Polygon output\n"
+        << "ASCII\n"
+        << "\n"
+        << "DATASET POLYDATA\n"
+        << "POINTS " << numPoints << " float\n"
+        << pointStr.str()
+        << "POLYGONS " << poly.numRings() << " " << numData << "\n"
+        << pointStr.str();
+}
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IsValid )
 
@@ -60,10 +92,10 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     // Polygon2D
         // valid
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0))", true , ""},
-        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.5 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))", true, "with interior ring"},
-        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,1.0 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))", true, "one contact point between interior ans exterior"},
-        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.1 -0.5,-0.1 0.5,-0.5 0.5,-0.5 -0.5),(0.1 -0.5,0.5 -0.5,0.5 0.5,0.1 0.5,0.1 -0.5))", true, "with interior rings"},
-        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.1 -0.5,-0.1 0.5,-0.5 0.5,-0.5 -0.5),(0.1 -0.5,0.5 -0.5,0.5 0.5,0.1 0.5,0.1 -0.5))", true, "one contact point between 2 interior rings"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,0.5 -0.5,-0.5 -0.5))", true, "with interior ring"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1.0 -0.5,-0.5 -0.5))", true, "one contact point between interior ans exterior"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,-0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))", true, "with interior rings"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))", true, "one contact point between 2 interior rings"},
         // invalid
         {"POLYGON((-1.0 -1.0,-1.0 1.0,-1.0 -1.0))", false, "only 3 points"},
         {"POLYGON((-1.0 -1.0,-1.0 1.0,1.0 1.0,-1.0 -1.0,-1.0 1.0))", false, "not closed"},
@@ -71,6 +103,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         {"POLYGON((-1.0 -1.0,2.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0))", false, "ring adjacency (spyke)"},
         {"POLYGON((-1.0 -1.0,1.0 1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0))", false, "ring intersection"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.5 -0.5))", false, "interior ring only 3 points"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.5 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))", false, "interior ring counterclockwise"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,-0.5 -0.5,-0.5 0.5))", false, "interior ring not closed"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.5 -0.5,0.5 -0.5,-0.5 -0.5,-0.5 -0.5))", false, "interior ring no surface"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.7 -0.5,0.5 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))", false, "interior ring adjacency (spyke)"},
@@ -84,9 +117,9 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     // Polygon3D
         // valid
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", true, ""},
-        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5))", true, ""},
-        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 1.0 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5))", true, "one contact point between interior and exterior"},
-        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.1 -0.5,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", true, "two interior rings"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 -0.5 -0.5))", true, "with interior ring"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 0.5 0.5,1.0 1.0 -0.5,1.0 -0.5 -0.5))", true, "one contact point between interior and exterior"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 -0.1 0.5,1.0 -0.1 -0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.1 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 0.1 -0.5))", true, "two interior rings"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.1 -0.5,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", true, "one contact point between 2 interior rings"},
         // invalid
         {"POLYGON((1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", false, "only 3 points"},
@@ -172,10 +205,11 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     {
         const TestGeometry & tg = testGeometry[t];
         std::auto_ptr< Geometry > g( io::readWkt(tg._wkt) );
-        BOOST_CHECK_MESSAGE( algorithm::isValid( *g ) == tg._valid, ( boost::format("%s should be %s (%s)") % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment) );
+        //if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("geom_%d.vtk") % t).str() );
+        Validity v = algorithm::isValid( *g );
+        BOOST_CHECK_MESSAGE( v == tg._valid, ( boost::format("%d:%s should be %s (%s), algorythim says: %s") % t % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment % v.reason() ) );
     }
 
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

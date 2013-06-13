@@ -382,13 +382,6 @@ namespace algorithm
 		return intersects( gsa, gsb );
 	}
 
-    template< int Dim >
-    std::auto_ptr< Geometry > intersectionLineSegments( const Point & p11, const Point & p12, const Point & p21, const Point & p22 )
-    {
-        std::auto_ptr< Geometry > inter;
-        BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-        return inter;
-    }
 
     template< int Dim >
     bool selfIntersectsImpl(const LineString & l)
@@ -400,15 +393,41 @@ namespace algorithm
         for ( size_t i = 0; i != numSegments; ++i ) {
             // first line segment is point i and i+1
             for ( size_t j = i + 1; j < numSegments; ++j ) {
-                // second line segment is point j and j+1
-                std::auto_ptr< Geometry > inter = 
-                    intersectionLineSegments< Dim >( 
-                        l.pointN( i ), l.pointN( i + 1 ),
-                        l.pointN( j ), l.pointN( j + 1 )
-                    ) 
-                ;
+                if ( l.pointN( j ) == l.pointN( j + 1 ) ) continue; // jump over zero lengthed segments
+                /** @todo find a way to avoid ugly copy/paste here, toPoint_d< Dim > can be used, 
+                 * but I dont know what to do with Kernel::Segment_Dim and Kernel::Point_Dim
+                 */
+                std::auto_ptr< Geometry > inter; // null if no intersection
+                if ( Dim == 2 )
+                {
+                    const CGAL::Segment_2< Kernel > s1( l.pointN( i ).toPoint_2(), l.pointN( i + 1 ).toPoint_2() ) ;
+                    const CGAL::Segment_2< Kernel > s2( l.pointN( j ).toPoint_2(), l.pointN( j + 1 ).toPoint_2() ) ;
+                    const CGAL::Object out = CGAL::intersection( s1, s2 );
+                    if ( out.is< Kernel::Point_2 >() ) {
+                        inter.reset( new Point( CGAL::object_cast< Kernel::Point_2 >( out ) ) );
+                    }
+                    else if ( out.is< Kernel::Segment_2 >() ) {
+                        const Kernel::Segment_2 & s = CGAL::object_cast< Kernel::Segment_2 >( out );
+                        inter.reset( new LineString( s.point(0), s.point(1) ) ) ;
+                    }
+                }
+                else
+                {
+                    const CGAL::Segment_3< Kernel > s1( l.pointN( i ).toPoint_3(), l.pointN( i + 1 ).toPoint_3() ) ;
+                    const CGAL::Segment_3< Kernel > s2( l.pointN( j ).toPoint_3(), l.pointN( j + 1 ).toPoint_3() ) ;
+                    const CGAL::Object out = CGAL::intersection( s1, s2 );
+                    if ( out.is< Kernel::Point_3 >() ) {
+                        inter.reset( new Point( CGAL::object_cast< Kernel::Point_3 >( out ) ) );
+                    }
+                    else if ( out.is< Kernel::Segment_3 >() ) {
+                        const Kernel::Segment_3 & s = CGAL::object_cast< Kernel::Segment_3 >( out );
+                        inter.reset( new LineString( s.point(0), s.point(1) ) ) ;
+                    }
+                }
+
                 if ( inter.get() && inter->is< LineString >() ) return true; // segments overlap
                 else if ( inter.get() && inter->is< Point >() 
+                        && !( i + 1 == j ) // one contact point between consecutive segments is ok
                         && !( (i == 0) 
                             && (j + 1 == numSegments) 
                             && inter->as< Point >() == l.startPoint()
