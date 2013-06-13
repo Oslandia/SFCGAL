@@ -57,7 +57,7 @@ void vtk( const Polygon & poly, const std::string & file)
         << "POINTS " << numPoints << " float\n"
         << pointStr.str()
         << "POLYGONS " << poly.numRings() << " " << numData << "\n"
-        << pointStr.str();
+        << polyStr.str();
 }
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IsValid )
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 -0.5 -0.5))", true, "with interior ring"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 0.5 0.5,1.0 1.0 -0.5,1.0 -0.5 -0.5))", true, "one contact point between interior and exterior"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 -0.1 0.5,1.0 -0.1 -0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.1 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 0.1 -0.5))", true, "two interior rings"},
-        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.1 -0.5,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", true, "one contact point between 2 interior rings"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 -0.1 0.5,1.0 0.1 -0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.1 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 0.1 -0.5))", true, "one contact point between 2 interior rings"},
         // invalid
         {"POLYGON((1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", false, "only 3 points"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 1.0 1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0))", false, "not closed"},
@@ -135,10 +135,10 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5))", false, "interior ring intersection"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 1.0 -0.5,1.0 1.0 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5))", false, "interior ring adjacent to exterior"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 2.0 -0.5,1.0 2.0 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5))", false, "interior ring intersection with exterior"},
-        {"POLYGON(1.0 (1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 1.5 -0.5,1.0 2.0 -0.5,1.0 2.0 0.5,1.0 1.5 0.5,1.0 1.5 -0.5))", false, "interior ring is ouside exterior"},
-        {"POLYGON(1.0 (1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.0 -0.5,1.0 0.0 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.0 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.0 0.5,1.0 0.0 -0.5))", false, "adjacent interior rings"},
-        {"POLYGON(1.0 (1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.2 -0.4,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", false, "intersection between interior rings"},
-        {"POLYGON(1.0 (1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 -0.2 -0.2,1.0 0.2 -0.2,1.0 0.2 0.2,1.0 -0.2 0.2,1.0 -0.2 -0.2))", false, "one inetrior ring is inside the other"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 1.5 -0.5,1.0 2.0 -0.5,1.0 2.0 0.5,1.0 1.5 0.5,1.0 1.5 -0.5))", false, "interior ring is ouside exterior"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.0 -0.5,1.0 0.0 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.0 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.0 0.5,1.0 0.0 -0.5))", false, "adjacent interior rings"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.2 -0.4,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", false, "intersection between interior rings"},
+        {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 -0.2 -0.2,1.0 0.2 -0.2,1.0 0.2 0.2,1.0 -0.2 0.2,1.0 -0.2 -0.2))", false, "one inetrior ring is inside the other"},
     // Multipoint2D
         // valid
         {"MULTIPOINT((-1.0 -1.0),(1.0 1.0))", true, ""},
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         // valid
         {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 -1.0))", true, ""},
         // invalid
-        {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 1.0))", true, ""},
+        {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 1.0))", false, "second linestring has zero length"},
     // MultiLinestring3D 
         // valid
         {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 -1.0))", true, ""},
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     {
         const TestGeometry & tg = testGeometry[t];
         std::auto_ptr< Geometry > g( io::readWkt(tg._wkt) );
-        //if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("geom_%d.vtk") % t).str() );
+        if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("/tmp/geom_%d.vtk") % t).str() );
         Validity v = algorithm::isValid( *g );
         BOOST_CHECK_MESSAGE( v == tg._valid, ( boost::format("%d:%s should be %s (%s), algorythim says: %s") % t % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment % v.reason() ) );
     }

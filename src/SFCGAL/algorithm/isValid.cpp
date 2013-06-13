@@ -164,9 +164,15 @@ const Validity isValid( const Solid & l, const double & toleranceAbs, const doub
     return Validity::valid();
 }
 
-const Validity isValid( const MultiLineString & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiLineString & ml, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const size_t numLineString = ml.numGeometries();
+    for (size_t l = 0; l != numLineString; ++l ) {
+        Validity v = isValid( ml.lineStringN(l) );
+        if (!v) return Validity::invalid( 
+                ( boost::format( "linestring %d in multilinestring is invalid: %s" ) % l % v.reason() ).str() 
+                );
+    }
     return Validity::valid();
 }
 
