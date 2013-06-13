@@ -152,10 +152,9 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
     return Validity::valid();
 }
 
-const Validity isValid( const Triangle & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const Triangle & t, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return Validity::valid();
+    return isValid( t.toPolygon() );
 }
 
 const Validity isValid( const Solid & l, const double & toleranceAbs, const double & toleranceRel )
@@ -170,27 +169,47 @@ const Validity isValid( const MultiLineString & ml, const double & toleranceAbs,
     for (size_t l = 0; l != numLineString; ++l ) {
         Validity v = isValid( ml.lineStringN(l) );
         if (!v) return Validity::invalid( 
-                ( boost::format( "linestring %d in multilinestring is invalid: %s" ) % l % v.reason() ).str() 
+                ( boost::format( "LineString %d in MultiLineString is invalid: %s" ) % l % v.reason() ).str() 
                 );
     }
     return Validity::valid();
 }
 
-const Validity isValid( const MultiPolygon & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const size_t numPolygons = mp.numGeometries();
+    for (size_t p = 0; p != numPolygons; ++p ) {
+        Validity v = isValid( mp.polygonN(p) );
+        if (!v) return Validity::invalid( 
+                ( boost::format( "Polygon %d in MultiPolygon is invalid: %s" ) % p % v.reason() ).str() 
+                );
+    }
+
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (intersection and touching missing)"));
     return Validity::valid();
 }
 
-const Validity isValid( const MultiSolid & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiSolid & ms, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const size_t numMultiSolid = ms.numGeometries();
+    for (size_t s = 0; s != numMultiSolid; ++s ) {
+        Validity v = isValid( ms.solidN(s) );
+        if (!v) return Validity::invalid( 
+                ( boost::format( "Solid %d in MultiSolid is invalid: %s" ) % s % v.reason() ).str() 
+                );
+    }
     return Validity::valid();
 }
 
-const Validity isValid( const GeometryCollection & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const GeometryCollection & gc, const double & toleranceAbs, const double & toleranceRel )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const size_t numGeom = gc.numGeometries();
+    for (size_t g = 0; g != numGeom; ++g ) {
+        Validity v = isValid( gc.geometryN(g) );
+        if (!v) return Validity::invalid( 
+                ( boost::format( "%s %d in GeometryCollection is invalid: %s" ) % gc.geometryN(g).geometryType()  % g % v.reason() ).str() 
+                );
+    }
     return Validity::valid();
 }
 
