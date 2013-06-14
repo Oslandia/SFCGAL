@@ -26,11 +26,13 @@
 #include <SFCGAL/algorithm/distance.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/normal.h>
-#include <SFCGAL/algorithm/covers.h>
+#include <SFCGAL/detail/algorithm/coversPoints.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/Kernel.h>
+
+using namespace SFCGAL::detail::algorithm;
 
 namespace SFCGAL {
 namespace algorithm {
@@ -130,8 +132,8 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
         // Interior rings must be interior to exterior ring
         for (size_t r=0; r < p.numInteriorRings(); ++r) { // no need for numRings-1, the next loop won't be entered for the last ring
             if ( p.is3D() 
-                    ? !covers3D( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) )
-                    : !covers( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) ) 
+		 ? !coversPoints3D( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) )
+		 : !coversPoints( Polygon( p.exteriorRing() ), Polygon( p.interiorRingN( r ) ) ) 
                ) {
                return Validity::invalid( ( boost::format("exterior ring doesn't cover interior ring %d") % r ).str() );
             }
@@ -141,8 +143,8 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
         for (size_t ri=0; ri < p.numInteriorRings(); ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
             for (size_t rj=ri+1; rj < p.numInteriorRings(); ++rj) {
                 if ( p.is3D() 
-                        ? covers3D( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) )
-                        : covers( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) ) 
+		     ? coversPoints3D( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) )
+		     : coversPoints( Polygon( p.interiorRingN( ri ) ), Polygon( p.interiorRingN( rj ) ) ) 
                    ) {
                    return Validity::invalid( ( boost::format("interior ring %d covers interior ring %d") % ri % rj ).str() ); 
                 }

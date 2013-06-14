@@ -18,31 +18,32 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <boost/test/unit_test.hpp>
+#ifndef SFCGAL_COVERS_POINTS_ALGORITHM
+#define SFCGAL_COVERS_POINTS_ALGORITHM
 
-#include <cmath>
+#include <SFCGAL/config.h>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/all.h>
-#include <SFCGAL/io/wkt.h>
-#include <SFCGAL/detail/io/WktWriter.h>
-#include <SFCGAL/algorithm/covers.h>
+#include <vector>
 
-using namespace SFCGAL ;
-using namespace boost::unit_test ;
+namespace SFCGAL {
+	class Geometry;
+	namespace detail {
+	namespace algorithm {
+		
 
-BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_CoversTest )
+	/**
+	 * Pseudo cover test on 2D geometries. Collect points of gb and tests if no points of gb is outside ga
+	 * @ingroup@ detail
+	 */
+	SFCGAL_API bool coversPoints( const Geometry& ga, const Geometry& gb );
 
-BOOST_AUTO_TEST_CASE( testPointPointCovers )
-{
-    Point pta( 0.0, 1.0, 0.0 );
-    Point ptb( 0.0, 1.0, 0.0 );
-    Point ptc( 0.0, 0.0, 0.0 );
-    BOOST_CHECK_EQUAL( algorithm::covers( pta, ptb ), true );
-    BOOST_CHECK_EQUAL( algorithm::covers( pta, ptc ), false );
-    BOOST_CHECK_EQUAL( algorithm::covers3D( pta, ptb ), true );
-    BOOST_CHECK_EQUAL( algorithm::covers3D( pta, ptc ), false );
+	/**
+	 * Pseudo cover test on 3D geometries. Collect points of gb and tests if no points of gb is outside ga
+	 * @ingroup@ detail
+	 */
+	SFCGAL_API bool coversPoints3D( const Geometry& ga, const Geometry& gb );
+    }
+    }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
-
+#endif
