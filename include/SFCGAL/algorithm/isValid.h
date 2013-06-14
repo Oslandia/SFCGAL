@@ -31,7 +31,7 @@ namespace algorithm {
 	 * @brief Check validity of a geometry
 	 * @ingroup public_api
 	 */
-    const Validity isValid( const Geometry & g );
+    const Validity isValid( const Geometry & g, const double & toleranceAbs= 1e-9 );
 
     /**
      * Asserts the validity of a given Geometry. If the Geometry is invalid, throws
