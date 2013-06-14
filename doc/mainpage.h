@@ -67,6 +67,8 @@
  * @defgroup capi Public C API
  *
  * @defgroup detail Implementation details
+ * 
+ * @defgroup incomplete Incomplete or buggy functions
  *
  *
  */

@@ -101,14 +101,19 @@ BOOST_AUTO_TEST_CASE( testLineStringTriangleIntersects )
 
     // line that shares a vertex
     BOOST_CHECK_EQUAL( algorithm::intersects( *ls1, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls1, tri ), true );
     // line crossing an edge
     BOOST_CHECK_EQUAL( algorithm::intersects( *ls2, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls2, tri ), true );
     // line inside the triangle
     BOOST_CHECK_EQUAL( algorithm::intersects( *ls3, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls3, tri ), true );
     // line traversing the triangle
     BOOST_CHECK_EQUAL( algorithm::intersects( *ls4, tri ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls4, tri ), true );
     // line outside
     BOOST_CHECK_EQUAL( algorithm::intersects( *ls5, tri ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *ls5, tri ), false );
 }
 
 
@@ -153,14 +158,19 @@ BOOST_AUTO_TEST_CASE( testPointPolygonIntersects )
 
     // point on a vertex
     BOOST_CHECK_EQUAL( algorithm::intersects( pta, *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( pta, *g ), true );
     // point on a boundary
     BOOST_CHECK_EQUAL( algorithm::intersects( ptb, *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptb, *g ), true );
     // point outside
     BOOST_CHECK_EQUAL( algorithm::intersects( ptc, *g ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptc, *g ), false );
     // point inside
     BOOST_CHECK_EQUAL( algorithm::intersects( pte, *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( pte, *g ), true );
     // point inside and on a triangulation edge
     BOOST_CHECK_EQUAL( algorithm::intersects( ptd, *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( ptd, *g ), true );
 }
 
 BOOST_AUTO_TEST_CASE( testPointPolygonWithHoleIntersects )
@@ -213,16 +223,21 @@ BOOST_AUTO_TEST_CASE( testPolygonPolygonWithHoleIntersects )
 
     // polygon touching
     BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((-1 0,0 0,0 1,-1 1,-1 0))"), *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *io::readWkt("POLYGON((-1 0,0 0,0 1,-1 1,-1 0))"), *g ), true );
     // polygon crossing
     BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((1.5 1.5,2.5 1.5,2.5 2.5,1.5 2.5,1.5 1.5))"), *g ), true );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *io::readWkt("POLYGON((1.5 1.5,2.5 1.5,2.5 2.5,1.5 2.5,1.5 1.5))"), *g ), true );
 
     // polygon A in B's hole
     BOOST_CHECK_EQUAL( algorithm::intersects( *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))"), *g ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))"), *g ), false );
     // polygon B in A's hole
     BOOST_CHECK_EQUAL( algorithm::intersects( *g, *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))") ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *g, *io::readWkt("POLYGON((2.1 2.1,2.5 2.1,2.5 2.5,2.1 2.5,2.1 2.1))") ), false );
 
     // polygon outside
     BOOST_CHECK_EQUAL( algorithm::intersects( *g, *io::readWkt("POLYGON((20.1 20.1,20.5 20.1,20.5 20.5,20.1 20.5,20.1 20.1))") ), false );
+    BOOST_CHECK_EQUAL( algorithm::intersects3D( *g, *io::readWkt("POLYGON((20.1 20.1,20.5 20.1,20.5 20.5,20.1 20.5,20.1 20.1))") ), false );
 }
 
 BOOST_AUTO_TEST_CASE( testPointPolygon3DIntersects )
