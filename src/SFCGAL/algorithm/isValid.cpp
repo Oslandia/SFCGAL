@@ -51,16 +51,6 @@ const Validity isValid( const LineString & l, const double & toleranceAbs )
 const Validity isValid( const Polygon & p, const double & toleranceAbs )
 {
     BOOST_ASSERT( !p.isEmpty() );
-    // Au moins 4 points par ring (couvert par simplicité, mais à peut-être à conserver car pas cher à tester)
-    // Surface d'un ring non nulle (couvert par simplicité)
-    // Rings fermants
-    // Rings simple (Pas d'adjacence d'un ring avec lui même et pas d'intersection)
-    // Rings correctement orientés
-    // Si ring(s) interne(s) pas plus d'un point de contact entre ring externe et ring interne
-    // Si ring(s) interne(s) chaque ring interne doit etre strictement interne au ring externe
-    // Si rings internes, pas plus de 1 point de contact entre chaque ring interne
-
-    // question: si 3 rings internes avec chacune un point de contact avec 2 autres, est-ce valide ? Non, l'intérieur doit être connecté.
 
     // Closed simple rings
     const Polygon::const_iterator end = p.end();
