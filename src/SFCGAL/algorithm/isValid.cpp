@@ -27,6 +27,7 @@
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/detail/algorithm/coversPoints.h>
+#include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
@@ -49,7 +50,7 @@ const Validity isValid( const LineString & l, const double & toleranceAbs )
     return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid("LineString has no length");
 }
 
-const Validity isValid( const Polygon & p, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const Polygon & p, const double & toleranceAbs )
 {
     BOOST_ASSERT( !p.isEmpty() );
     // Au moins 4 points par ring (couvert par simplicité, mais à peut-être à conserver car pas cher à tester)
@@ -154,35 +155,29 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs, const do
     return Validity::valid();
 }
 
-const Validity isValid( const Triangle & t, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const Triangle & t, const double & toleranceAbs )
 {
-    return isValid( t.toPolygon() );
+    return isValid( t.toPolygon(), toleranceAbs );
 }
 
-const Validity isValid( const Solid & l, const double & toleranceAbs, const double & toleranceRel )
-{
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
-    return Validity::valid();
-}
-
-const Validity isValid( const MultiLineString & ml, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiLineString & ml, const double & toleranceAbs )
 {
     const size_t numLineString = ml.numGeometries();
     for (size_t l = 0; l != numLineString; ++l ) {
-        Validity v = isValid( ml.lineStringN(l) );
-        if (!v) return Validity::invalid( 
+        Validity v = isValid( ml.lineStringN(l), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
                 ( boost::format( "LineString %d in MultiLineString is invalid: %s" ) % l % v.reason() ).str() 
                 );
     }
     return Validity::valid();
 }
 
-const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
 {
     const size_t numPolygons = mp.numGeometries();
     for (size_t p = 0; p != numPolygons; ++p ) {
-        Validity v = isValid( mp.polygonN(p) );
-        if (!v) return Validity::invalid( 
+        Validity v = isValid( mp.polygonN(p), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
                 ( boost::format( "Polygon %d in MultiPolygon is invalid: %s" ) % p % v.reason() ).str() 
                 );
     }
@@ -191,63 +186,107 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs, co
     return Validity::valid();
 }
 
-const Validity isValid( const MultiSolid & ms, const double & toleranceAbs, const double & toleranceRel )
-{
-    const size_t numMultiSolid = ms.numGeometries();
-    for (size_t s = 0; s != numMultiSolid; ++s ) {
-        Validity v = isValid( ms.solidN(s) );
-        if (!v) return Validity::invalid( 
-                ( boost::format( "Solid %d in MultiSolid is invalid: %s" ) % s % v.reason() ).str() 
-                );
-    }
-    return Validity::valid();
-}
-
-const Validity isValid( const GeometryCollection & gc, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const GeometryCollection & gc, const double & toleranceAbs )
 {
     const size_t numGeom = gc.numGeometries();
     for (size_t g = 0; g != numGeom; ++g ) {
-        Validity v = isValid( gc.geometryN(g) );
-        if (!v) return Validity::invalid( 
+        Validity v = isValid( gc.geometryN(g), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
                 ( boost::format( "%s %d in GeometryCollection is invalid: %s" ) % gc.geometryN(g).geometryType()  % g % v.reason() ).str() 
                 );
     }
     return Validity::valid();
 }
 
-const Validity isValid( const TriangulatedSurface & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    size_t numTriangles = tin.numTriangles();
+    for ( size_t t=0; t != numTriangles; ++t ) {
+        Validity v = isValid( tin.triangleN(t), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
+                ( boost::format( "Triangle %d in TriangulatedSurface is invalid: %s" ) % t % v.reason() ).str() 
+                );
+    }
+    if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
+
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
     return Validity::valid();
 }
 
-const Validity isValid( const PolyhedralSurface & l, const double & toleranceAbs, const double & toleranceRel )
+const Validity isValid( const TriangulatedSurface & tin, const double & toleranceAbs )
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const PolyHedralSurfaceGraph graph( tin );
+    return  isValid( tin, graph, toleranceAbs );
+}
+
+const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
+{
+    size_t numPolygons = s.numPolygons();
+    for ( size_t p=0; p != numPolygons; ++p ) {
+        Validity v = isValid( s.polygonN(p), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
+                ( boost::format( "Polygon %d in PolyhedralSurface is invalid: %s" ) % p % v.reason() ).str() 
+                );
+    }
+    if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
+
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
+    return Validity::valid();
+}
+
+const Validity isValid( const PolyhedralSurface & s, const double & toleranceAbs )
+{
+    const PolyHedralSurfaceGraph graph( s );
+    return  isValid( s, graph, toleranceAbs );
+}
+
+const Validity isValid( const Solid & solid, const double & toleranceAbs )
+{
+    const size_t numShells = solid.numShells();
+    for ( size_t s = 0; s != numShells; ++s ) {
+        const PolyHedralSurfaceGraph graph( solid.shellN(s) );
+        Validity v = isValid( solid.shellN(s), graph, toleranceAbs );
+        if (!v) return Validity::invalid( 
+                ( boost::format( "PolyhedralSurface (shell) %d in Solid is invalid: %s" ) % s % v.reason() ).str() 
+                );
+        if ( !isClosed( graph ) ) return Validity::invalid( 
+                ( boost::format( "PolyhedralSurface (shell) %d in Solid is not closed" ) % s ).str() 
+                );
+    }
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of shells missing"));
+    return Validity::valid();
+}
+
+const Validity isValid( const MultiSolid & ms, const double & toleranceAbs )
+{
+    const size_t numMultiSolid = ms.numGeometries();
+    for (size_t s = 0; s != numMultiSolid; ++s ) {
+        Validity v = isValid( ms.solidN(s), toleranceAbs );
+        if ( !v ) return Validity::invalid( 
+                ( boost::format( "Solid %d in MultiSolid is invalid: %s" ) % s % v.reason() ).str() 
+                );
+    }
     return Validity::valid();
 }
 
 
-const Validity isValid( const Geometry& g )
+const Validity isValid( const Geometry& g, const double & toleranceAbs )
 {
 	if ( g.isEmpty() ) return Validity::valid();
-
-    const double toleranceAbs = 1e-9;
-    const double toleranceRel = 1e-4;
 
 	switch ( g.geometryTypeId() ){
         case TYPE_POINT:              return Validity::valid();
 		case TYPE_LINESTRING:         return isValid( g.as< LineString >(),          toleranceAbs ) ;
-		case TYPE_POLYGON:            return isValid( g.as< Polygon >(),             toleranceAbs, toleranceRel ) ;
-		case TYPE_TRIANGLE:           return isValid( g.as< Triangle >(),            toleranceAbs, toleranceRel ) ;
-		case TYPE_SOLID:              return isValid( g.as< Solid >(),               toleranceAbs, toleranceRel ) ;
+		case TYPE_POLYGON:            return isValid( g.as< Polygon >(),             toleranceAbs ) ;
+		case TYPE_TRIANGLE:           return isValid( g.as< Triangle >(),            toleranceAbs ) ;
+		case TYPE_SOLID:              return isValid( g.as< Solid >(),               toleranceAbs ) ;
         case TYPE_MULTIPOINT:         return Validity::valid();
-		case TYPE_MULTILINESTRING:    return isValid( g.as< MultiLineString >(),     toleranceAbs, toleranceRel ) ;
-		case TYPE_MULTIPOLYGON:       return isValid( g.as< MultiPolygon >(),        toleranceAbs, toleranceRel ) ;
-		case TYPE_MULTISOLID:         return isValid( g.as< MultiSolid >(),          toleranceAbs, toleranceRel ) ;
-		case TYPE_GEOMETRYCOLLECTION: return isValid( g.as< GeometryCollection >(),  toleranceAbs, toleranceRel ) ;
-		case TYPE_TRIANGULATEDSURFACE:return isValid( g.as< TriangulatedSurface >(), toleranceAbs, toleranceRel ) ;
-		case TYPE_POLYHEDRALSURFACE:  return isValid( g.as< PolyhedralSurface >(),   toleranceAbs, toleranceRel ) ;
+		case TYPE_MULTILINESTRING:    return isValid( g.as< MultiLineString >(),     toleranceAbs ) ;
+		case TYPE_MULTIPOLYGON:       return isValid( g.as< MultiPolygon >(),        toleranceAbs ) ;
+		case TYPE_MULTISOLID:         return isValid( g.as< MultiSolid >(),          toleranceAbs ) ;
+		case TYPE_GEOMETRYCOLLECTION: return isValid( g.as< GeometryCollection >(),  toleranceAbs ) ;
+		case TYPE_TRIANGULATEDSURFACE:return isValid( g.as< TriangulatedSurface >(), toleranceAbs ) ;
+		case TYPE_POLYHEDRALSURFACE:  return isValid( g.as< PolyhedralSurface >(),   toleranceAbs ) ;
 	}
 	BOOST_THROW_EXCEPTION(Exception(
 		( boost::format("isValid( %s ) is not defined") % g.geometryType() ).str()
