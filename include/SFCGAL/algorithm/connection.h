@@ -91,7 +91,7 @@ void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceInd
             const EdgeMap::const_iterator foundEdgeWithBadOrientation = _edgeMap.find( edge ); 
             if ( foundEdgeWithBadOrientation != _edgeMap.end() ) {
                 BOOST_THROW_EXCEPTION( Exception (
-                    ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d of polygon %d") % s % faceIndex ).str() 
+                    ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d (%d-%d) of polygon %d") % s % edge.first % edge.second % faceIndex ).str() 
                 ));
             }
             const std::pair< VertexIndex, VertexIndex > reversedEdge( endIndex, startIndex );
@@ -101,10 +101,12 @@ void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceInd
                 foundEdge->second.second = faceIndex;
                 // we have two faces connected, this is an edge of the graph
                 boost::add_edge( foundEdge->second.first, foundEdge->second.second, _graph );
+                //std::cerr << "face " << foundEdge->second.first << "->" << foundEdge->second.second << "\n";
             }
             else {
                 // create edge
                 _edgeMap.insert( std::make_pair( edge, std::make_pair( faceIndex, INVALID_INDEX ) ) );
+                //std::cerr << "face " << faceIndex << " edge " << edge.first << "-" << edge.second << "\n";
             }
         }
         else {
@@ -127,6 +129,7 @@ void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceInd
 
             const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
             _edgeMap.insert( std::make_pair( edge, std::make_pair( faceIndex, INVALID_INDEX ) ) );
+            //std::cerr << "face " << faceIndex << " edge " << edge.first << "-" << edge.second << "\n";
         }
     }
 }

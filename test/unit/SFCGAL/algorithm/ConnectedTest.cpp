@@ -22,16 +22,56 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/algorithm/connection.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
+using namespace SFCGAL::algorithm ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_Connected )
 
-BOOST_AUTO_TEST_CASE( geometryIsValid )
+BOOST_AUTO_TEST_CASE( allFine )
 {
-    BOOST_CHECK_MESSAGE( false, "test not implemented" );
+    std::auto_ptr< Geometry > geom ( io::readWkt(
+                "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                                   ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                                   ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                                   ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                                   ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
+
+    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
+    BOOST_CHECK_MESSAGE( isClosed( graph ) , "not closed" );
+}
+
+BOOST_AUTO_TEST_CASE( notConnected )
+{
+    std::auto_ptr< Geometry > geom ( io::readWkt(
+                "POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
+                                   ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                                   ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                                   ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                                   ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
+
+    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    BOOST_CHECK_MESSAGE( !isConnected( graph ) , "connected" );
+    BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
+}
+
+BOOST_AUTO_TEST_CASE( notClosed )
+{
+    std::auto_ptr< Geometry > geom ( io::readWkt(
+                "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                                   ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                                   ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                                   ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                                   ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)))") );
+
+    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
+    BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
 
 }
 
