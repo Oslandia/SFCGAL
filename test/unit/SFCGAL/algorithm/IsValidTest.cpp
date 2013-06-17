@@ -19,46 +19,14 @@
  *
  */
 #include <boost/test/unit_test.hpp>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/vtk.h>
 #include <SFCGAL/algorithm/isValid.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
-
-// print each ring has a different polygon
-void vtk( const Polygon & poly, const std::string & file)
-{
-    std::stringstream pointStr;
-    std::stringstream polyStr;
-    size_t numPoints=0;
-    size_t numData=0;
-    for ( size_t r=0; r!=poly.numRings(); ++r ) {
-        polyStr << poly.ringN(r).numPoints();
-        for ( size_t p=0; p!=poly.ringN(r).numPoints(); ++p ) {
-            pointStr << poly.ringN(r).pointN(p).x() << " " << poly.ringN(r).pointN(p).y() << " " << poly.ringN(r).pointN(p).z() << "\n";
-            polyStr << " " << numPoints;
-            ++numPoints;
-            ++numData;
-        }
-        ++numData;
-        polyStr << "\n";
-    }
-    std::ofstream out(file.c_str());
-    out << "# vtk DataFile Version 1.0\n"
-        << "Polygon output\n"
-        << "ASCII\n"
-        << "\n"
-        << "DATASET POLYDATA\n"
-        << "POINTS " << numPoints << " float\n"
-        << pointStr.str()
-        << "POLYGONS " << poly.numRings() << " " << numData << "\n"
-        << polyStr.str();
-}
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IsValid )
 
@@ -200,7 +168,6 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         {"TIN(((0.0 0.0 0.0,1.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 1.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 0.0 1.0,0.5 0.1 -0.1,0.0 0.0 0.0)))", false, "self intersect"},
     };
     const std::size_t nbOfTest = sizeof(testGeometry)/sizeof(TestGeometry);
-    std::cout << nbOfTest << "\n";
     for (std::size_t t=0; t<nbOfTest; t++)
     {
         const TestGeometry & tg = testGeometry[t];

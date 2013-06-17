@@ -47,7 +47,7 @@ public:
     // finding the edge in the same order
     // note that this situation may be caused if a face is duplicated
     typedef std::map< std::pair < VertexIndex, VertexIndex > , std::pair< FaceIndex, FaceIndex > >  EdgeMap ;
-    typedef boost::adjacency_list< boost::listS, boost::listS, boost::undirectedS, FaceIndex > FaceGraph;
+    typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::undirectedS > FaceGraph;
     /*
      * Construct from PolyHedralSurfaceGraph
      * @throw Exception if surface is not connected
@@ -106,8 +106,7 @@ PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const PolyhedralSurface & surf )
                         // edit edge
                         foundEdge->second.second = p;
                         // we have two faces connected, this is an edge of the graph
-                        //boost::add_edge( foundEdge->second.first, foundEdge->second.second, _graph );
-                        BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (missing boost graph)"));
+                        boost::add_edge( foundEdge->second.first, foundEdge->second.second, _graph );
                     }
                     else {
                         // create edge
@@ -152,10 +151,8 @@ inline
 bool isConnected( const PolyHedralSurfaceGraph graph )
 {
     std::vector< PolyHedralSurfaceGraph::FaceIndex > component( graph.coordMap().size() );
-    //const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
-    //return 1 == numComponents;
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (missing boost connected_components)"));
-    return true;
+    const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
+    return 1 == numComponents;
 }
 
 /**
