@@ -175,7 +175,7 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
                 );
     }
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (intersection and touching missing)"));
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (intersection and adjacency missing)"));
     return Validity::valid();
 }
 
@@ -204,15 +204,20 @@ const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurface
     }
     if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection and consistant orientation missing)"));
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
     return Validity::valid();
 }
 
 const Validity isValid( const TriangulatedSurface & tin, const double & toleranceAbs )
 {
     BOOST_ASSERT( !tin.isEmpty() );
-    const PolyHedralSurfaceGraph graph( tin );
-    return  isValid( tin, graph, toleranceAbs );
+    try {
+        const PolyHedralSurfaceGraph graph( tin );
+        return  isValid( tin, graph, toleranceAbs );
+    }
+    catch ( std::exception& e ){
+        return Validity::invalid( e.what() ); // surface has inconsistent orientation
+    }
 }
 
 const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
@@ -227,15 +232,20 @@ const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGrap
     }
     if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection and consistant orientatioin missing)"));
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
     return Validity::valid();
 }
 
 const Validity isValid( const PolyhedralSurface & s, const double & toleranceAbs )
 {
     BOOST_ASSERT( !s.isEmpty() );
-    const PolyHedralSurfaceGraph graph( s );
-    return  isValid( s, graph, toleranceAbs );
+    try {
+        const PolyHedralSurfaceGraph graph( s );
+        return  isValid( s, graph, toleranceAbs );
+    }
+    catch ( std::exception& e ){
+        return Validity::invalid( e.what() ); // surface has inconsistent orientation
+    }
 }
 
 const Validity isValid( const Solid & solid, const double & toleranceAbs )
