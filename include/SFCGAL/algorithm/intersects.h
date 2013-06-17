@@ -26,12 +26,15 @@
 namespace SFCGAL {
 	class Geometry;
 	class LineString;
+    class PolyhedralSurface;
+    class TriangulatedSurface; 
 	namespace detail {
 		template <int Dim> class GeometrySet;
 		template <int Dim> class PrimitiveHandle;
 	}
 
 	namespace algorithm {
+    class SurfaceGraph;
 
 	/**
 	 * Robust intersection test on 2D geometries. Force projection to z=0 if needed
@@ -65,14 +68,38 @@ namespace SFCGAL {
 	 * Self intersection test for 2D LineString (false if only endpoint touch)
 	 * @ingroup detail
 	 */
-    bool selfIntersects(const LineString & l);
+    bool selfIntersects(const LineString& l);
 
 	/**
 	 * Self intersection test for 3D LineString (false if only endpoints touch)
 	 * @ingroup detail
 	 */
-    bool selfIntersects3D(const LineString & l);
-    }
-}
+    bool selfIntersects3D(const LineString& l);
 
+	/**
+	 * Self intersection test for 2D PolyhedralSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const PolyhedralSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 3D PolyhedralSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+
+    bool selfIntersects3D(const PolyhedralSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 2D TriangulatedSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const TriangulatedSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 3D TriangulatedSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects3D(const TriangulatedSurface& s, const SurfaceGraph& g);
+}
+}
 #endif

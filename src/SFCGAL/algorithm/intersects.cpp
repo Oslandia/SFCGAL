@@ -23,6 +23,8 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/intersection.h>
+#include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
@@ -30,6 +32,8 @@
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/LineString.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/PolyhedralSurface.h>
 
 #include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
@@ -445,5 +449,89 @@ namespace algorithm
     {
         return selfIntersectsImpl<3>( l );
     }
+
+
+    template< int Dim >
+    bool selfIntersectsImpl(const PolyhedralSurface& s, const SurfaceGraph& graph)
+    {
+        size_t numPolygons = s.numPolygons();
+        for ( size_t pi=0; pi != numPolygons; ++pi ) {
+            for ( size_t pj=pi+1; pj < numPolygons; ++pj ) {
+                std::auto_ptr< Geometry > inter = Dim == 3 
+                    ? intersection3D(s.polygonN(pi), s.polygonN(pj)) 
+                    : intersection(s.polygonN(pi), s.polygonN(pj)) ;
+                if ( !inter->isEmpty() ) {
+                    // two cases: 
+                    // - neighbors can have a line as intersection
+                    // - non neighbors can only have a point or a set of points
+                    typedef SurfaceGraph::FaceGraph::adjacency_iterator Iterator;
+                    std::pair< Iterator, Iterator > neighbors = boost::adjacent_vertices( pi, graph.faceGraph() );
+                    if ( neighbors.second != std::find(neighbors.first, neighbors.second, pj ) ) {
+                        // neighbor
+                        //std::cerr << pi << " " << pj << " neighbor\n";
+                        if ( !inter->is< LineString >() ) return true;
+                    }
+                    else {
+                        // not a neighbor
+                        //std::cerr << pi << " " << pj << " not neighbor\n";
+                        if ( inter->dimension() != 0 ) return true;
+                    }
+                } 
+            }
+        }
+        return false;
+    }
+
+    bool selfIntersects(const PolyhedralSurface& s, const SurfaceGraph& g) 
+    {
+        return selfIntersectsImpl<2>( s, g );
+    }
+
+    bool selfIntersects3D(const PolyhedralSurface& s, const SurfaceGraph& g)
+    {
+        return selfIntersectsImpl<3>( s, g );
+    }
+
+    template< int Dim >
+    bool selfIntersectsImpl(const TriangulatedSurface& tin, const SurfaceGraph& graph)
+    {
+        size_t numTriangles = tin.numTriangles();
+        for ( size_t ti=0; ti != numTriangles; ++ti ) {
+            for ( size_t tj=ti+1; tj < numTriangles; ++tj ) {
+                std::auto_ptr< Geometry > inter = Dim == 3 
+                    ? intersection3D(tin.triangleN(ti), tin.triangleN(tj)) 
+                    : intersection(tin.triangleN(ti), tin.triangleN(tj)) ;
+                if ( !inter->isEmpty() ) {
+                    // two cases: 
+                    // - neighbors can have a line as intersection
+                    // - non neighbors can only have a point or a set of points
+                    typedef SurfaceGraph::FaceGraph::adjacency_iterator Iterator;
+                    std::pair< Iterator, Iterator > neighbors = boost::adjacent_vertices( ti, graph.faceGraph() );
+                    if ( neighbors.second != std::find(neighbors.first, neighbors.second, tj ) ) {
+                        // neighbor
+                        //std::cerr << ti << " " << tj << " neighbor\n";
+                        if ( !inter->is< LineString >() ) return true;
+                    }
+                    else {
+                        // not a neighbor
+                        //std::cerr << ti << " " << tj << " not neighbor\n";
+                        if ( inter->dimension() != 0 ) return true;
+                    }
+                } 
+            }
+        }
+        return false;
+    }
+
+    bool selfIntersects(const TriangulatedSurface& tin, const SurfaceGraph& g) 
+    {
+        return selfIntersectsImpl<2>( tin, g );
+    }
+
+    bool selfIntersects3D(const TriangulatedSurface& tin, const SurfaceGraph& g)
+    {
+        return selfIntersectsImpl<3>( tin, g );
+    }
+
 }
 }

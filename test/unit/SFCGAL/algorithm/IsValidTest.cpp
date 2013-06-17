@@ -155,14 +155,14 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         // valid
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,1.0 1.0,-1.0 1.0)))", true, ""},
         // invalid
-        {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,1.0 1.0)))", false, "second triangle is invalid"},
+        {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,-1.0 1.0)))", false, "second triangle is invalid"},
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((1.0 -1.0,-1.0 1.0,1.0 1.0,1.0 -1.0)))", false, "inconsitent orientation"},
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((0.0 1.0,2.0 -1.0,2.0 1.0,0.0 1.0)))", false, "not connected"},
     // TIN3D
         // valid
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0)))", true, ""},
         // invalid
-        {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 1.0 1.0)))", false, "second triangle is invalid"},
+        {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 -1.0 1.0)))", false, "second triangle is invalid"},
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", false, "inconsitent orientation"},
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 0.0 1.0,1.0 2.0 -1.0,1.0 2.0 1.0,1.0 0.0 1.0)))", false, "not connected"},
         {"TIN(((0.0 0.0 0.0,1.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 1.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 0.0 1.0,0.5 0.1 -0.1,0.0 0.0 0.0)))", false, "self intersect"},
@@ -171,6 +171,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     for (std::size_t t=0; t<nbOfTest; t++)
     {
         const TestGeometry & tg = testGeometry[t];
+        //std::cerr << t << ":" << tg._wkt << "\n";
         std::auto_ptr< Geometry > g( io::readWkt(tg._wkt) );
         if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("/tmp/geom_%d.vtk") % t).str() );
         Validity v = algorithm::isValid( *g );
