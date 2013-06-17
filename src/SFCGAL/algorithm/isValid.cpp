@@ -199,7 +199,7 @@ const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurface
     }
     if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection and consistant orientation missing)"));
     return Validity::valid();
 }
 
@@ -220,7 +220,7 @@ const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGrap
     }
     if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
+    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection and consistant orientatioin missing)"));
     return Validity::valid();
 }
 

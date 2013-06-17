@@ -150,6 +150,7 @@ endif()
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h )
 
+enable_testing()
 
 #note : not available on windows without export/import
 OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
