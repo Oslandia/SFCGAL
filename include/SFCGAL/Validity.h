@@ -36,8 +36,8 @@ struct Validity {
     operator bool() const {return _valid;}
     const std::string & reason() const {return _reason;}
 private:
-    const bool _valid;
-    const std::string _reason;
+    bool _valid; // not const to allow default copy
+    std::string _reason;
     /** 
      * @brief default ctor for valid
      */

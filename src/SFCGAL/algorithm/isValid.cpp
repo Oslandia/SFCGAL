@@ -24,6 +24,7 @@
 #include <SFCGAL/algorithm/length.h>
 #include <SFCGAL/algorithm/orientation.h>
 #include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/distance3d.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/detail/algorithm/coversPoints.h>
@@ -60,7 +61,10 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
         if ( r->numPoints() < 4 ) {
             return Validity::invalid("not enought points in Polygon ring");
         }
-        if ( distancePointPoint( r->startPoint(), r->endPoint() ) > toleranceAbs ) {
+        const double distanceToClose = p.is3D() 
+              ? distancePointPoint3D( r->startPoint(), r->endPoint() ) 
+              : distancePointPoint( r->startPoint(), r->endPoint() ) ;
+        if ( distanceToClose > toleranceAbs ) {
             return Validity::invalid("ring is not closed");
         }
         if ( p.is3D() ? selfIntersects3D( *r ) : selfIntersects( *r ) ) {
@@ -175,7 +179,30 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
                 );
     }
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (intersection and adjacency missing)"));
+    for (size_t pi = 0; pi != numPolygons; ++pi ) {
+        for (size_t pj = pi+1; pj < numPolygons; ++pj ) {
+            std::auto_ptr< Geometry > inter = mp.is3D() 
+                ? intersection3D( mp.polygonN(pi), mp.polygonN(pj) ) 
+                : intersection( mp.polygonN(pi), mp.polygonN(pj) ) ;
+            // intersection can be empty, a point, or a set of points
+            if ( !inter->isEmpty() && !inter->is< Point >() ) {
+               if ( inter->is< GeometryCollection >() ) {
+                   const GeometryCollection & collection = inter->as< GeometryCollection >() ;
+                   const GeometryCollection::const_iterator end = collection.end() ;
+                   for ( GeometryCollection::const_iterator elem = collection.begin(); elem != end; ++elem ) {
+                       if ( !elem->is< Point >() ) return Validity::invalid( 
+                               (boost::format("intersection between Polygon %d and %d") % pi % pj ).str() 
+                               );
+                   }
+               }
+               else return Validity::invalid( 
+                               (boost::format("intersection between Polygon %d and %d is %s") % pi % pj % inter->geometryType() ).str() 
+                               );
+
+            } 
+        }
+    }
+
     return Validity::valid();
 }
 
@@ -211,13 +238,8 @@ const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurface
 const Validity isValid( const TriangulatedSurface & tin, const double & toleranceAbs )
 {
     BOOST_ASSERT( !tin.isEmpty() );
-    try {
-        const PolyHedralSurfaceGraph graph( tin );
-        return  isValid( tin, graph, toleranceAbs );
-    }
-    catch ( std::exception& e ){
-        return Validity::invalid( e.what() ); // surface has inconsistent orientation
-    }
+    const PolyHedralSurfaceGraph graph( tin );
+    return graph.isValid() ? isValid( tin, graph, toleranceAbs ) : graph.isValid() ;
 }
 
 const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
@@ -239,13 +261,8 @@ const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGrap
 const Validity isValid( const PolyhedralSurface & s, const double & toleranceAbs )
 {
     BOOST_ASSERT( !s.isEmpty() );
-    try {
-        const PolyHedralSurfaceGraph graph( s );
-        return  isValid( s, graph, toleranceAbs );
-    }
-    catch ( std::exception& e ){
-        return Validity::invalid( e.what() ); // surface has inconsistent orientation
-    }
+    const PolyHedralSurfaceGraph graph( s );
+    return graph.isValid() ? isValid( s, graph, toleranceAbs ) : graph.isValid() ;
 }
 
 const Validity isValid( const Solid & solid, const double & toleranceAbs )

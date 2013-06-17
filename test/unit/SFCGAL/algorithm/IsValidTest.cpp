@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         std::auto_ptr< Geometry > g( io::readWkt(tg._wkt) );
         if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("/tmp/geom_%d.vtk") % t).str() );
         Validity v = algorithm::isValid( *g );
-        BOOST_CHECK_MESSAGE( v == tg._valid, ( boost::format("%d:%s should be %s (%s), reason: %s") % t % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment % v.reason() ) );
+        BOOST_CHECK_MESSAGE( v == tg._valid, ( boost::format("%d:%s should be %s (%s)%s%s") % t % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment % (v?".":", reason: ") % v.reason() ) );
     }
 
 }

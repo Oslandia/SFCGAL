@@ -22,6 +22,7 @@
 #define _SFCGAL_GRAPH_ISCONNECTED_H_
 
 #include <SFCGAL/all.h>
+#include <SFCGAL/Validity.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <map>
@@ -62,14 +63,16 @@ public:
 
     const EdgeMap & edgeMap() const { return _edgeMap ; }
     const FaceGraph & faceGraph() const { return _graph ; }
-    const CoordinateMap & coordMap() const {return _coordinateMap ; }
-
+    const CoordinateMap & coordMap() const { return _coordinateMap ; }
+    const Validity isValid() const { return _isValid ; }
 
 private:
     CoordinateMap _coordinateMap ;
     EdgeMap _edgeMap ;
     FaceGraph _graph ;
-    VertexIndex _numVertices;
+    VertexIndex _numVertices ;
+    
+   Validity _isValid ;
 
     void addRing( const LineString & ring, FaceIndex faceIndex); // helper for ctor
 };
@@ -90,9 +93,9 @@ void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceInd
             const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
             const EdgeMap::const_iterator foundEdgeWithBadOrientation = _edgeMap.find( edge ); 
             if ( foundEdgeWithBadOrientation != _edgeMap.end() ) {
-                BOOST_THROW_EXCEPTION( Exception (
-                    ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d (%d-%d) of polygon %d") % s % edge.first % edge.second % faceIndex ).str() 
-                ));
+                _isValid = Validity::invalid(
+                        ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d (%d-%d) of polygon %d") % s % edge.first % edge.second % faceIndex ).str() 
+                        );
             }
             const std::pair< VertexIndex, VertexIndex > reversedEdge( endIndex, startIndex );
             const EdgeMap::iterator foundEdge = _edgeMap.find( reversedEdge ); 
@@ -136,7 +139,8 @@ void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceInd
 
 inline
 PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const PolyhedralSurface & surf ) :
-    _numVertices(0)
+    _numVertices(0),
+    _isValid( Validity::valid() )
 {
     const size_t numPolygons = surf.numPolygons() ;
     for ( size_t p = 0; p != numPolygons; ++p ) { // for each polygon
@@ -149,7 +153,8 @@ PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const PolyhedralSurface & surf )
 }
 
 PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const TriangulatedSurface & tin ) :
-    _numVertices(0)
+    _numVertices(0),
+    _isValid( Validity::valid() )
 {
     const size_t numTriangles = tin.numTriangles() ;
     for ( size_t t = 0; t != numTriangles; ++t ) { // for each polygon
