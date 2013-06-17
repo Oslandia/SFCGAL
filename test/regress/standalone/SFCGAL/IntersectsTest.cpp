@@ -29,8 +29,6 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
 
-
-
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
@@ -75,62 +73,12 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_IntersectsTest )
 //}
 
 
-
-/**
- * Perform tests in test/regress/data/IntersectsTest.txt
- */
-BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
-{
-	//logger().setLogLevel( Logger::Debug );
-
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/IntersectsTest.txt" ;
-
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
-
-	int numLine = 0 ;
-	std::string line;
-	while ( std::getline( ifs, line ) ){
-		numLine++;
-		if ( line[0] == '#' || line.empty() )
-			continue ;
-
-		BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
-
-		std::istringstream iss(line);
-
-		std::string distanceDimension ;
-		std::string wktGA, wktGB ;
-		std::string trueOrFalse ;
-
-		std::getline( iss, distanceDimension, '|' ) ;
-		std::getline( iss, wktGA, '|' ) ;
-		std::getline( iss, wktGB, '|' ) ;
-		std::getline( iss, trueOrFalse, '|' ) ;
-
-		bool expected = ( trueOrFalse == "true" ) ? true : false ;
-
-		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
-		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
-
-		if ( distanceDimension == "2" ){
-			BOOST_CHECK_MESSAGE( algorithm::intersects(*gA,*gB) == expected, numLine << ": intersects(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-		}else if ( distanceDimension == "3" ){
-			bool got = algorithm::intersects3D(*gA,*gB);
-			BOOST_CHECK_MESSAGE( got == expected, numLine << ": intersects3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-		}else{
-			BOOST_CHECK(false);
-		}
-	}
-}
-
 //
 // Test limit case
 BOOST_AUTO_TEST_CASE( testLimitsIntersects )
 {
     std::string filename( SFCGAL_TEST_DIRECTORY );
-    filename += "/regress/data/countries.wkt" ;
+    filename += "/data/countries.wkt" ;
     
     std::ifstream ifs( filename.c_str() );
     BOOST_REQUIRE( ifs.good() ) ;
