@@ -147,11 +147,13 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
 
 const Validity isValid( const Triangle & t, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !t.isEmpty() );
     return isValid( t.toPolygon(), toleranceAbs );
 }
 
 const Validity isValid( const MultiLineString & ml, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !ml.isEmpty() );
     const size_t numLineString = ml.numGeometries();
     for (size_t l = 0; l != numLineString; ++l ) {
         Validity v = isValid( ml.lineStringN(l), toleranceAbs );
@@ -164,6 +166,7 @@ const Validity isValid( const MultiLineString & ml, const double & toleranceAbs 
 
 const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !mp.isEmpty() );
     const size_t numPolygons = mp.numGeometries();
     for (size_t p = 0; p != numPolygons; ++p ) {
         Validity v = isValid( mp.polygonN(p), toleranceAbs );
@@ -178,6 +181,7 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
 
 const Validity isValid( const GeometryCollection & gc, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !gc.isEmpty() );
     const size_t numGeom = gc.numGeometries();
     for (size_t g = 0; g != numGeom; ++g ) {
         Validity v = isValid( gc.geometryN(g), toleranceAbs );
@@ -190,6 +194,7 @@ const Validity isValid( const GeometryCollection & gc, const double & toleranceA
 
 const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !tin.isEmpty() );
     size_t numTriangles = tin.numTriangles();
     for ( size_t t=0; t != numTriangles; ++t ) {
         Validity v = isValid( tin.triangleN(t), toleranceAbs );
@@ -205,12 +210,14 @@ const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurface
 
 const Validity isValid( const TriangulatedSurface & tin, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !tin.isEmpty() );
     const PolyHedralSurfaceGraph graph( tin );
     return  isValid( tin, graph, toleranceAbs );
 }
 
 const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !s.isEmpty() );
     size_t numPolygons = s.numPolygons();
     for ( size_t p=0; p != numPolygons; ++p ) {
         Validity v = isValid( s.polygonN(p), toleranceAbs );
@@ -226,12 +233,14 @@ const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGrap
 
 const Validity isValid( const PolyhedralSurface & s, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !s.isEmpty() );
     const PolyHedralSurfaceGraph graph( s );
     return  isValid( s, graph, toleranceAbs );
 }
 
 const Validity isValid( const Solid & solid, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !solid.isEmpty() );
     const size_t numShells = solid.numShells();
     for ( size_t s = 0; s != numShells; ++s ) {
         const PolyHedralSurfaceGraph graph( solid.shellN(s) );
@@ -249,6 +258,7 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
 
 const Validity isValid( const MultiSolid & ms, const double & toleranceAbs )
 {
+    BOOST_ASSERT( !ms.isEmpty() );
     const size_t numMultiSolid = ms.numGeometries();
     for (size_t s = 0; s != numMultiSolid; ++s ) {
         Validity v = isValid( ms.solidN(s), toleranceAbs );

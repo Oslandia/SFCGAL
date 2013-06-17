@@ -69,79 +69,90 @@ private:
     CoordinateMap _coordinateMap ;
     EdgeMap _edgeMap ;
     FaceGraph _graph ;
+    VertexIndex _numVertices;
 
+    void addRing( const LineString & ring, FaceIndex faceIndex); // helper for ctor
 };
 
 inline
-PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const PolyhedralSurface & surf )
+void PolyHedralSurfaceGraph::addRing( const LineString & ring, FaceIndex faceIndex) {
+    const size_t numSegments = ring.numSegments() ;
+    for ( size_t s = 0; s != numSegments; ++s ){ // for each segment
+        const Coordinate startCoord = ring.pointN( s ).coordinate() ;
+        const Coordinate endCoord = ring.pointN( ( s + 1 ) % numSegments ).coordinate() ; // possible optimization: store the index of ring start point instead of finding it
+        const CoordinateMap::const_iterator startFound = _coordinateMap.find( startCoord ) ;
+        const CoordinateMap::const_iterator endFound = _coordinateMap.find( endCoord ) ;
+        BOOST_ASSERT_MSG( s + 1 != numSegments || endFound != _coordinateMap.end(), "ring not closed" );
+        if ( startFound != _coordinateMap.end() && endFound != _coordinateMap.end() ) {
+            // found both end, we look for the edge
+            const VertexIndex startIndex = startFound->second ;
+            const VertexIndex endIndex = endFound->second ;
+            const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
+            const EdgeMap::const_iterator foundEdgeWithBadOrientation = _edgeMap.find( edge ); 
+            if ( foundEdgeWithBadOrientation != _edgeMap.end() ) {
+                BOOST_THROW_EXCEPTION( Exception (
+                    ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d of polygon %d") % s % faceIndex ).str() 
+                ));
+            }
+            const std::pair< VertexIndex, VertexIndex > reversedEdge( endIndex, startIndex );
+            const EdgeMap::iterator foundEdge = _edgeMap.find( reversedEdge ); 
+            if ( foundEdge != _edgeMap.end() ) {
+                // edit edge
+                foundEdge->second.second = faceIndex;
+                // we have two faces connected, this is an edge of the graph
+                boost::add_edge( foundEdge->second.first, foundEdge->second.second, _graph );
+            }
+            else {
+                // create edge
+                _edgeMap.insert( std::make_pair( edge, std::make_pair( faceIndex, INVALID_INDEX ) ) );
+            }
+        }
+        else {
+            // one end at least is missing, create the edge
+            VertexIndex startIndex ;
+            if ( startFound == _coordinateMap.end() ) {
+                _coordinateMap.insert( std::make_pair( startCoord, _numVertices) ) ;
+                startIndex = _numVertices;
+                ++_numVertices ;
+            }
+            else startIndex = startFound->second;
+
+            VertexIndex endIndex ;
+            if ( endFound == _coordinateMap.end() ) {
+                _coordinateMap.insert( std::make_pair( endCoord, _numVertices) ) ;
+                endIndex = _numVertices;
+                ++_numVertices ;
+            }
+            else endIndex = endFound-> second;
+
+            const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
+            _edgeMap.insert( std::make_pair( edge, std::make_pair( faceIndex, INVALID_INDEX ) ) );
+        }
+    }
+}
+
+inline
+PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const PolyhedralSurface & surf ) :
+    _numVertices(0)
 {
-    VertexIndex numVertices = 0 ;
     const size_t numPolygons = surf.numPolygons() ;
     for ( size_t p = 0; p != numPolygons; ++p ) { // for each polygon
         const Polygon & polygon = surf.polygonN(p) ;
         const size_t numRings = polygon.numRings() ;
         for ( size_t r = 0; r != numRings; ++r ){ // for each ring
-            const LineString & ring = polygon.ringN(r) ;
-            const size_t numSegments = ring.numSegments() ;
-            for ( size_t s = 0; s != numSegments; ++s ){ // for each segment
-                const Coordinate startCoord = ring.pointN( s ).coordinate() ;
-                const Coordinate endCoord = ring.pointN( ( s + 1 ) % numSegments ).coordinate() ; // possible optimization: store the index of ring start point instead of finding it
-                const CoordinateMap::const_iterator startFound = _coordinateMap.find( startCoord ) ;
-                const CoordinateMap::const_iterator endFound = _coordinateMap.find( endCoord ) ;
-                BOOST_ASSERT_MSG( s + 1 != numSegments || endFound != _coordinateMap.end(), "ring not closed" );
-                if ( startFound != _coordinateMap.end() && endFound != _coordinateMap.end() ) {
-                    // found both end, we look for the edge
-                    const VertexIndex startIndex = startFound->second ;
-                    const VertexIndex endIndex = endFound->second ;
-                    const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
-                    const EdgeMap::const_iterator foundEdgeWithBadOrientation = _edgeMap.find( edge ); 
-                    if ( foundEdgeWithBadOrientation != _edgeMap.end() ) {
-                        BOOST_THROW_EXCEPTION( Exception (
-                            ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d of ring %d of polygon %d") % s % r % p ).str() 
-                        ));
-                    }
-                    const std::pair< VertexIndex, VertexIndex > reversedEdge( endIndex, startIndex );
-                    const EdgeMap::iterator foundEdge = _edgeMap.find( reversedEdge ); 
-                    if ( foundEdge != _edgeMap.end() ) {
-                        // edit edge
-                        foundEdge->second.second = p;
-                        // we have two faces connected, this is an edge of the graph
-                        boost::add_edge( foundEdge->second.first, foundEdge->second.second, _graph );
-                    }
-                    else {
-                        // create edge
-                        _edgeMap.insert( std::make_pair( edge, std::make_pair( p, INVALID_INDEX ) ) );
-                    }
-                }
-                else {
-                    // one end at least is missing, create the edge
-                    VertexIndex startIndex ;
-                    if ( startFound == _coordinateMap.end() ) {
-                        _coordinateMap.insert( std::make_pair( startCoord, numVertices) ) ;
-                        startIndex = numVertices;
-                        ++numVertices ;
-                    }
-                    else startIndex = startFound->second;
-
-                    VertexIndex endIndex ;
-                    if ( endFound == _coordinateMap.end() ) {
-                        _coordinateMap.insert( std::make_pair( endCoord, numVertices) ) ;
-                        endIndex = numVertices;
-                        ++numVertices ;
-                    }
-                    else endIndex = endFound-> second;
-
-                    const std::pair< VertexIndex, VertexIndex > edge( startIndex, endIndex );
-                    _edgeMap.insert( std::make_pair( edge, std::make_pair( p, INVALID_INDEX ) ) );
-                }
-            }
+            addRing( polygon.ringN(r), p );
         }
     }
 }
 
-PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const TriangulatedSurface & tin )
+PolyHedralSurfaceGraph::PolyHedralSurfaceGraph( const TriangulatedSurface & tin ) :
+    _numVertices(0)
 {
-    BOOST_THROW_EXCEPTION(Exception("function is not implemented"));
+    const size_t numTriangles = tin.numTriangles() ;
+    for ( size_t t = 0; t != numTriangles; ++t ) { // for each polygon
+        const Triangle & triangle = tin.triangleN(t) ;
+        addRing( triangle.toPolygon().exteriorRing(), t );
+    }
 }
 
 /**
