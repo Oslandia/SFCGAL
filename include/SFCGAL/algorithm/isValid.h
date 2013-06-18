@@ -37,15 +37,17 @@ namespace algorithm {
  * Macro used to by-pass validity check
  */
 #ifndef SFCGAL_NEVER_CHECK_VALIDITY
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)                                                                \
-   {                                                                                                        \
-       const SFCGAL::Validity sfcgalAssertGeometryVal = SFCGAL::algorithm::isValid(g);           \
-       if ( !sfcgalAssertGeometryVal ) {                                                                    \
-           BOOST_THROW_EXCEPTION(Exception(                                                                 \
-              ( boost::format("%s is invalid : %s") % g.asText() % sfcgalAssertGeometryVal.reason() ).str() \
-           ));                                                                                              \
-       }                                                                                                    \
-   }
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)\
+{\
+   const SFCGAL::Validity sfcgalAssertGeometryVal = SFCGAL::algorithm::isValid(g);\
+   if ( !sfcgalAssertGeometryVal ) {\
+       BOOST_THROW_EXCEPTION(Exception(\
+          ( boost::format("%s is invalid : %s. %s")\
+              % g.geometryType() % sfcgalAssertGeometryVal.reason() % g.asText()\
+          ).str()\
+       ));\
+   }\
+}
 #else
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)
 #endif
