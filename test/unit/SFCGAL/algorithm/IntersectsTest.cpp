@@ -75,13 +75,23 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
 		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
-		if ( distanceDimension == "2" ){
-			BOOST_CHECK_MESSAGE( algorithm::intersects(*gA,*gB) == expected, numLine << ": intersects(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-		}else if ( distanceDimension == "3" ){
-			bool got = algorithm::intersects3D(*gA,*gB);
-			BOOST_CHECK_MESSAGE( got == expected, numLine << ": intersects3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-		}else{
-			BOOST_CHECK(false);
+		try {
+			if ( distanceDimension == "2" ){
+				BOOST_CHECK_MESSAGE( algorithm::intersects(*gA,*gB) == expected, numLine << ": intersects(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+				// test symmetric call
+				BOOST_CHECK_MESSAGE( algorithm::intersects(*gB,*gA) == expected, numLine << ": intersects(" << gB->asText() << ", " << gA->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+			}else if ( distanceDimension == "3" ){
+				bool got = algorithm::intersects3D(*gA,*gB);
+				BOOST_CHECK_MESSAGE( got == expected, numLine << ": intersects3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+				// test symmetric call
+				got = algorithm::intersects3D(*gB,*gA);
+				BOOST_CHECK_MESSAGE( got == expected, numLine << ": intersects3D(" << gB->asText() << ", " << gA->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
+			}else{
+				BOOST_CHECK(false);
+			}
+		}
+		catch ( std::exception& e ) {
+			BOOST_CHECK_MESSAGE( false, numLine << ": " << e.what() );
 		}
 	}
 }
