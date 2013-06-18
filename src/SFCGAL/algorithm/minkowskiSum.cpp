@@ -234,8 +234,8 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_s
 ///
 std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB )
 {
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( gA );
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( gB );
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gA );
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gB );
 
 	Polygon_set_2 polygonSet ;
 	minkowskiSum( gA, gB.toPolygon_2(), polygonSet ) ;

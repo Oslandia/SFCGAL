@@ -34,6 +34,18 @@ namespace algorithm {
     const Validity isValid( const Geometry & g, const double & toleranceAbs= 1e-9 );
 
     /**
+     * Asserts the validity of a given Geometry considered as 2D. If the Geometry is invalid, throws
+     * @ingroup public_api
+     */
+    void checkValidity2D( const Geometry& g );
+
+    /**
+     * Asserts the validity of a given Geometry considered as 3D. If the Geometry is invalid, throws
+     * @ingroup public_api
+     */
+    void checkValidity3D( const Geometry& g );
+
+    /**
      * Asserts the validity of a given Geometry. If the Geometry is invalid, throws
      * @ingroup public_api
      */
@@ -44,8 +56,12 @@ namespace algorithm {
  */
 #ifndef SFCGAL_NEVER_CHECK_VALIDITY
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) SFCGAL::algorithm::checkValidity(g)
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) SFCGAL::algorithm::checkValidity2D(g)
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g) SFCGAL::algorithm::checkValidity3D(g)
 #else
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g)
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g)
 #endif
 
 }//algorithm
