@@ -185,20 +185,10 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
                 ? intersection3D( mp.polygonN(pi), mp.polygonN(pj) ) 
                 : intersection( mp.polygonN(pi), mp.polygonN(pj) ) ;
             // intersection can be empty, a point, or a set of points
-            if ( !inter->isEmpty() && !inter->is< Point >() ) {
-               if ( inter->is< GeometryCollection >() ) {
-                   const GeometryCollection & collection = inter->as< GeometryCollection >() ;
-                   const GeometryCollection::const_iterator end = collection.end() ;
-                   for ( GeometryCollection::const_iterator elem = collection.begin(); elem != end; ++elem ) {
-                       if ( !elem->is< Point >() ) return Validity::invalid( 
+            if ( !inter->isEmpty() && inter->dimension() != 0 ) {
+                   return Validity::invalid( 
                                (boost::format("intersection between Polygon %d and %d") % pi % pj ).str() 
                                );
-                   }
-               }
-               else return Validity::invalid( 
-                               (boost::format("intersection between Polygon %d and %d is %s") % pi % pj % inter->geometryType() ).str() 
-                               );
-
             } 
         }
     }
@@ -219,7 +209,7 @@ const Validity isValid( const GeometryCollection & gc, const double & toleranceA
     return Validity::valid();
 }
 
-const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
+const Validity isValid( const TriangulatedSurface & tin, const SurfaceGraph & graph, const double & toleranceAbs )
 {
     BOOST_ASSERT( !tin.isEmpty() );
     size_t numTriangles = tin.numTriangles();
@@ -229,20 +219,20 @@ const Validity isValid( const TriangulatedSurface & tin, const PolyHedralSurface
                 ( boost::format( "Triangle %d in TriangulatedSurface is invalid: %s" ) % t % v.reason() ).str() 
                 );
     }
-    if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
+    if ( !isConnected( graph ) ) return Validity::invalid( "TriangulatedSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
+    if ( tin.is3D() ? selfIntersects3D( tin, graph ) : selfIntersects( tin, graph ) ) return Validity::invalid( "TriangulatedSurface self intersects" );
     return Validity::valid();
 }
 
 const Validity isValid( const TriangulatedSurface & tin, const double & toleranceAbs )
 {
     BOOST_ASSERT( !tin.isEmpty() );
-    const PolyHedralSurfaceGraph graph( tin );
+    const SurfaceGraph graph( tin );
     return graph.isValid() ? isValid( tin, graph, toleranceAbs ) : graph.isValid() ;
 }
 
-const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGraph & graph, const double & toleranceAbs )
+const Validity isValid( const PolyhedralSurface & s, const SurfaceGraph & graph, const double & toleranceAbs )
 {
     BOOST_ASSERT( !s.isEmpty() );
     size_t numPolygons = s.numPolygons();
@@ -254,14 +244,14 @@ const Validity isValid( const PolyhedralSurface & s, const PolyHedralSurfaceGrap
     }
     if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (self intersection missing)"));
+    if ( s.is3D() ? selfIntersects3D( s, graph ) : selfIntersects( s, graph ) ) return Validity::invalid( "PolyhedralSurface self intersects" );
     return Validity::valid();
 }
 
 const Validity isValid( const PolyhedralSurface & s, const double & toleranceAbs )
 {
     BOOST_ASSERT( !s.isEmpty() );
-    const PolyHedralSurfaceGraph graph( s );
+    const SurfaceGraph graph( s );
     return graph.isValid() ? isValid( s, graph, toleranceAbs ) : graph.isValid() ;
 }
 
@@ -270,7 +260,7 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
     BOOST_ASSERT( !solid.isEmpty() );
     const size_t numShells = solid.numShells();
     for ( size_t s = 0; s != numShells; ++s ) {
-        const PolyHedralSurfaceGraph graph( solid.shellN(s) );
+        const SurfaceGraph graph( solid.shellN(s) );
         Validity v = isValid( solid.shellN(s), graph, toleranceAbs );
         if (!v) return Validity::invalid( 
                 ( boost::format( "PolyhedralSurface (shell) %d in Solid is invalid: %s" ) % s % v.reason() ).str() 
@@ -279,7 +269,11 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
                 ( boost::format( "PolyhedralSurface (shell) %d in Solid is not closed" ) % s ).str() 
                 );
     }
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of shells missing"));
+    
+    if ( solid.numInteriorShells() ) {
+        BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of interior shells missing"));
+    }
+
     return Validity::valid();
 }
 

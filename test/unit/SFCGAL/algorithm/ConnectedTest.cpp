@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( allFine )
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
                                    ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
 
-    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
     BOOST_CHECK_MESSAGE( isClosed( graph ) , "not closed" );
 }
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( notConnected )
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
                                    ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
 
-    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( !isConnected( graph ) , "connected" );
     BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
 }
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( notClosed )
                                    ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)))") );
 
-    PolyHedralSurfaceGraph graph( geom->as< PolyhedralSurface >() );
+    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
     BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
 
