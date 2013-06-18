@@ -62,4 +62,39 @@ void vtk( const Polygon & poly, const std::string & file)
         << polyStr.str();
 }
 
+inline
+void vtk( const MultiPolygon & multiPoly, const std::string & file)
+{
+    std::stringstream pointStr;
+    std::stringstream polyStr;
+    size_t numPoints=0;
+    size_t numRings=0;
+    size_t numData=0;
+    for ( size_t i=0; i!=multiPoly.numGeometries(); ++i) {
+        const Polygon& poly = multiPoly.polygonN(i);
+        for ( size_t r=0; r!=poly.numRings(); ++r ) {
+            polyStr << poly.ringN(r).numPoints();
+            for ( size_t p=0; p!=poly.ringN(r).numPoints(); ++p ) {
+                pointStr << poly.ringN(r).pointN(p).x() << " " << poly.ringN(r).pointN(p).y() << " " << poly.ringN(r).pointN(p).z() << "\n";
+                polyStr << " " << numPoints;
+                ++numPoints;
+                ++numData;
+            }
+            ++numData;
+            ++numRings;
+            polyStr << "\n";
+        }
+    }
+    std::ofstream out(file.c_str());
+    out << "# vtk DataFile Version 1.0\n"
+        << "Polygon output\n"
+        << "ASCII\n"
+        << "\n"
+        << "DATASET POLYDATA\n"
+        << "POINTS " << numPoints << " float\n"
+        << pointStr.str()
+        << "POLYGONS " << numRings << " " << numData << "\n"
+        << polyStr.str();
+}
+
 #endif

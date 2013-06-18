@@ -22,7 +22,6 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/io/vtk.h>
 #include <SFCGAL/algorithm/isValid.h>
 
 using namespace boost::unit_test ;
@@ -221,7 +220,6 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         const TestGeometry & tg = testGeometry[t];
         //std::cerr << t << ":" << tg._wkt << "\n";
         std::auto_ptr< Geometry > g( io::readWkt(tg._wkt) );
-        if ( g->is< Polygon >() ) vtk( g->as< Polygon >(), (boost::format("/tmp/geom_%d.vtk") % t).str() );
         Validity v = algorithm::isValid( *g );
         BOOST_CHECK_MESSAGE( v == tg._valid, ( boost::format("%d:%s should be %s (%s)%s%s") % t % tg._wkt % (tg._valid?"valid":"invalid") % tg._comment % (v?".":", reason: ") % v.reason() ) );
     }

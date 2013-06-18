@@ -114,7 +114,6 @@ bool isConnected( const SurfaceGraph& graph )
 {
     std::vector< SurfaceGraph::FaceIndex > component( boost::num_vertices(graph.faceGraph()) );
     const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
-    std::cerr << __PRETTY_FUNCTION__ << " " << numComponents << "\n";
     return 1 == numComponents;
 }
 

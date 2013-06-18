@@ -74,13 +74,11 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
 
     // Orientation in 2D
     if ( !p.is3D() ) {
-        // Orientation counterclockwise for exterior ring, clockwise for interior
-        if (!isCounterClockWiseOriented( p.exteriorRing() )) {
-            return Validity::invalid("exterior ring is oriented clockwize");
-        }
+        // Opposit orientation for interior and exterior rings
+        const bool extCCWO = isCounterClockWiseOriented( p.exteriorRing() );
         for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
-            if ( isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
-                return Validity::invalid( ( boost::format("interior ring %d is oriented counterclockwize") % r ).str() );
+            if ( extCCWO == isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
+                return Validity::invalid( ( boost::format("exterior rin and interior ring %d have the same orientation") % r ).str() );
             }
         }
     }
