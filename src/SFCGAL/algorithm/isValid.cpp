@@ -269,8 +269,11 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
                 ( boost::format( "PolyhedralSurface (shell) %d in Solid is not closed" ) % s ).str() 
                 );
     }
+    
+    if ( solid.numInteriorShells() ) {
+        BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of interior shells missing"));
+    }
 
-    BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of shells missing"));
     return Validity::valid();
 }
 
