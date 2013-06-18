@@ -386,18 +386,25 @@ namespace algorithm
 		return intersects( gsa, gsb );
 	}
 
-
     template< int Dim >
-    bool selfIntersectsImpl(const LineString & l)
+    bool selfIntersectsImpl(const LineString & line)
     {
-        const size_t numSegments = l.numSegments();
-        if ( numSegments < 2 ) return false; // one segment cannot intersect
 
+        if ( line.numSegments() < 2 ) return false; // one segment cannot intersect
+
+        // note: zero length segments are a pain, to avoid algorithm complexity
+        // we start by filtering them out
+        const size_t numPoints = line.numPoints();
+        LineString l;
+        for ( size_t i = 0; i != numPoints; ++i ) {
+            if ( i==0 || l.endPoint() != line.pointN( i ) ) l.addPoint( line.pointN( i ) );
+        }
+
+        const size_t numSegments = l.numSegments();
         // test any two pairs of segments
         for ( size_t i = 0; i != numSegments; ++i ) {
             // first line segment is point i and i+1
             for ( size_t j = i + 1; j < numSegments; ++j ) {
-                if ( l.pointN( j ) == l.pointN( j + 1 ) ) continue; // jump over zero lengthed segments
                 /** @todo find a way to avoid ugly copy/paste here, toPoint_d< Dim > can be used, 
                  * but I dont know what to do with Kernel::Segment_Dim and Kernel::Point_Dim
                  */
