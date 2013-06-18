@@ -89,6 +89,8 @@ SurfaceGraph::SurfaceGraph( const PolyhedralSurface & surf ) :
 {
     const size_t numPolygons = surf.numPolygons() ;
     for ( size_t p = 0; p != numPolygons; ++p ) { // for each polygon
+        const FaceIndex idx = boost::add_vertex( _graph );
+        BOOST_ASSERT( idx == p );
         const Polygon & polygon = surf.polygonN(p) ;
         const size_t numRings = polygon.numRings() ;
         for ( size_t r = 0; r != numRings; ++r ){ // for each ring
@@ -110,8 +112,9 @@ SurfaceGraph::SurfaceGraph( const TriangulatedSurface & tin ) :
 
 bool isConnected( const SurfaceGraph& graph )
 {
-    std::vector< SurfaceGraph::FaceIndex > component( graph.coordMap().size() );
+    std::vector< SurfaceGraph::FaceIndex > component( boost::num_vertices(graph.faceGraph()) );
     const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
+    std::cerr << __PRETTY_FUNCTION__ << " " << numComponents << "\n";
     return 1 == numComponents;
 }
 

@@ -63,7 +63,7 @@ public:
 
     const EdgeMap & edgeMap() const { return _edgeMap ; }
     const FaceGraph & faceGraph() const { return _graph ; }
-    const CoordinateMap & coordMap() const { return _coordinateMap ; }
+    //const CoordinateMap & coordMap() const { return _coordinateMap ; }
     const Validity isValid() const { return _isValid ; }
 
 private:

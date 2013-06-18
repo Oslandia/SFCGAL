@@ -94,11 +94,11 @@ BOOST_AUTO_TEST_CASE( testExtrudeMultiPolygon )
 	points.push_back( Point(0.0,0.0,0.0) );
 
 	std::vector< Point > points2;
-	points2.push_back( Point(1.0,0.0,0.0) );
 	points2.push_back( Point(2.0,0.0,0.0) );
+	points2.push_back( Point(3.0,0.0,0.0) );
+	points2.push_back( Point(3.0,1.0,0.0) );
 	points2.push_back( Point(2.0,1.0,0.0) );
-	points2.push_back( Point(1.0,1.0,0.0) );
-	points2.push_back( Point(1.0,0.0,0.0) );
+	points2.push_back( Point(2.0,0.0,0.0) );
 
 	LineString exteriorRing( points ) ;
 	LineString exteriorRing2( points2 ) ;
