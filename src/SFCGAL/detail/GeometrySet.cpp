@@ -185,6 +185,8 @@ namespace SFCGAL {
 				for ( size_t i = 0; i < pts->size(); ++i ) {
 					ls.addPoint( (*pts)[i] );
 				}
+				// close the ring
+				ls.addPoint( (*pts)[0] );
 				Polygon poly(ls);
 				_decompose_polygon( poly, _surfaces, dim_t<3>() );
 			}
