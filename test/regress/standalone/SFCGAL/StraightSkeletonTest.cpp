@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_StraightSkeletonTest )
 BOOST_AUTO_TEST_CASE( testStraightSkeletonTest )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/StraightSkeletonTest.txt" ;
+	filename += "/data/StraightSkeletonTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

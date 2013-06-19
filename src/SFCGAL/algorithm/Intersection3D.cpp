@@ -272,7 +272,7 @@ namespace algorithm {
 			else if ( pb.handle.which() == PrimitiveSurface ) {
 				const CGAL::Triangle_3<Kernel> *tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
 				CGAL::Object interObj = CGAL::intersection( *tri1, *tri2 );
-				output.addPrimitive( interObj );
+				output.addPrimitive( interObj, /* pointsAsRing */ true );
 			}
 		}
 		else if ( pa.handle.which() == PrimitiveVolume ) {

@@ -39,13 +39,8 @@ WktWriter::WktWriter( std::ostream & s ):
 
 }
 
-///
-///
-///
-void WktWriter::write( const Geometry& g, bool exact )
+void WktWriter::writeRec( const Geometry& g )
 {
-	_exactWrite = exact;
-
 	switch( g.geometryTypeId() ){
 	case TYPE_POINT:
 		write( g.as< Point >() );
@@ -88,6 +83,15 @@ void WktWriter::write( const Geometry& g, bool exact )
 	std::ostringstream oss;
 	oss << "WktWriter : '" << g.geometryType() << "' is not supported" ;
 	BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
+}
+
+///
+///
+///
+void WktWriter::write( const Geometry& g, bool exact )
+{
+	_exactWrite = exact;
+	writeRec( g );
 }
 
 ///
@@ -224,7 +228,7 @@ void WktWriter::write( const GeometryCollection & g )
 	for ( size_t i = 0 ; i < g.numGeometries(); i++ ){
 		if ( i != 0 )
 			_s << ",";
-		write( g.geometryN(i) );
+		writeRec( g.geometryN(i) );
 	}
 	_s << ")" ;
 }

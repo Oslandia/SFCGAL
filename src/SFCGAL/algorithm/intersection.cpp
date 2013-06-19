@@ -108,8 +108,8 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 	{
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
 		GeometrySet<2> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );
@@ -121,8 +121,8 @@ namespace algorithm
 
 	std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
 	{
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
 
 		GeometrySet<3> gsa( ga ), gsb( gb ), output;
 		algorithm::intersection( gsa, gsb, output );

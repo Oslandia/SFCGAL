@@ -161,28 +161,31 @@ Geometry::Geometry( Geometry const& other )
 /// Since we do not have (yet) a real "equals" operator, we only compare points coordinates
 bool operator == ( const Geometry& ga, const Geometry& gb )
 {
-    detail::GetPointsVisitor get_points_a, get_points_b;
-    ga.accept( get_points_a );
-    gb.accept( get_points_b );
-
-    if ( get_points_a.points.size() != get_points_b.points.size() )
-	return false;
-
-    for ( size_t i = 0; i < get_points_a.points.size(); ++i ) {
-	bool found = false;
-	for ( size_t j = 0; j < get_points_b.points.size(); ++j ) {
-	    const Point& pta = *(get_points_a.points[i]);
-	    const Point& ptb = *(get_points_b.points[j]);
-	    if ( pta == ptb ) {
-		found = true;
-		break;
-	    }
+	if ( ga.geometryTypeId() != gb.geometryTypeId() ) {
+		return false;
 	}
-	if (! found) {
-	    return false;
+	detail::GetPointsVisitor get_points_a, get_points_b;
+	ga.accept( get_points_a );
+	gb.accept( get_points_b );
+	
+	if ( get_points_a.points.size() != get_points_b.points.size() )
+		return false;
+	
+	for ( size_t i = 0; i < get_points_a.points.size(); ++i ) {
+		bool found = false;
+		for ( size_t j = 0; j < get_points_b.points.size(); ++j ) {
+			const Point& pta = *(get_points_a.points[i]);
+			const Point& ptb = *(get_points_b.points[j]);
+			if ( pta == ptb ) {
+				found = true;
+				break;
+			}
+		}
+		if (! found) {
+			return false;
+		}
 	}
-    }
-    return true;
+	return true;
 }
 
 }//SFCGAL

@@ -366,8 +366,8 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
 		GeometrySet<2> gsa( ga );
 		GeometrySet<2> gsb( gb );
@@ -377,8 +377,8 @@ namespace algorithm
 
 	bool intersects3D( const Geometry& ga, const Geometry& gb )
 	{
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
-		SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
 
 		GeometrySet<3> gsa( ga );
 		GeometrySet<3> gsb( gb );

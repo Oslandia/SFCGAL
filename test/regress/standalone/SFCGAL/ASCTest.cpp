@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_ASCTest )
 BOOST_AUTO_TEST_CASE( testReadExample )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/example.asc" ;
+	filename += "/data/example.asc" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

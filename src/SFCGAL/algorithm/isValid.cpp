@@ -27,6 +27,8 @@
 #include <SFCGAL/algorithm/distance3d.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/algorithm/force2D.h>
+#include <SFCGAL/algorithm/force3D.h>
 #include <SFCGAL/detail/algorithm/coversPoints.h>
 #include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/all.h>
@@ -315,12 +317,36 @@ const Validity isValid( const Geometry& g, const double & toleranceAbs )
 
 void checkValidity( const Geometry& g )
 {
-   const Validity v = isValid(g);
-   if ( !v ) {
-       BOOST_THROW_EXCEPTION(Exception(
-          ( boost::format("%s is invalid : %s") % g.asText() % v.reason() ).str()
-       ));
-   }
+	const Validity v = isValid( g );
+	if ( ! v ) {
+		BOOST_THROW_EXCEPTION(Exception(
+						( boost::format("%s is invalid : %s") % g.asText() % v.reason() ).str()
+						));
+	}
+}
+
+void checkValidity2D( const Geometry& g )
+{
+	if ( g.is3D() ) {
+		std::auto_ptr<Geometry> clone( g.clone() );
+		algorithm::force2D( *clone );
+		checkValidity( *clone );
+	}
+	else {
+		checkValidity( g );
+	}
+}
+
+void checkValidity3D( const Geometry& g )
+{
+	if ( !g.is3D() ) {
+		std::auto_ptr<Geometry> clone( g.clone() );
+		algorithm::force3D( *clone );
+		checkValidity( *clone );
+	}
+	else {
+		checkValidity( g );
+	}
 }
 
 } // namespace algorithm

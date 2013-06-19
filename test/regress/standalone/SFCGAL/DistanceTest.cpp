@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 	logger().setLogLevel( Logger::Debug );
 
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/DistanceTest.txt" ;
+	filename += "/data/DistanceTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

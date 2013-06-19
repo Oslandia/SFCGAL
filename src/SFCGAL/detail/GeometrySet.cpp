@@ -185,6 +185,8 @@ namespace SFCGAL {
 				for ( size_t i = 0; i < pts->size(); ++i ) {
 					ls.addPoint( (*pts)[i] );
 				}
+				// close the ring
+				ls.addPoint( (*pts)[0] );
 				Polygon poly(ls);
 				_decompose_polygon( poly, _surfaces, dim_t<3>() );
 			}
@@ -545,7 +547,7 @@ namespace SFCGAL {
 				break;
 			}
 		}
-		GeometryCollection* ret;
+		GeometryCollection* ret = 0;
 		if ( hasCommonType ) {
 			if ( commonType == TYPE_POINT ) {
 				ret = new MultiPoint;
@@ -559,10 +561,15 @@ namespace SFCGAL {
 			else if ( commonType == TYPE_SOLID ) {
 				ret = new MultiSolid;
 			}
+			else {
+				// one common type, but no MULTI equivalent
+				ret = new GeometryCollection;
+			}
 		}
 		else {
 			ret = new GeometryCollection;
 		}
+		BOOST_ASSERT( ret != 0 );
 		for ( size_t i = 0; i < geometries.size(); ++i ) {
 			ret->addGeometry( geometries[i] );
 		}

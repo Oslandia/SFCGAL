@@ -18,45 +18,33 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <fstream>
+#ifndef _SFCGAL_TRANSFORM_FORCE2D_H_
+#define _SFCGAL_TRANSFORM_FORCE2D_H_
 
-#include <SFCGAL/all.h>
-#include <SFCGAL/io/wkt.h>
+#include <SFCGAL/config.h>
 
-#include "../../../test_config.h"
+#include <SFCGAL/Kernel.h>
+#include <SFCGAL/Transform.h>
 
-#include <boost/test/unit_test.hpp>
-using namespace boost::unit_test ;
+namespace SFCGAL {
+namespace transform {
 
-using namespace SFCGAL ;
-
-BOOST_AUTO_TEST_SUITE( SFCGAL_WktTest )
-
-BOOST_AUTO_TEST_CASE( testReadWriter )
-{
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/WktTest.txt" ;
-
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
-
-	std::string inputWkt;
-	while ( std::getline( ifs, inputWkt ) ){
-		if ( inputWkt[0] == '#' || inputWkt.empty() )
-			continue ;
-
+	/**
+	 * Force 2D definitions
+	 */
+	class SFCGAL_API Force2D : public Transform {
+	public:
 		/*
-		 * parse wkt and check symmetry
+		 * [SFCGAL::Transform]
 		 */
-		std::auto_ptr< Geometry > g( io::readWkt(inputWkt) );
-		std::string outputWkt = g->asText(1);
-		BOOST_CHECK_EQUAL( inputWkt, outputWkt );
-	}
-}
+		virtual void transform( Point & p ) ;
+	};
 
-
-BOOST_AUTO_TEST_SUITE_END()
+}//transform
+}//SFCGAL
 
 
 
+
+#endif
 
