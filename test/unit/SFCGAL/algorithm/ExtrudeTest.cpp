@@ -152,7 +152,10 @@ BOOST_AUTO_TEST_CASE( testExtrudePolyhedralSurface_closed )
 {
 	std::auto_ptr< Geometry > g( io::readWkt("POLYHEDRALSURFACE(((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)), ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)), ((1 1 0, 1 1 1, 1 0 1, 1 0 0, 1 1 0)),((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)),((0 0 1, 1 0 1, 1 1 1, 0 1 1, 0 0 1)))") );
 	std::auto_ptr< Geometry > ext( algorithm::extrude( *g, 0.0, 0.0, 1.0 ) );
+
+    std::cerr << "test testExtrudePolyhedralSurface_closed tests nothing\n";
 }
+
 
 
 
