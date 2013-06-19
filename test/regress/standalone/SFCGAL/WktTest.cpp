@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_WktTest )
 BOOST_AUTO_TEST_CASE( testReadWriter )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/WktTest.txt" ;
+	filename += "/data/WktTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 	//logger().setLogLevel( Logger::Debug );
 
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/TriangulatePolygonTest.txt" ;
+	filename += "/data/TriangulatePolygonTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;
