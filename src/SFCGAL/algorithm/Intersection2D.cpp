@@ -120,6 +120,7 @@ namespace algorithm {
 			// if it s a regulat polygon, triangulate it and recurse call
 			GeometrySet<2> triangles, g;
 			triangulate::triangulate( *poly, triangles );
+			std::cout << "triangles= " << triangles << std::endl;
 			g.addPrimitive( pb );
 
 			// recurse call
