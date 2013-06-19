@@ -40,6 +40,27 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
 BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 {
+	int argc = framework::master_test_suite().argc;
+	char **argv = framework::master_test_suite().argv;
+
+	// look for options
+	int test_one_line = -1;
+	bool print_line_number = false;
+	for ( int i = 0; i < argc; ++i ) {
+		std::string argi( argv[i] );
+		if ( argi == "--line" ) {
+			// only test one line
+			if ( argc >= i+1 ) {
+				sscanf( argv[i+1], "%d", &test_one_line );
+				++i;
+				continue;
+			}
+		}
+		if ( argi == "--line-number" ) {
+			print_line_number = true;
+		}
+	}
+
 	boost::ptr_map<std::string, Geometry*> storedGeom;
 
 	//logger().setLogLevel( Logger::Debug );
@@ -54,8 +75,15 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 	std::string line;
 	while ( std::getline( ifs, line ) ){
 		numLine++;
+		if ( test_one_line != -1 && numLine != test_one_line ) {
+			continue;
+		}
 		if ( line[0] == '#' || line.empty() )
 			continue ;
+
+		if ( print_line_number ) {
+			std::cout << numLine << std::endl;
+		}
 
 		BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
 

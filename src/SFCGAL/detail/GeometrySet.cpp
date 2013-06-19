@@ -665,7 +665,7 @@ namespace SFCGAL {
 					break;
 				}
 			}
-			// if its not covered by another volume
+			// if its not covered by another primitive
 			if ( !v1_covered ) {
 				// and not covered by another already inserted primitive
 				bool b = algorithm::covers( output, v1 );

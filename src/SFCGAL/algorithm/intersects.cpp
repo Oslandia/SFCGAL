@@ -238,16 +238,21 @@ namespace algorithm
 			// 2. or the geometry intersects one of the surfaces
 
 			// 1.
-		
-			Mesh_domain ext_domain( *polyhedron );
-			Mesh_domain::Is_in_domain is_in_poly( ext_domain );
 
-			GeometrySet<3> points;
-			points.collectPoints( geometry );
-			for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
-			      pit != points.points().end(); ++pit ) {
-				if ( is_in_poly( pit->primitive() ) ) {
-					return true;
+			if ( polyhedron->is_closed() ) {
+				// this test is needed only if its a volume
+				// if the polyhedron is not closed, this is not a volume, actually
+
+				Mesh_domain ext_domain( *polyhedron );
+				Mesh_domain::Is_in_domain is_in_poly( ext_domain );
+				
+				GeometrySet<3> points;
+				points.collectPoints( geometry );
+				for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
+				      pit != points.points().end(); ++pit ) {
+					if ( is_in_poly( pit->primitive() ) ) {
+						return true;
+					}
 				}
 			}
 
