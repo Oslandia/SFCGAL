@@ -78,6 +78,9 @@ namespace io {
 
 		void write( const Solid & g );
 		void writeInner( const Solid & g );
+
+		// for recursive call use
+		void writeRec( const Geometry & g ) ;
 	private:
 		std::ostream & _s ;
 		bool _exactWrite;
