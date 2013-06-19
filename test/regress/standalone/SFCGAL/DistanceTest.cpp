@@ -71,9 +71,9 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
 		if ( distanceDimension == "2" ){
-			BOOST_CHECK_EQUAL( gA->distance(*gB), expectedDistance );
+			BOOST_CHECK_CLOSE( gA->distance(*gB), expectedDistance, 1e-13 );
 		}else if ( distanceDimension == "3" ){
-			BOOST_CHECK_EQUAL( gA->distance3D(*gB), expectedDistance );
+			BOOST_CHECK_CLOSE( gA->distance3D(*gB), expectedDistance, 1e-13 );
 		}else{
 			BOOST_CHECK(false);
 		}
