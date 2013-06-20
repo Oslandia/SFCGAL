@@ -31,6 +31,8 @@
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
+namespace SFCGAL{
+namespace io {
 // print each ring has a different polygon
 inline
 void vtk( const Polygon & poly, const std::string & file)
@@ -95,6 +97,8 @@ void vtk( const MultiPolygon & multiPoly, const std::string & file)
         << pointStr.str()
         << "POLYGONS " << numRings << " " << numData << "\n"
         << polyStr.str();
+}
+}
 }
 
 #endif

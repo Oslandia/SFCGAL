@@ -37,7 +37,7 @@ namespace algorithm {
 	 * @warning the validity is assumed. No check is done.
 	 * @ingroup public_api
 	 */
-	SFCGAL_API std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+	SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
 } // namespace algorithm
 } // namespace SFCGAL

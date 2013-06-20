@@ -29,6 +29,7 @@
 #include <SFCGAL/all.h>
 #include <SFCGAL/version.h>
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/vtk.h>
 #include <SFCGAL/detail/TestGeometry.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/algorithm/intersects.h>
@@ -258,20 +259,35 @@ int main( int argc, char* argv[] ){
 
 
     // function calls
-    std::vector< NotImplementedException > notImplemented;
+    std::vector< NotImplementedException > notImplemented ;
 #define CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( call )\
     try{ call }\
     catch ( GeometryInvalidityException ) {}\
-    catch ( NotImplementedException e ) { notImplemented.push_back(e) ; }
+    catch ( NotImplementedException e ) { notImplemented.push_back(e) ; }\
+    catch ( std::exception& e )\
+    { \
+        std::cerr << "error in " << #call << "\n" ; \
+        std::cerr << "error with " << geom1->asText() ; \
+        /*io::vtk( geom1->as<Polygon>(), "/tmp/geom1.vtk" );*/\
+        if (geom2!=testCollection.end() ) {\
+            std::cerr << " and " << geom2->asText();\
+            /*io::vtk( geom2->as<Polygon>(), "/tmp/geom2.vtk" );*/\
+        }\
+        std::cerr << "\n";\
+        throw; \
+    }
 
     for (GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1) {
+        
+        GeomIter geom2 = testCollection.end();
+
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area3D(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
         
-        for (GeomIter geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
+        for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( 
                 if (geom2->is<Point>()) {
                     const Point & p = geom2->as<Point>() ;

@@ -938,7 +938,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_minkowski_sum( const sfcgal_geomet
 		return 0;
 	}
 
-	std::auto_ptr<SFCGAL::MultiPolygon> sum;
+	std::auto_ptr<SFCGAL::Geometry> sum;
 	try
 	{
 		sum = SFCGAL::algorithm::minkowskiSum( *g1, g2->as<const SFCGAL::Polygon>() );
