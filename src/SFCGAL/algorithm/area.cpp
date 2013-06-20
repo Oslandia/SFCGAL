@@ -22,6 +22,7 @@
 #include <SFCGAL/all.h>
 
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <CGAL/Point_2.h>
 #include <CGAL/Triangle_2.h>
@@ -52,6 +53,7 @@ typedef CGAL::Plane_3< SFCGAL::Kernel >    Plane_3 ;
 ///
 double area( const Geometry & g )
 {
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
@@ -170,6 +172,7 @@ double area( const PolyhedralSurface & g )
 ///
 double area3D( const Geometry & g )
 {
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( g );
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 	case TYPE_LINESTRING:

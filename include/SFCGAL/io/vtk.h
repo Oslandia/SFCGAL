@@ -98,6 +98,25 @@ void vtk( const MultiPolygon & multiPoly, const std::string & file)
         << "POLYGONS " << numRings << " " << numData << "\n"
         << polyStr.str();
 }
+
+inline
+void vtk( const Geometry & g, const std::string & file)
+{
+	switch ( g.geometryTypeId() ){
+        case TYPE_POINT:              return ;
+        case TYPE_LINESTRING:         return ;
+        case TYPE_POLYGON:            vtk( g.as<Polygon>(), file ) ; return ;
+        case TYPE_TRIANGLE:           return ;
+        case TYPE_SOLID:              return ;
+        case TYPE_MULTIPOINT:         return ;
+        case TYPE_MULTILINESTRING:    return ;
+        case TYPE_MULTIPOLYGON:       vtk( g.as<MultiPolygon>(), file ) ; return ;
+        case TYPE_MULTISOLID:         return ;
+        case TYPE_GEOMETRYCOLLECTION: return ;
+        case TYPE_TRIANGULATEDSURFACE:return ;
+        case TYPE_POLYHEDRALSURFACE:  return ;
+	}
+}
 }
 }
 

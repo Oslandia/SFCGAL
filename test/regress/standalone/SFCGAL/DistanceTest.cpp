@@ -27,6 +27,7 @@
 
 #include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
+//#include <SFCGAL/io/vtk.h>
 
 #include <SFCGAL/detail/tools/Log.h>
 
@@ -50,11 +51,13 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 	BOOST_REQUIRE( ifs.good() ) ;
 
 	std::string line;
+    size_t lineNo = 0;
 	while ( std::getline( ifs, line ) ){
+        ++lineNo;
 		if ( line[0] == '#' || line.empty() )
 			continue ;
 
-		BOOST_TEST_MESSAGE( line );
+		BOOST_TEST_MESSAGE( (boost::format("%s:%d") % filename % lineNo).str() );
 
 		std::istringstream iss(line);
 
@@ -69,6 +72,14 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 
 		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
 		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+
+        //if (43!=lineNo ) continue;
+        //if (43==lineNo )
+        //{
+        //    io::vtk(gA->as<Polygon>(), "/tmp/gA.vtk");
+        //    io::vtk(gB->as<MultiPolygon>(), "/tmp/gB.vtk");
+        //}
+        
 
 		if ( distanceDimension == "2" ){
 			BOOST_CHECK_CLOSE( gA->distance(*gB), expectedDistance, 1e-13 );
