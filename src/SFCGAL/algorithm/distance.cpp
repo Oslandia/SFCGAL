@@ -66,7 +66,7 @@ double distance( const Geometry & gA, const Geometry& gB )
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gA, gB );
 	}
-	BOOST_THROW_EXCEPTION(Exception(
+	BOOST_THROW_EXCEPTION(NotImplementedException(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
 }
@@ -96,7 +96,7 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
-	BOOST_THROW_EXCEPTION(Exception(
+	BOOST_THROW_EXCEPTION(NotImplementedException(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
 }
@@ -201,7 +201,7 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
-	BOOST_THROW_EXCEPTION(Exception(
+	BOOST_THROW_EXCEPTION(NotImplementedException(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
 }
@@ -297,7 +297,7 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
 	}
-	BOOST_THROW_EXCEPTION(Exception(
+	BOOST_THROW_EXCEPTION(NotImplementedException(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
 }

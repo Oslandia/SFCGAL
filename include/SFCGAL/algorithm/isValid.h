@@ -46,7 +46,7 @@ namespace algorithm {
         using namespace SFCGAL;\
         const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );\
         if ( ! sfcgalAssertGeometryValidity ) {\
-            BOOST_THROW_EXCEPTION(Exception(\
+            BOOST_THROW_EXCEPTION(GeometryInvalidityException(\
                 ( boost::format("%s is invalid : %s : %s")\
                   % g.geometryType()\
                   % sfcgalAssertGeometryValidity.reason()\
