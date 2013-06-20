@@ -34,6 +34,7 @@ namespace algorithm {
 /**
  * Represents a polyhedral surface as a graph where faces are nodes and egde are graph edges
  * @pre the polygons are valid
+ * @todo unittest
  */
 
 class SurfaceGraph : boost::noncopyable {

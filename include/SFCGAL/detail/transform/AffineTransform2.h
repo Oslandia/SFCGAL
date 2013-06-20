@@ -29,6 +29,7 @@ namespace transform {
 
 	/**
 	 * Wrapper for CGAL::Aff_transform_2
+	 * @todo unittest
 	 */
 	template < typename Kernel >
 	class AffineTransform2 : public Transform {

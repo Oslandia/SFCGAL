@@ -39,6 +39,7 @@ namespace generator {
 	 * @brief Basic building generator relying on a straight skeleton
 	 *
 	 * @warning only supports Polygon and MultiPolygon
+	 * @todo unittest
 	 */
 	SFCGAL_API std::auto_ptr< Geometry > building(
 		const Geometry & g,

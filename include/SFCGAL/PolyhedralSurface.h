@@ -41,6 +41,7 @@ namespace SFCGAL {
 	 *
 	 * @todo template < size_t N >?
 	 * @todo do better than a "polygon soup" or add topological view?
+	 * @todo unittest
 	 */
 	class SFCGAL_API PolyhedralSurface : public Surface {
 	public:

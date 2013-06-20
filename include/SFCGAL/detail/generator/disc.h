@@ -35,6 +35,7 @@ namespace generator {
 
 	/**
 	 * Generate a discrete circle
+	 * @todo unittest
 	 */
 	SFCGAL_API std::auto_ptr< Polygon > disc(
 		const Point& center,

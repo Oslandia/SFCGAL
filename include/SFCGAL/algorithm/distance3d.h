@@ -30,6 +30,7 @@ namespace algorithm {
 
 	/**
 	 * dispatch distance between two Geometries
+	 * @todo complete with solid
 	 */
 	SFCGAL_API double distance3D( const Geometry & gA, const Geometry& gB ) ;
 

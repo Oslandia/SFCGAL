@@ -41,9 +41,9 @@ namespace SFCGAL {
 	 * A shell is supposed to be close.
 	 *
 	 * @warning GM_Solid, from ISO 19107 is defined in CityGML, but not in SFA. Without Solid concept,
-	 * Volum concept is missing.
+	 * Volume concept is missing.
 	 *
-	 * @todo template < size_t N >?
+	 * @todo unittest
 	 */
 	class SFCGAL_API Solid : public Geometry {
 	public:
