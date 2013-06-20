@@ -30,7 +30,17 @@
 #include <SFCGAL/version.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/detail/TestGeometry.h>
+#include <SFCGAL/algorithm/area.h>
+#include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/intersection.h>
+#include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/minkowskiSum.h>
+#include <SFCGAL/algorithm/tesselate.h>
 #include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/distance3d.h>
+#include <SFCGAL/algorithm/straightSkeleton.h>
+#include <SFCGAL/algorithm/extrude.h>
 
 using namespace SFCGAL ;
 
@@ -246,11 +256,27 @@ int main( int argc, char* argv[] ){
         if (verbose) std::cout << "\n";
     }
 
-    
-
-    // function calls of unary functions
-
-    // function calls of binary functions
+    // function calls
+    for (GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1) {
+        (void)algorithm::area3D(*geom1) ;
+        (void)algorithm::area(*geom1) ;
+        if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ;
+        (void)algorithm::straightSkeleton(*geom1) ;
+        (void)algorithm::tesselate(*geom1) ;
+        for (GeomIter geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
+            if (geom2->is<Point>()) {
+                const Point & p = geom2->as<Point>() ;
+                (void)algorithm::extrude(*geom1, p.x(), p.y(), p.z()) ;
+            }
+            (void)algorithm::distance3D(*geom1, *geom2) ;
+            (void)algorithm::distance(*geom1, *geom2) ;
+            (void)algorithm::intersection3D(*geom1, *geom2) ;
+            (void)algorithm::intersection(*geom1, *geom2) ;
+            (void)algorithm::intersects3D(*geom1, *geom2) ;
+            (void)algorithm::intersects(*geom1, *geom2) ;
+            if (geom2->is<Polygon>()) (void)algorithm::minkowskiSum(*geom1, geom2->as<Polygon>()) ;
+        }
+    }
     
 
 
