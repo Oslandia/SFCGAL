@@ -107,6 +107,7 @@ void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2<
  * append gA+gB into the polygonSet
  */
 void minkowskiSum( const Point& gA, const Polygon_2 & gB, Polygon_set_2 & polygonSet ){
+    BOOST_ASSERT( gB.size() );
 
 	CGAL::Aff_transformation_2< Kernel > translate(
 		CGAL::TRANSLATION,
@@ -232,14 +233,15 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2 & gB, Polygon_s
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB )
+std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
 {
 	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gA );
 	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gB );
+    if ( gB.isEmpty() ) return std::auto_ptr< Geometry >( gA.clone() );
 
 	Polygon_set_2 polygonSet ;
 	minkowskiSum( gA, gB.toPolygon_2(), polygonSet ) ;
-	return detail::polygonSetToMultiPolygon( polygonSet ) ;
+	return std::auto_ptr< Geometry >( detail::polygonSetToMultiPolygon( polygonSet ).release() ) ;
 }
 
 } // namespace algorithm
