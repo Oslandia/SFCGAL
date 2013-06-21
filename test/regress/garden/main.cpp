@@ -20,6 +20,7 @@
  */
 #include <iostream>
 #include <fstream>
+#include <set>
 
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
@@ -261,16 +262,18 @@ int main( int argc, char* argv[] ){
     size_t calls = 0;
 
     // function calls
-    std::vector< NotImplementedException > notImplemented ;
+    std::set< std::string > notImplemented ;
 #define CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( call )\
     ++calls ;\
     try{ call }\
     catch ( GeometryInvalidityException ) {}\
-    catch ( NotImplementedException e ) { notImplemented.push_back(e) ; }\
+    catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     catch ( std::exception& e )\
     { \
-        ++numFailure; \
-        std::cerr << "error " << numFailure << " in " << #call << "\n" ; \
+        try{\
+        ++numFailure;\
+        std::cerr << "\n" ;\
+        std::cerr << "error " << numFailure << " in " << #call << "\n" ;\
         std::cerr << "error with " << (algorithm::isValid(*geom1)?"valid":"invalid")\
                   << " geometry " << geom1->asText() ; \
         io::vtk( *geom1, (boost::format("/tmp/geom1_failure%d.vtk") % numFailure).str() );\
@@ -281,6 +284,8 @@ int main( int argc, char* argv[] ){
         }\
         std::cerr << "\n";\
         std::cerr << e.what() << "\n";\
+        }\
+        catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     }
 
     for (GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1) {
@@ -290,12 +295,12 @@ int main( int argc, char* argv[] ){
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area3D(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
-        //CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
+        //CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
         
         for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( 
-                if (geom2->is<Point>()) {
+                if (geom2->is<Point>() && !geom2->isEmpty() ) {
                     const Point & p = geom2->as<Point>() ;
                     (void)algorithm::extrude(*geom1, p.x(), p.y(), p.z()) ;
                 }
@@ -309,20 +314,21 @@ int main( int argc, char* argv[] ){
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersects(*geom1, *geom2) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom2->is<Polygon>()) (void)algorithm::minkowskiSum(*geom1, geom2->as<Polygon>()) ; )
         }
-        if ( progress ) std::cout << "performed " << calls << " function calls\n";
+        if ( progress || verbose ) std::cout << "performed " << calls << " function calls\n";
     }
     
-    if (verbose) {
+    if (!notImplemented.empty()) {
         std::cout << "Missing implementations\n";
-        for (size_t i=0; i!=notImplemented.size(); ++i) {
-            std::cout << "    " << notImplemented[i].what() << "\n" ;    
+        for (std::set< std::string >::const_iterator i=notImplemented.begin(); 
+                i!=notImplemented.end(); ++i) {
+            std::cout << "    " << *i << "\n" ;    
         }
     }
 
 	boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
     if ( verbose ) std::cout << "elapsed " << elapsed << "\n";
 
-    if (numFailure) std::cerr << "**** " << numFailure << " test failed\n";
+    if (numFailure) std::cerr << "\n\n**** " << numFailure << " test failed\n";
     return numFailure==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
