@@ -33,6 +33,8 @@ class Geometry;
  }
 
 namespace algorithm {
+	struct NoValidityCheck;
+
 	/**
 	 * Intersection on 2D geometries.
 	 * @pre ga and gb are valid geometries
@@ -41,12 +43,28 @@ namespace algorithm {
 	SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
 	
 	/**
+	 * Intersection on 2D geometries. No validity check variant
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb,NoValidityCheck );
+
+	/**
 	 * Intersection on 3D geometries. Assume z = 0 if needed
 	 * @pre ga and gb are valid geometries
 	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 	
+	/**
+	 * Intersection on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning@ No actual validity check is done
+	 */
+	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
+
 	/**
 	 * @ingroup detail
 	 */

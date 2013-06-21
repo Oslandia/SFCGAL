@@ -28,6 +28,7 @@
 
 namespace SFCGAL {
 namespace algorithm {
+	struct NoValidityCheck;
 
 	/**
 	 * extrude a Geometry with a direction
@@ -37,9 +38,18 @@ namespace algorithm {
 	SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 	/**
+	 * extrude a Geometry with a direction
+	 * @pre g is a valid geometry
+	 * @ingroup detail
+	 * @warning No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck ) ;
+
+	/**
 	 * @brief extrude a Geometry by a given vector
 	 * @todo Improve 3D surface extrude (Extrude only faces whose dot( v, normal ) > 0 and use Polyhedron union to
 	 *         get output geometries with a clean topology)
+	 * @ingroup detail
 	 */
 	SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v ) ;
 

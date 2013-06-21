@@ -32,6 +32,7 @@ namespace SFCGAL {
 
 namespace SFCGAL {
 namespace algorithm {
+	struct NoValidityCheck;
 
 	/**
 	 * @brief [experimental]compute polygon offset
@@ -42,6 +43,15 @@ namespace algorithm {
 	 */
 	SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r ) ;
 
+	/**
+	 * @brief [experimental]compute polygon offset
+	 *
+	 * @warning test in order to compare with minkowski sum
+	 * @pre g is a valid Geometry
+	 * @ingroup detail
+	 * @warning No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r, NoValidityCheck ) ;
 
 }//namespace algorithm
 }//namespace SFCGAL

@@ -34,6 +34,7 @@ namespace triangulate {
 	 * @param g input geometry
 	 * @param triangulatedSurface resulting TriangulatedSurface
 	 * @param usePolygonPlanes use polygon plane or Triangulate in OXY plane
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const Geometry & g,
@@ -41,6 +42,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate a 3D Polygon
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const Polygon & g,
@@ -48,6 +50,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate a 3D Triangle (copy triangle)
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const Triangle & g,
@@ -55,6 +58,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate a 3D TriangulatedSurface (copy triangles)
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const TriangulatedSurface & g,
@@ -62,6 +66,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate a 3D MultiPolygon
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const GeometryCollection & g,
@@ -69,6 +74,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate 3D polygons in a PolyhedralSurface.
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const PolyhedralSurface & polyhedralSurface,
@@ -76,6 +82,7 @@ namespace triangulate {
 	);
 	/**
 	 * @brief Triangulate a Solid
+	 * @ingroup detail
 	 */
 	SFCGAL_API void triangulatePolygon3D(
 		const Solid & g,

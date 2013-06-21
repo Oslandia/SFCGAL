@@ -72,10 +72,8 @@ void straightSkeletonToMultiLineString(
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck )
 {
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-
 	switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
 		return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
@@ -88,6 +86,12 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 	}
 }
 
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
+	return straightSkeleton( g, autoOrientation, NoValidityCheck() );
+}
 ///
 ///
 ///

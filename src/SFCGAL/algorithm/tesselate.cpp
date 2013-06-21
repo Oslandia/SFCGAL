@@ -30,9 +30,8 @@ namespace algorithm {
 ///
 ///
 ///
-std::auto_ptr<Geometry> tesselate( const Geometry & g )
+std::auto_ptr<Geometry> tesselate( const Geometry & g, NoValidityCheck )
 {
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
 	switch ( g.geometryTypeId() ) {
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
@@ -65,6 +64,13 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g )
 		break;
 	}
 	return std::auto_ptr<Geometry>( g.clone() );
+}
+
+std::auto_ptr<Geometry> tesselate( const Geometry & g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
+    return tesselate( g, NoValidityCheck() );
 }
 
 } // namespace algorithm

@@ -51,9 +51,8 @@ typedef CGAL::Plane_3< SFCGAL::Kernel >    Plane_3 ;
 ///
 ///
 ///
-double area( const Geometry & g )
+double area( const Geometry & g, NoValidityCheck )
 {
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
@@ -78,6 +77,12 @@ double area( const Geometry & g )
 	BOOST_THROW_EXCEPTION( Exception(
 		( boost::format( "Unexpected geometry type (%s) in SFCGAL::algorithm::area" ) % g.geometryType() ).str()
 	) );
+}
+
+double area( const Geometry & g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
+    return area( g, NoValidityCheck() );
 }
 
 ///
@@ -170,9 +175,8 @@ double area( const PolyhedralSurface & g )
 ///
 ///
 ///
-double area3D( const Geometry & g )
+double area3D( const Geometry & g, NoValidityCheck )
 {
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( g );
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
@@ -198,7 +202,11 @@ double area3D( const Geometry & g )
 	BOOST_THROW_EXCEPTION( Exception("missing case in SFCGAL::algorithm::area3D") );
 }
 
-
+double area3D( const Geometry & g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( g );
+    return area3D( g, NoValidityCheck() );
+}
 ///
 ///
 ///
