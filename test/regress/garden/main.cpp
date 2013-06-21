@@ -257,24 +257,30 @@ int main( int argc, char* argv[] ){
         if (verbose) std::cout << "\n";
     }
 
+    size_t numFailure = 0;
+    size_t calls = 0;
 
     // function calls
     std::vector< NotImplementedException > notImplemented ;
 #define CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( call )\
+    ++calls ;\
     try{ call }\
     catch ( GeometryInvalidityException ) {}\
     catch ( NotImplementedException e ) { notImplemented.push_back(e) ; }\
     catch ( std::exception& e )\
     { \
-        std::cerr << "error in " << #call << "\n" ; \
-        std::cerr << "error with " << geom1->asText() ; \
-        /*io::vtk( geom1->as<Polygon>(), "/tmp/geom1.vtk" );*/\
+        ++numFailure; \
+        std::cerr << "error " << numFailure << " in " << #call << "\n" ; \
+        std::cerr << "error with " << (algorithm::isValid(*geom1)?"valid":"invalid")\
+                  << " geometry " << geom1->asText() ; \
+        io::vtk( *geom1, (boost::format("/tmp/geom1_failure%d.vtk") % numFailure).str() );\
         if (geom2!=testCollection.end() ) {\
-            std::cerr << " and " << geom2->asText();\
-            /*io::vtk( geom2->as<Polygon>(), "/tmp/geom2.vtk" );*/\
+            std::cerr << " and " << (algorithm::isValid(*geom1)?"valid":"invalid")\
+                      << " geometry " << geom2->asText();\
+            io::vtk( *geom2, (boost::format("/tmp/geom2_failure%d.vtk") % numFailure).str() );\
         }\
         std::cerr << "\n";\
-        throw; \
+        std::cerr << e.what() << "\n";\
     }
 
     for (GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1) {
@@ -285,7 +291,7 @@ int main( int argc, char* argv[] ){
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
+        //CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
         
         for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( 
@@ -303,6 +309,7 @@ int main( int argc, char* argv[] ){
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersects(*geom1, *geom2) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom2->is<Polygon>()) (void)algorithm::minkowskiSum(*geom1, geom2->as<Polygon>()) ; )
         }
+        if ( progress ) std::cout << "performed " << calls << " function calls\n";
     }
     
     if (verbose) {
@@ -312,15 +319,11 @@ int main( int argc, char* argv[] ){
         }
     }
 
-
-
-    bool success = true;
-
-
 	boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
     if ( verbose ) std::cout << "elapsed " << elapsed << "\n";
 
-    return success ? EXIT_SUCCESS : EXIT_FAILURE;
+    if (numFailure) std::cerr << "**** " << numFailure << " test failed\n";
+    return numFailure==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Functions called from lwgeom_sfcgal.c and corresponding C++ api calls
