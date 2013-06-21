@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( testArea3D_Square4X4 )
 
 BOOST_AUTO_TEST_CASE( testArea3D_Square4X4WithHole )
 {
-	std::string wkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 4.0,0.0 4.0 4.0,0.0 4.0 0.0,0.0 0.0 0.0),(0.0 2.0 2.0,0.0 2.0 3.0,0.0 3.0 3.0,0.0 3.0 2.0,0.0 2.0 2.0))" );
+	std::string wkt( "POLYGON((0.0 0.0 0.0,0.0 0.0 4.0,0.0 4.0 4.0,0.0 4.0 0.0,0.0 0.0 0.0),(0.0 2.0 2.0,0.0 3.0 2.0,0.0 3.0 3.0,0.0 2.0 3.0,0.0 2.0 2.0))" );
 	std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
 	BOOST_CHECK_CLOSE( algorithm::area3D( *g ), 15.0, 1e-10 );
 }
