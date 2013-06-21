@@ -35,6 +35,8 @@ namespace SFCGAL {
 
 	namespace algorithm {
     class SurfaceGraph;
+    // defined in isValid.h
+    struct NoValidityCheck;
 
 	/**
 	 * Robust intersection test on 2D geometries. Force projection to z=0 if needed
@@ -49,6 +51,22 @@ namespace SFCGAL {
 	 * @ingroup public_api
 	 */
 	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb );
+
+	/**
+	 * Intersection test on 2D geometries. Force projection to z=0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning the validity is assumed, no actual check is done
+	 */
+	SFCGAL_API bool intersects( const Geometry& ga, const Geometry& gb, NoValidityCheck );
+
+	/**
+	 * Intersection test on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning the validity is assumed, no actual check is done
+	 */
+	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
 	/**
 	 * Intersection test on GeometrySet

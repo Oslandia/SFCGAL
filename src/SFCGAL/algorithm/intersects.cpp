@@ -391,6 +391,22 @@ namespace algorithm
 		return intersects( gsa, gsb );
 	}
 
+	bool intersects( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+	{
+		GeometrySet<2> gsa( ga );
+		GeometrySet<2> gsb( gb );
+
+		return intersects( gsa, gsb );
+	}
+
+	bool intersects3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+	{
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
+
+		return intersects( gsa, gsb );
+	}
+
     template< int Dim >
     bool selfIntersectsImpl(const LineString & line)
     {

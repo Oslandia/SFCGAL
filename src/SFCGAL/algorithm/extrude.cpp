@@ -290,10 +290,15 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & 
 ///
 ///
 ///
+	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck )
+{
+	return extrude( g, Kernel::Vector_3(dx,dy,dz) ) ;
+}
+
 std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
 	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-	return extrude( g, Kernel::Vector_3(dx,dy,dz) ) ;
+	return extrude( g, dx, dy, dz, NoValidityCheck() );
 }
 
 }//algorithm

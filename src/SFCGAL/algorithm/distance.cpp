@@ -19,6 +19,7 @@
  *
  */
 #include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
@@ -46,7 +47,7 @@ namespace algorithm {
 ///
 ///
 ///
-double distance( const Geometry & gA, const Geometry& gB )
+double distance( const Geometry & gA, const Geometry& gB, NoValidityCheck )
 {
 	switch ( gA.geometryTypeId() ){
 	case TYPE_POINT:
@@ -69,6 +70,13 @@ double distance( const Geometry & gA, const Geometry& gB )
 	BOOST_THROW_EXCEPTION(NotImplementedException(
 		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
 	));
+}
+
+double distance( const Geometry & gA, const Geometry& gB )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(gA);
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(gB);
+	return distance( gA, gB, NoValidityCheck() );
 }
 
 ///
@@ -147,7 +155,7 @@ double distancePointPolygon( const Point & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA,gB) ){
+	if ( intersects( gA , gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 
@@ -243,7 +251,7 @@ double distanceLineStringPolygon( const LineString & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA, gB) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;
@@ -311,7 +319,7 @@ double distancePolygonPolygon( const Polygon & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA, gB) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;

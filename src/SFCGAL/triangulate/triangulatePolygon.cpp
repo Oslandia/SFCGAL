@@ -117,7 +117,6 @@ void triangulatePolygon3D(
 	TriangulatedSurface & triangulatedSurface
 )
 {
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( polygon );
 	/*
 	 * filter empty polygon
 	 */
