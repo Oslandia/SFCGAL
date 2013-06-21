@@ -36,6 +36,8 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g )
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
 	case TYPE_TRIANGLE:
+	case TYPE_SOLID:
+		//TODO confirm no internal tesselation
 	case TYPE_MULTIPOINT:
 	case TYPE_MULTILINESTRING:
 		return std::auto_ptr<Geometry>( g.clone() );
@@ -51,7 +53,6 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g )
 
 	 // multipolygon, solid and multisolid return a geometrycollection of triangulated
 	case TYPE_MULTIPOLYGON:
-	case TYPE_SOLID:
 	case TYPE_MULTISOLID:
 	case TYPE_GEOMETRYCOLLECTION: {
 		std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
