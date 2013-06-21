@@ -147,16 +147,17 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquareWithHole )
 }
 
 
-// test with a closed surface
-BOOST_AUTO_TEST_CASE( testExtrudePolyhedralSurface_closed )
+//SELECT ST_AsText(ST_Extrude(ST_Extrude(ST_Extrude('POINT(0 0)', 1, 0, 0), 0, 1, 0), 0, 0, 1));
+BOOST_AUTO_TEST_CASE( testChainingExtrude )
 {
-	std::auto_ptr< Geometry > g( io::readWkt("POLYHEDRALSURFACE(((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)), ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)), ((1 1 0, 1 1 1, 1 0 1, 1 0 0, 1 1 0)),((0 1 0, 0 1 1, 1 1 1, 1 1 0, 0 1 0)),((0 0 1, 1 0 1, 1 1 1, 0 1 1, 0 0 1)))") );
-	std::auto_ptr< Geometry > ext( algorithm::extrude( *g, 0.0, 0.0, 1.0 ) );
-
-    std::cerr << "test testExtrudePolyhedralSurface_closed tests nothing\n";
+	std::auto_ptr< Geometry > g( new Point(0.0,0.0) );
+	g = algorithm::extrude( *g, 1.0, 0.0, 0.0 ) ;
+	BOOST_CHECK_EQUAL( g->asText(0), "LINESTRING(0 0 0,1 0 0)" ) ;
+	g =  algorithm::extrude( *g, 0.0, 1.0, 0.0 ) ;
+	BOOST_CHECK_EQUAL( g->asText(0), "POLYHEDRALSURFACE(((0 0 0,1 0 0,1 1 0,0 1 0,0 0 0)))" ) ;
+	g =  algorithm::extrude( *g, 0.0, 0.0, 1.0 ) ;
+	BOOST_CHECK_EQUAL( g->asText(0), "SOLID((((0 1 0,1 1 0,1 0 0,0 1 0)),((0 1 1,1 0 1,1 1 1,0 1 1)),((0 1 0,1 0 0,0 0 0,0 1 0)),((0 1 1,0 0 1,1 0 1,0 1 1)),((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),((1 1 0,0 1 0,0 1 1,1 1 1,1 1 0)),((0 1 0,0 0 0,0 0 1,0 1 1,0 1 0)),((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0))))" ) ;
 }
-
-
 
 
 BOOST_AUTO_TEST_SUITE_END()
