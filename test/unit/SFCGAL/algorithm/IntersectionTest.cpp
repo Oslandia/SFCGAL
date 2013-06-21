@@ -136,6 +136,10 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		}
 		storedGeom[ "B" ] = gB->clone();
 
+		// exception management
+		bool expectException = false;
+		bool expectNotImplemented = false;
+
 		std::getline( iss, wktOut, '|' ) ;
 		if ( wktOut[0] == '@' ) {
 			// stored geometry reference
@@ -144,6 +148,13 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 				BOOST_CHECK_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
 			}
 			gOut.reset( storedGeom[ name ]->clone() );
+		}
+		// expect an exception
+		else if ( wktOut[0] == '!' ) {
+			if ( wktOut == "!NotImplemented" ) {
+				expectNotImplemented = true;
+			}
+			expectException = true;
 		}
 		else {
 			gOut = io::readWkt( wktOut );
@@ -160,8 +171,11 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 				BOOST_CHECK(false);
 			}
 		}
+		catch ( SFCGAL::NotImplementedException& e ) {
+			BOOST_CHECK_MESSAGE( expectNotImplemented, numLine << ": " << e.what() );
+		}
 		catch ( std::exception& e ) {
-			BOOST_CHECK_MESSAGE( false, numLine << ": " << e.what() );
+			BOOST_CHECK_MESSAGE( expectException, numLine << ": " << e.what() );
 		}
 	}
 }
