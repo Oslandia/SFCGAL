@@ -291,16 +291,18 @@ void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & p
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r )
+std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r, NoValidityCheck )
 {
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-
 	Offset_polygon_set_2 polygonSet ;
 	offset( g, r, polygonSet ) ;
 	return polygonSetToMultiPolygon( polygonSet, 8 );
 }
 
-
+std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+	return offset( g, r, NoValidityCheck() );
+}
 
 }//namespace algorithm
 }//namespace SFCGAL

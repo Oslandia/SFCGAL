@@ -19,7 +19,7 @@
  *
  */
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
-#include <SFCGAL/triangulate/triangulate2DZ.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
@@ -121,10 +121,8 @@ void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, GeometrySet
 {
 	// FIXME: lots of copies here, can we avoid this ?
 	Polygon poly( polygon );
-	ConstraintDelaunayTriangulation cdt;
-	triangulate2DZ( poly, cdt );
 	TriangulatedSurface surf;
-	cdt.getTriangles( surf );
+	triangulatePolygon3D( poly, surf );
 	for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
 		output.addGeometry( surf.triangleN(i) );
 	}

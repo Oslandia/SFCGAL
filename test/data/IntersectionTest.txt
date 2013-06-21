@@ -1,0 +1,567 @@
+####################################################################################################
+# syntax :
+#
+# - lines starting with '#' and empty lines are ignored
+#
+# - 2D intersection test :
+# 2|geometry A wkt|geometry B wkt|expected wkt result
+#
+# - 3D intersection test :
+# 3|geometry A wkt|geometry B wkt|expected wkt result
+#
+# - geometry storage
+# S|name|WKT
+#
+# - reference to a stored geometry : @name
+# @A always refers to the first geometry
+# @B always regers to the second geometry
+#
+# e.g.
+# S|square|POLYGON((0 0,1 0,1 1,0 1,0 0))
+# 2|@square|POINT(0.5 0)|@B
+# ... will check that intersection(POLYGON((0 0,1 0,1 1,0 1,0 0)), POINT(0.5 0)) == POINT(0.5 0)
+####################################################################################################
+
+####################################################################################################
+# detected bugs :
+#
+# - the output is not always clean :
+#   - TIN should sometimes be COLLECTION(TIN) if more than one connected component
+#   - MULTIPOLYGON should be POLYHEDRAL (if connected polygons)
+#   - some output is "overlaping": GEOMETRYCOLLECTION(POINT(0 1),POINT(1 -0),LINESTRING(0 0,0 1),LINESTRING(0 0,1 0),TRIANGLE((0 1,0 0,1 1,0 1)),TRIANGLE((1 1,0 0,1 0,1 1)))
+# - some output are still unstable (change from run to run)
+####################################################################################################
+
+#
+# point x point
+#
+
+2|POINT(0 0)|POINT(0 0)|POINT(0 0)
+3|POINT(0 0 0)|POINT(0 0 0)|POINT(0 0 0)
+2|POINT(1 0)|POINT(0 0)|GEOMETRYCOLLECTION EMPTY
+3|POINT(1 0 0)|POINT(0 0 0)|GEOMETRYCOLLECTION EMPTY
+
+#
+# point x linestring
+#
+
+# point on the linestring
+2|POINT(0.5 0)|LINESTRING(0 0,1 0)|POINT(0.5 0)
+3|POINT(0.5 0 0)|LINESTRING(0 0 0,1 0 0)|POINT(0.5 0 0)
+# point outside
+2|POINT(0 1)|LINESTRING(0 0,1 0)|GEOMETRYCOLLECTION EMPTY
+3|POINT(0 1 0)|LINESTRING(0 0 0,1 0 0)|GEOMETRYCOLLECTION EMPTY
+
+#
+# linestring x linestring
+#
+
+# linestring crossing
+2|LINESTRING(0.5 0,0.5 1)|LINESTRING(0 0,1 0)|POINT(0.5 0)
+3|LINESTRING(0.5 0 0,0.5 1 0)|LINESTRING(0 0 0,1 0 0)|POINT(0.5 0 0)
+# linestring outside
+2|LINESTRING(0 1,1 1)|LINESTRING(0 0,1 0)|GEOMETRYCOLLECTION EMPTY
+3|LINESTRING(0 1 0,1 1 0)|LINESTRING(0 0 0,1 0 0)|GEOMETRYCOLLECTION EMPTY
+# a "sub" linestring
+2|LINESTRING(0.5 0,0.7 0)|LINESTRING(0 0,1 0)|LINESTRING(0.5 0,0.7 0)
+3|LINESTRING(0.5 0 0,0.7 0 0)|LINESTRING(0 0 0,1 0 0)|LINESTRING(0.5 0 0,0.7 0 0)
+
+#
+# point x triangle
+#
+
+# point on an edge
+2|POINT(0.5 0)|TRIANGLE((0 0,1 0,1 1,0 0))|POINT(0.5 0)
+3|POINT(0.5 0 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|POINT(0.5 0 0)
+# point inside
+2|POINT(0.5 0.5)|TRIANGLE((0 0,1 0,1 1,0 0))|POINT(0.5 0.5)
+3|POINT(0.5 0.5 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|POINT(0.5 0.5 0)
+# point outside
+2|POINT(-1 0)|TRIANGLE((0 0,1 0,1 1,0 0))|GEOMETRYCOLLECTION EMPTY
+3|POINT(-1 0 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|GEOMETRYCOLLECTION EMPTY
+
+#
+# linestring x triangle
+#
+
+# linestring crossing
+2|LINESTRING(0 0,2 1)|TRIANGLE((0 0,1 0,1 1,0 0))|LINESTRING(0 0,1 0.5)
+3|LINESTRING(0 0 0,2 1 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|LINESTRING(0 0 0,1 0.5 0)
+# linestring crossing on a vertex
+2|LINESTRING(0 0,0 1)|TRIANGLE((0 0,1 0,1 1,0 0))|POINT(0 0)
+3|LINESTRING(0 0 0,0 1 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|POINT(0 0 0)
+# linestring outside
+2|LINESTRING(-1 0,-1 1)|TRIANGLE((0 0,1 0,1 1,0 0))|GEOMETRYCOLLECTION EMPTY
+3|LINESTRING(-1 0 0,-1 1 0)|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|GEOMETRYCOLLECTION EMPTY
+
+#
+# triangle x triangle
+#
+
+# a triangle crossing, resulting in a triangle
+2|TRIANGLE((0.5 0,1.5 0,1.5 1,0.5 0))|TRIANGLE((0 0,1 0,1 1,0 0))|TRIANGLE((1 0.5,0.5 0,1 0,1 0.5))
+3|TRIANGLE((0.5 0 0,1.5 0 0,1.5 1 0,0.5 0 0))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|TRIANGLE((1 0.5 0,0.5 0 0,1 0 0,1 0.5 0))
+# a triangle crossing, resulting in a polygon
+2|TRIANGLE((0 0.5,0 -0.5,1 0.5,0 0.5))|TRIANGLE((0 0,1 0,1 1,0 0))|POLYGON((1/1 1/2,1/2 0/1,0/1 0/1,1/2 1/2,1/1 1/2))
+3|TRIANGLE((0 0.5 0,0 -0.5 0,1 0.5 0,0 0.5 0))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|TIN(((0.5 0.5 0,0 0 0,0.5 0 0,0.5 0.5 0)),((1 0.5 0,0.5 0.5 0,0.5 0 0,1 0.5 0)))
+# triangle crossing, resulting in a segment (3D only)
+3|TRIANGLE((0 0.5 1,1 0.5 -1,1 0.5 1,0 0.5 1))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|LINESTRING(1/1 1/2 0/1,1/2 1/2 0/1)
+# triangle crossing on an edge
+2|TRIANGLE((0 0,1 -1,1 0,0 0))|TRIANGLE((0 0,1 0,1 1,0 0))|LINESTRING(1 0,0 0)
+3|TRIANGLE((0 0 0,1 -1 0,1 0 0,0 0 0))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|LINESTRING(0 0 0,1 0 0)
+# triangle crossing on a vertex
+2|TRIANGLE((1 0,2 0,2 1,1 0))|TRIANGLE((0 0,1 0,1 1,0 0))|POINT(1 0)
+3|TRIANGLE((1 0 0,2 0 0,2 1 0,1 0 0))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|POINT(1 0 0)
+# triangle outside
+2|TRIANGLE((-3 0,-2 0,-2 1,-3 0))|TRIANGLE((0 0,1 0,1 1,0 0))|GEOMETRYCOLLECTION EMPTY
+3|TRIANGLE((-3 0 0,-2 0 0,-2 1 0,-3 0 0))|TRIANGLE((0 0 0,1 0 0,1 1 0,0 0 0))|GEOMETRYCOLLECTION EMPTY
+
+#
+# point x polygon
+#
+
+# point inside
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(0.1 0.1)|POINT(0.1 0.1)
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(0.1 0.1 0)|POINT(0.1 0.1 0)
+# point on an edge
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(0.1 0)|POINT(0.1 0)
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(0.1 00 0)|POINT(0.1 0 0)
+# point on a vertex
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(0 0)|POINT(0 0)
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(0 0 0)|POINT(0 0 0)
+# point on an interior edge
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(1.5 1.3)|POINT(1.5 1.3)
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(1.5 1.3 0)|POINT(1.5 1.3 0)
+# point in a hole
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(1.5 1.5)|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(1.5 1.5 0)|GEOMETRYCOLLECTION EMPTY
+# point outside
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POINT(2.5 2.5)|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0 0,2 0 0,2 2 0,0 2 0,0 0 0),(1.3 1.3 0,1.3 1.7 0,1.7 1.7 0,1.7 1.3 0,1.3 1.3 0))|POINT(2.5 2.5 0)|GEOMETRYCOLLECTION EMPTY
+
+#
+# linestring x polygon
+#
+
+# a linestring inside
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2,1/2 1/2,45/26 1/2,49/26 1/2,2/1 1/2)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2 0,1/2 1/2 0,45/26 1/2 0,49/26 1/2 0,2/1 1/2 0)
+# a linestring on an edge
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(0 0,1 0)|LINESTRING(0 0,1 0)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(0 0,1 0)|LINESTRING(0 0 0,1 0 0)
+# a linestring inside a hole
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+# a linestring outside
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+
+#
+# triangle x polygon
+#
+
+# touching a vertex
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0 0)
+# touching an edge
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0,0 1)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 0,1 0,1 1,-1 0))|POLYGON((1 1,0 0.5,0 0,1 0,1 1))
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((-1 0,1 0,1 1,-1 0))|TIN(((0/1 0/1 0/1,1/1 0/1 0/1,1/1 1/1 0/1,0/1 0/1 0/1)),((0/1 1/2 0/1,0/1 0/1 0/1,1/1 1/1 0/1,0/1 1/2 0/1)))
+# inside
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1 0,1 0.1 0,1 1 0,0.1 0.1 0))
+# triangle inside a hole
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+
+#
+# polygon x polygon
+#
+
+# on a vertex
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0 0)
+# on an edge
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0,0 1)
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((0 0,1 0,1 1,0 1,0 0))|POLYGON((1 1,0 1,0 0,1 0,1 1))
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((0 0,1 0,1 1,0 1,0 0))|TIN(((1/2 1/2 0/1,0/1 1/1 0/1,0/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,0/1 0/1 0/1,1/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,1/1 0/1 0/1,1/1 1/1 0/1,1/2 1/2 0/1)),((0/1 1/1 0/1,1/2 1/2 0/1,1/1 1/1 0/1,0/1 1/1 0/1)))
+# inside a hole
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+# overlapping a hole => multipolygon
+2|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|MULTIPOLYGON(((1.6 1.3,1.4 1.3,1.4 0,1.6 0,1.6 1.3)),((1.4 2,1.4 1.7,1.6 1.7,1.6 2,1.4 2)))
+# FIXME => multi TIN ?
+3|POLYGON((0 0,2 0,2 2,0 2,0 0),(1.3 1.3,1.3 1.7,1.7 1.7,1.7 1.3,1.3 1.3))|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|TIN(((86/57 52/57 0/1,7/5 39/35 0/1,7/5 0/1 0/1,86/57 52/57 0/1)),((8/5 0/1 0/1,86/57 52/57 0/1,7/5 0/1 0/1,8/5 0/1 0/1)),((143/100 17/10 0/1,104/73 128/73 0/1,7/5 61/35 0/1,143/100 17/10 0/1)),((7/5 17/10 0/1,143/100 17/10 0/1,7/5 61/35 0/1,7/5 17/10 0/1)),((7/5 39/35 0/1,147/100 13/10 0/1,7/5 13/10 0/1,7/5 39/35 0/1)),((7/5 39/35 0/1,86/57 52/57 0/1,147/100 13/10 0/1,7/5 39/35 0/1)),((8/5 13/10 0/1,86/57 52/57 0/1,8/5 26/35 0/1,8/5 13/10 0/1)),((8/5 13/10 0/1,147/100 13/10 0/1,86/57 52/57 0/1,8/5 13/10 0/1)),((104/73 128/73 0/1,7/5 2/1 0/1,7/5 61/35 0/1,104/73 128/73 0/1)),((7/5 2/1 0/1,104/73 128/73 0/1,8/5 64/35 0/1,7/5 2/1 0/1)),((8/5 2/1 0/1,7/5 2/1 0/1,8/5 64/35 0/1,8/5 2/1 0/1)),((86/57 52/57 0/1,8/5 0/1 0/1,8/5 26/35 0/1,86/57 52/57 0/1)),((104/73 128/73 0/1,143/100 17/10 0/1,8/5 17/10 0/1,104/73 128/73 0/1)),((8/5 64/35 0/1,104/73 128/73 0/1,8/5 17/10 0/1,8/5 64/35 0/1)))
+
+#
+# point x polyhedral
+#
+
+# store a polyhedral : tesselation of a polygon with hole
+S|polyhedral|POLYHEDRALSURFACE(((1.7 1.7,1.7 1.3,2 2,1.7 1.7)),((1.3 1.3,0 0,2 0,1.3 1.3)),((1.7 1.3,1.3 1.3,2 0,1.7 1.3)),((0 2,0 0,1.3 1.3,0 2)),((0 2,1.3 1.7,2 2,0 2)),((0 2,1.3 1.3,1.3 1.7,0 2)),((1.3 1.7,1.7 1.7,2 2,1.3 1.7)),((2 2,1.7 1.3,2 0,2 2)))
+
+# point inside
+2|@polyhedral|POINT(0.1 0.1)|POINT(0.1 0.1)
+3|@polyhedral|POINT(0.1 0.1 0)|POINT(0.1 0.1 0)
+# point on an edge
+2|@polyhedral|POINT(0.1 0)|POINT(0.1 0)
+3|@polyhedral|POINT(0.1 00 0)|POINT(0.1 0 0)
+# point on a vertex
+2|@polyhedral|POINT(0 0)|POINT(0 0)
+3|@polyhedral|POINT(0 0 0)|POINT(0 0 0)
+# point on an interior edge
+2|@polyhedral|POINT(1.5 1.3)|POINT(1.5 1.3)
+3|@polyhedral|POINT(1.5 1.3 0)|POINT(1.5 1.3 0)
+# point in a hole
+2|@polyhedral|POINT(1.5 1.5)|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|POINT(1.5 1.5 0)|GEOMETRYCOLLECTION EMPTY
+# point outside
+2|@polyhedral|POINT(2.5 2.5)|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|POINT(2.5 2.5 0)|GEOMETRYCOLLECTION EMPTY
+
+#
+# linestring x polyhedral
+#
+
+# a linestring inside
+2|@polyhedral|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2,1/2 1/2,45/26 1/2,49/26 1/2,2/1 1/2)
+3|@polyhedral|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2 0,1/2 1/2 0,45/26 1/2 0,49/26 1/2 0,2/1 1/2 0)
+# a linestring on an edge
+2|@polyhedral|LINESTRING(0 0,1 0)|LINESTRING(0 0,1 0)
+3|@polyhedral|LINESTRING(0 0,1 0)|LINESTRING(0 0 0,1 0 0)
+# a linestring inside a hole
+2|@polyhedral|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+# a linestring outside
+2|@polyhedral|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+
+#
+# triangle x polyhedral
+# 
+
+# touching a vertex
+2|@polyhedral|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0)
+3|@polyhedral|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0 0)
+# touching an edge
+2|@polyhedral|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0,0 1)
+3|@polyhedral|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME should be TIN
+2|@polyhedral|TRIANGLE((-1 0,1 0,1 1,-1 0))|GEOMETRYCOLLECTION(TRIANGLE((1 1,0 0,0 0.5,1 1)),TRIANGLE((1 0,0 0,1 1,1 0)))
+3|@polyhedral|TRIANGLE((-1 0,1 0,1 1,-1 0))|TIN(((0/1 0/1 0/1,1/1 0/1 0/1,1/1 1/1 0/1,0/1 0/1 0/1)),((0/1 1/2 0/1,0/1 0/1 0/1,1/1 1/1 0/1,0/1 1/2 0/1)))
+## inside
+2|@polyhedral|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))
+3|@polyhedral|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1 0,1 0.1 0,1 1 0,0.1 0.1 0))
+# triangle inside a hole
+2|@polyhedral|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+
+#
+# polygon x polyhedral
+#
+
+# on a vertex
+2|@polyhedral|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0)
+3|@polyhedral|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0 0)
+# on an edge
+2|@polyhedral|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0,0 1)
+3|@polyhedral|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME : fix the output
+2|@polyhedral|POLYGON((0 0,1 0,1 1,0 1,0 0))|GEOMETRYCOLLECTION(POINT(0 1),POINT(1 -0),LINESTRING(0 0,0 1),LINESTRING(0 0,1 0),TRIANGLE((0 1,0 0,1 1,0 1)),TRIANGLE((1 1,0 0,1 0,1 1)))
+3|@polyhedral|POLYGON((0 0,1 0,1 1,0 1,0 0))|TIN(((1/2 1/2 0/1,0/1 1/1 0/1,0/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,0/1 0/1 0/1,1/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,1/1 0/1 0/1,1/1 1/1 0/1,1/2 1/2 0/1)),((0/1 1/1 0/1,1/2 1/2 0/1,1/1 1/1 0/1,0/1 1/1 0/1)))
+# inside a hole
+2|@polyhedral|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+# overlapping a hole => multipolygon
+2|@polyhedral|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|MULTIPOLYGON(((7/5 2/1,7/5 61/35,8/5 64/35,8/5 2/1,7/5 2/1)),((8/5 13/10,7/5 13/10,7/5 39/35,8/5 26/35,8/5 13/10)),((7/5 61/35,7/5 17/10,8/5 17/10,8/5 64/35,7/5 61/35)),((7/5 39/35,7/5 0/1,8/5 0/1,8/5 26/35,7/5 39/35)))
+# FIXME => multi TIN ?
+3|@polyhedral|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|TIN(((86/57 52/57 0/1,7/5 39/35 0/1,7/5 0/1 0/1,86/57 52/57 0/1)),((8/5 0/1 0/1,86/57 52/57 0/1,7/5 0/1 0/1,8/5 0/1 0/1)),((143/100 17/10 0/1,104/73 128/73 0/1,7/5 61/35 0/1,143/100 17/10 0/1)),((7/5 17/10 0/1,143/100 17/10 0/1,7/5 61/35 0/1,7/5 17/10 0/1)),((7/5 39/35 0/1,147/100 13/10 0/1,7/5 13/10 0/1,7/5 39/35 0/1)),((7/5 39/35 0/1,86/57 52/57 0/1,147/100 13/10 0/1,7/5 39/35 0/1)),((8/5 13/10 0/1,86/57 52/57 0/1,8/5 26/35 0/1,8/5 13/10 0/1)),((8/5 13/10 0/1,147/100 13/10 0/1,86/57 52/57 0/1,8/5 13/10 0/1)),((104/73 128/73 0/1,7/5 2/1 0/1,7/5 61/35 0/1,104/73 128/73 0/1)),((7/5 2/1 0/1,104/73 128/73 0/1,8/5 64/35 0/1,7/5 2/1 0/1)),((8/5 2/1 0/1,7/5 2/1 0/1,8/5 64/35 0/1,8/5 2/1 0/1)),((86/57 52/57 0/1,8/5 0/1 0/1,8/5 26/35 0/1,86/57 52/57 0/1)),((104/73 128/73 0/1,143/100 17/10 0/1,8/5 17/10 0/1,104/73 128/73 0/1)),((8/5 64/35 0/1,104/73 128/73 0/1,8/5 17/10 0/1,8/5 64/35 0/1)))
+
+#
+# polyhedral x polyhedral
+#
+
+# on a vertex
+2|@polyhedral|POLYHEDRALSURFACE(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0)
+3|@polyhedral|POLYHEDRALSURFACE(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0 0)
+# on an edge
+2|@polyhedral|POLYHEDRALSURFACE(((-1 1,0 0,0 1,-1 1)),((-1 1,-1 0,0 0,-1 1)))|LINESTRING(0 0,0 1)
+3|@polyhedral|POLYHEDRALSURFACE(((-1 1,0 0,0 1,-1 1)),((-1 1,-1 0,0 0,-1 1)))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME : fix the output
+2|@polyhedral|POLYHEDRALSURFACE(((0 1,1 0,1 1,0 1)),((0 1,0 0,1 0,0 1)))|GEOMETRYCOLLECTION(TRIANGLE((1 -0,0 0,0.5 0.5,1 -0)),TRIANGLE((0.5 0.5,0 0,-0 1,0.5 0.5)),TRIANGLE((1 1,0.5 0.5,0 1,1 1)),TRIANGLE((1 0,0.5 0.5,1 1,1 0)))
+3|@polyhedral|POLYHEDRALSURFACE(((0 1,1 0,1 1,0 1)),((0 1,0 0,1 0,0 1)))|TIN(((0 1 0,0.5 0.5 0,1 1 0,0 1 0)),((0.5 0.5 0,1 0 0,1 1 0,0.5 0.5 0)),((0.5 0.5 0,0 1 0,0 0 0,0.5 0.5 0)),((0.5 0.5 0,0 0 0,1 0 0,0.5 0.5 0)))
+# inside a hole
+2|@polyhedral|POLYHEDRALSURFACE(((1.4 1.6,1.6 1.4,1.6 1.6,1.4 1.6)),((1.4 1.6,1.4 1.4,1.6 1.4,1.4 1.6)))|GEOMETRYCOLLECTION EMPTY
+3|@polyhedral|POLYHEDRALSURFACE(((1.4 1.6,1.6 1.4,1.6 1.6,1.4 1.6)),((1.4 1.6,1.4 1.4,1.6 1.4,1.4 1.6)))|GEOMETRYCOLLECTION EMPTY
+# overlapping a hole => multipolygon
+# FIXME fix output
+2|@polyhedral|POLYHEDRALSURFACE(((1.4 2,1.6 0,1.6 2,1.4 2)),((1.4 2,1.4 0,1.6 0,1.4 2)))|GEOMETRYCOLLECTION(POLYGON((8/5 64/35,104/73 128/73,7/5 2/1,8/5 2/1,8/5 64/35)),TRIANGLE((104/73 128/73,7/5 61/35,7/5 2/1,104/73 128/73)),TRIANGLE((8/5 0/1,86/57 52/57,8/5 26/35,8/5 0/1)),POLYGON((8/5 17/10,143/100 17/10,104/73 128/73,8/5 64/35,8/5 17/10)),POLYGON((143/100 17/10,7/5 17/10,7/5 61/35,104/73 128/73,143/100 17/10)),POLYGON((8/5 26/35,86/57 52/57,147/100 13/10,8/5 13/10,8/5 26/35)),POLYGON((8/5 0/1,7/5 0/1,7/5 39/35,86/57 52/57,8/5 0/1)),POLYGON((86/57 52/57,7/5 39/35,7/5 13/10,147/100 13/10,86/57 52/57)))
+# FIXME => multi TIN ?
+3|@polyhedral|POLYHEDRALSURFACE(((1.4 2,1.6 0,1.6 2,1.4 2)),((1.4 2,1.4 0,1.6 0,1.4 2)))|TIN(((86/57 52/57 0/1,7/5 39/35 0/1,7/5 0/1 0/1,86/57 52/57 0/1)),((8/5 0/1 0/1,86/57 52/57 0/1,7/5 0/1 0/1,8/5 0/1 0/1)),((143/100 17/10 0/1,104/73 128/73 0/1,7/5 61/35 0/1,143/100 17/10 0/1)),((7/5 17/10 0/1,143/100 17/10 0/1,7/5 61/35 0/1,7/5 17/10 0/1)),((7/5 39/35 0/1,147/100 13/10 0/1,7/5 13/10 0/1,7/5 39/35 0/1)),((7/5 39/35 0/1,86/57 52/57 0/1,147/100 13/10 0/1,7/5 39/35 0/1)),((8/5 13/10 0/1,86/57 52/57 0/1,8/5 26/35 0/1,8/5 13/10 0/1)),((8/5 13/10 0/1,147/100 13/10 0/1,86/57 52/57 0/1,8/5 13/10 0/1)),((104/73 128/73 0/1,7/5 2/1 0/1,7/5 61/35 0/1,104/73 128/73 0/1)),((7/5 2/1 0/1,104/73 128/73 0/1,8/5 64/35 0/1,7/5 2/1 0/1)),((8/5 2/1 0/1,7/5 2/1 0/1,8/5 64/35 0/1,8/5 2/1 0/1)),((86/57 52/57 0/1,8/5 0/1 0/1,8/5 26/35 0/1,86/57 52/57 0/1)),((104/73 128/73 0/1,143/100 17/10 0/1,8/5 17/10 0/1,104/73 128/73 0/1)),((8/5 64/35 0/1,104/73 128/73 0/1,8/5 17/10 0/1,8/5 64/35 0/1)))
+
+#
+# point x tin
+#
+
+# store a TIN : tesselation of a polygon with hole
+S|poly_tin|TIN(((1.7 1.7,1.7 1.3,2 2,1.7 1.7)),((1.3 1.3,0 0,2 0,1.3 1.3)),((1.7 1.3,1.3 1.3,2 0,1.7 1.3)),((0 2,0 0,1.3 1.3,0 2)),((0 2,1.3 1.7,2 2,0 2)),((0 2,1.3 1.3,1.3 1.7,0 2)),((1.3 1.7,1.7 1.7,2 2,1.3 1.7)),((2 2,1.7 1.3,2 0,2 2)))
+
+# point inside
+2|@poly_tin|POINT(0.1 0.1)|POINT(0.1 0.1)
+3|@poly_tin|POINT(0.1 0.1 0)|POINT(0.1 0.1 0)
+# point on an edge
+2|@poly_tin|POINT(0.1 0)|POINT(0.1 0)
+3|@poly_tin|POINT(0.1 00 0)|POINT(0.1 0 0)
+# point on a vertex
+2|@poly_tin|POINT(0 0)|POINT(0 0)
+3|@poly_tin|POINT(0 0 0)|POINT(0 0 0)
+# point on an interior edge
+2|@poly_tin|POINT(1.5 1.3)|POINT(1.5 1.3)
+3|@poly_tin|POINT(1.5 1.3 0)|POINT(1.5 1.3 0)
+# point in a hole
+2|@poly_tin|POINT(1.5 1.5)|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|POINT(1.5 1.5 0)|GEOMETRYCOLLECTION EMPTY
+# point outside
+2|@poly_tin|POINT(2.5 2.5)|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|POINT(2.5 2.5 0)|GEOMETRYCOLLECTION EMPTY
+
+
+#
+# linestring x tin
+#
+
+# a linestring inside
+2|@poly_tin|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2,1/2 1/2,45/26 1/2,49/26 1/2,2/1 1/2)
+3|@poly_tin|LINESTRING(-0.5 0.5,2.5 0.5)|LINESTRING(0/1 1/2 0,1/2 1/2 0,45/26 1/2 0,49/26 1/2 0,2/1 1/2 0)
+# a linestring on an edge
+2|@poly_tin|LINESTRING(0 0,1 0)|LINESTRING(0 0,1 0)
+3|@poly_tin|LINESTRING(0 0,1 0)|LINESTRING(0 0 0,1 0 0)
+# a linestring inside a hole
+2|@poly_tin|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|LINESTRING(1.4 1.4,1.6 1.6)|GEOMETRYCOLLECTION EMPTY
+# a linestring outside
+2|@poly_tin|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|LINESTRING(-0.5 0,1 -2)|GEOMETRYCOLLECTION EMPTY
+
+#
+# triangle x tin
+#
+
+# touching a vertex
+2|@poly_tin|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0)
+3|@poly_tin|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0 0)
+# touching an edge
+2|@poly_tin|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0,0 1)
+3|@poly_tin|TRIANGLE((-1 0,0 0,0 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME should be TIN
+2|@poly_tin|TRIANGLE((-1 0,1 0,1 1,-1 0))|GEOMETRYCOLLECTION(TRIANGLE((1 1,0 0,0 0.5,1 1)),TRIANGLE((1 0,0 0,1 1,1 0)))
+3|@poly_tin|TRIANGLE((-1 0,1 0,1 1,-1 0))|TIN(((0/1 0/1 0/1,1/1 0/1 0/1,1/1 1/1 0/1,0/1 0/1 0/1)),((0/1 1/2 0/1,0/1 0/1 0/1,1/1 1/1 0/1,0/1 1/2 0/1)))
+## inside
+2|@poly_tin|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))
+3|@poly_tin|TRIANGLE((0.1 0.1,1 0.1,1 1,0.1 0.1))|TRIANGLE((0.1 0.1 0,1 0.1 0,1 1 0,0.1 0.1 0))
+# triangle inside a hole
+2|@poly_tin|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|TRIANGLE((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+
+#
+# polygon x tin
+#
+
+# on a vertex
+2|@poly_tin|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0)
+3|@poly_tin|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0 0)
+# on an edge
+2|@poly_tin|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0,0 1)
+3|@poly_tin|POLYGON((-1 0,0 0,0 1,-1 1,-1 0))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME : fix the output
+2|@poly_tin|POLYGON((0 0,1 0,1 1,0 1,0 0))|GEOMETRYCOLLECTION(POINT(0 1),POINT(1 -0),LINESTRING(0 0,0 1),LINESTRING(0 0,1 0),TRIANGLE((0 1,0 0,1 1,0 1)),TRIANGLE((1 1,0 0,1 0,1 1)))
+3|@poly_tin|POLYGON((0 0,1 0,1 1,0 1,0 0))|TIN(((1/2 1/2 0/1,0/1 1/1 0/1,0/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,0/1 0/1 0/1,1/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,1/1 0/1 0/1,1/1 1/1 0/1,1/2 1/2 0/1)),((0/1 1/1 0/1,1/2 1/2 0/1,1/1 1/1 0/1,0/1 1/1 0/1)))
+# inside a hole
+2|@poly_tin|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|POLYGON((1.4 1.4,1.6 1.4,1.6 1.6,1.4 1.6,1.4 1.4))|GEOMETRYCOLLECTION EMPTY
+# overlapping a hole => multipolygon
+2|@poly_tin|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|MULTIPOLYGON(((7/5 2/1,7/5 61/35,8/5 64/35,8/5 2/1,7/5 2/1)),((8/5 13/10,7/5 13/10,7/5 39/35,8/5 26/35,8/5 13/10)),((7/5 61/35,7/5 17/10,8/5 17/10,8/5 64/35,7/5 61/35)),((7/5 39/35,7/5 0/1,8/5 0/1,8/5 26/35,7/5 39/35)))
+# FIXME => multi TIN ?
+3|@poly_tin|POLYGON((1.4 0,1.6 0,1.6 2,1.4 2,1.4 0))|TIN(((86/57 52/57 0/1,7/5 39/35 0/1,7/5 0/1 0/1,86/57 52/57 0/1)),((8/5 0/1 0/1,86/57 52/57 0/1,7/5 0/1 0/1,8/5 0/1 0/1)),((143/100 17/10 0/1,104/73 128/73 0/1,7/5 61/35 0/1,143/100 17/10 0/1)),((7/5 17/10 0/1,143/100 17/10 0/1,7/5 61/35 0/1,7/5 17/10 0/1)),((7/5 39/35 0/1,147/100 13/10 0/1,7/5 13/10 0/1,7/5 39/35 0/1)),((7/5 39/35 0/1,86/57 52/57 0/1,147/100 13/10 0/1,7/5 39/35 0/1)),((8/5 13/10 0/1,86/57 52/57 0/1,8/5 26/35 0/1,8/5 13/10 0/1)),((8/5 13/10 0/1,147/100 13/10 0/1,86/57 52/57 0/1,8/5 13/10 0/1)),((104/73 128/73 0/1,7/5 2/1 0/1,7/5 61/35 0/1,104/73 128/73 0/1)),((7/5 2/1 0/1,104/73 128/73 0/1,8/5 64/35 0/1,7/5 2/1 0/1)),((8/5 2/1 0/1,7/5 2/1 0/1,8/5 64/35 0/1,8/5 2/1 0/1)),((86/57 52/57 0/1,8/5 0/1 0/1,8/5 26/35 0/1,86/57 52/57 0/1)),((104/73 128/73 0/1,143/100 17/10 0/1,8/5 17/10 0/1,104/73 128/73 0/1)),((8/5 64/35 0/1,104/73 128/73 0/1,8/5 17/10 0/1,8/5 64/35 0/1)))
+
+#
+# tin x tin
+#
+
+# on a vertex
+2|@poly_tin|TIN(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0)
+3|@poly_tin|TIN(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0 0)
+# on an edge
+2|@poly_tin|TIN(((-1 1,0 0,0 1,-1 1)),((-1 1,-1 0,0 0,-1 1)))|LINESTRING(0 0,0 1)
+3|@poly_tin|TIN(((-1 1,0 0,0 1,-1 1)),((-1 1,-1 0,0 0,-1 1)))|LINESTRING(0 0 0,0 1 0)
+# overlapping
+# FIXME : fix the output
+2|@poly_tin|TIN(((0 1,1 0,1 1,0 1)),((0 1,0 0,1 0,0 1)))|GEOMETRYCOLLECTION(TRIANGLE((1 -0,0 0,0.5 0.5,1 -0)),TRIANGLE((0.5 0.5,0 0,-0 1,0.5 0.5)),TRIANGLE((1 1,0.5 0.5,0 1,1 1)),TRIANGLE((1 0,0.5 0.5,1 1,1 0)))
+3|@poly_tin|TIN(((0 1,1 0,1 1,0 1)),((0 1,0 0,1 0,0 1)))|TIN(((1/2 1/2 0/1,0/1 1/1 0/1,0/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,0/1 0/1 0/1,1/1 0/1 0/1,1/2 1/2 0/1)),((1/2 1/2 0/1,1/1 0/1 0/1,1/1 1/1 0/1,1/2 1/2 0/1)),((0/1 1/1 0/1,1/2 1/2 0/1,1/1 1/1 0/1,0/1 1/1 0/1)))
+# inside a hole
+2|@poly_tin|TIN(((1.4 1.6,1.6 1.4,1.6 1.6,1.4 1.6)),((1.4 1.6,1.4 1.4,1.6 1.4,1.4 1.6)))|GEOMETRYCOLLECTION EMPTY
+3|@poly_tin|TIN(((1.4 1.6,1.6 1.4,1.6 1.6,1.4 1.6)),((1.4 1.6,1.4 1.4,1.6 1.4,1.4 1.6)))|GEOMETRYCOLLECTION EMPTY
+# overlapping a hole => multipolygon
+# FIXME fix output
+2|@poly_tin|TIN(((1.4 2,1.6 0,1.6 2,1.4 2)),((1.4 2,1.4 0,1.6 0,1.4 2)))|GEOMETRYCOLLECTION(POLYGON((8/5 64/35,104/73 128/73,7/5 2/1,8/5 2/1,8/5 64/35)),TRIANGLE((104/73 128/73,7/5 61/35,7/5 2/1,104/73 128/73)),TRIANGLE((8/5 0/1,86/57 52/57,8/5 26/35,8/5 0/1)),POLYGON((8/5 17/10,143/100 17/10,104/73 128/73,8/5 64/35,8/5 17/10)),POLYGON((143/100 17/10,7/5 17/10,7/5 61/35,104/73 128/73,143/100 17/10)),POLYGON((8/5 26/35,86/57 52/57,147/100 13/10,8/5 13/10,8/5 26/35)),POLYGON((8/5 0/1,7/5 0/1,7/5 39/35,86/57 52/57,8/5 0/1)),POLYGON((86/57 52/57,7/5 39/35,7/5 13/10,147/100 13/10,86/57 52/57)))
+# FIXME => multi TIN ?
+3|@poly_tin|TIN(((1.4 2,1.6 0,1.6 2,1.4 2)),((1.4 2,1.4 0,1.6 0,1.4 2)))|TIN(((86/57 52/57 0/1,7/5 39/35 0/1,7/5 0/1 0/1,86/57 52/57 0/1)),((8/5 0/1 0/1,86/57 52/57 0/1,7/5 0/1 0/1,8/5 0/1 0/1)),((143/100 17/10 0/1,104/73 128/73 0/1,7/5 61/35 0/1,143/100 17/10 0/1)),((7/5 17/10 0/1,143/100 17/10 0/1,7/5 61/35 0/1,7/5 17/10 0/1)),((7/5 39/35 0/1,147/100 13/10 0/1,7/5 13/10 0/1,7/5 39/35 0/1)),((7/5 39/35 0/1,86/57 52/57 0/1,147/100 13/10 0/1,7/5 39/35 0/1)),((8/5 13/10 0/1,86/57 52/57 0/1,8/5 26/35 0/1,8/5 13/10 0/1)),((8/5 13/10 0/1,147/100 13/10 0/1,86/57 52/57 0/1,8/5 13/10 0/1)),((104/73 128/73 0/1,7/5 2/1 0/1,7/5 61/35 0/1,104/73 128/73 0/1)),((7/5 2/1 0/1,104/73 128/73 0/1,8/5 64/35 0/1,7/5 2/1 0/1)),((8/5 2/1 0/1,7/5 2/1 0/1,8/5 64/35 0/1,8/5 2/1 0/1)),((86/57 52/57 0/1,8/5 0/1 0/1,8/5 26/35 0/1,86/57 52/57 0/1)),((104/73 128/73 0/1,143/100 17/10 0/1,8/5 17/10 0/1,104/73 128/73 0/1)),((8/5 64/35 0/1,104/73 128/73 0/1,8/5 17/10 0/1,8/5 64/35 0/1)))
+
+
+#
+# point x solid
+#
+
+# store the cube
+S|cube|SOLID((((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0)),((0 0 1,0 1 1,0 1 0,0 0 0,0 0 1)),((1 0 1,1 1 1,0 1 1,0 0 1,1 0 1)),((1 0 0,1 0 1,0 0 1,0 0 0,1 0 0))))
+
+# point on a vertex
+3|@cube|POINT(0 0 0)|@B
+# point on an edge
+3|@cube|POINT(0.5 0 0)|@B
+# point on a face
+3|@cube|POINT(0.5 0.5 0)|@B
+# point inside
+3|@cube|POINT(0.5 0.5 0.5)|@B
+# point outside
+3|@cube|POINT(2 2 2)|GEOMETRYCOLLECTION EMPTY
+
+#
+# linestring x solid
+#
+
+
+# on a vertex
+3|@cube|LINESTRING(-1 0 0,0 0 0)|POINT(0 0 0)
+# on an edge
+3|@cube|LINESTRING(-1 0,2 0)|LINESTRING(0 0 0,1 0 0)
+# inside a face
+3|@cube|LINESTRING(-1 0.5 0.5,0.5 0.5 0.5)|LINESTRING(0 0.5 0.5,0.5 0.5 0.5)
+# completely inside
+3|@cube|LINESTRING(0.2 0.2 0.2,0.7 0.7 0.7)|@B
+
+#
+# triangle x solid
+#
+
+# on a vertex
+3|@cube|TRIANGLE((-1 -1,0 -1,0 0,-1 -1))|POINT(0 0 0)
+# overlapping giving a polygon
+3|@cube|TRIANGLE((-1 0,1 0,1 1,-1 0))|POLYGON((0 0.5 0,1 1 0,1 0 0,0 0 0,0 0.5 0))
+# overlapping giving a triangle
+# FIXME : should be a triangle
+3|@cube|TRIANGLE((0.5 0,1.5 0,1.5 1,0.5 0))|POLYGON((1 0.5 0,1 0 0,0.5 0 0,1 0.5 0))
+# partly inside
+3|@cube|TRIANGLE((0.5 0 0.5,1.5 0 0.5,1.5 1 0.5,0.5 0 0.5))|POLYGON((1/2 0/1 1/2,1/1 1/2 1/2,1/1 0/1 1/2,1/2 0/1 1/2))
+# inside
+3|@cube|TRIANGLE((0.2 0.2 0.2,0.7 0.2 0.2,0.7 0.7 0.2,0.2 0.2 0.2))|@B
+
+#
+# polygon x solid
+#
+
+# on a vertex
+3|@cube|POLYGON((-1 -1,0 -1,0 0,-1 0,-1 -1))|POINT(0 0 0)
+# on an edge
+3|@cube|POLYGON((-1 0,0 0,0 0.5,-1 0.5,-1 0))|LINESTRING(0 0 0,0 0.5 0)
+# overlapping giving a polygon
+3|@cube|POLYGON((0.5 0 0,1.5 0 0,1.5 0.5 0,0.5 0.5 0,0.5 0 0))|MULTIPOLYGON(((1 0.5 0,1 0.5 0,0.5 0.5 0,1 0.5 0)),((0.5 0 0,0.5 0.5 0,1 0.25 0,1 0 0,0.5 0 0)))
+# partly inside
+3|@cube|POLYGON((0.5 0 0.5,1.5 0 0.5,1.5 0.5 0.5,0.5 0.5 0.5,0.5 0 0.5))|MULTIPOLYGON(((1/2 0/1 1/2,1/2 1/2 1/2,1/1 1/4 1/2,1/1 0/1 1/2,1/2 0/1 1/2)),((1/2 1/2 1/2,1/1 1/2 1/2,1/1 1/4 1/2,1/2 1/2 1/2)))
+# inside
+3|@cube|POLYGON((0.2 0.2 0.2,0.7 0.2 0.2,0.7 0.7 0.2,0.2 0.7 0.2,0.2 0.2 0.2))|TIN(((1/5 7/10 1/5,1/5 1/5 1/5,7/10 1/5 1/5,1/5 7/10 1/5)),((1/5 7/10 1/5,7/10 1/5 1/5,7/10 7/10 1/5,1/5 7/10 1/5)))
+# concave polygone that touches on two points
+3|@cube|POLYGON((0.2 0.5 0, 0.2 0.5 -1, 0.8 0.5 -1, 0.8 0.5 0, 0.5 0.5 -0.5, 0.2 0.5 0))|MULTIPOINT(0.8 0.5 0,0.2 0.5 0)
+# cube inside a hole
+3|@cube|POLYGON((-1 -1,2 -1,2 2,-1 2,-1 -1),(-0.5 -0.5,-0.5 1.5,1.5 1.5,1.5 -0.5,-0.5 -0.5))|GEOMETRYCOLLECTION EMPTY
+
+#
+# polyhedral x solid
+#
+
+# on a vertex
+3|@cube|POLYHEDRALSURFACE(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0 0)
+# on an edge
+3|@cube|POLYHEDRALSURFACE(((-1 0.5,0 0,0 0.5,-1 0.5)),((-1 0.5,-1 0,0 0,-1 0.5)))|LINESTRING(0 0 0,0 0.5 0)
+# overlapping giving a polygon
+3|@cube|POLYHEDRALSURFACE(((0.5 0.5 0,1.5 0 0,1.5 0.5 0,0.5 0.5 0)),((0.5 0.5 0,0.5 0 0,1.5 0 0,0.5 0.5 0)))|MULTIPOLYGON(((1/1 1/2 0/1,1/1 1/4 0/1,1/2 1/2 0/1,1/1 1/2 0/1)),((1/2 0/1 0/1,1/2 1/2 0/1,1/1 1/4 0/1,1/1 0/1 0/1,1/2 0/1 0/1)))
+# partly inside
+3|@cube|POLYHEDRALSURFACE(((0.5 0.5 0.5,1.5 0 0.5,1.5 0.5 0.5,0.5 0.5 0.5)),((0.5 0.5 0.5,0.5 0 0.5,1.5 0 0.5,0.5 0.5 0.5)))|MULTIPOLYGON(((1/1 1/2 1/2,1/1 1/4 1/2,1/2 1/2 1/2,1/1 1/2 1/2)),((1/1 1/4 1/2,1/1 0/1 1/2,1/2 0/1 1/2,1/2 1/2 1/2,1/1 1/4 1/2)))
+# inside
+3|@cube|POLYHEDRALSURFACE(((0.2 0.7 0.2,0.7 0.2 0.2,0.7 0.7 0.2,0.2 0.7 0.2)),((0.2 0.7 0.2,0.2 0.2 0.2,0.7 0.2 0.2,0.2 0.7 0.2)))|TIN(((1/5 7/10 1/5,1/5 1/5 1/5,7/10 1/5 1/5,1/5 7/10 1/5)),((1/5 7/10 1/5,7/10 1/5 1/5,7/10 7/10 1/5,1/5 7/10 1/5)))
+# concave polygone that touches on two points
+3|@cube|POLYHEDRALSURFACE(((0.5 0.5 -0.5,0.2 0.5 -1,0.8 0.5 -1,0.5 0.5 -0.5)),((0.8 0.5 0,0.5 0.5 -0.5,0.8 0.5 -1,0.8 0.5 0)),((0.2 0.5 0,0.2 0.5 -1,0.5 0.5 -0.5,0.2 0.5 0)))|MULTIPOINT(0.8 0.5 0,0.2 0.5 0)
+# cube inside a hole
+3|@cube|POLYHEDRALSURFACE(((1.5 -0.5,-0.5 -0.5,-1 -1,1.5 -0.5)),((1.5 -0.5,-1 -1,2 -1,1.5 -0.5)),((-1 2,-1 -1,-0.5 -0.5,-1 2)),((-1 2,-0.5 1.5,1.5 1.5,-1 2)),((-1 2,-0.5 -0.5,-0.5 1.5,-1 2)),((2 2,1.5 1.5,2 -1,2 2)),((2 2,-1 2,1.5 1.5,2 2)),((1.5 1.5,1.5 -0.5,2 -1,1.5 1.5)))|GEOMETRYCOLLECTION EMPTY
+
+#
+# tin x solid
+#
+
+# on a vertex
+3|@cube|TIN(((-1 0,0 -1,0 0,-1 0)),((-1 0,-1 -1,0 -1,-1 0)))|POINT(0 0 0)
+# on an edge
+3|@cube|TIN(((-1 0.5,0 0,0 0.5,-1 0.5)),((-1 0.5,-1 0,0 0,-1 0.5)))|LINESTRING(0 0 0,0 0.5 0)
+# overlapping giving a polygon
+3|@cube|TIN(((0.5 0.5 0,1.5 0 0,1.5 0.5 0,0.5 0.5 0)),((0.5 0.5 0,0.5 0 0,1.5 0 0,0.5 0.5 0)))|MULTIPOLYGON(((1/2 0/1 0/1,1/2 1/2 0/1,1/1 1/4 0/1,1/1 0/1 0/1,1/2 0/1 0/1)),((1/2 1/2 0/1,1/1 1/2 0/1,1/1 1/4 0/1,1/2 1/2 0/1)))
+# partly inside
+3|@cube|TIN(((0.5 0.5 0.5,1.5 0 0.5,1.5 0.5 0.5,0.5 0.5 0.5)),((0.5 0.5 0.5,0.5 0 0.5,1.5 0 0.5,0.5 0.5 0.5)))|MULTIPOLYGON(((1/1 1/4 1/2,1/1 0/1 1/2,1/2 0/1 1/2,1/2 1/2 1/2,1/1 1/4 1/2)),((1/1 1/2 1/2,1/1 1/4 1/2,1/2 1/2 1/2,1/1 1/2 1/2)))
+# inside
+3|@cube|TIN(((0.2 0.7 0.2,0.7 0.2 0.2,0.7 0.7 0.2,0.2 0.7 0.2)),((0.2 0.7 0.2,0.2 0.2 0.2,0.7 0.2 0.2,0.2 0.7 0.2)))|TIN(((1/5 7/10 1/5,1/5 1/5 1/5,7/10 1/5 1/5,1/5 7/10 1/5)),((1/5 7/10 1/5,7/10 1/5 1/5,7/10 7/10 1/5,1/5 7/10 1/5)))
+# concave polygone that touches on two points
+3|@cube|TIN(((0.5 0.5 -0.5,0.2 0.5 -1,0.8 0.5 -1,0.5 0.5 -0.5)),((0.8 0.5 0,0.5 0.5 -0.5,0.8 0.5 -1,0.8 0.5 0)),((0.2 0.5 0,0.2 0.5 -1,0.5 0.5 -0.5,0.2 0.5 0)))|MULTIPOINT(0.8 0.5 0,0.2 0.5 0)
+# cube inside a hole
+3|@cube|TIN(((1.5 -0.5,-0.5 -0.5,-1 -1,1.5 -0.5)),((1.5 -0.5,-1 -1,2 -1,1.5 -0.5)),((-1 2,-1 -1,-0.5 -0.5,-1 2)),((-1 2,-0.5 1.5,1.5 1.5,-1 2)),((-1 2,-0.5 -0.5,-0.5 1.5,-1 2)),((2 2,1.5 1.5,2 -1,2 2)),((2 2,-1 2,1.5 1.5,2 2)),((1.5 1.5,1.5 -0.5,2 -1,1.5 1.5)))|GEOMETRYCOLLECTION EMPTY
+
+#
+# solid x solid
+#
+
+# cube x cube => cube (its TIN version)
+3|@cube|@cube|SOLID((((1 1 0,0 1 0,1 1 1,1 1 0)),((1 1 1,1 0 1,1 1 0,1 1 1)),((0 1 0,0 1 1,1 1 1,0 1 0)),((1 1 0,0 0 0,0 1 0,1 1 0)),((1 0 1,1 0 0,1 1 0,1 0 1)),((1 1 1,0 1 1,1 0 1,1 1 1)),((0 1 0,0 0 0,0 1 1,0 1 0)),((1 1 0,1 0 0,0 0 0,1 1 0)),((1 0 1,0 0 1,1 0 0,1 0 1)),((0 1 1,0 0 1,1 0 1,0 1 1)),((0 0 0,0 0 1,0 1 1,0 0 0)),((1 0 0,0 0 1,0 0 0,1 0 0))))
+# cube x displaced cube (-1 -1 -1) => point
+# FIXME : result is not stable !! (run multiple times to reproduce)
+3|SOLID((((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0)),((0 0 1,0 1 1,0 1 0,0 0 0,0 0 1)),((1 0 1,1 1 1,0 1 1,0 0 1,1 0 1)),((1 0 0,1 0 1,0 0 1,0 0 0,1 0 0))))|SOLID((((-1 -1 -1,-1 0 -1,0 0 -1,0 -1 -1,-1 -1 -1)),((0 -1 -1,0 0 -1,0 0 0,0 -1 0,0 -1 -1)),((-1 0 -1,-1 0 0,0 0 0,0 0 -1,-1 0 -1)),((-1 -1 0,-1 0 0,-1 0 -1,-1 -1 -1,-1 -1 0)),((0 -1 0,0 0 0,-1 0 0,-1 -1 0,0 -1 0)),((0 -1 -1,0 -1 0,-1 -1 0,-1 -1 -1,0 -1 -1))))|POINT(0 0 0)
+3|@cube|SOLID((((-1 -1 -1,-1 0 -1,0 0 -1,0 -1 -1,-1 -1 -1)),((0 -1 -1,0 0 -1,0 0 0,0 -1 0,0 -1 -1)),((-1 0 -1,-1 0 0,0 0 0,0 0 -1,-1 0 -1)),((-1 -1 0,-1 0 0,-1 0 -1,-1 -1 -1,-1 -1 0)),((0 -1 0,0 0 0,-1 0 0,-1 -1 0,0 -1 0)),((0 -1 -1,0 -1 0,-1 -1 0,-1 -1 -1,0 -1 -1))))|POINT(0 0 0)
+# cube x displaced cube (-1 -1 0) => line
+3|@cube|SOLID((((-1 -1 0,-1 0 0,0 0 0,0 -1 0,-1 -1 0)),((0 -1 0,0 0 0,0 0 1,0 -1 1,0 -1 0)),((-1 0 0,-1 0 1,0 0 1,0 0 0,-1 0 0)),((-1 -1 1,-1 0 1,-1 0 0,-1 -1 0,-1 -1 1)),((0 -1 1,0 0 1,-1 0 1,-1 -1 1,0 -1 1)),((0 -1 0,0 -1 1,-1 -1 1,-1 -1 0,0 -1 0))))|LINESTRING(0 0 0,0 0 1)
+# cube x displaced cube (-1 0 0) => face
+# FIXME : output !
+3|@cube|SOLID((((-1 -0 -0,-1 1 -0,-0 1 -0,-0 -0 -0,-1 -0 -0)),((-0 -0 -0,-0 1 -0,-0 1 1,-0 -0 1,-0 -0 -0)),((-1 1 -0,-1 1 1,-0 1 1,-0 1 -0,-1 1 -0)),((-1 -0 1,-1 1 1,-1 1 -0,-1 -0 -0,-1 -0 1)),((-0 -0 1,-0 1 1,-1 1 1,-1 -0 1,-0 -0 1)),((-0 -0 -0,-0 -0 1,-1 -0 1,-1 -0 -0,-0 -0 -0))))|GEOMETRYCOLLECTION(LINESTRING(0 0 0,0 0 1),LINESTRING(0 0 0,0 1 0),LINESTRING(0 1 1,0 0 1),LINESTRING(0 1 1,0 1 0),TIN(((0 0.5 0.5,0 0 1,0 0 0,0 0.5 0.5)),((0 0 1,0 0.5 0.5,0 1 1,0 0 1)),((0 0.5 0.5,0 0 0,0 1 0,0 0.5 0.5)),((0 0.5 0.5,0 1 0,0 1 1,0 0.5 0.5))))
+# cube x displaced cube (+0.5 0 0) => small cube
+3|@cube|SOLID((((0.5 0 0,0.5 1 0,1.5 1 0,1.5 0 0,0.5 0 0)),((1.5 0 0,1.5 1 0,1.5 1 1,1.5 0 1,1.5 0 0)),((0.5 1 0,0.5 1 1,1.5 1 1,1.5 1 0,0.5 1 0)),((0.5 0 1,0.5 1 1,0.5 1 0,0.5 0 0,0.5 0 1)),((1.5 0 1,1.5 1 1,0.5 1 1,0.5 0 1,1.5 0 1)),((1.5 0 0,1.5 0 1,0.5 0 1,0.5 0 0,1.5 0 0))))|SOLID((((1 0.5 0,1 0 0,0.5 0 0,1 0.5 0)),((0.5 0 0,0.5 0.5 0,1 0.5 0,0.5 0 0)),((1 0 0,0.5 0 0.5,0.5 0 0,1 0 0)),((1 0.5 0,1 0 0.5,1 0 0,1 0.5 0)),((0.5 0.5 0,1 1 0,1 0.5 0,0.5 0.5 0)),((0.5 0 0,0.5 1 1,0.5 0.5 0,0.5 0 0)),((0.5 0 0.5,0.5 0.5 1,0.5 0 0,0.5 0 0.5)),((1 0 0,1 0 0.5,0.5 0 0.5,1 0 0)),((1 0.5 0,1 0 1,1 0 0.5,1 0.5 0)),((1 1 0,1 0 1,1 0.5 0,1 1 0)),((0.5 0.5 0,0.5 1 0,1 1 0,0.5 0.5 0)),((0.5 1 1,0.5 1 0.5,0.5 0.5 0,0.5 1 1)),((0.5 0 0,0.5 0.5 1,0.5 1 1,0.5 0 0)),((0.5 0 0.5,0.5 0 1,0.5 0.5 1,0.5 0 0.5)),((1 0 0.5,0.5 0 1,0.5 0 0.5,1 0 0.5)),((1 0 1,0.5 0 1,1 0 0.5,1 0 1)),((1 1 0,1 0.5 1,1 0 1,1 1 0)),((0.5 1 0,1 1 0.5,1 1 0,0.5 1 0)),((0.5 0.5 0,0.5 1 0.5,0.5 1 0,0.5 0.5 0)),((0.5 1 1,1 1 1,0.5 1 0.5,0.5 1 1)),((0.5 0.5 1,1 0.5 1,0.5 1 1,0.5 0.5 1)),((0.5 0 1,1 0 1,0.5 0.5 1,0.5 0 1)),((1 0.5 1,0.5 0.5 1,1 0 1,1 0.5 1)),((1 1 0,1 1 0.5,1 0.5 1,1 1 0)),((0.5 1 0,0.5 1 0.5,1 1 0.5,0.5 1 0)),((1 1 1,1 1 0.5,0.5 1 0.5,1 1 1)),((0.5 1 1,1 0.5 1,1 1 1,0.5 1 1)),((1 1 0.5,1 1 1,1 0.5 1,1 1 0.5))))
+
+#
+# some limit cases
+#
+
+# double points
+2|POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))|POLYGON((0 0,5 0,5 5,0 5,0 0))|POLYGON((5 5,0 5,0 0,5 0,5 5))
+# FIXME clean output
+3|POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))|POLYGON((0 0,5 0,5 5,0 5,0 0))|GEOMETRYCOLLECTION(POINT(5 5 0),TIN(((0 5 0,0 0 0,5 0 0,0 5 0)),((0 5 0,5 0 0,5 5 0,0 5 0))))
+# double points
+# FIXME clean output
+2|LINESTRING(0 0,0 10,10 10,10 0)|LINESTRING(10 10 4,10 0 5,0 0 5)|GEOMETRYCOLLECTION(POINT(0 0),LINESTRING(10 0,10 10))
+3|LINESTRING(0 0,0 10,10 10,10 0)|LINESTRING(10 10 4,10 0 5,0 0 5)|GEOMETRYCOLLECTION EMPTY
+
+# intersection with empty
+2|POINT EMPTY|POINT EMPTY|GEOMETRYCOLLECTION EMPTY
+3|POINT EMPTY|POINT EMPTY|GEOMETRYCOLLECTION EMPTY
+2|LINESTRING EMPTY|LINESTRING(10 10 4,10 0 5,0 0 5)|GEOMETRYCOLLECTION EMPTY
+3|LINESTRING EMPTY|LINESTRING(10 10 4,10 0 5,0 0 5)|GEOMETRYCOLLECTION EMPTY
+2|POLYGON EMPTY|TRIANGLE((0 0,1 0,1 1,0 0))|GEOMETRYCOLLECTION EMPTY
+3|POLYGON EMPTY|TRIANGLE((0 0,1 0,1 1,0 0))|GEOMETRYCOLLECTION EMPTY
+2|POLYGON EMPTY|POLYGON((0 0,1 0,1 1,0 1,0 0))|GEOMETRYCOLLECTION EMPTY
+3|POLYGON EMPTY|POLYGON((0 0,1 0,1 1,0 1,0 0))|GEOMETRYCOLLECTION EMPTY
+
+# intersection of polygon with a hole that intersects the boundary
+2|POLYGON((-1/1 -1/1,1/1 -1/1,1/1 1/1,-1/1 1/1,-1/1 -1/1))|POLYGON((-1/1 -1/1,1/1 -1/1,1/1 1/1,-1/1 1/1,-1/1 -1/1),(-1/2 -1/2,-1/2 1/2,1/2 1/2,1/1 -1/2,-1/2 -1/2))|!NotImplemented

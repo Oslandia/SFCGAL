@@ -72,10 +72,8 @@ void straightSkeletonToMultiLineString(
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck )
 {
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-
 	switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
 		return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
@@ -88,6 +86,12 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 	}
 }
 
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+
+	return straightSkeleton( g, autoOrientation, NoValidityCheck() );
+}
 ///
 ///
 ///
@@ -100,6 +104,9 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOr
 
 	Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
 	boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+    if (!skeleton.get() ) {
+        BOOST_THROW_EXCEPTION( Exception("CGAL failed to create straightSkeleton") ) ;
+    }
 	straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	return result ;
 }
@@ -114,6 +121,9 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool a
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		Polygon_with_holes_2 polygon = g.polygonN(i).toPolygon_with_holes_2() ;
 		boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+        if (!skeleton.get() ) {
+            BOOST_THROW_EXCEPTION( Exception("CGAL failed to create straightSkeleton") ) ;
+        }
 		straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	}
 	return result ;

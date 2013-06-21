@@ -26,6 +26,7 @@
 #include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <iostream>
 

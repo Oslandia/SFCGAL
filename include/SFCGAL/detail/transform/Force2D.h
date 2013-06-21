@@ -18,42 +18,33 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_ALGORITHM_OFFSET_H_
-#define _SFCGAL_ALGORITHM_OFFSET_H_
+#ifndef _SFCGAL_TRANSFORM_FORCE2D_H_
+#define _SFCGAL_TRANSFORM_FORCE2D_H_
 
 #include <SFCGAL/config.h>
 
-#include <memory>
+#include <SFCGAL/Kernel.h>
+#include <SFCGAL/Transform.h>
 
 namespace SFCGAL {
-	class Geometry ;
-	class MultiPolygon ;
-}
-
-namespace SFCGAL {
-namespace algorithm {
-	struct NoValidityCheck;
+namespace transform {
 
 	/**
-	 * @brief [experimental]compute polygon offset
-	 *
-	 * @warning test in order to compare with minkowski sum
-	 * @pre g is a valid Geometry
-	 * @ingroup public_api
+	 * Force 2D definitions
 	 */
-	SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r ) ;
+	class SFCGAL_API Force2D : public Transform {
+	public:
+		/*
+		 * [SFCGAL::Transform]
+		 */
+		virtual void transform( Point & p ) ;
+	};
 
-	/**
-	 * @brief [experimental]compute polygon offset
-	 *
-	 * @warning test in order to compare with minkowski sum
-	 * @pre g is a valid Geometry
-	 * @ingroup detail
-	 * @warning No actual validity check is done.
-	 */
-	SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r, NoValidityCheck ) ;
+}//transform
+}//SFCGAL
 
-}//namespace algorithm
-}//namespace SFCGAL
+
+
 
 #endif
+

@@ -55,6 +55,27 @@ namespace SFCGAL {
 		std::string _message;
 	};
 	
+	/**
+	 * SFCGAL Exception thrown when invalid geometries are found before entering an algo
+	 */
+	class SFCGAL_API GeometryInvalidityException : public Exception {
+    public:
+        GeometryInvalidityException( std::string const& message ):
+            Exception( message )
+        {}
+    
+    };
+
+	/**
+	 * SFCGAL Exception thrown when a function is not implemented
+	 */
+	class SFCGAL_API NotImplementedException : public Exception {
+    public:
+        NotImplementedException( std::string const& message ):
+            Exception( message )
+        {}
+    
+    };
 } // namespace SFCGAL
 
 #endif

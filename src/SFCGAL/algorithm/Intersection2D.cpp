@@ -24,6 +24,7 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/intersections.h>
 
+#include <SFCGAL/Exception.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
@@ -34,6 +35,33 @@ using namespace SFCGAL::detail;
 namespace SFCGAL {
 namespace algorithm {
     
+	// local function : get the number of intersection points between rings of a polygon
+	int numIntersectionPoints( const CGAL::Polygon_with_holes_2<Kernel>& poly )
+	{
+		int numIntersectionPoints = 0;
+		CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly.holes_begin();
+		for ( int i = 0; i == 0 || hit != poly.holes_end(); ++i ) {
+			GeometrySet<2> ringI;
+			if ( i == 0 ) {
+				ringI.addSegments( poly.outer_boundary().edges_begin(), poly.outer_boundary().edges_end() );
+			}
+			else {
+				ringI.addSegments( hit->edges_begin(), hit->edges_end() );
+				hit++;
+			}
+			for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hjt = hit;
+			      hjt != poly.holes_end();
+			      ++hjt ) {
+				GeometrySet<2> ringJ, inter;
+				ringJ.addSegments( hjt->edges_begin(), hjt->edges_end() );
+				
+				algorithm::intersection( ringI, ringJ, inter );
+				numIntersectionPoints += inter.points().size();
+			}
+		}
+		return numIntersectionPoints;
+	}
+
 	//
 	// must be called with pa's dimension larger than pb's
 	void intersection( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
@@ -88,6 +116,16 @@ namespace algorithm {
 				gpoly2.addSegments( hit->edges_begin(), hit->edges_end() );
 			}
 			algorithm::intersection( gpoly1, gpoly2, output );
+
+			// CGAL::intersection does not work when rings intersect themselves
+			// However, touching by a single point is valid for OGC
+			// FIXME: not implemented yet
+			if ( numIntersectionPoints( *poly1 ) > 0 ) {
+				BOOST_THROW_EXCEPTION(NotImplementedException("Intersection does not support polygon with connected rings"));
+			}
+			if ( numIntersectionPoints( *poly2 ) > 0 ) {
+				BOOST_THROW_EXCEPTION(NotImplementedException("Intersection does not support polygon with connected rings"));
+			}
 
 			// now call on polygon's interiors
 			CGAL::intersection( *poly1,

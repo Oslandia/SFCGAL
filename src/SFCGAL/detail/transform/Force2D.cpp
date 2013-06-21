@@ -18,38 +18,26 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_ALGORITHM_MINKOWSKISUM_H_
-#define _SFCGAL_ALGORITHM_MINKOWSKISUM_H_
+#include <SFCGAL/detail/transform/Force2D.h>
+#include <SFCGAL/Point.h>
 
-#include <SFCGAL/config.h>
-
-#include <memory>
-#include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
-namespace algorithm {
-	struct NoValidityCheck;
+namespace transform {
 
-	/**
-	 * @brief 2D minkowski sum (p+q)
-	 *
-	 * @todo missing cases (union)
-	 * @pre gA and gB are valid geometries
-	 * @ingroup public_api
-	 */
-	SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+///
+///
+///
+void Force2D::transform( Point & p )
+{
+	if ( ! p.isEmpty() && p.is3D() ){
+		p = Point( p.x(), p.y() );
+	}
+}
 
-	/**
-	 * @brief 2D minkowski sum (p+q)
-	 *
-	 * @todo missing cases (union)
-	 * @pre gA and gB are valid geometries
-	 * @ingroup detail
-	 * @warning@ No actual validity check is done.
-	 */
-	SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck ) ;
 
-} // namespace algorithm
-} // namespace SFCGAL
+}//transform
+}//SFCGAL
 
-#endif
+
+

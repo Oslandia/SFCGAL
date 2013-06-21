@@ -313,15 +313,5 @@ const Validity isValid( const Geometry& g, const double & toleranceAbs )
     return Validity::invalid(( boost::format("isValid( %s ) is not defined") % g.geometryType() ).str()); // to avoid warning
 }
 
-void checkValidity( const Geometry& g )
-{
-   const Validity v = isValid(g);
-   if ( !v ) {
-       BOOST_THROW_EXCEPTION(Exception(
-          ( boost::format("%s is invalid : %s") % g.asText() % v.reason() ).str()
-       ));
-   }
-}
-
 } // namespace algorithm
 } // namespace SFCGAL

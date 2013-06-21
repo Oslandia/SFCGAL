@@ -28,6 +28,7 @@
 
 #include <SFCGAL/detail/transform/AffineTransform3.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 
 
@@ -46,7 +47,7 @@ namespace algorithm {
 ///
 ///
 ///
-double distance3D( const Geometry & gA, const Geometry& gB )
+double distance3D( const Geometry & gA, const Geometry& gB, NoValidityCheck )
 {
 	//SFCGAL_DEBUG( boost::format("dispatch distance3D(%s,%s)") % gA.asText() % gB.asText() );
 
@@ -80,6 +81,13 @@ double distance3D( const Geometry & gA, const Geometry& gB )
 	));
 }
 
+double distance3D( const Geometry & gA, const Geometry& gB )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(gA);
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(gB);
+
+    return distance3D( gA, gB, NoValidityCheck() );
+}
 ///
 ///
 ///
@@ -183,7 +191,7 @@ double distancePointSolid3D( const Point & gA, const Solid& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects3D(gA,gB) ){
+	if ( intersects3D( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 
@@ -301,7 +309,7 @@ double distanceLineStringSolid3D( const LineString & gA, const Solid & gB )
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
-	if ( intersects( gA, gB ) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;
@@ -354,7 +362,7 @@ double distanceTriangleSolid3D( const Triangle & gA, const Solid& gB )
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
-	if ( intersects( gA, gB ) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;
@@ -428,7 +436,7 @@ double distanceSolidSolid3D( const Solid & gA, const Solid& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects( gA, gB ) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 
