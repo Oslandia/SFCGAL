@@ -37,6 +37,7 @@ namespace SFCGAL {
 
 	/**
 	 * A Polygon in SFA with holes
+     * @ingroup public_api
 	 */
 	class SFCGAL_API Polygon : public Surface {
 	public:

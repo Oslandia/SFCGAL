@@ -36,7 +36,7 @@ namespace SFCGAL {
 
 	/**
 	 * A LineString in SFA
-	 *
+     * @ingroup public_api
 	 * @todo template < size_t N >?
 	 */
 	class SFCGAL_API LineString : public Geometry {

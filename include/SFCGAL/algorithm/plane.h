@@ -34,7 +34,8 @@ namespace SFCGAL {
 namespace algorithm {
 
 	/**
-	 * Test if a 3D plane can be extracted from a Polygon
+	 * @brief Test if a 3D plane can be extracted from a Polygon
+	 * @ingroup public_api
 	 */
 	template < typename Kernel >
 	bool hasPlane3D( const Polygon& polygon,

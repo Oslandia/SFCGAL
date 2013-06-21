@@ -33,7 +33,7 @@ namespace SFCGAL {
 
 	/**
 	 * A MultiPolygon in SFA.
-	 *
+     * @ingroup public_api
 	 * @ŧodo add polygon() etc.
 	 */
 	class SFCGAL_API MultiPolygon : public GeometryCollection {

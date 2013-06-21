@@ -36,6 +36,7 @@ namespace SFCGAL {
 
 	/**
 	 * [OGC/SFA]Triangle
+     * @ingroup public_api
 	 *
 	 * @warning According to SFA, a Triangle should be inherited from a Polygon. That means
 	 * that a triangle "is a" Polygon with hole. This inheritance is removed in order to

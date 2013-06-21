@@ -29,7 +29,7 @@ namespace algorithm {
 
 	/**
 	 * @brief Compute the 2D area for a Geometry
-	 *
+	 * @ingroup public_api
 	 * @warning Z component is ignored, there is no 2D projection for 3D geometries
 	 */
 	SFCGAL_API double     area( const Geometry & g ) ;
@@ -67,7 +67,7 @@ namespace algorithm {
 
 	/**
 	 * Returns 3D area for a Geometry
-	 *
+	 * @ingroup public_api
 	 * @warning Solid area is set to 0 (might be defined as the area of the surface)
 	 */
 	SFCGAL_API double         area3D( const Geometry & g ) ;

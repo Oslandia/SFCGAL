@@ -295,7 +295,7 @@ int main( int argc, char* argv[] ){
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area3D(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
-        //CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
         
         for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
