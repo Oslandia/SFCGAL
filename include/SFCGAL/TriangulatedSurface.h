@@ -42,7 +42,6 @@ namespace SFCGAL {
 	/**
 	 * A TriangulatedSurface in SFA modeled as a Triangle soup
 	 *
-	 * @todo template < size_t N >?
 	 * @todo do better than a "triangle soup" or add topological view?
 	 *
 	 * @warning CGAL::Triangulation_3 contains tetrahedron

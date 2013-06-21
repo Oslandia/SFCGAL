@@ -49,7 +49,6 @@ namespace SFCGAL {
 		Polygon() ;
 		/**
 		 * Constructor with an exterior ring
-		 * @todo replace by Polygon( const std::vector< LineStringPtr > & rings
 		 */
 		Polygon( const std::vector< LineString > & rings ) ;
 		/**

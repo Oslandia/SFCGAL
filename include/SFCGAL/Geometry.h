@@ -114,8 +114,6 @@ namespace SFCGAL {
     /**
      * @brief OGC/SFA based Geometry abstract class
      *
-     * @todo store bbox?
-     *
      * @ingroup public_api
      */
     class SFCGAL_API Geometry {
