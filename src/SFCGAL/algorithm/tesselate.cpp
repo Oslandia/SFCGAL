@@ -37,8 +37,6 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g, NoValidityCheck )
 	case TYPE_POINT:
 	case TYPE_LINESTRING:
 	case TYPE_TRIANGLE:
-	case TYPE_SOLID:
-		//TODO confirm no internal tesselation
 	case TYPE_MULTIPOINT:
 	case TYPE_MULTILINESTRING:
 		return std::auto_ptr<Geometry>( g.clone() );
