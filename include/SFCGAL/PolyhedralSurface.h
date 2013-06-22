@@ -38,9 +38,9 @@ namespace SFCGAL {
 
 	/**
 	 * A PolyhedralSurface in SFA modeled as a Polygon soup
-	 *
+     * @ingroup public_api
+	 * @todo template < size_t N >?
 	 * @todo do better than a "polygon soup" or add topological view?
-	 * @todo unittest
 	 */
 	class SFCGAL_API PolyhedralSurface : public Surface {
 	public:

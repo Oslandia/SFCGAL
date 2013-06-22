@@ -33,7 +33,7 @@ namespace SFCGAL {
 
 	/**
 	 * A MultiPoint in SFA.
-	 *
+     * @ingroup public_api
 	 * @ŧodo add pointN() etc.
 	 */
 	class SFCGAL_API MultiPoint : public GeometryCollection {

@@ -37,13 +37,11 @@ namespace SFCGAL {
 
 	/**
 	 * A Solid modeled with an exteriorShell and interiorShells materialized by PolyhedralSurface.
-	 *
-	 * A shell is supposed to be close.
-	 *
+	 * @ingroup public_api
+	 * @note A shell is supposed to be close.
 	 * @warning GM_Solid, from ISO 19107 is defined in CityGML, but not in SFA. Without Solid concept,
-	 * Volume concept is missing.
-	 *
-	 * @todo unittest
+	 * @note Volum concept is missing.
+	 * @todo template < size_t N >?
 	 */
 	class SFCGAL_API Solid : public Geometry {
 	public:

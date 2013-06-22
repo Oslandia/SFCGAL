@@ -30,7 +30,7 @@ namespace algorithm {
 
 	/**
 	 * @brief Compute the 2D area for a Geometry
-	 *
+	 * @ingroup public_api
 	 * @warning Z component is ignored, there is no 2D projection for 3D geometries
 	 * @ingroup public_api
 	 * @pre g is a valid geometry
@@ -87,7 +87,7 @@ namespace algorithm {
 
 	/**
 	 * Returns 3D area for a Geometry
-	 *
+	 * @ingroup public_api
 	 * @warning Solid area is set to 0 (might be defined as the area of the surface)
 	 * @ingroup public_api
 	 * @pre g is a valid geometry

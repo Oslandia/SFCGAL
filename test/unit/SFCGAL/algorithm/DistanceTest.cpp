@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_badLineStrin
 	Point point(3.0,4.0);
 	LineString lineString ;
 	lineString.addPoint( Point(0.0,0.0) );
-	BOOST_CHECK_EQUAL( point.distance( lineString ), std::numeric_limits< double >::infinity() );
+	BOOST_CHECK_THROW( point.distance( lineString ), GeometryInvalidityException );
 }
 BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSegments )
 {
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSeg
 	LineString lineString ;
 	lineString.addPoint( Point(0.0,0.0) );
 	lineString.addPoint( Point(0.0,0.0) );
-	BOOST_CHECK_EQUAL( point.distance( lineString ), 5.0 );
+	BOOST_CHECK_THROW( point.distance( lineString ), GeometryInvalidityException );
 }
 BOOST_AUTO_TEST_CASE( testDistancePointLineString3D_pointOnLineString_collapsedSegments )
 {
