@@ -105,7 +105,7 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
     const size_t numRings =  p.numRings();
     for (size_t ri=0; ri < numRings; ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
         size_t numTouchingPoints = 0;
-        for (size_t rj=rj+1; rj < numRings; ++rj) {
+        for (size_t rj=ri+1; rj < numRings; ++rj) {
             std::auto_ptr<Geometry> inter = p.is3D()
                                             ? intersection3D( p.ringN( ri ), p.ringN( rj ) )
                                             : intersection( p.ringN( ri ), p.ringN( rj ) );

@@ -222,6 +222,14 @@ BOOST_AUTO_TEST_CASE( testDistanceMultiPointMultiPoint_disjoint )
 	BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
 }
 
+// Polygon / Solid
+BOOST_AUTO_TEST_CASE( testDistancePolygonSolid )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("POLYGON((1 -1 -1,1 1 -1,1 1 1,1 -1 1,1 -1 -1))"));
+	std::auto_ptr< Geometry > gB( io::readWkt("SOLID((((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),((1 1 1,0 1 1,0 0 1,1 0 1,1 1 1)),((1 1 1,1 0 1,1 0 0,1 1 0,1 1 1)),((1 1 1,1 1 0,0 1 0,0 1 1,1 1 1))))"));
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 0 );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

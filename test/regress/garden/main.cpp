@@ -267,13 +267,15 @@ int main( int argc, char* argv[] ){
     ++calls ;\
     try{ call }\
     catch ( GeometryInvalidityException ) {}\
+    catch ( InappropriateGeometryException ) {}\
     catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     catch ( std::exception& e )\
     { \
         try{\
         ++numFailure;\
         std::cerr << "\n" ;\
-        std::cerr << "error " << numFailure << " in " << #call << "\n" ;\
+        std::cerr << "error " << numFailure << " in " << #call << ": "\
+                  << e.what() << "\n";\
         std::cerr << "error with " << (algorithm::isValid(*geom1)?"valid":"invalid")\
                   << " geometry " << geom1->asText() ; \
         io::vtk( *geom1, (boost::format("/tmp/geom1_failure%d.vtk") % numFailure).str() );\
@@ -283,7 +285,6 @@ int main( int argc, char* argv[] ){
             io::vtk( *geom2, (boost::format("/tmp/geom2_failure%d.vtk") % numFailure).str() );\
         }\
         std::cerr << "\n";\
-        std::cerr << e.what() << "\n";\
         }\
         catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     }

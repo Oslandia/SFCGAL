@@ -281,7 +281,7 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & 
 		//extrusion not available
 		break;
 	}
-	BOOST_THROW_EXCEPTION( Exception(
+	BOOST_THROW_EXCEPTION( InappropriateGeometryException(
 		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
 	));
 }
