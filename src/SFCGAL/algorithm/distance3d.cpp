@@ -362,7 +362,7 @@ double distanceTriangleSolid3D( const Triangle & gA, const Solid& gB )
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
-	if ( intersects( gA, gB, NoValidityCheck() ) ){
+	if ( intersects3D( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;

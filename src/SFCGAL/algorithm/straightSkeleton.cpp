@@ -88,7 +88,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 
 std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
 {
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
 	return straightSkeleton( g, autoOrientation, NoValidityCheck() );
 }

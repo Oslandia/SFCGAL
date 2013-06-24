@@ -147,9 +147,9 @@ void vtk( const Geometry & g, const std::string & file)
         case TYPE_TRIANGLE:           vtk( g.as<Triangle>(), file ) ; return ; 
         case TYPE_TRIANGULATEDSURFACE:vtk( g.as<TriangulatedSurface>(), file ) ; return ;
         case TYPE_POLYHEDRALSURFACE:  vtk( g.as<PolyhedralSurface>(), file ) ; return ; 
+        case TYPE_SOLID:              vtk( g.as<Solid>().exteriorShell(), file ) ; return ;     
         case TYPE_POINT:              
         case TYPE_LINESTRING:         
-        case TYPE_SOLID:              
         case TYPE_MULTIPOINT:         
         case TYPE_MULTILINESTRING:    
         case TYPE_MULTISOLID:         
