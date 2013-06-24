@@ -50,7 +50,9 @@ std::auto_ptr<Geometry> tesselate( const Geometry & g, NoValidityCheck )
 	case TYPE_SOLID: {
 		std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
 		for ( size_t i = 0; i < g.as<Solid>().numShells(); ++i ) {
-			ret->addGeometry( tesselate( g.as<Solid>().shellN(i) ).release() );
+			const PolyhedralSurface & shellN = g.as<Solid>().shellN(i) ;
+			if ( ! shellN.isEmpty() )
+				ret->addGeometry( tesselate( shellN ).release() );
 		}
 		return std::auto_ptr<Geometry>( ret.release() );
     }
