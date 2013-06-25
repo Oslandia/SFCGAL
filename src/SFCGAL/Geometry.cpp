@@ -125,7 +125,7 @@ size_t Geometry::numGeometries() const
 ///
 const Geometry  &  Geometry::geometryN( size_t const& n ) const
 {
-	BOOST_ASSERT( n == 0 );
+	BOOST_ASSERT( n == 0 ); (void)n;
 	return *this ;
 }
 
@@ -134,7 +134,7 @@ const Geometry  &  Geometry::geometryN( size_t const& n ) const
 ///
 Geometry &  Geometry::geometryN( size_t const& n )
 {
-	BOOST_ASSERT( n == 0 );
+	BOOST_ASSERT( n == 0 ); (void)n;
 	return *this ;
 }
 

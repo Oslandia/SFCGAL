@@ -90,7 +90,7 @@ SurfaceGraph::SurfaceGraph( const PolyhedralSurface & surf ) :
     const size_t numPolygons = surf.numPolygons() ;
     for ( size_t p = 0; p != numPolygons; ++p ) { // for each polygon
         const FaceIndex idx = boost::add_vertex( _graph );
-        BOOST_ASSERT( idx == p );
+        BOOST_ASSERT( idx == p ); (void)idx;
         const Polygon & polygon = surf.polygonN(p) ;
         const size_t numRings = polygon.numRings() ;
         for ( size_t r = 0; r != numRings; ++r ){ // for each ring
