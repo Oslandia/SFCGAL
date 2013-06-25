@@ -274,7 +274,8 @@ namespace SFCGAL {
        }
     protected:
        Geometry();
-       Geometry( Geometry const& other );
+       Geometry( const Geometry& );
+       const Geometry& operator=( const Geometry& );
     };
 
     /**

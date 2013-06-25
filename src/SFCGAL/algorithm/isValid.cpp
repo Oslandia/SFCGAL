@@ -111,7 +111,7 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
                                             : intersection( p.ringN( ri ), p.ringN( rj ) );
             if ( ! inter->isEmpty() && ! inter->is< Point >() ) {
                 return Validity::invalid( ( boost::format("intersection between ring %d and %d") % ri % rj ).str() );
-            } else if ( inter->is< Point >() ) {
+            } else if ( ! inter->isEmpty() && inter->is< Point >() ) {
                 ++numTouchingPoints;
             }
         }
