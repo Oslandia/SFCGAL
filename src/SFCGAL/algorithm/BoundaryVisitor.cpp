@@ -31,7 +31,7 @@ namespace algorithm {
 ///
 ///
 ///
-void BoundaryVisitor::visit( const Point & g )
+void BoundaryVisitor::visit( const Point & )
 {
 	_boundary.reset();
 }
@@ -107,7 +107,7 @@ void BoundaryVisitor::visit( const Solid & g )
 ///
 ///
 ///
-void BoundaryVisitor::visit( const MultiPoint & g )
+void BoundaryVisitor::visit( const MultiPoint & )
 {
 	_boundary.reset();
 }

@@ -111,7 +111,7 @@ namespace io {
 namespace boost {
 namespace serialization {
 
-	void save( boost::archive::text_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version)
+	void save( boost::archive::text_oarchive & ar, const CGAL::Gmpz & z, const unsigned int /*version*/)
 	{
 		std::ostringstream ostr;
 		ostr << z;
@@ -120,7 +120,7 @@ namespace serialization {
 	}
 
 	// specialization for binary archives
-	void save ( boost::archive::binary_oarchive & ar, const CGAL::Gmpz & z, const unsigned int version)
+	void save ( boost::archive::binary_oarchive & ar, const CGAL::Gmpz & z, const unsigned int/* version*/)
 	{
 		const mpz_t& mpz = z.mpz();
 		int32_t size = mpz->_mp_size;
@@ -132,7 +132,7 @@ namespace serialization {
 	}
 
 
-	void load( boost::archive::text_iarchive & ar, CGAL::Gmpz & z, const unsigned int version)
+	void load( boost::archive::text_iarchive & ar, CGAL::Gmpz & z, const unsigned int /*version*/)
 	{
 		std::string line;
 		ar >> line;
@@ -140,7 +140,7 @@ namespace serialization {
 		istr >> z;
 	}
 
-	void load( boost::archive::binary_iarchive & ar, CGAL::Gmpz & z, const unsigned int version)
+	void load( boost::archive::binary_iarchive & ar, CGAL::Gmpz & z, const unsigned int /*version*/)
 	{
 		int32_t size;
 		uint32_t rsize;

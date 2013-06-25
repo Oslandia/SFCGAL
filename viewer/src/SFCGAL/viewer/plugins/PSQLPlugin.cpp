@@ -205,7 +205,7 @@ namespace plugins {
 		addLayer( "layer", true, "", "" );
 	}
 
-	void LayersWidget::onClick( const QModelIndex& idx )
+	void LayersWidget::onClick( const QModelIndex& /*idx*/ )
 	{
 		if ( QApplication::mouseButtons() & Qt::RightButton ) {
 			QMenu* menu = new QMenu;

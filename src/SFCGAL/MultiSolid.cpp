@@ -44,9 +44,9 @@ MultiSolid::MultiSolid( MultiSolid const& other ):
 ///
 ///
 ///
-MultiSolid& MultiSolid::operator = ( const MultiSolid & other )
+MultiSolid& MultiSolid::operator = ( MultiSolid other )
 {
-	assign(other) ;
+	swap(other) ;
 	return *this ;
 }
 

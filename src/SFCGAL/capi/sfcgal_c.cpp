@@ -596,7 +596,7 @@ extern "C" void sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t* p
 	reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom )->SRID() = srid;
 }
 
-extern "C" void sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* pgeom, int num_decimals, char** buffer, size_t* len )
+extern "C" void sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* pgeom, int /*num_decimals*/, char** buffer, size_t* len )
 {
 	std::string ewkt = reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->asEWKT();
 	*buffer = (char*)__sfcgal_alloc_handler( ewkt.size() + 1 );

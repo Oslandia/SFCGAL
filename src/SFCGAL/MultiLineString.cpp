@@ -44,9 +44,9 @@ MultiLineString::MultiLineString( MultiLineString const& other ):
 ///
 ///
 ///
-MultiLineString& MultiLineString::operator = ( const MultiLineString & other )
+MultiLineString& MultiLineString::operator = ( MultiLineString other )
 {
-	assign(other) ;
+	swap(other) ;
 	return *this ;
 }
 

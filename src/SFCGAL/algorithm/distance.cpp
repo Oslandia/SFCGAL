@@ -66,10 +66,13 @@ double distance( const Geometry & gA, const Geometry& gB, NoValidityCheck )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gA, gB );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(NotImplementedException(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 double distance( const Geometry & gA, const Geometry& gB )
@@ -103,10 +106,13 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(NotImplementedException(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///
@@ -208,10 +214,13 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(NotImplementedException(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///
@@ -304,10 +313,13 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(NotImplementedException(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///

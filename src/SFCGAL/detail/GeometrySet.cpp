@@ -96,9 +96,8 @@ namespace SFCGAL {
 		}
 	}
 
-	void _decompose_solid( const Solid& solid, typename GeometrySet<2>::VolumeCollection& volumes, dim_t<2> )
+	void _decompose_solid( const Solid&, typename GeometrySet<2>::VolumeCollection&, dim_t<2> )
 	{
-		// nothing
 	}
 	void _decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
@@ -117,25 +116,25 @@ namespace SFCGAL {
 	}
 
 	template <int Dim>
-	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Point& g, int flags )
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Point& g, int /*flags*/ )
 	{
 		addPrimitive( g );
 	}
 
 	template <int Dim>
-	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Segment& g, int flags )
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Segment& g, int /*flags*/ )
 	{
 		addPrimitive( g );
 	}
 
 	template <int Dim>
-	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Surface& g, int flags )
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Surface& g, int /*flags*/ )
 	{
 		addPrimitive( g );
 	}
 
 	template <int Dim>
-	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int flags )
+	GeometrySet<Dim>::GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int /*flags*/ )
 	{
 		addPrimitive( g );
 	}
@@ -459,7 +458,7 @@ namespace SFCGAL {
 		output.push_back( tri );
 	}
 
-	void recompose_volumes( const GeometrySet<2>::VolumeCollection& volumes, std::vector<Geometry*>& output, dim_t<2> )
+	void recompose_volumes( const GeometrySet<2>::VolumeCollection&, std::vector<Geometry*>&, dim_t<2> )
 	{
 	}
 
@@ -601,9 +600,8 @@ namespace SFCGAL {
 		points.insert( tri.vertex(2) );
 	}
 
-	void _collect_points( const NoVolume&, GeometrySet<2>::PointCollection& points )
+	void _collect_points( const NoVolume&, GeometrySet<2>::PointCollection& )
 	{
-		// nothing
 	}
 
 	void _collect_points( const MarkedPolyhedron& poly, GeometrySet<3>::PointCollection& points )

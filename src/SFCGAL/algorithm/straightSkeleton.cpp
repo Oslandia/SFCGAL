@@ -96,7 +96,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/ )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	if ( g.isEmpty() ){
@@ -106,7 +106,6 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOr
     // test if holes touch, since CGAL segfaults if it does
     const size_t numRings =  g.numRings();
     for (size_t ri=1; ri < numRings; ++ri) {
-        size_t numTouchingPoints = 0;
         for (size_t rj=ri+1; rj < numRings; ++rj) {
             std::auto_ptr<Geometry> inter = g.is3D()
                                             ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
@@ -133,7 +132,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOr
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/ )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){

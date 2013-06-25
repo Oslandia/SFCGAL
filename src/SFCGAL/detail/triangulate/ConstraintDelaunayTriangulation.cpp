@@ -158,7 +158,7 @@ void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triang
 ///
 ///
 ///
-std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface( bool filterExteriorParts ) const
+std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
 {
 	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
 	getTriangles(*result, false);

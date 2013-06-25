@@ -180,7 +180,7 @@ osg::Camera* ViewerWidget::createCamera( int x, int y, int w, int h, const std::
 ///
 ///
 ///
-void ViewerWidget::paintEvent( QPaintEvent* event )
+void ViewerWidget::paintEvent( QPaintEvent* /*event*/ )
 {
 	frame();
 }

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_sfcgal_cTest )
 
 bool hasError = false;
 
-int on_error(const char* msg, ...)
+int on_error(const char* /*msg*/, ...)
 {
 	hasError = true;
 	return 0;

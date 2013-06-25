@@ -52,7 +52,7 @@ Surface::Surface() :
 ///
 ///
 Surface::Surface( Surface const& other ) :
-	Geometry()
+	Geometry(other)
 {
 
 }

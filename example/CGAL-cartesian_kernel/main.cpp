@@ -28,7 +28,7 @@ typedef CGAL::Cartesian< double > K ;
 typedef K::Point_2 Point_2 ;
 
 
-int main( int argc, char* argv[] ){
+int main(){
 	Point_2 a( 0.0, 0.0 );
 	Point_2 b( 3.0, 4.0 );
 	K::Compute_squared_distance_2 squared_distance;

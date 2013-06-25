@@ -44,11 +44,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		MultiSolid( MultiSolid const& other ) ;
+		MultiSolid( const MultiSolid & other ) ;
 		/**
 		 * assign operator
 		 */
-		MultiSolid& operator = ( const MultiSolid & other ) ;
+		MultiSolid& operator = ( MultiSolid other ) ;
 		/**
 		 * destructor
 		 */
@@ -89,7 +89,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<GeometryCollection>(*this);
 

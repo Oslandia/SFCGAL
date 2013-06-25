@@ -64,7 +64,7 @@ namespace SFCGAL {
 		/**
 		 * assign operator
 		 */
-		LineString& operator = ( const LineString & other ) ;
+		LineString& operator = ( LineString other ) ;
 
 		/**
 		 * destructor
@@ -280,13 +280,18 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _points;
 		}
 	private:
 		boost::ptr_vector< Point > _points ;
+
+        void swap( LineString & other )
+        {
+            std::swap( _points, other._points );
+        }
 	};
 
 

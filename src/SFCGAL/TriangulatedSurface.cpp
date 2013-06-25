@@ -47,7 +47,7 @@ TriangulatedSurface::TriangulatedSurface( const std::vector< Triangle > & triang
 ///
 ///
 ///
-TriangulatedSurface::TriangulatedSurface( TriangulatedSurface const& other ):
+TriangulatedSurface::TriangulatedSurface( const TriangulatedSurface& other ):
 	Surface(),
 	_triangles(other._triangles)
 {
@@ -57,9 +57,9 @@ TriangulatedSurface::TriangulatedSurface( TriangulatedSurface const& other ):
 ///
 ///
 ///
-TriangulatedSurface& TriangulatedSurface::operator = ( const TriangulatedSurface & other )
+TriangulatedSurface& TriangulatedSurface::operator = ( TriangulatedSurface other )
 {
-	_triangles = other._triangles ;
+    swap(other);
 	return *this ;
 }
 

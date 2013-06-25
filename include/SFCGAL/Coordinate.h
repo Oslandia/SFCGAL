@@ -180,7 +180,7 @@ namespace SFCGAL {
 		 * Serialization
 		 */
 		template <class Archive>
-		void save( Archive& ar, const unsigned int version ) const
+		void save( Archive& ar, const unsigned int /*version*/ ) const
 		{
 			int dim = coordinateDimension();
 			ar << dim;
@@ -197,7 +197,7 @@ namespace SFCGAL {
 		}
 
 		template <class Archive>
-		void load( Archive& ar, const unsigned int version )
+		void load( Archive& ar, const unsigned int /*version*/ )
 		{
 			int dim;
 			ar >> dim;

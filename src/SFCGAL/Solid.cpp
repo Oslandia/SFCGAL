@@ -64,20 +64,20 @@ Solid::Solid( const std::vector< PolyhedralSurface > & shells )
 ///
 ///
 ///
-Solid::Solid( Solid const& other )
+Solid::Solid( const Solid& other ):
+    Geometry(other)
 {
-	(*this) = other ;
+	for ( size_t i = 0; i < other.numShells(); i++ ){
+		_shells.push_back( other.shellN(i).clone() );
+	}
 }
 
 ///
 ///
 ///
-Solid& Solid::operator = ( const Solid & other )
+Solid& Solid::operator = ( Solid other )
 {
-	_shells.clear() ;
-	for ( size_t i = 0; i < other.numShells(); i++ ){
-		_shells.push_back( other.shellN(i).clone() );
-	}
+    swap(other);
 	return *this ;
 }
 

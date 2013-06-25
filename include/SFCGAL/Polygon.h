@@ -68,7 +68,7 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		Polygon( Polygon const& other ) ;
+		Polygon( const Polygon& other ) ;
 
 		/**
 		 * Constructor from CGAL::Polygon_with_holes_2<K>
@@ -82,7 +82,7 @@ namespace SFCGAL {
 		/**
 		 * assign operator
 		 */
-		Polygon& operator = ( const Polygon & other ) ;
+		Polygon& operator = ( Polygon other ) ;
 
 		/**
 		 * destructor
@@ -251,7 +251,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _rings;
@@ -265,6 +265,11 @@ namespace SFCGAL {
 		 * @warning never empty, empty LineString as exteriorRing for empty Polygon
 		 */
 		boost::ptr_vector< LineString > _rings ;
+
+        void swap( Polygon & other )
+        {
+            std::swap( _rings, other._rings );
+        }
 	};
 
 

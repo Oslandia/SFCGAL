@@ -307,7 +307,7 @@ Kernel::Point_2 Coordinate::toPoint_2() const
 class ToPoint3Visitor : public boost::static_visitor<Kernel::Point_3>
 {
 public:
-	Kernel::Point_3 operator()( const Coordinate::Empty& storage ) const {
+	Kernel::Point_3 operator()( const Coordinate::Empty& /*storage*/ ) const {
 		return Kernel::Point_3( CGAL::ORIGIN );
 	}
 	Kernel::Point_3 operator()( const Kernel::Point_2& storage ) const {

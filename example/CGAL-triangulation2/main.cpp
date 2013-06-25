@@ -62,7 +62,7 @@ typedef CGAL::Creator_uniform_2< double, Point_2 >  Creator_2;
 /**
  * Generate a terrain and export to wavefront obj format
  */
-int main( int argc, char* argv[] )
+int main()
 {
 	std::ofstream ofs("triangulation2.obj");
 	if ( ! ofs.good() ){

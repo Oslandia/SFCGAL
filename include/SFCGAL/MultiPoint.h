@@ -45,11 +45,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		MultiPoint( MultiPoint const& other ) ;
+		MultiPoint( const MultiPoint& other ) ;
 		/**
 		 * assign operator
 		 */
-		MultiPoint& operator = ( const MultiPoint & other ) ;
+		MultiPoint& operator = ( MultiPoint other ) ;
 		/**
 		 * destructor
 		 */
@@ -93,7 +93,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<GeometryCollection>(*this);
 

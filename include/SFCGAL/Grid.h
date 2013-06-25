@@ -160,13 +160,13 @@ namespace SFCGAL {
 		/**
 		 * @brief gets the height of the grid
 		 */
-		inline const size_t nrows() const {
+		inline size_t nrows() const {
 			return _data.size1() ;
 		}
 		/**
 		 * @brief gets the width of the grid
 		 */
-		inline const size_t ncols() const {
+		inline size_t ncols() const {
 			return _data.size2() ;
 		}
 
