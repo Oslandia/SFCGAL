@@ -76,6 +76,17 @@ namespace SFCGAL {
         {}
     
     };
+
+	/**
+	 * SFCGAL Exception thrown when geometry is inapropriate for a function
+	 */
+	class SFCGAL_API InappropriateGeometryException : public Exception {
+    public:
+        InappropriateGeometryException( std::string const& message ):
+            Exception( message )
+        {}
+    
+    };
 } // namespace SFCGAL
 
 #endif
