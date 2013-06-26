@@ -50,12 +50,31 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;
 
+	int argc = framework::master_test_suite().argc;
+	char **argv = framework::master_test_suite().argv;
+
+	// look for options
+	int test_one_line = -1;
+	for ( int i = 0; i < argc; ++i ) {
+		std::string argi( argv[i] );
+		if ( argi == "--line" ) {
+			// only test one line
+			if ( argc > i+1 ) {
+				sscanf( argv[i+1], "%d", &test_one_line );
+				++i;
+				continue;
+			}
+		}
+	}
+
 	std::string line;
-    size_t lineNo = 0;
+    int lineNo = 0;
 	while ( std::getline( ifs, line ) ){
         ++lineNo;
 		if ( line[0] == '#' || line.empty() )
 			continue ;
+
+        if ( -1 != test_one_line && lineNo != test_one_line ) continue;
 
 		BOOST_TEST_MESSAGE( (boost::format("%s:%d") % filename % lineNo).str() );
 
