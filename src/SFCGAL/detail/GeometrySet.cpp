@@ -339,9 +339,11 @@ namespace SFCGAL {
 
 	CGAL::Bbox_3 compute_solid_bbox( const typename TypeForDimension<3>::Volume& vol, dim_t<3> )
 	{
-		CGAL::Bbox_3 ret;
-		MarkedPolyhedron::Point_const_iterator pit;
-		for ( pit = vol.points_begin(); pit != vol.points_end(); ++pit ) {
+        BOOST_ASSERT( vol.size_of_vertices () );
+		MarkedPolyhedron::Point_const_iterator pit = vol.points_begin();
+		CGAL::Bbox_3 ret( pit->bbox() );
+        ++pit;
+		for ( ; pit != vol.points_end(); ++pit ) {
 			ret = ret + pit->bbox();
 		}
 		return ret;

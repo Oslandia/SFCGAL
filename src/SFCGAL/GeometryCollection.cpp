@@ -169,6 +169,7 @@ void    GeometryCollection::addGeometry( Geometry * geometry )
 	if ( ! isAllowed(*geometry) ){
 		std::ostringstream oss;
 		oss << "try a add a '" << geometry->geometryType() << "' in a '" << geometryType() << "'";
+        delete geometry; // we are responsible for the resource here
 		BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
 	}
 	_geometries.push_back( geometry );
