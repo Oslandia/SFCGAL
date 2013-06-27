@@ -150,7 +150,7 @@ Geometry::Geometry()
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& other )
+Geometry::Geometry( Geometry const& /*other*/ )
 {
 
 }
