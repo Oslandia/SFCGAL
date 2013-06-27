@@ -103,8 +103,9 @@ endif()
 find_package( CGAL COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
-include_directories( 
-	include
+include_directories( include )
+#-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
+include_directories( SYSTEM 
 	${CGAL_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIRS}	
 	${MPFR_INCLUDE_DIRS}	
@@ -120,7 +121,7 @@ link_directories(
 #-- optional OpenSceneGraph support
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
-	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
+	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
 	
 	# config.h generation
 	set( SFCGAL_WITH_OSG "ON" )
