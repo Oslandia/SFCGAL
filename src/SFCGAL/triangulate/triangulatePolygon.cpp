@@ -57,8 +57,12 @@ void triangulatePolygon3D(
 		return triangulatePolygon3D( g.as< Solid >(), triangulatedSurface );
 	case TYPE_MULTIPOLYGON:
 	case TYPE_MULTISOLID:
-	case TYPE_GEOMETRYCOLLECTION:
-		return triangulatePolygon3D( g.as< GeometryCollection >(), triangulatedSurface );
+	case TYPE_GEOMETRYCOLLECTION:{
+		for ( size_t i = 0; i < g.numGeometries(); i++ ){
+			triangulatePolygon3D( g.geometryN(i), triangulatedSurface ) ;
+		}
+		return ;
+	}
 	default:
 		BOOST_THROW_EXCEPTION(
 				      Exception(

@@ -32,6 +32,8 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_OrientationTest )
 
+//TODO COMPLETE TEST
+
 //void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon ) ;
 //void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon ) ;
 //void makeValidOrientation( Polygon & polygon ) ;

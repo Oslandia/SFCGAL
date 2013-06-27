@@ -29,6 +29,7 @@ namespace transform {
 
 	/**
 	 * Wrapper for CGAL::Aff_transform_3
+	 * @todo unittest
 	 */
 	template < typename K >
 	class AffineTransform3 : public Transform {

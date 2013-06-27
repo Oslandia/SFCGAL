@@ -42,6 +42,8 @@ typedef uint32_t srid_t;
  * It is used to store annex data, like SRID or cached computations
  *
  * It is noncopyable since it stores a std::auto_ptr<SFCGAL::Geometry>
+ *
+ * @todo unittest
  */
 class SFCGAL_API PreparedGeometry : public boost::noncopyable
 {
