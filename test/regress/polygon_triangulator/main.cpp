@@ -31,6 +31,8 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/algorithm/area.h>
+#include <SFCGAL/algorithm/force2D.h>
+#include <SFCGAL/algorithm/orientation.h>
 
 #include <boost/chrono.hpp>
 
@@ -59,6 +61,7 @@ int main( int argc, char* argv[] ){
 	    ("help", "produce help message")
 	    ("progress", "display progress")
 	    ("verbose",  "verbose mode")
+	    ("force2d","force 2d polygon")
 	    ("filename", po::value< std::string >(), "input filename (id|wkt_[multi]polygon on each line)")
 	;
 
@@ -73,6 +76,7 @@ int main( int argc, char* argv[] ){
 
 	bool verbose  = vm.count("verbose") != 0 ;
 	bool progress = vm.count("progress") != 0 ;
+	bool force2d  = vm.count("force2d") != 0 ;
 
 	std::string filename ;
 	if ( vm.count("filename") ) {
@@ -158,6 +162,10 @@ int main( int argc, char* argv[] ){
 		try {
 			std::auto_ptr< Geometry > g;
 			g = io::readWkt( wkt ) ;
+
+			if ( force2d ){
+				algorithm::force2D( *g ) ;
+			}
 			triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ;
 
 			//check area
