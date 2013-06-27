@@ -129,6 +129,7 @@ endif()
 
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
+option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" ON )
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -138,7 +139,10 @@ if(MSVC)
 	endif()
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	# Update if necessary
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Werror -Wno-error=format")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic")
+	if( SFCGAL_BUILD_FAILED_ON_WARNING )
+		 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=format")
+	endif()
 
 	add_definitions( "-frounding-math" )
 	
