@@ -30,6 +30,7 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
+#include <SFCGAL/detail/GetPointsVisitor.h>
 
 
 typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
@@ -449,6 +450,49 @@ double distanceSolidSolid3D( const Solid & gA, const Solid& gB )
 	return dMin ;
 }
 
+struct Sphere {
+    double radius;
+    CGAL::Vector_3<Kernel> center;
+};
+
+const Sphere boundingSphere( const Geometry & geom )
+{
+    BOOST_ASSERT( ! geom.isEmpty() );
+    using namespace SFCGAL::detail;
+    GetPointsVisitor v;
+    const_cast< Geometry & >(geom).accept( v );
+
+    BOOST_ASSERT( v.points.size() );
+
+    typedef CGAL::Vector_3< Kernel > Vector_3 ;
+
+    const GetPointsVisitor::const_iterator end = v.points.end();
+
+    // centroid
+    Vector_3 c(0,0,0);
+    int numPoint = 0;
+    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+        c = c + (*x)->toVector_3() ;
+        ++numPoint;
+    }
+    BOOST_ASSERT( numPoint );
+    c = c / numPoint;
+
+    // farest point from centroid
+    Vector_3 f = c ;
+    typename Kernel::FT maxDistanceSq = 0;
+    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+        const Vector_3 cx = (*x)->toVector_3() - c ;
+        const typename Kernel::FT dSq = cx * cx ;
+        if ( dSq > maxDistanceSq ) {
+            f = (*x)->toVector_3() ;
+            maxDistanceSq = dSq ;
+        }
+    }
+
+    const Sphere sphere = { std::sqrt( CGAL::to_double( maxDistanceSq ) ), c };
+    return sphere;
+}
 
 ///
 ///
@@ -460,9 +504,45 @@ double distanceGeometryCollectionToGeometry3D( const Geometry & gA, const Geomet
 	if ( gA.isEmpty() || gB.isEmpty() ){
 		return std::numeric_limits< double >::infinity() ;
 	}
+    
+
+    // if bounding spheres (BS) of gB and gAi don't intersect and
+    // if the closest point of BS(gAj) is further than the farest 
+    // point of BS(gAi) there is no need to compute the distance(gAj, gB)
+    // since it will be greater than distance(gAi, gB)
+    //
+    // The aim is not to find the minimal bounding sphere, but a good enought sphere than
+    // encloses all points
+    std::set<size_t> noTest;
+    if (1)
+    {
+        std::vector<Sphere> bsA;
+        for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+            bsA.push_back( boundingSphere(gA.geometryN(i)) );
+        }
+        Sphere bsB( boundingSphere( gB ) );
+        std::vector<size_t> noIntersect;
+        for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+            const double l2 = CGAL::to_double( (bsB.center - bsA[i].center).squared_length() );
+            if (std::pow(bsB.radius + bsA[i].radius, 2) < l2 ) {
+                noIntersect.push_back( i );
+            }
+        }
+
+        for ( size_t i = 0; i < noIntersect.size(); i++ ) {
+            const double li = std::sqrt( CGAL::to_double( (bsA[i].center - bsB.center).squared_length() ) );
+            for ( size_t j = i; j < noIntersect.size(); j++ ) {
+                const double lj = std::sqrt( CGAL::to_double( (bsA[j].center - bsB.center).squared_length() ) );
+                if ( li + bsA[i].radius < lj - bsA[j].radius  ) noTest.insert( j );
+                else if ( lj + bsA[j].radius < li - bsA[i].radius  ) noTest.insert( i );
+            }
+        }
+        //if (!noTest.empty()) std::cout << "pruning " << noTest.size() << "/" << gA.numGeometries() << "\n";
+    }
 
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+        if ( noTest.end() != noTest.find(i) ) continue;
 		dMin = std::min( dMin, distance3D( gA.geometryN(i), gB ) );
 	}
 	return dMin ;

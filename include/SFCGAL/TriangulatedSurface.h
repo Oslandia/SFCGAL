@@ -63,11 +63,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		TriangulatedSurface( TriangulatedSurface const& other ) ;
+		TriangulatedSurface( const TriangulatedSurface& other ) ;
 		/**
 		 * assign operator
 		 */
-		TriangulatedSurface& operator = ( const TriangulatedSurface & other ) ;
+		TriangulatedSurface& operator = ( TriangulatedSurface other ) ;
 		/**
 		 * destructor
 		 */
@@ -180,13 +180,18 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _triangles;
 		}
 	private:
 		boost::ptr_vector< Triangle > _triangles ;
+
+        void swap( TriangulatedSurface & other )
+        {
+            std::swap(_triangles, other._triangles);
+        }
 	};
 }
 

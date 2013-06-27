@@ -45,11 +45,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		MultiLineString( MultiLineString const& other ) ;
+		MultiLineString( const MultiLineString& other ) ;
 		/**
 		 * assign operator
 		 */
-		MultiLineString& operator = ( const MultiLineString & other ) ;
+		MultiLineString& operator = ( MultiLineString other ) ;
 		/**
 		 * destructor
 		 */
@@ -89,7 +89,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<GeometryCollection>(*this);
 

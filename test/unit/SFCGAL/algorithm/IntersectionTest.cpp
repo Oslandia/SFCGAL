@@ -35,7 +35,19 @@
 
 using namespace SFCGAL;
 using namespace boost::unit_test ;
+//namespace SFCGAL{
+//inline Geometry* new_clone( const Geometry& g )
+//{
+//    return g.clone();
+//}
+//}
 
+void insertOrReplace( boost::ptr_map<std::string, Geometry > & map, std::string key, Geometry * value )
+{
+   boost::ptr_map<std::string, Geometry >::iterator found =  map.find( key );
+   if ( found != map.end() ) map.erase( found );
+   map.insert( key, value );
+}
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
 BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
@@ -61,7 +73,7 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		}
 	}
 
-	boost::ptr_map<std::string, Geometry*> storedGeom;
+	boost::ptr_map<std::string, Geometry > storedGeom;
 
 	//logger().setLogLevel( Logger::Debug );
 
@@ -75,9 +87,6 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 	std::string line;
 	while ( std::getline( ifs, line ) ){
 		numLine++;
-		if ( test_one_line != -1 && numLine != test_one_line ) {
-			continue;
-		}
 		if ( line[0] == '#' || line.empty() )
 			continue ;
 
@@ -85,7 +94,9 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 			std::cout << numLine << std::endl;
 		}
 
-		BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
+		if ( test_one_line == -1 ) {
+            BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
+        }
 
 		std::istringstream iss(line);
 
@@ -100,8 +111,14 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 			std::string geomName;
 			std::getline( iss, geomName, '|' );
 			std::getline( iss, wktGA, '|' );
-			storedGeom[ geomName ] = io::readWkt( wktGA ).release();
+			insertOrReplace( storedGeom, geomName, io::readWkt( wktGA ).release() );
 			continue;
+		}
+
+        // we need to read the lines until here to store reference
+		if ( test_one_line != -1 ) {
+			if ( numLine != test_one_line) continue;
+            else  BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
 		}
 
 		std::auto_ptr< Geometry > gA(0);
@@ -112,29 +129,31 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		if ( wktGA[0] == '@' ) {
 			// stored geometry reference
 			std::string name = wktGA.substr(1);
-			if ( storedGeom.find( name ) == storedGeom.end() ) {
-				BOOST_CHECK_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
+            const boost::ptr_map<std::string, Geometry >::const_iterator found =  storedGeom.find( name );
+			if ( found == storedGeom.end() ) {
+				BOOST_REQUIRE_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
 			}
-			gA.reset( storedGeom[ name ]->clone() );
+			gA.reset( found->second->clone() );
 		}
 		else {
 			gA = io::readWkt( wktGA );
 		}
-		storedGeom[ "A" ] = gA->clone();
+        insertOrReplace(storedGeom, "A", gA->clone() );
 
 		std::getline( iss, wktGB, '|' ) ;
 		if ( wktGB[0] == '@' ) {
 			// stored geometry reference
 			std::string name = wktGB.substr(1);
-			if ( storedGeom.find( name ) == storedGeom.end() ) {
-				BOOST_CHECK_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
+            const boost::ptr_map<std::string, Geometry >::const_iterator found =  storedGeom.find( name );
+			if ( found == storedGeom.end() ) {
+				BOOST_REQUIRE_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
 			}
-			gB.reset( storedGeom[ name ]->clone() );
+			gB.reset( found->second->clone() );
 		}
 		else {
 			gB = io::readWkt( wktGB );
 		}
-		storedGeom[ "B" ] = gB->clone();
+        insertOrReplace(storedGeom, "B", gB->clone() );
 
 		// exception management
 		bool expectException = false;
@@ -144,10 +163,11 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		if ( wktOut[0] == '@' ) {
 			// stored geometry reference
 			std::string name = wktOut.substr(1);
-			if ( storedGeom.find( name ) == storedGeom.end() ) {
+            const boost::ptr_map<std::string, Geometry >::const_iterator found =  storedGeom.find( name );
+			if ( found == storedGeom.end() ) {
 				BOOST_CHECK_MESSAGE( false, numLine << ": can't find the geometry named " << name );				
 			}
-			gOut.reset( storedGeom[ name ]->clone() );
+			gOut.reset( found->second->clone() );
 		}
 		// expect an exception
 		else if ( wktOut[0] == '!' ) {
@@ -159,6 +179,7 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 		else {
 			gOut = io::readWkt( wktOut );
 		}
+
 
 		try {
 			if ( dimension == "2" ){

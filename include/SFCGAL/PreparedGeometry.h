@@ -108,7 +108,7 @@ class SFCGAL_API PreparedGeometry : public boost::noncopyable
 	 * Serializer
 	 */
 	template <class Archive>
-	void save( Archive& ar, const unsigned int version ) const
+	void save( Archive& ar, const unsigned int /*version*/ ) const
 	{
 		ar & _srid;
 		const Geometry* pgeom = _geometry.get();
@@ -116,7 +116,7 @@ class SFCGAL_API PreparedGeometry : public boost::noncopyable
 	}
 
 	template <class Archive>
-	void load( Archive& ar, const unsigned int version )
+	void load( Archive& ar, const unsigned int /*version*/ )
 	{
 		ar & _srid;
 		Geometry* pgeom;

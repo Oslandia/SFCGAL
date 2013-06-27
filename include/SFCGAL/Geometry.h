@@ -267,12 +267,13 @@ namespace SFCGAL {
 	* @ingroup detail
         */
        template <class Archive>
-       void serialize( Archive& ar, const unsigned int version )
+       void serialize( Archive& /*ar*/, const unsigned int /*version*/ )
        {
        }
     protected:
        Geometry();
-       Geometry( Geometry const& other );
+       Geometry( const Geometry& );
+       const Geometry& operator=( const Geometry& );
     };
 
     /**

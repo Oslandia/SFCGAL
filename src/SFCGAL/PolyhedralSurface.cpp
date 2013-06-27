@@ -49,7 +49,7 @@ PolyhedralSurface::PolyhedralSurface( const std::vector< Polygon > & polygons ) 
 ///
 ///
 ///
-PolyhedralSurface::PolyhedralSurface( PolyhedralSurface const& other ) :
+PolyhedralSurface::PolyhedralSurface( const PolyhedralSurface& other ) :
 	Surface(),
 	_polygons(other._polygons)
 {
@@ -78,9 +78,9 @@ PolyhedralSurface::PolyhedralSurface( const MarkedPolyhedron& poly ) :
 ///
 ///
 ///
-PolyhedralSurface& PolyhedralSurface::operator = ( const PolyhedralSurface & other )
+PolyhedralSurface& PolyhedralSurface::operator = ( PolyhedralSurface other )
 {
-	_polygons = other._polygons ;
+	swap(other);
 	return *this ;
 }
 

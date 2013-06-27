@@ -85,10 +85,12 @@ Polygon::Polygon( const Triangle & triangle ):
 ///
 ///
 ///
-Polygon::Polygon( Polygon const& other ):
+Polygon::Polygon( const Polygon& other ):
 	Surface(other)
 {
-	(*this) = other ;
+	for ( size_t i = 0; i < other.numRings(); i++ ){
+		_rings.push_back( other.ringN(i).clone() );
+	}
 }
 
 ///
@@ -129,12 +131,9 @@ Polygon::Polygon( const CGAL::Polygon_with_holes_2< Kernel >& poly )
 ///
 ///
 ///
-Polygon& Polygon::operator = ( const Polygon & other )
+Polygon& Polygon::operator = ( Polygon other )
 {
-	_rings.clear() ;
-	for ( size_t i = 0; i < other.numRings(); i++ ){
-		_rings.push_back( other.ringN(i).clone() );
-	}
+    swap(other);
 	return *this ;
 }
 

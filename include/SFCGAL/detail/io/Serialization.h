@@ -108,7 +108,7 @@ namespace serialization {
 	 * Serializer of Gmpq
 	 */
 	template<class Archive>
-	void save(Archive & ar, const CGAL::Gmpq & q, const unsigned int version)
+	void save(Archive & ar, const CGAL::Gmpq & q, const unsigned int /*version*/)
 	{
 		CGAL::Gmpz n = q.numerator();
 		CGAL::Gmpz d = q.denominator();
@@ -120,7 +120,7 @@ namespace serialization {
 	 * Unserializer of Gmpq
 	 */
 	template<class Archive>
-	void load(Archive & ar, CGAL::Gmpq & q, const unsigned int version)
+	void load(Archive & ar, CGAL::Gmpq & q, const unsigned int /*version*/)
 	{
 		CGAL::Gmpz n;
 		CGAL::Gmpz d;
@@ -139,7 +139,7 @@ namespace serialization {
 	 * Serializer of Kernel::FT
 	 */
 	template<class Archive>
-	void save(Archive & ar, const SFCGAL::Kernel::FT & q, const unsigned int version)
+	void save(Archive & ar, const SFCGAL::Kernel::FT & q, const unsigned int /*version*/)
 	{
 		SFCGAL::Kernel::Exact_kernel::FT eq = CGAL::exact( q );
 		ar << eq;
@@ -149,7 +149,7 @@ namespace serialization {
 	 * Unserializer of Kernel::FT
 	 */
 	template<class Archive>
-	void load(Archive & ar, SFCGAL::Kernel::FT & q, const unsigned int version)
+	void load(Archive & ar, SFCGAL::Kernel::FT & q, const unsigned int /*version*/)
 	{
 		SFCGAL::Kernel::Exact_kernel::FT eq;
 		ar >> eq;

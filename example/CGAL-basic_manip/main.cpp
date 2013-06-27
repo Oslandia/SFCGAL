@@ -81,7 +81,7 @@ typedef CGAL::Polygon_2< Kernel >            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
 
 
-int main( int argc, char* argv[] ){
+int main(){
 
 	///------------- 2D -----------------------------------------------------------------------
 

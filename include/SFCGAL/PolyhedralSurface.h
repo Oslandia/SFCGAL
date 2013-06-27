@@ -62,11 +62,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		PolyhedralSurface( PolyhedralSurface const& other ) ;
+		PolyhedralSurface( const PolyhedralSurface & other ) ;
 		/**
 		 * assign operator
 		 */
-		PolyhedralSurface& operator = ( const PolyhedralSurface & other ) ;
+		PolyhedralSurface& operator = ( PolyhedralSurface other ) ;
 		/**
 		 * destructor
 		 */
@@ -176,13 +176,18 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _polygons;
 		}
 	private:
 		boost::ptr_vector< Polygon > _polygons ;
+
+        void swap( PolyhedralSurface & other )
+        {
+            std::swap( _polygons, other._polygons );
+        }
 	};
 }
 

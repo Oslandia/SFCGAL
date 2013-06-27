@@ -39,7 +39,7 @@ ForceOrderPoints::ForceOrderPoints( bool orientCCW ) :
 ///
 ///
 ///
-void ForceOrderPoints::transform( Point & p )
+void ForceOrderPoints::transform( Point & )
 {
 }
 

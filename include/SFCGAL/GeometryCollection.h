@@ -47,11 +47,11 @@ namespace SFCGAL {
 		/**
 		 * Copy constructor
 		 */
-		GeometryCollection( GeometryCollection const& other ) ;
+		GeometryCollection( const GeometryCollection& other ) ;
 		/**
 		 * assign operator
 		 */
-		GeometryCollection& operator = ( const GeometryCollection & other ) ;
+		GeometryCollection& operator = ( GeometryCollection other ) ;
 		/**
 		 * destructor
 		 */
@@ -118,7 +118,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _geometries;
@@ -134,9 +134,12 @@ namespace SFCGAL {
 
 
 		/**
-		 * Assign other collection
+		 * Swap
 		 */
-		void  assign( const GeometryCollection & other ) ;
+		void  swap( GeometryCollection & other )
+        {
+            _geometries.swap( other._geometries );
+        }
 	};
 
 

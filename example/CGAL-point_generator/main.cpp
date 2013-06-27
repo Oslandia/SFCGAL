@@ -33,7 +33,8 @@ typedef CGAL::Creator_uniform_2< double, Point_2 >  Creator_2;
 typedef CGAL::Creator_uniform_3< double, Point_3 >  Creator_3;
 
 
-int main( int argc, char* argv[] ){
+int main()
+{
 
 	//-- generate points in disc
 	{

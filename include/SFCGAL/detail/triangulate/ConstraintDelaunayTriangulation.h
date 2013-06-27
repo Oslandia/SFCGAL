@@ -147,7 +147,7 @@ namespace triangulate {
 		/**
 		 * get the resulting TriangulatedSurface
 		 */
-		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface( bool filterExteriorParts = false ) const ;
+		std::auto_ptr< TriangulatedSurface > getTriangulatedSurface() const ;
 
 		/**
 		 * @brief get finite face iterator
