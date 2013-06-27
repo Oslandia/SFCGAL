@@ -32,6 +32,8 @@ namespace transform {
 
 	/**
 	 * If the 2D surface is pointing down, reverse its points
+	 * @todo unittest
+	 * @todo move outside (it's not a coordinate transform)?
 	 */
 	class SFCGAL_API ForceOrderPoints : public Transform {
 	public:

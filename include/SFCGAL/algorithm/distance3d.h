@@ -30,6 +30,8 @@ namespace algorithm {
 	struct NoValidityCheck;
 
 	/**
+	 * dispatch distance between two Geometries
+	 * @todo complete with solid
 	 * Compute distance between two 3D Geometries
 	 * @ingroup public_api
 	 * @pre gA is a valid geometry

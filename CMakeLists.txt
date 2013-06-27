@@ -103,8 +103,9 @@ endif()
 find_package( CGAL COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
-include_directories( 
-	include
+include_directories( include )
+#-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
+include_directories( SYSTEM 
 	${CGAL_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIRS}	
 	${MPFR_INCLUDE_DIRS}	
@@ -120,7 +121,7 @@ link_directories(
 #-- optional OpenSceneGraph support
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
-	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
+	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
 	
 	# config.h generation
 	set( SFCGAL_WITH_OSG "ON" )
@@ -129,6 +130,7 @@ endif()
 
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
+option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" OFF )
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -138,7 +140,10 @@ if(MSVC)
 	endif()
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	# Update if necessary
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Werror -Wno-error=format")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic")
+	if( SFCGAL_BUILD_FAILED_ON_WARNING )
+		 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=format")
+	endif()
 
 	add_definitions( "-frounding-math" )
 	

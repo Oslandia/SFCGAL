@@ -34,6 +34,7 @@ namespace generator {
 
 	/**
 	 * generate hoch snowflake
+	 * @todo unittest
 	 */
 	SFCGAL_API std::auto_ptr< Polygon > hoch( const unsigned int & order ) ;
 
