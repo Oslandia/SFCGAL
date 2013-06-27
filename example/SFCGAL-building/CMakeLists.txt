@@ -10,8 +10,7 @@ target_link_libraries( example-${EXAMPLE_NAME}
 	${Boost_LIBRARIES}
 )
 if(SFCGAL_WITH_OSG)
-	target_link_libraries( example-${EXAMPLE_NAME} 
-		SFCGAL
+	target_link_libraries( example-${EXAMPLE_NAME}
 		${OPENSCENEGRAPH_LIBRARIES}
 	)
 endif()

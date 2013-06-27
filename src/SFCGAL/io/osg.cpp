@@ -1,6 +1,7 @@
 #include <SFCGAL/config.h>
 #ifdef SFCGAL_WITH_OSG
 
+#include <SFCGAL/io/osg.h>
 #include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <osg/Geometry>

@@ -7,6 +7,7 @@
 #error "SFCGAL is not build with OpenSceneGraph support (see SFCGAL_BUILD_OSG in cmake)"
 #endif
 
+#include <string>
 
 namespace osg {
 	class Geometry ;
