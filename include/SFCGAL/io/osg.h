@@ -28,9 +28,15 @@ namespace io {
 	 *
 	 * @warning requires OpenSceneGraph
 	 *
-	 * @todo list of geometrie?
+	 * @todo list of geometries?
 	 */
 	SFCGAL_API void osgWriteFile( const Geometry & g, const std::string& filepath ) ;
+
+	/**
+	 * @brief [helper] converts a SFCGAL::Geometry to an OSG geometry
+	 */
+	SFCGAL_API osg::Geometry* toOsgGeometry( const Geometry & g ) ;
+
 
 } // namespace io
 } // namespace SFCGAL

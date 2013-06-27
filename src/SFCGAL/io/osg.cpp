@@ -26,6 +26,17 @@ void osgWriteFile( const Geometry & g, const std::string& filepath )
 	osgDB::writeNodeFile(*geode, filepath ) ;
 }
 
+
+///
+///
+///
+osg::Geometry* toOsgGeometry( const Geometry & g )
+{
+	SFCGAL::detail::io::OsgFactory factory ;
+	return factory.createGeometry( g ) ;
+}
+
+
 } // namespace io
 } // namespace SFCGAL
 
