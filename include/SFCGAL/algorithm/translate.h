@@ -34,10 +34,14 @@ namespace algorithm {
 
 	/**
 	 * @brief translate a geometry from a given vector
+	 * @todo unittest
+	 * @todo rename to translate3D and add translate for 2D
 	 */
 	SFCGAL_API void       translate( Geometry & g, const Kernel::Vector_3 & v ) ;
 	/**
 	 * @brief translate a geometry from a given vector
+	 * @todo unittest
+	 * @todo rename to translate3D and add translate for 2D
 	 */
 	SFCGAL_API void       translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 

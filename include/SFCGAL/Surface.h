@@ -27,8 +27,6 @@ namespace SFCGAL {
 
 	/**
 	 * Abstract Surface class
-	 *
-	 * @todo template < size_t N >?
 	 */
 	class SFCGAL_API Surface : public Geometry {
 	public:

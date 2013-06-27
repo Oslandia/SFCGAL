@@ -1,6 +1,7 @@
 #include <SFCGAL/config.h>
 #ifdef SFCGAL_WITH_OSG
 
+#include <SFCGAL/io/osg.h>
 #include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <osg/Geometry>
@@ -24,6 +25,17 @@ void osgWriteFile( const Geometry & g, const std::string& filepath )
 	geode->addDrawable( osgGeometry );
 	osgDB::writeNodeFile(*geode, filepath ) ;
 }
+
+
+///
+///
+///
+osg::Geometry* toOsgGeometry( const Geometry & g )
+{
+	SFCGAL::detail::io::OsgFactory factory ;
+	return factory.createGeometry( g ) ;
+}
+
 
 } // namespace io
 } // namespace SFCGAL

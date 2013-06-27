@@ -33,7 +33,7 @@ namespace algorithm {
 	 * @brief Check validity of a geometry
 	 * @ingroup public_api
 	 */
-    const Validity isValid( const Geometry & g, const double & toleranceAbs= 1e-9 );
+    SFCGAL_API const Validity isValid( const Geometry & g, const double & toleranceAbs= 1e-9 );
 
 /**
  * Macro used to by-pass validity check
