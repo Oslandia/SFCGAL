@@ -37,43 +37,43 @@ using namespace boost::unit_test ;
 class DemoVisitorGetType : public ConstGeometryVisitor {
 public:
 
-	virtual void visit( const Point & g ) {
+	virtual void visit( const Point & /*g*/ ) {
 		type = "Point";
 	}
-	virtual void visit( const LineString & g ) {
+	virtual void visit( const LineString & /*g*/ ) {
 		type = "LineString";
 	}
-	virtual void visit( const Polygon & g ) {
+	virtual void visit( const Polygon & /*g*/ ) {
 		type = "Polygon";
 	}
-	virtual void visit( const Triangle & g ) {
+	virtual void visit( const Triangle & /*g*/ ) {
 		type = "Triangle";
 	}
-	virtual void visit( const Solid & g ) {
+	virtual void visit( const Solid & /*g*/ ) {
 		type = "Solid";
 	}
-	virtual void visit( const MultiPoint & g ) {
+	virtual void visit( const MultiPoint & /*g*/ ) {
 		type = "MultiPoint";
 	}
-	virtual void visit( const MultiLineString & g ){
+	virtual void visit( const MultiLineString & /*g*/ ){
 		type = "MultiLineString";
 	}
-	virtual void visit( const MultiPolygon & g ){
+	virtual void visit( const MultiPolygon & /*g*/ ){
 		type = "MultiPolygon";
 	}
-	virtual void visit( const MultiSolid & g ){
+	virtual void visit( const MultiSolid & /*g*/ ){
 		type = "MultiSolid";
 	}
 
-	virtual void visit( const GeometryCollection & g ){
+	virtual void visit( const GeometryCollection & /*g*/ ){
 		type = "GeometryCollection";
 	}
 
-	virtual void visit( const PolyhedralSurface & g ) {
+	virtual void visit( const PolyhedralSurface & /*g*/ ) {
 		type = "PolyhedralSurface";
 	}
 
-	virtual void visit( const TriangulatedSurface & g ) {
+	virtual void visit( const TriangulatedSurface & /*g*/ ) {
 		type = "TriangulatedSurface";
 	}
 
