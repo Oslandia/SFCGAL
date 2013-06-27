@@ -129,7 +129,7 @@ endif()
 
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
-option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" ON )
+option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" OFF )
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
