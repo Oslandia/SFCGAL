@@ -111,6 +111,7 @@ BOOST_AUTO_TEST_CASE( solidConversionTest )
 	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
 
 	const Solid& solid = static_cast<const Solid&>( *g );
+	// TODO check crash with MinGW
 	CGAL::Nef_polyhedron_3< Kernel > nef( solid.toNef_polyhedron_3< Kernel >());
 	// Here a Nef_polyhedron merges adjacent triangles
 	BOOST_CHECK_EQUAL( nef.number_of_facets(), 9U );
