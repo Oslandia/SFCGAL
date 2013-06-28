@@ -54,8 +54,8 @@ namespace algorithm {
 		GeometrySet<3> tpoint( segment->target() );
 		triangulate::triangulate( *ext_poly, triangles );
 
-		bool source_inside = is_in_ext( segment->source() ) || intersects( triangles, spoint );
-		bool target_inside = is_in_ext( segment->target() ) || intersects( triangles, tpoint );
+		bool source_inside = (is_in_ext( segment->source() ) != CGAL::ON_UNBOUNDED_SIDE ) || intersects( triangles, spoint );
+		bool target_inside = (is_in_ext( segment->target() ) != CGAL::ON_UNBOUNDED_SIDE ) || intersects( triangles, tpoint );
 
 		if ( source_inside && target_inside ) {
 			// the entire segment intersects the volume, return the segment
@@ -130,7 +130,7 @@ namespace algorithm {
 			// no surface intersection
 			// if one of the point of the triangle is inside the polyhedron,
 			// the triangle is inside
-			if ( point_inside_q( tri.vertex(0) ) ) {
+			if ( point_inside_q( tri.vertex(0) ) != CGAL::ON_UNBOUNDED_SIDE ) {
 				output.addPrimitive( tri );
 				return;
 			}
@@ -187,7 +187,7 @@ namespace algorithm {
 				}
 				else {
 					// strictly inside test
-					bool point_inside_volume =  point_inside_q( test_point );
+					bool point_inside_volume = point_inside_q( test_point ) != CGAL::ON_UNBOUNDED_SIDE;
 
 					if ( point_inside_volume ) {
 						point_is_inside = true;
