@@ -34,10 +34,27 @@
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/Kernel.h>
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/visitors.hpp>
+#include <boost/graph/undirected_dfs.hpp>
+
+
 using namespace SFCGAL::detail::algorithm;
 
 namespace SFCGAL {
 namespace algorithm {
+
+// to detect unconnected interior in polygon
+struct LoopDetector : public boost::dfs_visitor<> {
+    LoopDetector(bool & hasLoop):_hasLoop(hasLoop){}
+
+    template <class Edge, class Graph>
+    void back_edge(Edge, const Graph&) { _hasLoop = true; }
+private:
+    bool & _hasLoop;
+};
+
+
 
 /**
  * @note empty geometries are valid, but the test is only performed in the interface function
@@ -102,21 +119,37 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
     }
 
     // Rings must not share more than one point (no intersection)
-    const size_t numRings =  p.numRings();
-    for (size_t ri=0; ri < numRings; ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
-        size_t numTouchingPoints = 0;
-        for (size_t rj=ri+1; rj < numRings; ++rj) {
-            std::auto_ptr<Geometry> inter = p.is3D()
-                                            ? intersection3D( p.ringN( ri ), p.ringN( rj ) )
-                                            : intersection( p.ringN( ri ), p.ringN( rj ) );
-            if ( ! inter->isEmpty() && ! inter->is< Point >() ) {
-                return Validity::invalid( ( boost::format("intersection between ring %d and %d") % ri % rj ).str() );
-            } else if ( ! inter->isEmpty() && inter->is< Point >() ) {
-                ++numTouchingPoints;
+    {
+        typedef std::pair<int,int> Edge;
+        std::vector<Edge> touchingRings;
+        const size_t numRings =  p.numRings();
+        for (size_t ri=0; ri < numRings; ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
+            for (size_t rj=ri+1; rj < numRings; ++rj) {
+                std::auto_ptr<Geometry> inter = p.is3D()
+                                                ? intersection3D( p.ringN( ri ), p.ringN( rj ) )
+                                                : intersection( p.ringN( ri ), p.ringN( rj ) );
+                if ( ! inter->isEmpty() && ! inter->is< Point >() ) {
+                    return Validity::invalid( ( boost::format("intersection between ring %d and %d") % ri % rj ).str() );
+                } else if ( ! inter->isEmpty() && inter->is< Point >() ) {
+                    touchingRings.push_back( Edge(ri,rj) );
+                }
             }
         }
-        if ( numTouchingPoints > 1 ) {
-            SFCGAL_WARNING( ( boost::format("ring %d has %d touching points, interior may not be connected") % ri % numTouchingPoints ).str() );
+        {
+            using namespace boost;
+            typedef adjacency_list< vecS, vecS, undirectedS,
+                    no_property,
+                    property<edge_color_t, default_color_type> > Graph;
+            typedef graph_traits<Graph>::vertex_descriptor vertex_t;
+
+            Graph g(touchingRings.begin(), touchingRings.end(), numRings);
+       
+            bool hasLoop = false;
+            LoopDetector vis(hasLoop);
+            undirected_dfs(g, root_vertex(vertex_t(0)).visitor(vis).edge_color_map(get(edge_color, g)));
+            if (hasLoop) {
+                return Validity::invalid("interior is not connected");
+            }
         }
     }
 

@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         //std::cerr << t << ":" << tg._wkt << "\n";
         std::auto_ptr< Geometry > g( io::readWkt(tg.wkt) );
         Validity v = algorithm::isValid( *g );
-        BOOST_CHECK_MESSAGE( v == tg.isValid, ( boost::format("%d:%s should be %s (%s)%s%s : %s") % t % g->geometryType() % (tg.isValid?"valid":"invalid") % tg.comment % (v?".":", reason: ") % v.reason(), tg.wkt ) );
+        BOOST_CHECK_MESSAGE( v == tg.isValid, ( boost::format("%d:%s should be %s (%s)%s%s : %s") % t % g->geometryType() % (tg.isValid?"valid":"invalid") % tg.comment % (v?".":", reason: ") % v.reason() % tg.wkt ) );
     }
 
 }

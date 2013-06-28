@@ -31,6 +31,9 @@ struct TestGeometry {
     const std::string comment;
 };
 
+// include poly with touching holes that disconnect interior
+//
+
 inline
 const std::vector< TestGeometry > createTestGeometries()
 {
@@ -60,6 +63,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1.0 -0.5,-0.5 -0.5))", true, "one contact point between interior ans exterior"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,-0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))", true, "with interior rings"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))", true, "one contact point between 2 interior rings"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-.7 0,.7 0,0 -.7,-.7 0),(-.5 0,-.5 .5,0 .5,-.5 0),(.5 0,.1 .5,.5 .5,.5 0))", true, "3 touching interior ring define a connected interior"},
         // invalid
         {"POLYGON((-1.0 -1.0,-1.0 1.0,-1.0 -1.0))", false, "only 3 points"},
         {"POLYGON((-1.0 -1.0,-1.0 1.0,1.0 1.0,-1.0 -1.0,-1.0 1.0))", false, "not closed"},
@@ -78,6 +82,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.0 -0.5,0.0 0.5,-0.5 0.5,-0.5 -0.5),(0.0 -0.5,0.5 -0.5,0.5 0.5,0.0 0.5,0.0 -0.5))", false, "adjacent interior rings"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.2 -0.4,-0.1 0.5,-0.5 0.5,-0.5 -0.5),(0.1 -0.5,0.5 -0.5,0.5 0.5,0.1 0.5,0.1 -0.5))", false, "intersection between interior rings"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.5 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5),(-0.2 -0.2,0.2 -0.2,0.2 0.2,-0.2 0.2,-0.2 -0.2))", false, "one inetrior ring is inside the other"},
+        {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-.7 0,.7 0,0 -.7,-.7 0),(-.5 0,-.5 .5,0 .5,-.5 0),(.5 0,0 .5,.5 .5,.5 0))", false, "3 touching interior ring define an unconnected interior"},
     // Polygon3D
         // valid
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", true, ""},
