@@ -42,7 +42,7 @@ namespace algorithm {
 	template < typename V, typename E >
 	bool isHalfEdge( const GeometryGraphT<V,E> & graph ){
 		typedef typename GeometryGraphT<V,E>::vertex_descriptor vertex_descriptor ;
-		typedef typename GeometryGraphT<V,E>::edge_descriptor   edge_descriptor ;
+		//typedef typename GeometryGraphT<V,E>::edge_descriptor   edge_descriptor ;
 		typedef typename GeometryGraphT<V,E>::edge_iterator     edge_iterator ;
 
 		/*

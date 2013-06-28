@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( adjacentVertices )
 {
 	GeometryGraph graph;
 	typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
-	typedef GeometryGraph::edge_descriptor   edge_descriptor ;
+	//typedef GeometryGraph::edge_descriptor   edge_descriptor ;
 
 	vertex_descriptor a = graph.addVertex( Coordinate(0.0,0.0) );
 	vertex_descriptor b = graph.addVertex( Coordinate(1.0,1.0) );

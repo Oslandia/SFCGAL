@@ -38,10 +38,10 @@ namespace algorithm
 	template <int Dim>
 	bool covers( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb )
 	{
-		typedef typename TypeForDimension<Dim>::Point TPoint;
-		typedef typename TypeForDimension<Dim>::Segment TSegment;
-		typedef typename TypeForDimension<Dim>::Surface TSurface;
-		typedef typename TypeForDimension<Dim>::Volume TVolume;
+		//typedef typename TypeForDimension<Dim>::Point TPoint;
+		//typedef typename TypeForDimension<Dim>::Segment TSegment;
+		//typedef typename TypeForDimension<Dim>::Surface TSurface;
+		//typedef typename TypeForDimension<Dim>::Volume TVolume;
 
 		if ( pa.handle.which() < pb.handle.which() ) {
 			// no geometry can cover a geometry of greater dimension

@@ -80,9 +80,9 @@ std::auto_ptr< Geometry > building(
 	const Kernel::FT& roofSlope
 )
 {
-	typedef Straight_skeleton_2::Vertex_const_handle     Vertex_const_handle ;
+	//typedef Straight_skeleton_2::Vertex_const_handle     Vertex_const_handle ;
 	typedef Straight_skeleton_2::Halfedge_const_handle   Halfedge_const_handle ;
-	typedef Straight_skeleton_2::Halfedge_const_iterator Halfedge_const_iterator ;
+	//typedef Straight_skeleton_2::Halfedge_const_iterator Halfedge_const_iterator ;
 	typedef Straight_skeleton_2::Face_const_iterator     Face_const_iterator ;
 
 

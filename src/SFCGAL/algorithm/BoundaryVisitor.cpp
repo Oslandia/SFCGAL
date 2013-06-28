@@ -244,7 +244,7 @@ void BoundaryVisitor::getBoundaryFromLineStrings( const graph::GeometryGraph & g
 void BoundaryVisitor::getBoundaryFromPolygons( const graph::GeometryGraph & g )
 {
 	typedef graph::GeometryGraph::vertex_descriptor vertex_descriptor ;
-	typedef graph::GeometryGraph::vertex_iterator   vertex_iterator ;
+	//typedef graph::GeometryGraph::vertex_iterator   vertex_iterator ;
 	typedef graph::GeometryGraph::edge_descriptor   edge_descriptor ;
 	typedef graph::GeometryGraph::edge_iterator     edge_iterator ;
 
