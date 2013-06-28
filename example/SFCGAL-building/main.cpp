@@ -21,8 +21,8 @@ class InputData {
 public:
 	InputData( const std::string & wkt_ = "", double wallHeight_ = 5.0, double roofSlope_ = 1.0 ):
 		wkt(wkt_),
-		wallHeight(wallHeight_),
-		roofSlope(roofSlope_)
+		roofSlope(roofSlope_),
+		wallHeight(wallHeight_)
 	{
 
 	}

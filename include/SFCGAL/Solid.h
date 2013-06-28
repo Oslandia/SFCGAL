@@ -179,8 +179,10 @@ namespace SFCGAL {
 			TriangulatedSurface ext_tri;
 			triangulate::triangulatePolygon3D( this->exteriorShell(), ext_tri );
 			
-			std::auto_ptr<Polyhedron> poly( ext_tri.toPolyhedron_3<K, Polyhedron>());
-			nef = CGAL::Nef_polyhedron_3<K>( *poly );
+            {
+                std::auto_ptr<Polyhedron> poly( ext_tri.toPolyhedron_3<K, Polyhedron>());
+                nef = CGAL::Nef_polyhedron_3<K>( *poly );
+            }
 			
 			for ( size_t i = 0; i < this->numInteriorShells(); i++ ) {
 				TriangulatedSurface tri;
