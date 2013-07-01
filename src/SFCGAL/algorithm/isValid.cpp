@@ -95,7 +95,7 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
         const bool extCCWO = isCounterClockWiseOriented( p.exteriorRing() );
         for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
             if ( extCCWO == isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
-                return Validity::invalid( ( boost::format("exterior rin and interior ring %d have the same orientation") % r ).str() );
+                return Validity::invalid( ( boost::format("exterior ring and interior ring %d have the same orientation") % r ).str() );
             }
         }
     }

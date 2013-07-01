@@ -20,6 +20,7 @@
  */
 #include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/all.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 namespace SFCGAL {
 namespace triangulate {
@@ -81,6 +82,17 @@ void triangulateCollection2DZ( const Geometry & g, ConstraintDelaunayTriangulati
 ///
 ///
 void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & triangulation ){
+
+    if (g.isEmpty() ) return;
+  
+    if (triangulation.hasProjectionPlane()) {
+        SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE(g, triangulation.projectionPlane() );
+    }
+    else {
+        SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
+    }
+
+
 	switch ( g.geometryTypeId() ){
 	case TYPE_POINT:
 		triangulate2DZ( g.as< Point >(), triangulation );
@@ -104,9 +116,10 @@ void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & trian
 		return ;
 	case TYPE_SOLID:
 	case TYPE_MULTISOLID:
-	default:
+        // note: we can't have à valid geom in 2D that comes from à solid 
+        // since a solid closed and thus self-intersects once projected
 		BOOST_THROW_EXCEPTION(
-				      Exception(
+				      InappropriateGeometryException(
 						( boost::format( "can't process 2DZ triangulation for type '%1%'" ) % g.geometryType() ).str()
 						)
 				      );
