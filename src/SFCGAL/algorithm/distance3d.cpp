@@ -480,10 +480,10 @@ const Sphere boundingSphere( const Geometry & geom )
 
     // farest point from centroid
     Vector_3 f = c ;
-    typename Kernel::FT maxDistanceSq = 0;
+    Kernel::FT maxDistanceSq = 0;
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
         const Vector_3 cx = (*x)->toVector_3() - c ;
-        const typename Kernel::FT dSq = cx * cx ;
+        const Kernel::FT dSq = cx * cx ;
         if ( dSq > maxDistanceSq ) {
             f = (*x)->toVector_3() ;
             maxDistanceSq = dSq ;
