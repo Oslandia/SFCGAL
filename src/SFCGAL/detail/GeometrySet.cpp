@@ -676,6 +676,65 @@ namespace SFCGAL {
 		}
 	}
 
+		template <>
+		void GeometrySet<2>::addBoundary( const TypeForDimension<2>::Surface& surface )
+		{
+			addSegments( surface.outer_boundary().edges_begin(), surface.outer_boundary().edges_end() );
+			for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = surface.holes_begin();
+			      hit != surface.holes_end();
+			      ++hit ) {
+				addSegments( hit->edges_begin(), hit->edges_end() );
+			}
+		}
+
+		template <>
+		void GeometrySet<3>::addBoundary( const TypeForDimension<3>::Surface& )
+		{
+			// TODO
+		}
+
+
+		template <>
+		int GeometrySet<2>::dimension() const
+		{
+			if ( ! surfaces().empty() ) {
+				return 2;
+			}
+			if ( ! segments().empty() ) {
+				return 1;
+			}
+			if ( ! points().empty() ) {
+				return 0;
+			}
+			return -1;
+		}
+
+		template <>
+		int GeometrySet<3>::dimension() const
+		{
+			if ( ! volumes().empty() ) {
+				for ( GeometrySet<3>::VolumeCollection::const_iterator it = volumes().begin();
+				      it != volumes().end();
+				      ++it ) {
+					if ( it->primitive().is_closed() ) {
+						return 3;
+					}
+				}
+
+				return 2;
+			}
+			if ( ! surfaces().empty() ) {
+				return 2;
+			}
+			if ( ! segments().empty() ) {
+				return 1;
+			}
+			if ( ! points().empty() ) {
+				return 0;
+			}
+			return -1;
+		}
+
 	template <int Dim>
 	void GeometrySet<Dim>::filterCovered( GeometrySet<Dim>& output ) const
 	{

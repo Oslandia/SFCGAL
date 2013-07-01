@@ -248,6 +248,26 @@ namespace SFCGAL {
 		}
 
 		/**
+		 * Get the maximum geometry dimension of the set
+		 * -1 : empty
+		 * 0 : there are points
+		 * 1 : there are segments
+		 * 2 : there are surfaces
+		 * 3 : there are volumes
+		 */
+		int dimension() const;
+
+		/**
+		 * Add the boundary (segments) of a surface
+		 */
+		void addBoundary( const typename TypeForDimension<Dim>::Surface& surface );
+		
+		/**
+		 * Add the boundary (surfaces) of a volume
+		 */
+		void addBoundary( const typename TypeForDimension<Dim>::Volume& volume );
+
+		/**
 		 * Compute all bounding boxes and handles of the set
 		 */
 		void computeBoundingBoxes( typename HandleCollection<Dim>::Type& handles, typename BoxCollection<Dim>::Type& boxes ) const;
