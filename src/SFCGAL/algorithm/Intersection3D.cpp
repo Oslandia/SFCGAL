@@ -44,6 +44,7 @@ namespace algorithm {
 		//typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
 
 		const MarkedPolyhedron* ext_poly = pa.as<MarkedPolyhedron>();
+		BOOST_ASSERT( ext_poly->is_closed() );
 		const CGAL::Segment_3<Kernel>* segment = pb.as<CGAL::Segment_3<Kernel> >();
 
 		MarkedPolyhedron *ext_poly_nc = const_cast<MarkedPolyhedron*>( ext_poly );
@@ -115,6 +116,7 @@ namespace algorithm {
 	
 	void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>& output )
 	{
+		BOOST_ASSERT( pa.is_closed() );
 		Split_visitor visitor( NULL, true );
 
 		MarkedPolyhedron polyb;
@@ -303,9 +305,11 @@ namespace algorithm {
 							      output );
 			}
 			else if ( pb.handle.which() == PrimitiveVolume ) {
-				_intersection_solid_solid(  *pa.as<MarkedPolyhedron>(),
-							    *pb.as<MarkedPolyhedron>(),
-							    output );
+				const MarkedPolyhedron& sa = *pa.as<MarkedPolyhedron>();
+				const MarkedPolyhedron& sb = *pb.as<MarkedPolyhedron>();
+				BOOST_ASSERT( sa.is_closed() );
+				BOOST_ASSERT( sb.is_closed() );
+				_intersection_solid_solid( sa, sb, output );
 			}
 		}
 	}

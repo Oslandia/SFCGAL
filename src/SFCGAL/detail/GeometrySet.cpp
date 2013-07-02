@@ -319,7 +319,26 @@ namespace SFCGAL {
 	void GeometrySet<3>::addPrimitive( const TypeForDimension<3>::Volume& p, int flags )
 	{
 		BOOST_ASSERT( ! p.empty() );
-		_volumes.push_back( GeometrySet<3>::VolumeCollection::value_type(p, flags) );
+		if ( p.is_closed() ) {
+			_volumes.push_back( GeometrySet<3>::VolumeCollection::value_type(p, flags) );
+		}
+		else {
+			// it is an unclosed volume, i.e. a surface
+			BOOST_ASSERT( p.is_pure_triangle() );
+			CGAL::Point_3<Kernel> p1, p2, p3;
+			for ( MarkedPolyhedron::Facet_const_iterator fit = p.facets_begin();
+			      fit != p.facets_end();
+			      ++fit ) {
+				MarkedPolyhedron::Halfedge_around_facet_const_circulator cit = fit->facet_begin();
+				p1 = cit->vertex()->point();
+				cit++;
+				p2 = cit->vertex()->point();
+				cit++;
+				p3 = cit->vertex()->point();
+				CGAL::Triangle_3<Kernel> tri( p1, p2, p3 );
+				_surfaces.push_back( tri );
+			}	
+		}
 	}
 
 		template <int Dim>
