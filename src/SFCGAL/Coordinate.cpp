@@ -56,17 +56,25 @@ Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel
 ///
 ///
 ///
+Coordinate::Coordinate( const double & x, const double & y )
+{
+    if (!std::isfinite(x) || !std::isfinite(y) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value"));
+    }
+
+	_storage = Kernel::Point_2(x, y);
+}
+
+///
+///
+///
 Coordinate::Coordinate( const double & x, const double & y, const double & z )
 {
-	if ( isNaN(x) || isNaN(y) ){
-		BOOST_ASSERT( isNaN(x) && isNaN(y) );
-	}else{
-		if ( isNaN(z) ){
-			_storage = Kernel::Point_2(x, y);
-		}else{
-			_storage = Kernel::Point_3(x, y, z);
-		}
-	}
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value"));
+    }
+
+	_storage = Kernel::Point_3(x, y, z);
 }
 
 ///
@@ -160,7 +168,8 @@ class GetXVisitor : public boost::static_visitor<Kernel::FT>
 {
 public:
 	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		return 0.0;
+		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate x value"));
+        return 0;
 	}
 	Kernel::FT operator()( const Kernel::Point_2& storage ) const {
 		return storage.x();
@@ -183,7 +192,8 @@ class GetYVisitor : public boost::static_visitor<Kernel::FT>
 {
 public:
 	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		return 0.0;
+		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate y value"));
+		return 0;
 	}
 	Kernel::FT operator()( const Kernel::Point_2& storage ) const {
 		return storage.y();
@@ -206,10 +216,11 @@ class GetZVisitor : public boost::static_visitor<Kernel::FT>
 {
 public:
 	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		return 0.0;
+		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate z value"));
+		return 0;
 	}
 	Kernel::FT operator()( const Kernel::Point_2& ) const {
-		return 0.0;
+		return 0;
 	}
 	Kernel::FT operator()( const Kernel::Point_3& storage ) const {
 		return storage.z();

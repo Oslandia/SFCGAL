@@ -71,8 +71,8 @@ void Logger::log(
 		return ;
 	}
 
-	ptime now = second_clock::local_time();
-	_out << to_iso_string(now) << ":" ;
+	//ptime now = second_clock::local_time();
+	//_out << to_iso_string(now) << ":" ;
 
 	if ( _displayFilePosition && ! filename.empty() ){
 		_out << filename << ":" ;
@@ -80,8 +80,15 @@ void Logger::log(
 	if ( _displayFilePosition && lineNumber >= 0 ){
 		_out << lineNumber <<  ":" ;
 	}
-	std::cout << message << std::endl ;
 
+    switch ( level ){
+        case Debug:   _out << " debug: "; break;
+        case Info:    _out << " info: "; break;
+        case Warning: _out << " warning: "; break;
+        case Error:   _out << " error: "; break;
+        case Critical:_out << " critical: "; break;
+    }
+	_out << message << std::endl ;
 }
 
 
@@ -106,7 +113,7 @@ void Logger::setLogLevel( const Level & logLevel )
 ///
 Logger::Logger( std::ostream& str ):
 	_logLevel( Warning ),
-	_displayFilePosition(false),
+	_displayFilePosition(true),
 	_out( str.rdbuf() )
 {
 

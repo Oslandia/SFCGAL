@@ -44,7 +44,11 @@ void triangulatePolygon3D(
 	TriangulatedSurface & triangulatedSurface
 )
 {
-	switch ( g.geometryTypeId() ){
+    if (g.isEmpty() ) return;
+
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );   
+	
+    switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
 		return triangulatePolygon3D( g.as< Triangle >(), triangulatedSurface );
 	case TYPE_POLYGON:
@@ -65,7 +69,7 @@ void triangulatePolygon3D(
 	}
 	default:
 		BOOST_THROW_EXCEPTION(
-				      Exception(
+				      InappropriateGeometryException(
 						( boost::format( "can't triangulate 3d polygons for type '%1%'" ) % g.geometryType() ).str()
 						)
 				      );

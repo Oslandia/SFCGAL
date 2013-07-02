@@ -56,11 +56,21 @@ namespace SFCGAL {
 		 */
 		Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double & m = NaN() ) ;
 		/**
-		 * XY[Z] constructor
+		 * XY constructor
 		 */
-		Point( const double & x, const double & y, const double & z = NaN(), const double & m = NaN() ) ;
+		Point( const double & x, const double & y) ;
 
 		/**
+		 * XYZ constructor
+		 */
+		Point( const double & x, const double & y, const double & z ) ;
+
+		/**
+		 * XYZM constructor
+		 */
+		Point( const double & x, const double & y, const double & z, const double & m  ) ;
+		
+        /**
 		 * Constructor from CGAL::Point_2<K>
 		 */
 		Point( const Kernel::Point_2 & other ) ;
@@ -103,15 +113,15 @@ namespace SFCGAL {
 		//--- accessors
 
 		/**
-		 * Returns the x value as a double (NaN for empty Point)
+		 * Returns the x value as a double throw for empty Point
 		 */
 		inline Kernel::RT x() const { return _coordinate.x() ; }
 		/**
-		 * Returns the y value as a double (NaN for empty Point)
+		 * Returns the y value as a double throw for empty Point
 		 */
 		inline Kernel::RT y() const { return _coordinate.y() ; }
 		/**
-		 * Returns the z value
+		 * Returns the z value (zero for 2D) throw for empty Point
 		 */
 		inline Kernel::RT z() const { return _coordinate.z() ; }
 
