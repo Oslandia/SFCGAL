@@ -33,8 +33,9 @@ BOOST_AUTO_TEST_CASE( testDefaultConstructor )
 {
 	Coordinate g ;
 	BOOST_CHECK( g.isEmpty() );
-	BOOST_CHECK_EQUAL( g.x(), 0 );
-	BOOST_CHECK_EQUAL( g.y(), 0 );
+	BOOST_CHECK_THROW( g.x(), Exception );
+	BOOST_CHECK_THROW( g.y(), Exception );
+	BOOST_CHECK_THROW( g.z(), Exception );
 }
 
 /// Coordinate( const Kernel::FT & x, const Kernel::FT & y ) ;
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE( testXYZConstructor )
 	BOOST_CHECK_EQUAL( g.z(), 5 );
 }
 
-/// Coordinate( const double & x, const double & y, const double & z = NaN() ) ;
+/// Coordinate( const double & x, const double & y ) ;
 BOOST_AUTO_TEST_CASE( testXYConstructorDouble )
 {
 	Coordinate g( 3.0, 4.0 );
@@ -68,6 +69,7 @@ BOOST_AUTO_TEST_CASE( testXYConstructorDouble )
 	BOOST_CHECK_EQUAL( g.x(), 3 );
 	BOOST_CHECK_EQUAL( g.y(), 4 );
 }
+/// Coordinate( const double & x, const double & y, const double& z ) ;
 BOOST_AUTO_TEST_CASE( testXYZConstructorDouble )
 {
 	Coordinate g( 3.0, 4.0, 5.0 );
@@ -76,6 +78,9 @@ BOOST_AUTO_TEST_CASE( testXYZConstructorDouble )
 	BOOST_CHECK_EQUAL( g.x(), 3 );
 	BOOST_CHECK_EQUAL( g.y(), 4 );
 	BOOST_CHECK_EQUAL( g.z(), 5 );
+    BOOST_CHECK_THROW( Coordinate(std::numeric_limits<double>::infinity(),0,0), NonFiniteValueException);
+    BOOST_CHECK_THROW( Coordinate(0,std::numeric_limits<double>::infinity(),0), NonFiniteValueException);
+    BOOST_CHECK_THROW( Coordinate(0,0,std::numeric_limits<double>::infinity()), NonFiniteValueException);
 }
 
 /// Coordinate( const CGAL::Point_2< K > & other ):

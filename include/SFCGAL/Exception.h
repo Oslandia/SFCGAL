@@ -87,6 +87,18 @@ namespace SFCGAL {
         {}
     
     };
+
+	/**
+	 * SFCGAL Exception thrown when non finite value is found
+	 */
+	class SFCGAL_API NonFiniteValueException : public Exception {
+    public:
+        NonFiniteValueException( std::string const& message ):
+            Exception( message )
+        {}
+    
+    };
+
 } // namespace SFCGAL
 
 #endif

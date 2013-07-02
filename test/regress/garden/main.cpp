@@ -134,9 +134,14 @@ int main( int argc, char* argv[] ){
         case TYPE_POINT :
             {
                 Point p(geom.as<Point>()) ;
-                (void)p.x();
-                (void)p.y();
-                (void)p.z();
+                try{
+                    (void)p.x();
+                    (void)p.y();
+                    (void)p.z();
+                }
+                catch (Exception) {
+                    BOOST_ASSERT(p.isEmpty());
+                }
             }
             break;
         case TYPE_LINESTRING :
