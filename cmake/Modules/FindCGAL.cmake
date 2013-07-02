@@ -24,6 +24,15 @@ if( CGAL_LIBRARY )
 	get_filename_component(CGAL_LIBRARY_DIRS ${CGAL_LIBRARY} PATH)
 endif()
 
+if(CGAL_FIND_VERSION)
+    find_file(version_file CGAL/version.h HINTS $ENV{CGAL_DIR}/include ${CGAL_DIR}/include ${CGAL_INCLUDE_DIRS} PATH_SUFFIXES CGAL)
+    file(STRINGS ${version_file} version_str REGEX "# *define +CGAL_VERSION +")
+    string( REGEX REPLACE "# *define +CGAL_VERSION +" "" CGAL_VERSION ${version_str})
+    if("${CGAL_VERSION}" VERSION_LESS "${CGAL_FIND_VERSION}")
+        message(FATAL_ERROR "CGAL " ${CGAL_FIND_VERSION} " is requiered (found " ${CGAL_VERSION} " in ${version_file})" )
+    endif()
+
+endif()
 
 find_library( CGAL_LIBRARY_DEBUG "CGAL${CGAL_LIBRARY_POSTFIX_DEBUG}" ${CGAL_LIBRARY_DEBUG}
 	HINTS ${CGAL_LIBRARY_DIRS}
