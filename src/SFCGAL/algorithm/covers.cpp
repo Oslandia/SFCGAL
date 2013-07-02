@@ -187,19 +187,25 @@ namespace algorithm
 			return false;
 		}
 
+		//
+		// This is a very naive (not efficient) implementation of covers() !
+		//
+		// covers(A,B) <=> A inter B == B
+		// '==' is here implemented with comparison of length, area and volumes
+		// TODO use only predicates if possible
 		GeometrySet<Dim> inter;
 		algorithm::intersection( a, b, inter );
 
-		if ( ! b.points().empty() && ! equalLength( b, inter, 0 ) ) {
+		if ( b.hasPoints() && ! equalLength( b, inter, 0 ) ) {
 				return false;
 		}
-		if ( ! b.segments().empty() && ! equalLength( b, inter, 1 ) ) {
+		if ( b.hasSegments() && ! equalLength( b, inter, 1 ) ) {
 				return false;
 		}
-		if ( ! b.surfaces().empty() && ! equalLength( b, inter, 2 ) ) {
+		if ( b.hasSurfaces() && ! equalLength( b, inter, 2 ) ) {
 				return false;
 		}
-		if ( ! b.volumes().empty() && ! equalLength( b, inter, 3 ) ) {
+		if ( b.hasVolumes() && ! equalLength( b, inter, 3 ) ) {
 				return false;
 		}
 		return true;

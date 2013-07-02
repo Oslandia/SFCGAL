@@ -187,6 +187,11 @@ namespace SFCGAL {
 		GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int flags = 0 );
 
 		/**
+		 * Add primitives from another set
+		 */
+		void merge( const GeometrySet<Dim>& g );
+
+		/**
 		 * Add a geometry by decomposing it into CGAL primitives
 		 */
 		void addGeometry( const Geometry& g );
@@ -283,6 +288,23 @@ namespace SFCGAL {
 
 		inline VolumeCollection& volumes() { return _volumes; }
 		inline const VolumeCollection& volumes() const { return _volumes; }
+
+		/**
+		 * Returns true if the set holds points
+		 */
+		bool hasPoints() const;
+		/**
+		 * Returns true if the set holds segments
+		 */
+		bool hasSegments() const;
+		/**
+		 * Returns true if the set holds surfaces
+		 */
+		bool hasSurfaces() const;
+		/**
+		 * Returns true if the set holds volumes
+		 */
+		bool hasVolumes() const;
 
 		/**
 		 * convert the set to a SFCGAL::Geometry

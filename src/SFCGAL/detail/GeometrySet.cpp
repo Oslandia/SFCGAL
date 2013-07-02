@@ -81,10 +81,12 @@ namespace SFCGAL {
 
 	void _decompose_polygon( const Polygon& poly, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
+		BOOST_ASSERT( ! poly.isEmpty() );
 		surfaces.push_back( poly.toPolygon_with_holes_2() );
 	}
 	void _decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
+		BOOST_ASSERT( ! poly.isEmpty() );
 		TriangulatedSurface surf;
 		triangulate::triangulatePolygon3D( poly, surf );
 		for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
@@ -101,6 +103,7 @@ namespace SFCGAL {
 	}
 	void _decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
+		BOOST_ASSERT( ! solid.isEmpty() );
 		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, MarkedPolyhedron >() );
 	}
 
@@ -140,28 +143,59 @@ namespace SFCGAL {
 	}
 
 	template <int Dim>
+	void GeometrySet<Dim>::merge( const GeometrySet<Dim>& g )
+	{
+		std::copy( g.points().begin(), g.points().end(), std::inserter( points(), points().end() ) );
+		std::copy( g.segments().begin(), g.segments().end(), std::inserter( segments(), segments().end() ) );
+		std::copy( g.surfaces().begin(), g.surfaces().end(), std::back_inserter( surfaces() ) );
+		std::copy( g.volumes().begin(), g.volumes().end(), std::back_inserter( volumes() ) );
+	}
+
+	template <int Dim>
 	void GeometrySet<Dim>::addGeometry( const Geometry& g )
 	{
 		_decompose( g );
 	}
 
-	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const PrimitiveHandle<Dim>& p )
+	template <>
+	void GeometrySet<2>::addPrimitive( const PrimitiveHandle<2>& p )
 	{
 		switch ( p.handle.which() )
 		{
 		case PrimitivePoint:
-			_points.insert( *boost::get<const typename TypeForDimension<Dim>::Point*>(p.handle) );
+			_points.insert( *boost::get<const typename TypeForDimension<2>::Point*>(p.handle) );
 			break;
 		case PrimitiveSegment:
-			_segments.insert( *boost::get<const typename TypeForDimension<Dim>::Segment*>(p.handle) );
+			_segments.insert( *boost::get<const typename TypeForDimension<2>::Segment*>(p.handle) );
 			break;
 		case PrimitiveSurface:
-			_surfaces.push_back( *boost::get<const typename TypeForDimension<Dim>::Surface*>(p.handle) );
+			_surfaces.push_back( *boost::get<const typename TypeForDimension<2>::Surface*>(p.handle) );
 			break;
-		case PrimitiveVolume:
-			_volumes.push_back( *boost::get<const typename TypeForDimension<Dim>::Volume*>(p.handle) );
+		default:
 			break;
+		}
+	}
+		
+	template <>
+	void GeometrySet<3>::addPrimitive( const PrimitiveHandle<3>& p )
+	{
+		switch ( p.handle.which() )
+		{
+		case PrimitivePoint:
+			_points.insert( *boost::get<const typename TypeForDimension<3>::Point*>(p.handle) );
+			break;
+		case PrimitiveSegment:
+			_segments.insert( *boost::get<const typename TypeForDimension<3>::Segment*>(p.handle) );
+			break;
+		case PrimitiveSurface:
+			_surfaces.push_back( *boost::get<const typename TypeForDimension<3>::Surface*>(p.handle) );
+			break;
+		case PrimitiveVolume: {
+			const TypeForDimension<3>::Volume& vol = *boost::get<const typename TypeForDimension<3>::Volume*>(p.handle);
+			BOOST_ASSERT( !vol.empty() );
+			_volumes.push_back( vol );
+			break;
+		}
 		}
 	}
 
@@ -200,6 +234,7 @@ namespace SFCGAL {
 			_surfaces.push_back( TSurface( *p ) );
 		}
 		else if ( const TVolume * p = CGAL::object_cast<TVolume>( &o ) ) {
+			BOOST_ASSERT( ! p->empty() );
 			_volumes.push_back( TVolume( *p ) );
 		}
 	}
@@ -241,6 +276,7 @@ namespace SFCGAL {
 			_segments.insert( TSegment( *p ) );
 		}
 		else if ( const TSurface * p = CGAL::object_cast<TSurface>( &o ) ) {
+			BOOST_ASSERT( ! p->is_unbounded() );
 			_surfaces.push_back( TSurface( *p ) );
 		}
 		else if ( const TVolume * p = CGAL::object_cast<TVolume>( &o ) ) {
@@ -260,19 +296,85 @@ namespace SFCGAL {
 		_segments.insert( CollectionElement<typename Segment_d<Dim>::Type>(p, flags ) );
 	}
 
-	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Surface& p, int flags )
+	template <>
+	void GeometrySet<2>::addPrimitive( const typename TypeForDimension<2>::Surface& p, int flags )
+	{
+		BOOST_ASSERT( ! p.is_unbounded() );
+		_surfaces.push_back( p );
+		_surfaces.back().setFlags( flags );
+	}
+	template <>
+	void GeometrySet<3>::addPrimitive( const typename TypeForDimension<3>::Surface& p, int flags )
 	{
 		_surfaces.push_back( p );
 		_surfaces.back().setFlags( flags );
 	}
 
-	template <int Dim>
-	void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Volume& p, int flags )
+	template <>
+	void GeometrySet<2>::addPrimitive( const TypeForDimension<2>::Volume&, int )
 	{
-		_volumes.push_back( typename GeometrySet<Dim>::VolumeCollection::value_type(p, flags) );
 	}
 
+	template <>
+	void GeometrySet<3>::addPrimitive( const TypeForDimension<3>::Volume& p, int flags )
+	{
+		BOOST_ASSERT( ! p.empty() );
+		_volumes.push_back( GeometrySet<3>::VolumeCollection::value_type(p, flags) );
+	}
+
+		template <int Dim>
+		bool GeometrySet<Dim>::hasPoints() const
+		{
+			return ! points().empty();
+		}
+
+		template <int Dim>
+		bool GeometrySet<Dim>::hasSegments() const
+		{
+			return ! segments().empty();
+		}
+
+		template <>
+		bool GeometrySet<2>::hasSurfaces() const
+		{
+			return ! surfaces().empty();
+		}
+		template <>
+		bool GeometrySet<3>::hasSurfaces() const
+		{
+			if ( ! surfaces().empty() ) {
+				return true;
+			}
+			if ( ! volumes().empty() ) {
+				for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
+					if ( ! it->primitive().is_closed() ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		template <>
+		bool GeometrySet<2>::hasVolumes() const
+		{
+			return false;
+		}
+		template <>
+		bool GeometrySet<3>::hasVolumes() const
+		{
+			if ( ! volumes().empty() ) {
+				return true;
+			}
+			if ( ! volumes().empty() ) {
+				for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
+					if ( it->primitive().is_closed() ) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	template <int Dim>
 	void GeometrySet<Dim>::_decompose( const Geometry& g )
 	{
