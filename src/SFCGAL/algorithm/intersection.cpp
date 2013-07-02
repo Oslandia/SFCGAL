@@ -88,6 +88,44 @@ namespace algorithm
 		GeometrySet<Dim>& output;
 	};
 
+	/**
+	 * intersection post processing
+	 */
+	void post_intersection( const GeometrySet<2>& input, GeometrySet<2>& output )
+	{
+		//
+		// reverse orientation of polygons if needed
+		for ( GeometrySet<2>::SurfaceCollection::const_iterator it = input.surfaces().begin(); 
+		      it != input.surfaces().end();
+		      ++it ) {
+			const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
+			CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
+			if ( outer.orientation() == CGAL::CLOCKWISE ) {
+				outer.reverse_orientation();
+			}
+			std::list<CGAL::Polygon_2<Kernel> > rings;
+			for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = p.holes_begin();
+			      hit != p.holes_end();
+			      ++hit ) {
+				rings.push_back( *hit );
+				if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
+					rings.back().reverse_orientation();
+				}
+			}
+			output.surfaces().push_back( CGAL::Polygon_with_holes_2<Kernel>( outer, rings.begin(), rings.end() ) );
+		}
+
+		output.points() = input.points();
+		output.segments() = input.segments();
+		output.volumes() = input.volumes();
+	}
+
+	void post_intersection( const GeometrySet<3>& input, GeometrySet<3>& output )
+	{
+		// nothing special to do
+		output = input;
+	}
+
 	template <int Dim>
 	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
 	{
@@ -96,10 +134,14 @@ namespace algorithm
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 
-		intersection_cb<Dim> cb( output );
+		GeometrySet<Dim> temp, temp2;
+		intersection_cb<Dim> cb( temp );
 		CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
 					  bboxes.begin(), bboxes.end(),
 					  cb );
+
+		post_intersection( temp, temp2 );
+		output.merge(temp2);
 	}
 
 	template void intersection<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );

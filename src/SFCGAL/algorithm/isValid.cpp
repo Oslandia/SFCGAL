@@ -61,11 +61,31 @@ private:
  * in individual functions for implementation, an assertion !empty is present for this reason
  */
 
+//const Validity isValid( const Coordinate & p)
+//{
+//    BOOST_ASSERT( !p.isEmpty() );
+//    if ( !CGAL::is_finite(p.x()) || CGAL::is_finite(p.y()) ) return Validity::invalid("NaN coordinate");
+//    //if ( p.x().is_inf() || p.y().is_inf() ) return Validity::invalid("infinite coordinate");
+//    return Validity::valid();
+//}
+//
+const Validity isValid( const Point & p)
+{
+    BOOST_ASSERT( !p.isEmpty() );(void)p;
+    //return( isValid(p.coordinate() ) );
+    return Validity::valid();
+}
 
 const Validity isValid( const LineString & l, const double & toleranceAbs )
 {
     BOOST_ASSERT( !l.isEmpty() );
-    return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid("LineString has no length");
+//    const size_t numPoints = l.numPoints();
+//    for ( size_t p=0; p!=numPoints; ++p) {
+//        const Validity v = isValid(l.pointN(p));
+//        if (!v) return Validity::invalid( ( boost::format("Point %d is invalid: %s") % p % v.reason() ).str() );
+//    }
+    
+    return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid("no length");
 }
 
 const Validity isValid( const Polygon & p, const double & toleranceAbs )
@@ -73,19 +93,23 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
     BOOST_ASSERT( !p.isEmpty() );
 
     // Closed simple rings
-    const Polygon::const_iterator end = p.end();
-    for ( Polygon::const_iterator r=p.begin(); r!=end; ++r ) {
-        if ( r->numPoints() < 4 ) {
-            return Validity::invalid("not enought points in Polygon ring");
+    const size_t numRings =  p.numRings();
+    for (size_t r=0; r != numRings; ++r) {
+        if ( p.ringN(r).numPoints() < 4 ) {
+            return Validity::invalid((boost::format("not enought points in ring %d") % r ).str() );
         }
-        const double distanceToClose = p.is3D()
-                                       ? distancePointPoint3D( r->startPoint(), r->endPoint() )
-                                       : distancePointPoint( r->startPoint(), r->endPoint() ) ;
-        if ( distanceToClose > toleranceAbs ) {
-            return Validity::invalid("ring is not closed");
+//        const Validity v = isValid( p.ringN(r) );
+//        if (!v) return Validity::invalid((boost::format("ring %d is invalid: %s") % r % v.reason()).str() );
+        
+        const double distanceToClose = 
+            p.is3D() ? distancePointPoint3D( p.ringN(r).startPoint(), p.ringN(r).endPoint() )
+                     : distancePointPoint( p.ringN(r).startPoint(), p.ringN(r).endPoint() ) 
+        ;
+        if ( distanceToClose > 0 ) {
+            return Validity::invalid((boost::format("ring %d is not closed") % r ).str() );
         }
-        if ( p.is3D() ? selfIntersects3D( *r ) : selfIntersects( *r ) ) {
-            return Validity::invalid("ring self intersects");
+        if ( p.is3D() ? selfIntersects3D( p.ringN(r) ) : selfIntersects( p.ringN(r) ) ) {
+            return Validity::invalid((boost::format("ring %d self intersects") % r ).str());
         }
     }
 
@@ -95,7 +119,7 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
         const bool extCCWO = isCounterClockWiseOriented( p.exteriorRing() );
         for (std::size_t r=0; r<p.numInteriorRings(); ++r) {
             if ( extCCWO == isCounterClockWiseOriented( p.interiorRingN( r ) ) ) {
-                return Validity::invalid( ( boost::format("exterior rin and interior ring %d have the same orientation") % r ).str() );
+                return Validity::invalid( ( boost::format("exterior ring and interior ring %d have the same orientation") % r ).str() );
             }
         }
     }
@@ -122,7 +146,6 @@ const Validity isValid( const Polygon & p, const double & toleranceAbs )
     {
         typedef std::pair<int,int> Edge;
         std::vector<Edge> touchingRings;
-        const size_t numRings =  p.numRings();
         for (size_t ri=0; ri < numRings; ++ri) { // no need for numRings-1, the next loop won't be entered for the last ring
             for (size_t rj=ri+1; rj < numRings; ++rj) {
                 std::auto_ptr<Geometry> inter = p.is3D()
@@ -192,7 +215,7 @@ const Validity isValid( const MultiLineString & ml, const double & toleranceAbs 
     for (size_t l = 0; l != numLineString; ++l ) {
         Validity v = isValid( ml.lineStringN(l), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "LineString %d in MultiLineString is invalid: %s" ) % l % v.reason() ).str()
+                                 ( boost::format( "LineString %d is invalid: %s" ) % l % v.reason() ).str()
                              );
     }
     return Validity::valid();
@@ -205,7 +228,7 @@ const Validity isValid( const MultiPolygon & mp, const double & toleranceAbs )
     for (size_t p = 0; p != numPolygons; ++p ) {
         Validity v = isValid( mp.polygonN(p), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "Polygon %d in MultiPolygon is invalid: %s" ) % p % v.reason() ).str()
+                                 ( boost::format( "Polygon %d is invalid: %s" ) % p % v.reason() ).str()
                              );
     }
 
@@ -233,7 +256,7 @@ const Validity isValid( const GeometryCollection & gc, const double & toleranceA
     for (size_t g = 0; g != numGeom; ++g ) {
         Validity v = isValid( gc.geometryN(g), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "%s %d in GeometryCollection is invalid: %s" ) % gc.geometryN(g).geometryType()  % g % v.reason() ).str()
+                                 ( boost::format( "%s %d is invalid: %s" ) % gc.geometryN(g).geometryType()  % g % v.reason() ).str()
                              );
     }
     return Validity::valid();
@@ -246,12 +269,12 @@ const Validity isValid( const TriangulatedSurface & tin, const SurfaceGraph & gr
     for ( size_t t=0; t != numTriangles; ++t ) {
         Validity v = isValid( tin.triangleN(t), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "Triangle %d in TriangulatedSurface is invalid: %s" ) % t % v.reason() ).str()
+                                 ( boost::format( "Triangle %d is invalid: %s" ) % t % v.reason() ).str()
                              );
     }
-    if ( !isConnected( graph ) ) return Validity::invalid( "TriangulatedSurface is not connected" );
+    if ( !isConnected( graph ) ) return Validity::invalid( "not connected" );
 
-    if ( tin.is3D() ? selfIntersects3D( tin, graph ) : selfIntersects( tin, graph ) ) return Validity::invalid( "TriangulatedSurface self intersects" );
+    if ( tin.is3D() ? selfIntersects3D( tin, graph ) : selfIntersects( tin, graph ) ) return Validity::invalid( "self intersects" );
     return Validity::valid();
 }
 
@@ -269,12 +292,12 @@ const Validity isValid( const PolyhedralSurface & s, const SurfaceGraph & graph,
     for ( size_t p=0; p != numPolygons; ++p ) {
         Validity v = isValid( s.polygonN(p), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "Polygon %d in PolyhedralSurface is invalid: %s" ) % p % v.reason() ).str()
+                                 ( boost::format( "Polygon %d is invalid: %s" ) % p % v.reason() ).str()
                              );
     }
-    if ( !isConnected( graph ) ) return Validity::invalid( "PolyhedralSurface is not connected" );
+    if ( !isConnected( graph ) ) return Validity::invalid( "not connected" );
 
-    if ( s.is3D() ? selfIntersects3D( s, graph ) : selfIntersects( s, graph ) ) return Validity::invalid( "PolyhedralSurface self intersects" );
+    if ( s.is3D() ? selfIntersects3D( s, graph ) : selfIntersects( s, graph ) ) return Validity::invalid( "self intersects" );
     return Validity::valid();
 }
 
@@ -293,10 +316,10 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
         const SurfaceGraph graph( solid.shellN(s) );
         Validity v = isValid( solid.shellN(s), graph, toleranceAbs );
         if (!v) return Validity::invalid(
-                               ( boost::format( "PolyhedralSurface (shell) %d in Solid is invalid: %s" ) % s % v.reason() ).str()
+                               ( boost::format( "PolyhedralSurface (shell) %d is invalid: %s" ) % s % v.reason() ).str()
                            );
         if ( !isClosed( graph ) ) return Validity::invalid(
-                                                 ( boost::format( "PolyhedralSurface (shell) %d in Solid is not closed" ) % s ).str()
+                                                 ( boost::format( "PolyhedralSurface (shell) %d is not closed" ) % s ).str()
                                              );
     }
 
@@ -314,7 +337,7 @@ const Validity isValid( const MultiSolid & ms, const double & toleranceAbs )
     for (size_t s = 0; s != numMultiSolid; ++s ) {
         Validity v = isValid( ms.solidN(s), toleranceAbs );
         if ( !v ) return Validity::invalid(
-                                 ( boost::format( "Solid %d in MultiSolid is invalid: %s" ) % s % v.reason() ).str()
+                                 ( boost::format( "Solid %d is invalid: %s" ) % s % v.reason() ).str()
                              );
     }
     return Validity::valid();
@@ -327,7 +350,7 @@ const Validity isValid( const Geometry& g, const double & toleranceAbs )
 
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
-        return Validity::valid();
+        return isValid( g.as< Point >() );
     case TYPE_LINESTRING:
         return isValid( g.as< LineString >(),          toleranceAbs ) ;
     case TYPE_POLYGON:

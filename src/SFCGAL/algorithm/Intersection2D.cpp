@@ -103,18 +103,9 @@ namespace algorithm {
 			// We have to call intersection on boundaries first
 
 			GeometrySet<2> gpoly1, gpoly2;
-			gpoly1.addSegments( poly1->outer_boundary().edges_begin(), poly1->outer_boundary().edges_end() );
-			gpoly2.addSegments( poly2->outer_boundary().edges_begin(), poly2->outer_boundary().edges_end() );
-			for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly1->holes_begin();
-			      hit != poly1->holes_end();
-			      ++hit ) {
-				gpoly1.addSegments( hit->edges_begin(), hit->edges_end() );
-			}
-			for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = poly2->holes_begin();
-			      hit != poly2->holes_end();
-			      ++hit ) {
-				gpoly2.addSegments( hit->edges_begin(), hit->edges_end() );
-			}
+			gpoly1.addBoundary( *poly1 );
+			gpoly2.addBoundary( *poly2 );
+
 			algorithm::intersection( gpoly1, gpoly2, output );
 
 			// CGAL::intersection does not work when rings intersect themselves

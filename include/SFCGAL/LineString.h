@@ -53,7 +53,7 @@ namespace SFCGAL {
 		 */
 		LineString( const std::vector< Point > & points ) ;
 		/**
-		 * Empty LineString constructor
+		 * LineString constructor
 		 */
 		LineString( const Point & startPoint, const Point & endPoint ) ;
 		/**

@@ -50,7 +50,7 @@ void insertOrReplace( boost::ptr_map<std::string, Geometry > & map, std::string 
 }
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
 
-BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
+BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
 {
 	int argc = framework::master_test_suite().argc;
 	char **argv = framework::master_test_suite().argv;

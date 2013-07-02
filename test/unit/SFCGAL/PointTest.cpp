@@ -23,6 +23,7 @@
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/Exception.h>
 
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
@@ -41,9 +42,9 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 	BOOST_CHECK( ! g.isMeasured() );
 
 	// no more access to double
-	BOOST_CHECK_EQUAL( g.x(), 0 );
-	BOOST_CHECK_EQUAL( g.y(), 0 );
-	BOOST_CHECK_EQUAL( g.z(), 0 );
+	BOOST_CHECK_THROW( g.x(), Exception );
+	BOOST_CHECK_THROW( g.y(), Exception );
+	BOOST_CHECK_THROW( g.z(), Exception );
 	BOOST_CHECK( isNaN( g.m() ) );
 }
 
@@ -57,6 +58,7 @@ BOOST_AUTO_TEST_CASE( xyConstructor )
 	BOOST_CHECK( ! g.is3D() );
 	BOOST_CHECK_EQUAL( g.x(), 2.0 );
 	BOOST_CHECK_EQUAL( g.y(), 3.0 );
+	BOOST_CHECK_EQUAL( g.z(), 0 );
 }
 
 //Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;

@@ -53,11 +53,16 @@ namespace SFCGAL {
 		 */
 		Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
 		/**
-		 * XY[Z] constructor
-		 * @warning x,y,z may be NaN
+		 * XYZ constructor
+		 * @warning x,y,z must not be not be NaN nor inf
 		 */
-		Coordinate( const double & x, const double & y, const double & z = NaN() ) ;
+		Coordinate( const double & x, const double & y, const double & z ) ;
 
+		/**
+		 * XY constructor
+		 * @warning x,y must not be not be NaN nor inf
+		 */
+		Coordinate( const double & x, const double & y ) ;
 		/**
 		 * Constructor from CGAL::Point_2<K>
 		 */
@@ -97,19 +102,19 @@ namespace SFCGAL {
 
 		/**
 		 * @brief Gets the x value
-		 * @warning Exact, 0 for empty coordinates
+		 * @warning Exact, NaN for empty coordinates
 		 */
 		Kernel::FT x() const;
 
 		/**
 		 * @brief Gets the y value
-		 * @warning Exact, 0 for empty coordinates
+		 * @warning Exact, NaN for empty coordinates
 		 */
 		Kernel::FT y() const;
 
 		/**
 		 * @brief Gets the z value
-		 * @warning Exact, 0 for empty or 2D coordinates
+		 * @warning Exact, NaN for empty or 0 for 2D coordinates
 		 */
 		Kernel::FT z() const;
 

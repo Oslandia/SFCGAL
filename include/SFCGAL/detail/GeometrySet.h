@@ -187,6 +187,11 @@ namespace SFCGAL {
 		GeometrySet( const typename TypeForDimension<Dim>::Volume& g, int flags = 0 );
 
 		/**
+		 * Add primitives from another set
+		 */
+		void merge( const GeometrySet<Dim>& g );
+
+		/**
 		 * Add a geometry by decomposing it into CGAL primitives
 		 */
 		void addGeometry( const Geometry& g );
@@ -248,6 +253,26 @@ namespace SFCGAL {
 		}
 
 		/**
+		 * Get the maximum geometry dimension of the set
+		 * -1 : empty
+		 * 0 : there are points
+		 * 1 : there are segments
+		 * 2 : there are surfaces
+		 * 3 : there are volumes
+		 */
+		int dimension() const;
+
+		/**
+		 * Add the boundary (segments) of a surface
+		 */
+		void addBoundary( const typename TypeForDimension<Dim>::Surface& surface );
+		
+		/**
+		 * Add the boundary (surfaces) of a volume
+		 */
+		void addBoundary( const typename TypeForDimension<Dim>::Volume& volume );
+
+		/**
 		 * Compute all bounding boxes and handles of the set
 		 */
 		void computeBoundingBoxes( typename HandleCollection<Dim>::Type& handles, typename BoxCollection<Dim>::Type& boxes ) const;
@@ -263,6 +288,23 @@ namespace SFCGAL {
 
 		inline VolumeCollection& volumes() { return _volumes; }
 		inline const VolumeCollection& volumes() const { return _volumes; }
+
+		/**
+		 * Returns true if the set holds points
+		 */
+		bool hasPoints() const;
+		/**
+		 * Returns true if the set holds segments
+		 */
+		bool hasSegments() const;
+		/**
+		 * Returns true if the set holds surfaces
+		 */
+		bool hasSurfaces() const;
+		/**
+		 * Returns true if the set holds volumes
+		 */
+		bool hasVolumes() const;
 
 		/**
 		 * convert the set to a SFCGAL::Geometry

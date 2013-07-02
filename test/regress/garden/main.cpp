@@ -43,6 +43,8 @@
 #include <SFCGAL/algorithm/distance3d.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
 #include <SFCGAL/algorithm/extrude.h>
+#include <SFCGAL/triangulate/triangulate2DZ.h>
+#include <SFCGAL/PreparedGeometry.h>
 
 using namespace SFCGAL ;
 
@@ -119,15 +121,27 @@ int main( int argc, char* argv[] ){
         const Geometry & geom = testCollection.geometryN(g); // make copy to modify
         (void)geom.is3D() ;
         (void)geom.isEmpty() ;
+
+        {
+            srid_t srid = 12; // whatever
+            PreparedGeometry prep(geom.clone(), srid);
+            (void)prep.geometry();
+            BOOST_ASSERT( prep.SRID() == srid );
+        }
         if (verbose) std::cout << (boost::format("% 8d")%g) << " - " << (geom.is3D()?"3D":"2D") << " " << geom.geometryType() << (geom.isEmpty()?" (empty)":"") << (algorithm::isValid(geom)?"":" (invalid)");
         switch (geom.geometryTypeId())
         {
         case TYPE_POINT :
             {
                 Point p(geom.as<Point>()) ;
-                (void)p.x();
-                (void)p.y();
-                (void)p.z();
+                try{
+                    (void)p.x();
+                    (void)p.y();
+                    (void)p.z();
+                }
+                catch (Exception) {
+                    BOOST_ASSERT(p.isEmpty());
+                }
             }
             break;
         case TYPE_LINESTRING :
@@ -298,6 +312,16 @@ int main( int argc, char* argv[] ){
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
+       
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
+            {
+                triangulate::ConstraintDelaunayTriangulation cdt;
+                triangulate::triangulate2DZ( *geom1, cdt );
+                TriangulatedSurface surf;
+                cdt.getTriangles( surf );
+            }
+        )
+
         
         for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( 
@@ -305,7 +329,7 @@ int main( int argc, char* argv[] ){
                     const Point & p = geom2->as<Point>() ;
                     (void)algorithm::extrude(*geom1, p.x(), p.y(), p.z()) ;
                 }
-                )
+            )
 
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::distance3D(*geom1, *geom2) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::distance(*geom1, *geom2) ; )
@@ -453,14 +477,14 @@ sfcgal_geometry_straight_skeleton(geom)
 sfcgal_geometry_tesselate(geom)
     *algorithm::tesselate(geom)
 sfcgal_geometry_triangulate_2dz(geom)
-    triangulate::ConstraintDelaunayTriangulation::ConstraintDelaunayTriangulation()
-    triangulate::triangulate2DZ( geom, ConstraintDelaunayTriangulation)
-    TriangulatedSurface::TriangulatedSurface() -> surf
-    triangulate::ConstraintDelaunayTriangulation::getTriangles( surf )
+    *triangulate::ConstraintDelaunayTriangulation::ConstraintDelaunayTriangulation()
+    *triangulate::triangulate2DZ( geom, ConstraintDelaunayTriangulation)
+    *TriangulatedSurface::TriangulatedSurface() -> surf
+    *triangulate::ConstraintDelaunayTriangulation::getTriangles( surf )
 sfcgal_prepared_geometry_create_from_geometry(geom,srid)
-    PreparedGeometry::PreparedGeometry(geom, srid)
+    *PreparedGeometry::PreparedGeometry(geom, srid)
 sfcgal_prepared_geometry_delete( geom )
-    PreparedGeometry::~PreparedGeometry()
+    *PreparedGeometry::~PreparedGeometry()
 sfcgal_prepared_geometry_geometry(geom)
     PreparedGeometry::geometry()
 sfcgal_prepared_geometry_srid(geom))

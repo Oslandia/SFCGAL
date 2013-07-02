@@ -79,10 +79,13 @@ namespace algorithm {
             SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );\
         }\
     }
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE(g, plane) \
+   BOOST_THROW_EXCEPTION( NotImplementedException("validation on geometry projected on arbitrary plane is not implemented") );
 #else
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g)
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g)
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE(g, plane)
 #endif
 
 /**

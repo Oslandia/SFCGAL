@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( testLineString )
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.8 0.2,0.8 0.8,0.2 0.8,0.2 0.2))" ) ) ;
+	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ) ;
 	ConstraintDelaunayTriangulation triangulation = triangulate2DZ(*g);
 	BOOST_CHECK_EQUAL( triangulation.numVertices(), 8U );
 	BOOST_CHECK_EQUAL( triangulation.numTriangles(), 10U );
@@ -81,8 +81,19 @@ BOOST_AUTO_TEST_CASE( testMultiPolygon )
 
 BOOST_AUTO_TEST_CASE( testSolid )
 {
-	Solid g ;
-	BOOST_CHECK_THROW( triangulate2DZ(g), Exception );
+
+	std::auto_ptr< Geometry > g( io::readWkt( "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                                                      ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                                                      ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                                                      ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                                                      ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                                                      ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" ) );
+	
+#ifndef SFCGAL_NEVER_CHECK_VALIDITY
+    BOOST_CHECK_THROW( triangulate2DZ(*g), GeometryInvalidityException );
+#else
+    BOOST_CHECK_THROW( triangulate2DZ(*g), InappropriateGeometryException );
+#endif
 }
 
 

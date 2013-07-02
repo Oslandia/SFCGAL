@@ -107,17 +107,17 @@ namespace SFCGAL {
 		 */
 		inline Point point( const size_t & row, const size_t & col ) const {
 			if ( _pixelConvention == PIXEL_IS_POINT ){
-				return Point(
+				Point p(
 					_limits.xMin() + col * dx(),
-					_limits.yMax() - row * dy(),
-					_data(row,col)
-				);
+					_limits.yMax() - row * dy());
+                p.setM( _data(row,col) );
+                return p;
 			}else{
-				return Point(
+				Point p(
 					_limits.xMin() + ( 0.5 + col ) * dx(),
-					_limits.yMax() - ( 0.5 + row ) * dy(),
-					_data(row,col)
-				);
+					_limits.yMax() - ( 0.5 + row ) * dy());
+			    p.setM( _data(row,col) );
+                return p;
 			}
 		}
 

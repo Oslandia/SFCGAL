@@ -45,4 +45,14 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
 
 }
 
+BOOST_AUTO_TEST_CASE( geometryWithNan )
+{
+    const double inf = std::numeric_limits<double>::infinity();
+    const double quietNaN = std::numeric_limits<double>::quiet_NaN();
+    const double sigNaN = std::numeric_limits<double>::signaling_NaN();
+
+    BOOST_CHECK_THROW( Coordinate(quietNaN ,1.0,2.0), NonFiniteValueException  );
+    BOOST_CHECK_THROW( Coordinate(inf,1.0,2.0), NonFiniteValueException  );
+    BOOST_CHECK_THROW( Coordinate(sigNaN,1.0,2.0), NonFiniteValueException );
+}
 BOOST_AUTO_TEST_SUITE_END()
