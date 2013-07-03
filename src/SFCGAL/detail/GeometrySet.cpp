@@ -61,7 +61,7 @@ bool operator< ( const CGAL::Segment_3<SFCGAL::Kernel>& sega, const CGAL::Segmen
 namespace SFCGAL {
 	namespace detail {
 
-	void _decompose_triangle( const Triangle& tri, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
+	void _decompose_triangle( const Triangle& tri, GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
 		CGAL::Polygon_2<Kernel> outer;
 		outer.push_back( tri.vertex(0).toPoint_2() );
@@ -72,7 +72,7 @@ namespace SFCGAL {
 		}
 		surfaces.push_back( CGAL::Polygon_with_holes_2<Kernel>( outer ) );
 	}
-	void _decompose_triangle( const Triangle& tri, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
+	void _decompose_triangle( const Triangle& tri, GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
 		CGAL::Triangle_3<Kernel> outtri( tri.vertex(0).toPoint_3(),
 						 tri.vertex(1).toPoint_3(),
@@ -80,12 +80,12 @@ namespace SFCGAL {
 		surfaces.push_back( outtri );
 	}
 
-	void _decompose_polygon( const Polygon& poly, typename GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
+	void _decompose_polygon( const Polygon& poly, GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 	{
 		BOOST_ASSERT( ! poly.isEmpty() );
 		surfaces.push_back( poly.toPolygon_with_holes_2() );
 	}
-	void _decompose_polygon( const Polygon& poly, typename GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
+	void _decompose_polygon( const Polygon& poly, GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 	{
 		BOOST_ASSERT( ! poly.isEmpty() );
 		TriangulatedSurface surf;
@@ -99,10 +99,10 @@ namespace SFCGAL {
 		}
 	}
 
-	void _decompose_solid( const Solid&, typename GeometrySet<2>::VolumeCollection&, dim_t<2> )
+	void _decompose_solid( const Solid&, GeometrySet<2>::VolumeCollection&, dim_t<2> )
 	{
 	}
-	void _decompose_solid( const Solid& solid, typename GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
+	void _decompose_solid( const Solid& solid, GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
 		BOOST_ASSERT( ! solid.isEmpty() );
 		// volume orientation test
@@ -467,7 +467,7 @@ namespace SFCGAL {
 		return CGAL::Bbox_2();
 	}
 
-	CGAL::Bbox_3 compute_solid_bbox( const typename TypeForDimension<3>::Volume& vol, dim_t<3> )
+	CGAL::Bbox_3 compute_solid_bbox( const TypeForDimension<3>::Volume& vol, dim_t<3> )
 	{
         BOOST_ASSERT( vol.size_of_vertices () );
 		MarkedPolyhedron::Point_const_iterator pit = vol.points_begin();

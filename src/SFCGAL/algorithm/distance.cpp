@@ -392,10 +392,10 @@ const Circle boundingCircle( const Geometry & geom )
 
     // farest point from centroid
     Vector_2 f = c ;
-    typename Kernel::FT maxDistanceSq = 0;
+    Kernel::FT maxDistanceSq = 0;
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
         const Vector_2 cx = (*x)->toVector_2() - c ;
-        const typename Kernel::FT dSq = cx * cx ;
+        const Kernel::FT dSq = cx * cx ;
         if ( dSq > maxDistanceSq ) {
             f = (*x)->toVector_2() ;
             maxDistanceSq = dSq ;
