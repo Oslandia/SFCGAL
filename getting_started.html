@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="SFCGAL : " />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>SFCGAL</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Oslandia/SFCGAL">View on GitHub</a>
+
+          <h1 id="project_title">SFCGAL</h1>
+          <h2 id="project_tagline"></h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Oslandia/SFCGAL/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Oslandia/SFCGAL/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+<!--
+        <h3>
+<a name="welcome-to-sfcgal" class="anchor" href="#welcome-to-sfcgal"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+-->
+<a href="index.html">About</a> | <a href="authors.html">Authors</a> | <a href="documentation.html">Documentation</a> | <a href="dev.html">Development</a> | <a href="screenshot.html">Screenshot</a> | <a href="getting_started.html">Getting started</a>
+
+<h3>Getting started</h3>
+
+
+<h4>Requirements</h4>
+
+<ul>
+<li>C++ compiler</li>
+<li>CMake 2.8.6+</li>
+<li>CGAL 4.1</li>
+<li>Boost (see CGAL for version)</li>
+<li>MPFR (CGAL Epeck)</li>
+<li>GMP (CGAL Epeck)</li>
+</ul>
+
+<p>Optional dependencies (viewer and 3D format export)</p>
+
+<ul>
+<li>OpenSceneGraph (version >= 3.1)</li>
+<li>Qt4</li>
+
+<h4>Compilation</h4>
+
+<p>Use cmake or cmake-gui.</p>
+
+<p>Build options (ON/OFF cmake variable)</p>
+
+<pre>
+SFCGAL_BUILD_UNIT_TESTS : Build unit tests
+SFCGAL_BUILD_REGRESS_TESTS : Build regress tests
+SFCGAL_BUILD_BENCH : Build bench tests
+SFCGAL_BUILD_EXAMPLES : Build examples
+SFCGAL_BUILD_OSG : Build components depending on OpenSceneGraph
+SFCGAL_BUILD_VIEWER : Build basic viewer
+</pre>
+
+<p>Dependencies location (environment variables)</p>
+
+<pre>
+GMP_DIR : GMP location
+MPFR_DIR : MPFR location
+CGAL_DIR : CGAL location
+BOOST_ROOT : Boost location
+</pre>
+
+<p>then ...</p>
+
+<pre>
+make
+make install
+</pre>
+
+<p>CGAL uses a lot of templated constructions. The whole building process may then take a while.
+</p>
+
+<h4>Documentation</h4>
+
+<p>If doxygen is available, you may run 'make doc' to generate the code documentation.</p>
+
+<h4>Test & usage</h4>
+
+<p>In addition to the main SFCGAL library, the following optional components are part of the building process:
+
+<ul>
+<li>PostGIS (2.2-trunk) throw --with-sfcgal option in configure</li>
+<li>a unit test suite, see the test/unit directory</li>
+<li>a regression test suite, see the test/regress directory</li>
+<li>a benchmark suite, see the test/bench directory</li>
+<li>a 3D viewer, based on OpenSceneGraph and Qt</li>
+</ul>
+
+<h4>Troubleshouting</h4>
+
+<p>Windows/MinGW</p>
+
+<ul>
+<li>MinGW fail to build boost thread for version 1.46.1 (fixed in boost 1.47.0, please upgrade your boost version)</li>
+<li>Use the same cmake option for boost with CGAL and SFCGAL (particularly Boost_USE_STATIC_LIBS=OFF)</li>
+<li>Missing boost definitions in CGAL-4.1 to use static libraries (dllexport/dllimport)</li>
+</ul>
+
+<p>Patch CGAL-4.1/CMakeLists.txt with the following lines to build with boost static libraries (Boost_USE_STATIC_LIBS=ON).</p>
+
+<pre>
+option( Boost_USE_STATIC_LIBS "boost use dynamic libraries" OFF )
+if( Boost_USE_STATIC_LIBS )
+  message( STATUS "Boost_USE_STATIC_LIBS=ON" )
+    add_definitions( "-DBOOST_THREAD_USE_LIB" )
+else()
+    message( STATUS "Boost_USE_STATIC_LIBS=OFF" )
+    add_definitions( "-DBOOST_ALL_DYN_LINK" )
+endif()
+</pre>
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">SFCGAL maintained by <a href="https://github.com/Oslandia">Oslandia</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+    
+
+  </body>
+</html>
