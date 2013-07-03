@@ -163,43 +163,6 @@ namespace SFCGAL {
 		inline iterator       end() { return _shells.end() ; }
 		inline const_iterator end() const { return _shells.end() ; }
 
-
-		//-- helpers
-
-		/**
-		 * Convert to Nef_polyhedron_3
-		 */
-		template < typename K >
-		CGAL::Nef_polyhedron_3<K> toNef_polyhedron_3() const
-		{
-			typedef CGAL::Polyhedron_3<K> Polyhedron;
-			CGAL::Nef_polyhedron_3<K> nef;
-			// Convert each shell of the solid to a polyhedron_3
-			// Then build a Nef_polyhedron by substraction of interior shells
-			TriangulatedSurface ext_tri;
-			triangulate::triangulatePolygon3D( this->exteriorShell(), ext_tri );
-			
-            {
-                std::auto_ptr<Polyhedron> poly( ext_tri.toPolyhedron_3<K, Polyhedron>());
-                nef = CGAL::Nef_polyhedron_3<K>( *poly );
-            }
-			
-			for ( size_t i = 0; i < this->numInteriorShells(); i++ ) {
-				TriangulatedSurface tri;
-				triangulate::triangulatePolygon3D( this->interiorShellN(i), tri );
-				
-				std::auto_ptr<Polyhedron> poly( tri.toPolyhedron_3<K, Polyhedron>());
-				CGAL::Nef_polyhedron_3<K> lnef( *poly );
-				
-				// substract the hole from the global nef
-				// WARNING: interior shells are supposed to have an opposite orientation
-				// to the exterior shell's one. In this case, we should use the intersection operator
-				nef = nef - lnef;
-			}
-			return nef;
-		}
-
-
 		//-- visitors
 
 		//-- SFCGAL::Geometry

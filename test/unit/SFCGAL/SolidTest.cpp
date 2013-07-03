@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_SolidTest )
 
 //-- other tests
 
-BOOST_AUTO_TEST_CASE( solidConversionTest )
+BOOST_AUTO_TEST_CASE( solidReadTest )
 {
 	// the unit cube where half of a cube has been substracted
 	std::string gstr = "SOLID("
@@ -109,11 +109,7 @@ BOOST_AUTO_TEST_CASE( solidConversionTest )
 		")";
 
 	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
-
-	const Solid& solid = static_cast<const Solid&>( *g );
-	CGAL::Nef_polyhedron_3< Kernel > nef( solid.toNef_polyhedron_3< Kernel >());
-	// Here a Nef_polyhedron merges adjacent triangles
-	BOOST_CHECK_EQUAL( nef.number_of_facets(), 9U );
+	BOOST_CHECK_EQUAL(g->as< Solid >().numShells(),2U);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
