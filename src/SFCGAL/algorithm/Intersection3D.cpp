@@ -144,9 +144,12 @@ namespace algorithm {
 		Is_not_marked criterion;
 		CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter(decomposition));
 
+		bool hasSurface = false;
 		for ( std::list<MarkedPolyhedron>::iterator it = decomposition.begin(); it != decomposition.end(); ++it ) {
-			//std::ofstream decompo("decompo.off");
-			//			decompo << *it;
+			// char fname[256];
+			// sprintf(fname, "decompo%d.off", k++);
+			// std::ofstream decompo(fname);
+			// decompo << *it;
 
 			// take a point on the component and tests if its inside the other polyhedron
 			//
@@ -197,17 +200,14 @@ namespace algorithm {
 				}
 			}
 			
-			//				if ( is_volume ) {
-			//					return surface_polyhedron_to_geometry( *it );
-			//				}
-			//				return planar_polyhedron_to_geometry( *it );
-			
-			
 			if ( point_is_inside ) {
 				// we know it is a planar intersection
+				hasSurface = true;
 				output.addPrimitive( *it, FLAG_IS_PLANAR );
-				return;
 			}
+		}
+		if ( hasSurface ) {
+			return;
 		}
 
 		for ( std::list<Polyline_3>::const_iterator lit = polylines.begin(); lit != polylines.end(); ++lit ) {
@@ -245,14 +245,14 @@ namespace algorithm {
 			typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
 			MarkedPolyhedron& polya = const_cast<MarkedPolyhedron&>( pa );
 			MarkedPolyhedron& polyb = const_cast<MarkedPolyhedron&>( pb );
-			
+
 			Corefinement coref;
 			CGAL::Emptyset_iterator no_polylines;
 			// vector of <Polyhedron, tag>
 			typedef std::vector<std::pair<MarkedPolyhedron*, int> > Decomposition;
 			Decomposition result;
 			coref( polya, polyb, no_polylines, std::back_inserter(result), Corefinement::Intersection_tag );
-			
+
 			// empty intersection
 			if (result.size() == 0) {
 				return ;
