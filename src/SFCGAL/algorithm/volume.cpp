@@ -34,7 +34,7 @@ const Kernel::FT volume( const Solid& solid, NoValidityCheck )
     const CGAL::Point_3<Kernel> origin(0,0,0);
     const size_t numShells = solid.numShells();
     for (size_t i=0; i<numShells; i++) {
-        std::auto_ptr<Geometry> t( tesselate( solid.shellN(i) ) );
+	    std::auto_ptr<Geometry> t( tesselate( solid.shellN(i), NoValidityCheck() ) );
         const TriangulatedSurface& tin = t->as<TriangulatedSurface>();
         const size_t numTriangles = tin.numTriangles();
         for (size_t j=0; j<numTriangles; j++) {
