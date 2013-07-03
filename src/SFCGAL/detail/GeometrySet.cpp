@@ -37,6 +37,7 @@
 #include <SFCGAL/detail/TypeForDimension.h>
 
 #include <SFCGAL/algorithm/covers.h>
+#include <SFCGAL/algorithm/volume.h>
 
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
@@ -104,7 +105,15 @@ namespace SFCGAL {
 	void _decompose_solid( const Solid& solid, GeometrySet<3>::VolumeCollection& volumes, dim_t<3> )
 	{
 		BOOST_ASSERT( ! solid.isEmpty() );
-		volumes.push_back( *solid.exteriorShell().toPolyhedron_3<Kernel, MarkedPolyhedron >() );
+		// volume orientation test
+		// TODO: simplfiy ?
+		MarkedPolyhedron p = *solid.exteriorShell().toPolyhedron_3<Kernel, MarkedPolyhedron >();
+		if ( algorithm::volume( solid ) < 0 ) {
+			// if the volume is "inverted", we reverse it
+			// TODO: Once every boolean operations work with complement geometries, we may want to keep the solid inverted
+			p.inside_out();
+		}
+		volumes.push_back( p );
 	}
 
 	template <int Dim>
@@ -458,7 +467,7 @@ namespace SFCGAL {
 		return CGAL::Bbox_2();
 	}
 
-	CGAL::Bbox_3 compute_solid_bbox( const typename TypeForDimension<3>::Volume& vol, dim_t<3> )
+	CGAL::Bbox_3 compute_solid_bbox( const TypeForDimension<3>::Volume& vol, dim_t<3> )
 	{
         BOOST_ASSERT( vol.size_of_vertices () );
 		MarkedPolyhedron::Point_const_iterator pit = vol.points_begin();

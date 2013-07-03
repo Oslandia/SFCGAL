@@ -35,8 +35,9 @@
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/PolyhedralSurface.h>
 
-#include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
+
+#include <CGAL/Point_inside_polyhedron_3.h>
 
 //#define CACHE_TRIANGULATION
 
@@ -231,8 +232,6 @@ namespace algorithm
 		template <class T>
 		bool operator() ( const T *geometry ) const
 		{
-			typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
-
 			// intersection between a solid and a geometry
 			// 1. either one of the geometry' point lies inside the solid
 			// 2. or the geometry intersects one of the surfaces
@@ -243,14 +242,13 @@ namespace algorithm
 				// this test is needed only if its a volume
 				// if the polyhedron is not closed, this is not a volume, actually
 
-				Mesh_domain ext_domain( *polyhedron );
-				Mesh_domain::Is_in_domain is_in_poly( ext_domain );
+				CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *polyhedron );
 				
 				GeometrySet<3> points;
 				points.collectPoints( geometry );
 				for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
 				      pit != points.points().end(); ++pit ) {
-					if ( is_in_poly( pit->primitive() ) ) {
+					if ( is_in_poly( pit->primitive() ) != CGAL::ON_UNBOUNDED_SIDE ) {
 						return true;
 					}
 				}

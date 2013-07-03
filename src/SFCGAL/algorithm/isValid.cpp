@@ -324,7 +324,7 @@ const Validity isValid( const Solid & solid, const double & toleranceAbs )
     }
 
     if ( solid.numInteriorShells() ) {
-        BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (covering and intersections of interior shells missing"));
+        BOOST_THROW_EXCEPTION(Exception("function is not fully implemented (orientation, covering and intersections of interior shells missing"));
     }
 
     return Validity::valid();
