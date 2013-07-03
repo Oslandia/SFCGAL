@@ -71,7 +71,7 @@ private:
 //
 const Validity isValid( const Point & p)
 {
-    BOOST_ASSERT( !p.isEmpty() );
+    BOOST_ASSERT( !p.isEmpty() );(void)p;
     //return( isValid(p.coordinate() ) );
     return Validity::valid();
 }
