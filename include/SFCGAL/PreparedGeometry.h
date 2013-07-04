@@ -55,13 +55,13 @@ class SFCGAL_API PreparedGeometry : public boost::noncopyable
 
 	/**
 	 * Constructor
-	 * @geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
+	 * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
 	 */
 	PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid = 0 );
 
 	/**
 	 * Constructor
-	 * @geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
+	 * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
 	 */
 	PreparedGeometry( Geometry* geometry, srid_t srid = 0 );
 
@@ -100,7 +100,7 @@ class SFCGAL_API PreparedGeometry : public boost::noncopyable
 
 	/**
 	 * Convert to an extended WKT (with SRID)
-	 * @numDecimals: number of decimals, -1 for keeping the exact rational representation, if possible
+	 * @param numDecimals: number of decimals, -1 for keeping the exact rational representation, if possible
 	 */
 	std::string asEWKT( const int& numDecimals = - 1) const;
 

@@ -7,7 +7,7 @@
  *
  * @section intro_sec Introduction
  *
- * SFCGAL rely on the a single CGAL Kernel : The Exact Predicate Exact Construction Kernel (Epeck). SFCGAL::Kernel is a typedef
+ * SFCGAL relies on a single CGAL Kernel : The Exact Predicate Exact Construction Kernel (Epeck). SFCGAL::Kernel is a typedef
  * on Epeck on this Kernel.
  *
  * SFCGAL::Coordinate class provides a type erasure on CGAL points in order to fit the dynamic is3D() world. SFCGAL::Coordinate
@@ -22,7 +22,7 @@
  * 		<li>Boost library (http://www.boost.org/)</li>
  * </ul>
  *
- * @section geometric_model_sec Geometric Model
+ * @section geometric_model_sec Geometric model
  *
  * The Geometric Model is an extension of OGC Simple Feature Access providing solids (SFCGAL::Solid) defined
  * in the ISO 19107 and implemented in CityGML.
@@ -62,6 +62,17 @@
  * </ul>
  * On the other hand, it leads to convert between Triangle and Polygon and to duplicate some codes (area for example) so that it could to change
  * that and conform.
+ *
+ * @section api API
+ *
+ * Two sets of functionalities are exposed and will be maintained as a stable API :
+ * <ul>
+ * <li>@link public_api the C++ public API @endlink</li>
+ * <li>@link capi the C public API @endlink</li>
+ * </ul>
+ *
+ * Some other elements of the documentation are tagged as @link detail 'details' @endlink which means they are for internal use only and are subject
+ * to changes within future releases.
  *
  * @defgroup public_api Public C++ API
  * @defgroup capi Public C API

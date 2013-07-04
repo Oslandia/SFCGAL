@@ -37,28 +37,23 @@ namespace SFCGAL {
 	namespace algorithm {
 	/**
 	 * Cover test on 2D geometries. Checks if gA covers gB. Force projection to z=0 if needed
-	 * @ingroup@ incomplete
-	 * @todo unittest Incomplete implementation. Only used through intersection so far
+	 * @ingroup@ detail
 	 */
 	SFCGAL_API bool covers( const Geometry& ga, const Geometry& gb );
 
-	/*
+	/**
 	 * Cover test on 3D geometries. Checks if gA covers gB. Assume z = 0 if needed
-	 * @ingroup@ incomplete
-	 * @todo unittest Incomplete implementation. Only used through intersection so far
 	 */
 	SFCGAL_API bool covers3D( const Geometry& ga, const Geometry& gb );
 
 	/**
-	 * @ingroup@ incomplete
-	 * @todo unittest Incomplete implementation. Only used through intersection so far
+	 * @ingroup@ detail
 	 */
 	template <int Dim>
 	bool covers( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b );
 
 	/**
-	 * @ingroup@ incomplete
-	 * @todo unittest Incomplete implementation. Only used through intersection so far
+	 * @ingroup@ detail
 	 */
 	template <int Dim>
 	bool covers( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
