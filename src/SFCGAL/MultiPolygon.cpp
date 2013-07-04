@@ -44,9 +44,9 @@ MultiPolygon::MultiPolygon( MultiPolygon const& other ):
 ///
 ///
 ///
-MultiPolygon& MultiPolygon::operator = ( const MultiPolygon & other )
+MultiPolygon& MultiPolygon::operator = ( MultiPolygon other )
 {
-	assign(other) ;
+	swap(other) ;
 	return *this ;
 }
 

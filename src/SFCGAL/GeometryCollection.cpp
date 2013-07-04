@@ -39,17 +39,20 @@ GeometryCollection::GeometryCollection():
 ///
 ///
 ///
-GeometryCollection::GeometryCollection( GeometryCollection const& other )
+GeometryCollection::GeometryCollection( GeometryCollection const& other ):
+    Geometry()
 {
-	assign(other);
+	for ( size_t i = 0; i < other.numGeometries(); i++ ){
+		addGeometry( other.geometryN(i).clone() );
+	}
 }
 
 ///
 ///
 ///
-GeometryCollection& GeometryCollection::operator = ( const GeometryCollection & other )
+GeometryCollection& GeometryCollection::operator = ( GeometryCollection other )
 {
-	assign(other);
+	swap(other);
 	return *this ;
 }
 
@@ -166,6 +169,7 @@ void    GeometryCollection::addGeometry( Geometry * geometry )
 	if ( ! isAllowed(*geometry) ){
 		std::ostringstream oss;
 		oss << "try a add a '" << geometry->geometryType() << "' in a '" << geometryType() << "'";
+        delete geometry; // we are responsible for the resource here
 		BOOST_THROW_EXCEPTION( std::runtime_error( oss.str() ) );
 	}
 	_geometries.push_back( geometry );
@@ -182,23 +186,11 @@ void    GeometryCollection::addGeometry( Geometry const& geometry )
 ///
 ///
 ///
-bool    GeometryCollection::isAllowed( Geometry const& g )
+bool GeometryCollection::isAllowed( Geometry const& )
 {
 	//GeometryCollection accepts all subtypes
 	return true ;
 }
-
-///
-///
-///
-void    GeometryCollection::assign( const GeometryCollection & other )
-{
-	_geometries.clear() ;
-	for ( size_t i = 0; i < other.numGeometries(); i++ ){
-		addGeometry( other.geometryN(i).clone() );
-	}
-}
-
 
 ///
 ///

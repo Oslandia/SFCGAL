@@ -23,6 +23,7 @@
 
 #include <SFCGAL/Exception.h>
 
+using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 
@@ -62,6 +63,28 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
 Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double& m ):
 	_coordinate(x,y,z),
 	_m(m)
+{
+
+}
+
+///
+///
+///
+Point::Point( const double & x, const double & y ):
+	Geometry(),
+	_coordinate(x,y),
+	_m(NaN())
+{
+
+}
+
+///
+///
+///
+Point::Point( const double & x, const double & y, const double & z ):
+	Geometry(),
+	_coordinate(x,y,z),
+	_m(NaN())
 {
 
 }

@@ -23,15 +23,25 @@
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/intersection.h>
+#include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/algorithm/covers.h>
-#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/Envelope.h>
+#include <SFCGAL/Exception.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/PolyhedralSurface.h>
 
-#include <CGAL/Polyhedral_mesh_domain_3.h>
 #include <CGAL/box_intersection_d.h>
 
+#include <CGAL/Point_inside_polyhedron_3.h>
+
 //#define CACHE_TRIANGULATION
+
+using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 namespace algorithm
@@ -222,23 +232,25 @@ namespace algorithm
 		template <class T>
 		bool operator() ( const T *geometry ) const
 		{
-			typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
-
 			// intersection between a solid and a geometry
 			// 1. either one of the geometry' point lies inside the solid
 			// 2. or the geometry intersects one of the surfaces
 
 			// 1.
-		
-			Mesh_domain ext_domain( *polyhedron );
-			Mesh_domain::Is_in_domain is_in_poly( ext_domain );
 
-			GeometrySet<3> points;
-			points.collectPoints( geometry );
-			for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
-			      pit != points.points().end(); ++pit ) {
-				if ( is_in_poly( pit->primitive() ) ) {
-					return true;
+			if ( polyhedron->is_closed() ) {
+				// this test is needed only if its a volume
+				// if the polyhedron is not closed, this is not a volume, actually
+
+				CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *polyhedron );
+				
+				GeometrySet<3> points;
+				points.collectPoints( geometry );
+				for ( GeometrySet<3>::PointCollection::const_iterator pit = points.points().begin();
+				      pit != points.points().end(); ++pit ) {
+					if ( is_in_poly( pit->primitive() ) != CGAL::ON_UNBOUNDED_SIDE ) {
+						return true;
+					}
 				}
 			}
 
@@ -332,8 +344,8 @@ namespace algorithm
 	template <int Dim>
 	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b )
 	{
-		typename SFCGAL::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 
@@ -357,6 +369,9 @@ namespace algorithm
 
 	bool intersects( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
+
 		GeometrySet<2> gsa( ga );
 		GeometrySet<2> gsb( gb );
 
@@ -365,11 +380,184 @@ namespace algorithm
 
 	bool intersects3D( const Geometry& ga, const Geometry& gb )
 	{
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
+		SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
+
 		GeometrySet<3> gsa( ga );
 		GeometrySet<3> gsb( gb );
 
 		return intersects( gsa, gsb );
 	}
+
+	bool intersects( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+	{
+		GeometrySet<2> gsa( ga );
+		GeometrySet<2> gsb( gb );
+
+		return intersects( gsa, gsb );
+	}
+
+	bool intersects3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+	{
+		GeometrySet<3> gsa( ga );
+		GeometrySet<3> gsb( gb );
+
+		return intersects( gsa, gsb );
+	}
+
+    template< int Dim >
+    bool selfIntersectsImpl(const LineString & line)
+    {
+
+        if ( line.numSegments() < 2 ) return false; // one segment cannot intersect
+
+        // note: zero length segments are a pain, to avoid algorithm complexity
+        // we start by filtering them out
+        const size_t numPoints = line.numPoints();
+        LineString l;
+        for ( size_t i = 0; i != numPoints; ++i ) {
+            if ( i==0 || l.endPoint() != line.pointN( i ) ) l.addPoint( line.pointN( i ) );
+        }
+
+        const size_t numSegments = l.numSegments();
+        // test any two pairs of segments
+        for ( size_t i = 0; i != numSegments; ++i ) {
+            // first line segment is point i and i+1
+            for ( size_t j = i + 1; j < numSegments; ++j ) {
+                /** @todo find a way to avoid ugly copy/paste here, toPoint_d< Dim > can be used, 
+                 * but I dont know what to do with Kernel::Segment_Dim and Kernel::Point_Dim
+                 */
+                std::auto_ptr< Geometry > inter; // null if no intersection
+                if ( Dim == 2 )
+                {
+                    const CGAL::Segment_2< Kernel > s1( l.pointN( i ).toPoint_2(), l.pointN( i + 1 ).toPoint_2() ) ;
+                    const CGAL::Segment_2< Kernel > s2( l.pointN( j ).toPoint_2(), l.pointN( j + 1 ).toPoint_2() ) ;
+                    const CGAL::Object out = CGAL::intersection( s1, s2 );
+                    if ( out.is< Kernel::Point_2 >() ) {
+                        inter.reset( new Point( CGAL::object_cast< Kernel::Point_2 >( out ) ) );
+                    }
+                    else if ( out.is< Kernel::Segment_2 >() ) {
+                        const Kernel::Segment_2 & s = CGAL::object_cast< Kernel::Segment_2 >( out );
+                        inter.reset( new LineString( s.point(0), s.point(1) ) ) ;
+                    }
+                }
+                else
+                {
+                    const CGAL::Segment_3< Kernel > s1( l.pointN( i ).toPoint_3(), l.pointN( i + 1 ).toPoint_3() ) ;
+                    const CGAL::Segment_3< Kernel > s2( l.pointN( j ).toPoint_3(), l.pointN( j + 1 ).toPoint_3() ) ;
+                    const CGAL::Object out = CGAL::intersection( s1, s2 );
+                    if ( out.is< Kernel::Point_3 >() ) {
+                        inter.reset( new Point( CGAL::object_cast< Kernel::Point_3 >( out ) ) );
+                    }
+                    else if ( out.is< Kernel::Segment_3 >() ) {
+                        const Kernel::Segment_3 & s = CGAL::object_cast< Kernel::Segment_3 >( out );
+                        inter.reset( new LineString( s.point(0), s.point(1) ) ) ;
+                    }
+                }
+
+                if ( inter.get() && inter->is< LineString >() ) return true; // segments overlap
+                else if ( inter.get() && inter->is< Point >() 
+                        && !( i + 1 == j ) // one contact point between consecutive segments is ok
+                        && !( (i == 0) 
+                            && (j + 1 == numSegments) 
+                            && inter->as< Point >() == l.startPoint()
+                            && inter->as< Point >() == l.endPoint() ) ) return true; // contact point that is not a contact between startPoint and endPoint
+            }
+        }
+        
+        return false;
+    }
+
+    bool selfIntersects(const LineString & l){
+        return selfIntersectsImpl<2>( l );
+    }
+    bool selfIntersects3D(const LineString & l)
+    {
+        return selfIntersectsImpl<3>( l );
+    }
+
+
+    template< int Dim >
+    bool selfIntersectsImpl(const PolyhedralSurface& s, const SurfaceGraph& graph)
+    {
+        size_t numPolygons = s.numPolygons();
+        for ( size_t pi=0; pi != numPolygons; ++pi ) {
+            for ( size_t pj=pi+1; pj < numPolygons; ++pj ) {
+                std::auto_ptr< Geometry > inter = Dim == 3 
+                    ? intersection3D(s.polygonN(pi), s.polygonN(pj)) 
+                    : intersection(s.polygonN(pi), s.polygonN(pj)) ;
+                if ( !inter->isEmpty() ) {
+                    // two cases: 
+                    // - neighbors can have a line as intersection
+                    // - non neighbors can only have a point or a set of points
+                    typedef SurfaceGraph::FaceGraph::adjacency_iterator Iterator;
+                    std::pair< Iterator, Iterator > neighbors = boost::adjacent_vertices( pi, graph.faceGraph() );
+                    if ( neighbors.second != std::find(neighbors.first, neighbors.second, pj ) ) {
+                        // neighbor
+                        //std::cerr << pi << " " << pj << " neighbor\n";
+                        if ( !inter->is< LineString >() ) return true;
+                    }
+                    else {
+                        // not a neighbor
+                        //std::cerr << pi << " " << pj << " not neighbor\n";
+                        if ( inter->dimension() != 0 ) return true;
+                    }
+                } 
+            }
+        }
+        return false;
+    }
+
+    bool selfIntersects(const PolyhedralSurface& s, const SurfaceGraph& g) 
+    {
+        return selfIntersectsImpl<2>( s, g );
+    }
+
+    bool selfIntersects3D(const PolyhedralSurface& s, const SurfaceGraph& g)
+    {
+        return selfIntersectsImpl<3>( s, g );
+    }
+
+    template< int Dim >
+    bool selfIntersectsImpl(const TriangulatedSurface& tin, const SurfaceGraph& graph)
+    {
+        size_t numTriangles = tin.numTriangles();
+        for ( size_t ti=0; ti != numTriangles; ++ti ) {
+            for ( size_t tj=ti+1; tj < numTriangles; ++tj ) {
+                std::auto_ptr< Geometry > inter = Dim == 3 
+                    ? intersection3D(tin.triangleN(ti), tin.triangleN(tj)) 
+                    : intersection(tin.triangleN(ti), tin.triangleN(tj)) ;
+                if ( !inter->isEmpty() ) {
+                    // two cases: 
+                    // - neighbors can have a line as intersection
+                    // - non neighbors can only have a point or a set of points
+                    typedef SurfaceGraph::FaceGraph::adjacency_iterator Iterator;
+                    std::pair< Iterator, Iterator > neighbors = boost::adjacent_vertices( ti, graph.faceGraph() );
+                    if ( neighbors.second != std::find(neighbors.first, neighbors.second, tj ) ) {
+                        // neighbor
+                        //std::cerr << ti << " " << tj << " neighbor\n";
+                        if ( !inter->is< LineString >() ) return true;
+                    }
+                    else {
+                        // not a neighbor
+                        //std::cerr << ti << " " << tj << " not neighbor\n";
+                        if ( inter->dimension() != 0 ) return true;
+                    }
+                } 
+            }
+        }
+        return false;
+    }
+
+    bool selfIntersects(const TriangulatedSurface& tin, const SurfaceGraph& g) 
+    {
+        return selfIntersectsImpl<2>( tin, g );
+    }
+
+    bool selfIntersects3D(const TriangulatedSurface& tin, const SurfaceGraph& g)
+    {
+        return selfIntersectsImpl<3>( tin, g );
+    }
 
 }
 }

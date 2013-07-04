@@ -20,9 +20,11 @@
  */
 #include <SFCGAL/io/ewkt.h>
 
-#include <SFCGAL/io/WktReader.h>
-#include <SFCGAL/io/WktWriter.h>
-#include <SFCGAL/tools/CharArrayBuffer.h>
+#include <SFCGAL/detail/io/WktReader.h>
+#include <SFCGAL/detail/io/WktWriter.h>
+#include <SFCGAL/detail/tools/CharArrayBuffer.h>
+
+using namespace SFCGAL::detail::io;
 
 namespace SFCGAL {
 namespace io {

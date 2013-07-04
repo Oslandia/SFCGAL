@@ -29,8 +29,11 @@
 #include <SFCGAL/all.h>
 
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/vtk.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/algorithm/area.h>
+#include <SFCGAL/algorithm/force2D.h>
+#include <SFCGAL/algorithm/orientation.h>
 
 #include <boost/chrono.hpp>
 
@@ -59,6 +62,8 @@ int main( int argc, char* argv[] ){
 	    ("help", "produce help message")
 	    ("progress", "display progress")
 	    ("verbose",  "verbose mode")
+	    ("force2d","force 2d polygon")
+	    ("line", po::value< int >(), "line to test")
 	    ("filename", po::value< std::string >(), "input filename (id|wkt_[multi]polygon on each line)")
 	;
 
@@ -73,6 +78,7 @@ int main( int argc, char* argv[] ){
 
 	bool verbose  = vm.count("verbose") != 0 ;
 	bool progress = vm.count("progress") != 0 ;
+	bool force2d  = vm.count("force2d") != 0 ;
 
 	std::string filename ;
 	if ( vm.count("filename") ) {
@@ -83,6 +89,11 @@ int main( int argc, char* argv[] ){
 		return 1 ;
 	}
 
+    int oneLine = -1;
+	if ( vm.count("line") ) {
+        oneLine = vm["line"].as< int >();
+    }
+
 	/*
 	 * open file
 	 */
@@ -92,14 +103,14 @@ int main( int argc, char* argv[] ){
 		return 1;
 	}
 
-	std::string tri_filename( filename+".tri.wkt" );
+	const std::string tri_filename( filename+".tri.wkt" );
 	std::ofstream tri_ofs( tri_filename.c_str() ) ;
 	if ( ! tri_ofs.good() ){
 		std::cerr << "fail to write : " << tri_filename << std::endl ;
 		return 1;
 	}
 
-	std::string error_filename( filename+".error.wkt" );
+	const std::string error_filename( filename+".error.wkt" );
 	std::ofstream ofs_error( error_filename.c_str() ) ;
 	if ( ! ofs_error.good() ){
 		std::cerr << "fail to write : " << error_filename << std::endl ;
@@ -110,6 +121,8 @@ int main( int argc, char* argv[] ){
 	//boost::timer timer ;
 	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
+    std::vector< std::string > invalidGeom;
+    std::vector< std::string > inapropriateGeom;
 	/*
 	 * process file
 	 */
@@ -118,6 +131,9 @@ int main( int argc, char* argv[] ){
 
 	while ( std::getline( ifs, line ) ){
 		lineNumber++ ;
+
+        if ( -1 != oneLine && oneLine != lineNumber ) continue;
+
 
 		boost::algorithm::trim( line );
 		if ( line.empty() ){
@@ -152,12 +168,16 @@ int main( int argc, char* argv[] ){
 
 		//std::cout << "process " << id << std::endl;
 
-		bool failed = true ;
-
+        bool failed = true;
 		TriangulatedSurface triangulatedSurface ;
 		try {
-			std::auto_ptr< Geometry > g;
-			g = io::readWkt( wkt ) ;
+			std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+
+            //io::vtk( *g, (boost::format("/tmp/polygon_%s.vtk") % id ).str() );
+
+			if ( force2d ){
+				algorithm::force2D( *g ) ;
+			}
 			triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ;
 
 			//check area
@@ -166,22 +186,20 @@ int main( int argc, char* argv[] ){
 
 			double ratio = fabs( areaPolygons - areaTriangles ) / std::max( areaPolygons, areaTriangles );
 			if ( ratio > 0.1 ){
-				std::cerr << "[error]" << id << "|" << "area(polygon) != area(tin) ( " << areaPolygons << " !=" << areaTriangles <<  ")" << "|" << g->asText() << "|" << triangulatedSurface.asText() << std::endl ;
+				std::cerr << filename << ":" << lineNumber << " error:" << id << "|" << "area(polygon) != area(tin) ( " << areaPolygons << " !=" << areaTriangles <<  ")" << "|" << g->asText() << "|" << triangulatedSurface.asText() << std::endl ;
 			}
-			failed = false ;
-		}catch ( Exception & e ){
-			std::cerr << "[Exception]" << id << "|" << e.what() << "|" << wkt << std::endl ;
-		}catch ( std::exception & e ){
-			std::cerr << "[std::exception]" << id << "|" << e.what() << "|" << wkt << std::endl ;
-		}catch ( ... ){
-			std::cerr << "[...]" << id << "|" << wkt << std::endl ;
-		}
-
-		if ( failed ){
-			numFailed++ ;
-			ofs_error << line << std::endl ;
-		}else{
 			numSuccess++ ;
+            failed = false;
+		}catch ( InappropriateGeometryException & e ){
+            inapropriateGeom.push_back( id );
+            numFailed++ ;
+		}catch ( GeometryInvalidityException & e ){
+            invalidGeom.push_back( id );
+            numFailed++ ;
+		}catch ( std::exception & e ){
+            BOOST_ASSERT_MSG( false, (boost::format("%s:%d: unhandled std::exception: %s") % filename % lineNumber % e.what()).str().c_str() );
+		}catch ( ... ){
+            BOOST_ASSERT_MSG( false, (boost::format("%s:%d: unknown exception") % filename % lineNumber).str().c_str() );
 		}
 
 		//output triangulated surface
@@ -194,6 +212,12 @@ int main( int argc, char* argv[] ){
 
 
 	boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
+    for (size_t i=0; i!=invalidGeom.size(); ++i) {
+        std::cout << "    " << invalidGeom[i] << " is invalid\n";
+    }
+    for (size_t i=0; i!=inapropriateGeom.size(); ++i) {
+        std::cout << "    " << inapropriateGeom[i] << " is inapropriate for triangulation\n";
+    }
 	std::cout << filename << " complete (" << elapsed << " s)---" << std::endl;
 	std::cout << numFailed << " failed /" << (numFailed + numSuccess) << std::endl ;
 

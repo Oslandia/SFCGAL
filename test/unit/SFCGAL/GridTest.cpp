@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( constructorWithSize )
 
 BOOST_AUTO_TEST_CASE( constructorWithMatrix )
 {
-	ublas::matrix< double > data = ublas::identity_matrix< double >( 5 );
+	detail::ublas::matrix< double > data = detail::ublas::identity_matrix< double >( 5 );
 	Grid g( data );
 	BOOST_CHECK_EQUAL( g.pixelConvention(), PIXEL_IS_POINT );
 	BOOST_CHECK_EQUAL( g.nrows(), 5U );
@@ -163,9 +163,9 @@ BOOST_AUTO_TEST_CASE( testToTriangulatedSurface )
 	g.z(1,0) = 2.0 ; g.z(1,1) = 3.0 ;
 
 	g.setPixelConvention( PIXEL_IS_POINT );
-	BOOST_CHECK_EQUAL( g.toTrianguledSurface()->asText(1), "TIN(((0.0 0.0 2.0,1.0 0.0 3.0,1.0 1.0 1.0,0.0 0.0 2.0)),((0.0 0.0 2.0,1.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 2.0)))" );
+	BOOST_CHECK_EQUAL( g.toTrianguledSurface()->asText(1), "TIN M(((0.0 0.0 2.0,1.0 0.0 3.0,1.0 1.0 1.0,0.0 0.0 2.0)),((0.0 0.0 2.0,1.0 1.0 1.0,0.0 1.0 0.0,0.0 0.0 2.0)))" );
 	g.setPixelConvention( PIXEL_IS_AREA );
-	BOOST_CHECK_EQUAL( g.toTrianguledSurface()->asText(1), "TIN(((0.2 0.2 2.0,0.8 0.2 3.0,0.8 0.8 1.0,0.2 0.2 2.0)),((0.2 0.2 2.0,0.8 0.8 1.0,0.2 0.8 0.0,0.2 0.2 2.0)))" );
+	BOOST_CHECK_EQUAL( g.toTrianguledSurface()->asText(1), "TIN M(((0.2 0.2 2.0,0.8 0.2 3.0,0.8 0.8 1.0,0.2 0.2 2.0)),((0.2 0.2 2.0,0.8 0.8 1.0,0.2 0.8 0.0,0.2 0.2 2.0)))" );
 }
 
 

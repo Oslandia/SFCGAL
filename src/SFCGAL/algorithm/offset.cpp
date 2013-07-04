@@ -21,6 +21,7 @@
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/detail/polygonSetToMultiPolygon.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 
 #include <CGAL/Polygon_2.h>
@@ -44,6 +45,8 @@ typedef CGAL::General_polygon_set_2< Gps_traits_2 >            Offset_polygon_se
 
 #define SFCGAL_OFFSET_ACCURACY 0.0001
 
+#define SFCGAL_OFFSET_ASSERT_FINITE_RADIUS( r ) \
+    if ( !std::isfinite(r) ) BOOST_THROW_EXCEPTION( NonFiniteValueException("radius is non finite") );
 namespace SFCGAL {
 namespace algorithm {
 
@@ -167,7 +170,9 @@ Offset_polygon_2 circleToPolygon( const Kernel::Circle_2& circle )
 /**
  * @brief build Point offset
  */
-void offset( const Point & gA, const double& radius, Offset_polygon_set_2 & polygonSet ){
+void offset( const Point & gA, const double& radius, Offset_polygon_set_2 & polygonSet )
+{
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(radius);
 	Kernel::Circle_2 circle( gA.toPoint_2(), radius * radius );
 	if ( polygonSet.is_empty() ){
 		polygonSet.insert( circleToPolygon( circle ) );
@@ -180,7 +185,9 @@ void offset( const Point & gA, const double& radius, Offset_polygon_set_2 & poly
 /**
  * @brief build LineString offset
  */
-void offset( const LineString & lineString, const double& radius, Offset_polygon_set_2 & polygonSet ){
+void offset( const LineString & lineString, const double& radius, Offset_polygon_set_2 & polygonSet )
+{
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(radius);
 	for ( size_t i = 0; i < lineString.numSegments(); i++ ){
 		Polygon_2 P ;
 		P.push_back( lineString.pointN(i).toPoint_2() );
@@ -199,7 +206,9 @@ void offset( const LineString & lineString, const double& radius, Offset_polygon
 ///
 ///
 ///
-void offset( const Polygon & g, const double& radius, Offset_polygon_set_2 & polygonSet ){
+void offset( const Polygon & g, const double& radius, Offset_polygon_set_2 & polygonSet )
+{
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(radius);
 	if ( g.isEmpty() ){
 		return ;
 	}
@@ -249,7 +258,9 @@ void offset( const Polygon & g, const double& radius, Offset_polygon_set_2 & pol
 ///
 ///
 ///
-void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_set_2 & polygonSet ){
+void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_set_2 & polygonSet )
+{
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(radius);
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		offset( g.geometryN(i), radius, polygonSet );
 	}
@@ -260,6 +271,7 @@ void offsetCollection( const Geometry & g, const double& radius, Offset_polygon_
 ///
 void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & polygonSet )
 {
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(radius);
 	if ( g.isEmpty() )
 		return ;
 
@@ -290,14 +302,20 @@ void offset( const Geometry & g, const double & radius, Offset_polygon_set_2 & p
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r )
+std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r, NoValidityCheck )
 {
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(r);
 	Offset_polygon_set_2 polygonSet ;
 	offset( g, r, polygonSet ) ;
 	return polygonSetToMultiPolygon( polygonSet, 8 );
 }
 
-
+std::auto_ptr< MultiPolygon > offset( const Geometry & g, const double & r )
+{
+    SFCGAL_OFFSET_ASSERT_FINITE_RADIUS(r);
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+	return offset( g, r, NoValidityCheck() );
+}
 
 }//namespace algorithm
 }//namespace SFCGAL

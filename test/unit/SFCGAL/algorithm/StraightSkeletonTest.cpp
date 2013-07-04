@@ -25,7 +25,7 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
 
-#include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/tools/Registry.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
@@ -71,7 +71,23 @@ BOOST_AUTO_TEST_CASE( testPolygon )
 		BOOST_CHECK_EQUAL( result->asText(0), expectedWKT );
 	}
 }
+BOOST_AUTO_TEST_CASE( testPolygonWithHole )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1.0 -0.5,-0.5 -0.5))"));
 
+    // just for valgrind
+    std::auto_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ) ;
+
+}
+
+BOOST_AUTO_TEST_CASE( testPolygonWithTouchingHoles )
+{
+	std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))" ) );
+
+    // just for valgrind
+    BOOST_CHECK_THROW( std::auto_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ), NotImplementedException ) ;
+
+}
 
 BOOST_AUTO_TEST_CASE( testMultiPolygon )
 {

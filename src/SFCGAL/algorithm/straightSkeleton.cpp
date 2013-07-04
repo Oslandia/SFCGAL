@@ -21,6 +21,8 @@
 #include <SFCGAL/algorithm/straightSkeleton.h>
 #include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/orientation.h>
+#include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/algorithm/intersection.h>
 
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 
@@ -71,7 +73,7 @@ void straightSkeletonToMultiLineString(
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck )
 {
 	switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
@@ -85,19 +87,43 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
 	}
 }
 
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
+	return straightSkeleton( g, autoOrientation, NoValidityCheck() );
+}
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/ )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	if ( g.isEmpty() ){
 		return result ;
 	}
 
+    // test if holes touch, since CGAL segfaults if it does
+    const size_t numRings =  g.numRings();
+    for (size_t ri=1; ri < numRings; ++ri) {
+        for (size_t rj=ri+1; rj < numRings; ++rj) {
+            std::auto_ptr<Geometry> inter = g.is3D()
+                                            ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
+                                            : intersection( g.ringN( ri ), g.ringN( rj ) );
+            if (! inter->isEmpty() && inter->is< Point >() ) {
+                BOOST_THROW_EXCEPTION( NotImplementedException( 
+                    "straight skeleton of Polygon with touching interior rings is not implemented" 
+                    ) );
+            }
+        }
+    }
+
+
 	Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
 	boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+    if (!skeleton.get() ) {
+        BOOST_THROW_EXCEPTION( Exception("CGAL failed to create straightSkeleton") ) ;
+    }
 	straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	return result ;
 }
@@ -106,12 +132,15 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOr
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/ )
 {
 	std::auto_ptr< MultiLineString > result( new MultiLineString );
 	for ( size_t i = 0; i < g.numGeometries(); i++ ){
 		Polygon_with_holes_2 polygon = g.polygonN(i).toPolygon_with_holes_2() ;
 		boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+        if (!skeleton.get() ) {
+            BOOST_THROW_EXCEPTION( Exception("CGAL failed to create straightSkeleton") ) ;
+        }
 		straightSkeletonToMultiLineString( *skeleton, *result ) ;
 	}
 	return result ;

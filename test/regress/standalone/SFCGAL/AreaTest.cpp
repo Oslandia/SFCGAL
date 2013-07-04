@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_AreaTest )
 BOOST_AUTO_TEST_CASE( testComputeArea )
 {
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/AreaTest.txt" ;
+	filename += "/data/AreaTest.txt" ;
 
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;

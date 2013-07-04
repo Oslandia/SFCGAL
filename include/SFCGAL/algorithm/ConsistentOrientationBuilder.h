@@ -25,8 +25,8 @@
 
 #include <SFCGAL/Geometry.h>
 
-#include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/graph/GeometryGraphBuilder.h>
+#include <SFCGAL/detail/graph/GeometryGraph.h>
+#include <SFCGAL/detail/graph/GeometryGraphBuilder.h>
 
 namespace SFCGAL {
 namespace algorithm {

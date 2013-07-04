@@ -59,21 +59,20 @@ LineString::LineString( const Point & startPoint, const Point & endPoint ):
 ///
 ///
 ///
-LineString::LineString( LineString const& other ):
+LineString::LineString( const LineString& other ):
 	Geometry()
 {
-	(*this) = other ;
+	for ( size_t i = 0; i < other.numPoints(); i++ ){
+		_points.push_back( other.pointN(i).clone() ) ;
+	}
 }
 
 ///
 ///
 ///
-LineString& LineString::operator = ( const LineString & other )
+LineString& LineString::operator = ( LineString other )
 {
-	_points.resize( other.numPoints() );
-	for ( size_t i = 0; i < other.numPoints(); i++ ){
-		_points[i] = other.pointN(i) ;
-	}
+    swap(other);
 	return *this ;
 }
 

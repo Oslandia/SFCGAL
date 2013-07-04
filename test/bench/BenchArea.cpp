@@ -28,7 +28,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/generator/sierpinski.h>
+#include <SFCGAL/detail/generator/sierpinski.h>
 
 #include <SFCGAL/algorithm/area.h>
 

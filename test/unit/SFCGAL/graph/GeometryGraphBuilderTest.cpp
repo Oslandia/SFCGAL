@@ -21,8 +21,8 @@
 #include <boost/test/unit_test.hpp>
 
 
-#include <SFCGAL/graph/GeometryGraph.h>
-#include <SFCGAL/graph/GeometryGraphBuilder.h>
+#include <SFCGAL/detail/graph/GeometryGraph.h>
+#include <SFCGAL/detail/graph/GeometryGraphBuilder.h>
 
 using namespace boost::unit_test ;
 
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_GeometryGraphBuilderTest )
 BOOST_AUTO_TEST_CASE( addPoint )
 {
 	typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
-	typedef GeometryGraph::edge_descriptor   edge_descriptor ;
+	//typedef GeometryGraph::edge_descriptor   edge_descriptor ;
 	GeometryGraph        graph;
 	GeometryGraphBuilder graphBuilder( graph );
 
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( addPoint )
 
 BOOST_AUTO_TEST_CASE( addLineString )
 {
-	typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
+	//typedef GeometryGraph::vertex_descriptor vertex_descriptor ;
 	typedef GeometryGraph::edge_descriptor   edge_descriptor ;
 	GeometryGraph        graph;
 	GeometryGraphBuilder graphBuilder( graph );

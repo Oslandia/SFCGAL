@@ -20,7 +20,7 @@
  */
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/all.h>
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform3.h>
 
 
 namespace SFCGAL {

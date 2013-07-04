@@ -36,7 +36,7 @@ namespace SFCGAL {
 
 	/**
 	 * A LineString in SFA
-	 *
+     * @ingroup public_api
 	 * @todo template < size_t N >?
 	 */
 	class SFCGAL_API LineString : public Geometry {
@@ -53,7 +53,7 @@ namespace SFCGAL {
 		 */
 		LineString( const std::vector< Point > & points ) ;
 		/**
-		 * Empty LineString constructor
+		 * LineString constructor
 		 */
 		LineString( const Point & startPoint, const Point & endPoint ) ;
 		/**
@@ -64,7 +64,7 @@ namespace SFCGAL {
 		/**
 		 * assign operator
 		 */
-		LineString& operator = ( const LineString & other ) ;
+		LineString& operator = ( LineString other ) ;
 
 		/**
 		 * destructor
@@ -280,13 +280,18 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _points;
 		}
 	private:
 		boost::ptr_vector< Point > _points ;
+
+        void swap( LineString & other )
+        {
+            std::swap( _points, other._points );
+        }
 	};
 
 

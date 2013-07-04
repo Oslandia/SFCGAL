@@ -25,27 +25,99 @@
 
 namespace SFCGAL {
 	class Geometry;
-	template <int Dim> class GeometrySet;
-	template <int Dim> class PrimitiveHandle;
+	class LineString;
+    class PolyhedralSurface;
+    class TriangulatedSurface; 
+	namespace detail {
+		template <int Dim> class GeometrySet;
+		template <int Dim> class PrimitiveHandle;
+	}
 
 	namespace algorithm {
-	/*
-	 * Intersection test on 2D geometries. Force projection to z=0 if needed
+    class SurfaceGraph;
+    // defined in isValid.h
+    struct NoValidityCheck;
+
+	/**
+	 * Robust intersection test on 2D geometries. Force projection to z=0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API bool intersects( const Geometry& ga, const Geometry& gb );
 
-	/*
-	 * Intersection test on 3D geometries. Assume z = 0 if needed
+	/**
+	 * Robust intersection test on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb );
 
-	template <int Dim>
-	bool intersects( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );
+	/**
+	 * Intersection test on 2D geometries. Force projection to z=0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning the validity is assumed, no actual check is done
+	 */
+	SFCGAL_API bool intersects( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
-	template <int Dim>
-	bool intersects( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b );
+	/**
+	 * Intersection test on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning the validity is assumed, no actual check is done
+	 */
+	SFCGAL_API bool intersects3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
-    }
+	/**
+	 * Intersection test on GeometrySet
+	 * @ingroup detail
+	 */
+	template <int Dim>
+	bool intersects( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b );
+
+	/**
+	 * Intersection test on a PrimitiveHandle
+	 * @ingroup detail
+	 */
+	template <int Dim>
+	bool intersects( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
+
+	/**
+	 * Self intersection test for 2D LineString (false if only endpoint touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const LineString& l);
+
+	/**
+	 * Self intersection test for 3D LineString (false if only endpoints touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects3D(const LineString& l);
+
+	/**
+	 * Self intersection test for 2D PolyhedralSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const PolyhedralSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 3D PolyhedralSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+
+    bool selfIntersects3D(const PolyhedralSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 2D TriangulatedSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects(const TriangulatedSurface& s, const SurfaceGraph& g);
+
+	/**
+	 * Self intersection test for 3D TriangulatedSurface (false if only point touch)
+	 * @ingroup detail
+	 */
+    bool selfIntersects3D(const TriangulatedSurface& s, const SurfaceGraph& g);
 }
-
+}
 #endif

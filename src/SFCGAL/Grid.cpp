@@ -23,6 +23,8 @@
 #include <SFCGAL/Triangle.h>
 #include <SFCGAL/TriangulatedSurface.h>
 
+using namespace SFCGAL::detail;
+
 namespace SFCGAL {
 
 ///
@@ -119,10 +121,10 @@ std::auto_ptr< TriangulatedSurface > Grid::toTrianguledSurface() const
 			Point c = point(i+1,j+1);
 			Point d = point(i+1,j);
 
-			if ( d.is3D() && c.is3D() && b.is3D() ){
+			if ( d.isMeasured() && c.isMeasured() && b.isMeasured() ){
 				result->addTriangle( new Triangle( d, c, b ) );
 			}
-			if ( d.is3D() && b.is3D() && a.is3D() ){
+			if ( d.isMeasured() && b.isMeasured() && a.isMeasured() ){
 				result->addTriangle( new Triangle( d, b, a ) );
 			}
 		}

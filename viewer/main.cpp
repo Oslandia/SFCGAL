@@ -29,7 +29,7 @@
 #include <osgDB/Registry>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 //	g->as< Polygon >().ringN(1).reverse();
 //	std::auto_ptr< Geometry > ext( algorithm::extrude(*g,0.0,0.0,1.0) );
 //
-//	io::OsgFactory factory ;
+//	detail::io::OsgFactory factory ;
 //
 //	osg::Geometry * osgGeometry = factory.createGeometry( *ext ) ;
 //

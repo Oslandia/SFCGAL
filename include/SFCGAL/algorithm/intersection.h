@@ -27,26 +27,57 @@
 
 namespace SFCGAL {
 class Geometry;
-template <int Dim> class GeometrySet;
-template <int Dim> class PrimitiveHandle;
+ namespace detail {
+	 template <int Dim> class GeometrySet;
+	 template <int Dim> class PrimitiveHandle;
+ }
 
 namespace algorithm {
-	/*
+	struct NoValidityCheck;
+
+	/**
 	 * Intersection on 2D geometries.
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
 	
-	/*
+	/**
+	 * Intersection on 2D geometries. No validity check variant
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb,NoValidityCheck );
+
+	/**
 	 * Intersection on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 	
-	template <int Dim>
-	void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& );
+	/**
+	 * Intersection on 3D geometries. Assume z = 0 if needed
+	 * @pre ga and gb are valid geometries
+	 * @ingroup detail
+	 * @warning@ No actual validity check is done
+	 */
+	SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
+	/**
+	 * @ingroup detail
+	 */
 	template <int Dim>
-	void intersection( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b, GeometrySet<Dim>& );
-    }
+	void intersection( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& );
+
+	/**
+	 * @ingroup detail
+	 */
+	template <int Dim>
+	void intersection( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b, detail::GeometrySet<Dim>& );
+
+}
 }
 
 #endif

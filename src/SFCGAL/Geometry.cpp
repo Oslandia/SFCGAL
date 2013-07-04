@@ -22,7 +22,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/GeometryVisitor.h>
-#include <SFCGAL/io/WktWriter.h>
+#include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 
 #include <SFCGAL/algorithm/BoundaryVisitor.h>
@@ -31,7 +31,7 @@
 
 #include <SFCGAL/detail/EnvelopeVisitor.h>
 
-#include <SFCGAL/transform/RoundTransform.h>
+#include <SFCGAL/detail/transform/RoundTransform.h>
 
 #include <SFCGAL/Kernel.h>
 
@@ -56,7 +56,7 @@ std::string Geometry::asText( const int & numDecimals ) const
 		oss << std::fixed ;
 		oss.precision( numDecimals );
 	}
-	io::WktWriter writer( oss );
+	detail::io::WktWriter writer( oss );
 	bool exact = false;
 	if ( numDecimals == -1 ) {
 		exact = true;
@@ -125,7 +125,7 @@ size_t Geometry::numGeometries() const
 ///
 const Geometry  &  Geometry::geometryN( size_t const& n ) const
 {
-	BOOST_ASSERT( n == 0 );
+	BOOST_ASSERT( n == 0 ); (void)n;
 	return *this ;
 }
 
@@ -134,7 +134,7 @@ const Geometry  &  Geometry::geometryN( size_t const& n ) const
 ///
 Geometry &  Geometry::geometryN( size_t const& n )
 {
-	BOOST_ASSERT( n == 0 );
+	BOOST_ASSERT( n == 0 ); (void)n;
 	return *this ;
 }
 
@@ -150,7 +150,7 @@ Geometry::Geometry()
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& other )
+Geometry::Geometry( Geometry const& )
 {
 
 }
@@ -161,28 +161,31 @@ Geometry::Geometry( Geometry const& other )
 /// Since we do not have (yet) a real "equals" operator, we only compare points coordinates
 bool operator == ( const Geometry& ga, const Geometry& gb )
 {
-    detail::GetPointsVisitor get_points_a, get_points_b;
-    ga.accept( get_points_a );
-    gb.accept( get_points_b );
-
-    if ( get_points_a.points.size() != get_points_b.points.size() )
-	return false;
-
-    for ( size_t i = 0; i < get_points_a.points.size(); ++i ) {
-	bool found = false;
-	for ( size_t j = 0; j < get_points_b.points.size(); ++j ) {
-	    const Point& pta = *(get_points_a.points[i]);
-	    const Point& ptb = *(get_points_b.points[j]);
-	    if ( pta == ptb ) {
-		found = true;
-		break;
-	    }
+	if ( ga.geometryTypeId() != gb.geometryTypeId() ) {
+		return false;
 	}
-	if (! found) {
-	    return false;
+	detail::GetPointsVisitor get_points_a, get_points_b;
+	ga.accept( get_points_a );
+	gb.accept( get_points_b );
+	
+	if ( get_points_a.points.size() != get_points_b.points.size() )
+		return false;
+	
+	for ( size_t i = 0; i < get_points_a.points.size(); ++i ) {
+		bool found = false;
+		for ( size_t j = 0; j < get_points_b.points.size(); ++j ) {
+			const Point& pta = *(get_points_a.points[i]);
+			const Point& ptb = *(get_points_b.points[j]);
+			if ( pta == ptb ) {
+				found = true;
+				break;
+			}
+		}
+		if (! found) {
+			return false;
+		}
 	}
-    }
-    return true;
+	return true;
 }
 
 }//SFCGAL

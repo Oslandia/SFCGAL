@@ -21,7 +21,7 @@
 #include <SFCGAL/viewer/plugins/PSQLPlugin.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/ViewerWidget.h>
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <SFCGAL/all.h>
@@ -205,7 +205,7 @@ namespace plugins {
 		addLayer( "layer", true, "", "" );
 	}
 
-	void LayersWidget::onClick( const QModelIndex& idx )
+	void LayersWidget::onClick( const QModelIndex& /*idx*/ )
 	{
 		if ( QApplication::mouseButtons() & Qt::RightButton ) {
 			QMenu* menu = new QMenu;
@@ -356,7 +356,7 @@ namespace plugins {
 			return 0;
 		}
 		
-		io::OsgFactory factory;
+		detail::io::OsgFactory factory;
 		osg::ref_ptr<osg::Geode> geode( new osg::Geode );
 		
 		try {

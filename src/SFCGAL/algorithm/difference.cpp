@@ -25,7 +25,9 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
+
+using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 
@@ -177,8 +179,8 @@ namespace algorithm
 	template <int Dim>
 	void difference( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
 	{
-		typename SFCGAL::HandleCollection<Dim>::Type ahandles, bhandles;
-		typename SFCGAL::BoxCollection<Dim>::Type aboxes, bboxes;
+		typename SFCGAL::detail::HandleCollection<Dim>::Type ahandles, bhandles;
+		typename SFCGAL::detail::BoxCollection<Dim>::Type aboxes, bboxes;
 		a.computeBoundingBoxes( ahandles, aboxes );
 		b.computeBoundingBoxes( bhandles, bboxes );
 

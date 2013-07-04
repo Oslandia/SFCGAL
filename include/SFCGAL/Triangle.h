@@ -27,7 +27,7 @@
 
 #include <SFCGAL/Point.h>
 #include <SFCGAL/Surface.h>
-#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/detail/TypeForDimension.h>
 
 #include <CGAL/Triangle_2.h>
 #include <CGAL/Triangle_3.h>
@@ -36,6 +36,7 @@ namespace SFCGAL {
 
 	/**
 	 * [OGC/SFA]Triangle
+     * @ingroup public_api
 	 *
 	 * @warning According to SFA, a Triangle should be inherited from a Polygon. That means
 	 * that a triangle "is a" Polygon with hole. This inheritance is removed in order to
@@ -136,9 +137,9 @@ namespace SFCGAL {
 		 * Convert to CGAL::Triangle_2 or CGAL::Triangle_2
 		 */
 		template < int D >
-		inline typename TypeForDimension<D>::Triangle toTriangle_d() const
+		  inline typename detail::TypeForDimension<D>::Triangle toTriangle_d() const
 		{
-		    return typename TypeForDimension<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
+		  return typename detail::TypeForDimension<D>::Triangle( vertex(0).toPoint_d<D>(), vertex(1).toPoint_d<D>(), vertex(2).toPoint_d<D>() );
 		}
 
 		//-- visitors
@@ -152,7 +153,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _vertices[0] & _vertices[1] & _vertices[2];

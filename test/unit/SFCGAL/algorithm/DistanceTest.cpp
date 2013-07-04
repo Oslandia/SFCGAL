@@ -24,8 +24,8 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/distance.h>
 
-#include <SFCGAL/tools/Registry.h>
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Registry.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 using namespace SFCGAL ;
 
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_badLineStrin
 	Point point(3.0,4.0);
 	LineString lineString ;
 	lineString.addPoint( Point(0.0,0.0) );
-	BOOST_CHECK_EQUAL( point.distance( lineString ), std::numeric_limits< double >::infinity() );
+	BOOST_CHECK_THROW( point.distance( lineString ), GeometryInvalidityException );
 }
 BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSegments )
 {
@@ -126,14 +126,14 @@ BOOST_AUTO_TEST_CASE( testDistancePointLineString_pointOnLineString_collapsedSeg
 	LineString lineString ;
 	lineString.addPoint( Point(0.0,0.0) );
 	lineString.addPoint( Point(0.0,0.0) );
-	BOOST_CHECK_EQUAL( point.distance( lineString ), 5.0 );
+	BOOST_CHECK_THROW( point.distance( lineString ), GeometryInvalidityException );
 }
 BOOST_AUTO_TEST_CASE( testDistancePointLineString3D_pointOnLineString_collapsedSegments )
 {
 	Point point(0.0,3.0,4.0);
 	LineString lineString ;
 	lineString.addPoint( Point(0.0,0.0,0.0) );
-	lineString.addPoint( Point(0.0,0.0,0.0) );
+	lineString.addPoint( Point(0.0,-1.0,-1.0) );
 	BOOST_CHECK_EQUAL( point.distance3D( lineString ), 5.0 );
 }
 
@@ -166,15 +166,15 @@ BOOST_AUTO_TEST_CASE( testDistancePointPolygon_pointOutOfPolygon )
 // LineString / LineString 2D
 BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString_zeroLengthSegments )
 {
-	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0,0.0 0.0)") );
-	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(3.0 4.0,3.0 4.0)") );
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0,-1.0 -1.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(3.0 4.0,4.0 5.0)") );
 	BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
 }
 // LineString / LineString 3D
 BOOST_AUTO_TEST_CASE( testDistanceLineStringLineString3D_zeroLengthSegments )
 {
-	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0 0.0,0.0 0.0 0.0)") );
-	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(0.0 3.0 4.0,0.0 3.0 4.0)") );
+	std::auto_ptr< Geometry > gA( io::readWkt("LINESTRING(0.0 0.0 0.0,-1.0 -1.0 -1.0)") );
+	std::auto_ptr< Geometry > gB( io::readWkt("LINESTRING(0.0 3.0 4.0,0.0 4.0 5.0)") );
 	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 5.0 );
 }
 
@@ -220,6 +220,14 @@ BOOST_AUTO_TEST_CASE( testDistanceMultiPointMultiPoint_disjoint )
 	std::auto_ptr< Geometry > gA( io::readWkt("MULTIPOINT((0.0 0.0),(1.0 0.0),(1.0 1.0),(0.0 1.0)))") );
 	std::auto_ptr< Geometry > gB( io::readWkt("MULTIPOINT((8.0 8.0),(4.0 5.0))") );
 	BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
+}
+
+// Polygon / Solid
+BOOST_AUTO_TEST_CASE( testDistancePolygonSolid )
+{
+	std::auto_ptr< Geometry > gA( io::readWkt("POLYGON((1 -1 -1,1 1 -1,1 1 1,1 -1 1,1 -1 -1))"));
+	std::auto_ptr< Geometry > gB( io::readWkt("SOLID((((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),((1 1 1,0 1 1,0 0 1,1 0 1,1 1 1)),((1 1 1,1 0 1,1 0 0,1 1 0,1 1 1)),((1 1 1,1 1 0,0 1 0,0 1 1,1 1 1))))"));
+	BOOST_CHECK_EQUAL( gA->distance3D( *gB ), 0 );
 }
 
 

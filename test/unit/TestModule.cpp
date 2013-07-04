@@ -25,7 +25,7 @@
 #include <boost/test/unit_test.hpp>
 using namespace boost::unit_test ;
 
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 test_suite* init_unit_test_suite(int, char * * const){
 //	std::cerr << "init test suite" << std::endl;

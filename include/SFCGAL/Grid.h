@@ -21,7 +21,7 @@
 #ifndef _SFCGAL_GRID_H_
 #define _SFCGAL_GRID_H_
 
-#include <SFCGAL/ublas.h>
+#include <SFCGAL/detail/ublas.h>
 
 #include <SFCGAL/Envelope.h>
 #include <SFCGAL/Point.h>
@@ -77,7 +77,7 @@ namespace SFCGAL {
 		 * @brief copy constructor
 		 */
 		Grid(
-			const ublas::matrix< double > & data,
+		        const detail::ublas::matrix< double > & data,
 			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
 			const PixelConvention & pixelType = PIXEL_IS_POINT
 		);
@@ -107,17 +107,17 @@ namespace SFCGAL {
 		 */
 		inline Point point( const size_t & row, const size_t & col ) const {
 			if ( _pixelConvention == PIXEL_IS_POINT ){
-				return Point(
+				Point p(
 					_limits.xMin() + col * dx(),
-					_limits.yMax() - row * dy(),
-					_data(row,col)
-				);
+					_limits.yMax() - row * dy());
+                p.setM( _data(row,col) );
+                return p;
 			}else{
-				return Point(
+				Point p(
 					_limits.xMin() + ( 0.5 + col ) * dx(),
-					_limits.yMax() - ( 0.5 + row ) * dy(),
-					_data(row,col)
-				);
+					_limits.yMax() - ( 0.5 + row ) * dy());
+			    p.setM( _data(row,col) );
+                return p;
 			}
 		}
 
@@ -160,13 +160,13 @@ namespace SFCGAL {
 		/**
 		 * @brief gets the height of the grid
 		 */
-		inline const size_t nrows() const {
+		inline size_t nrows() const {
 			return _data.size1() ;
 		}
 		/**
 		 * @brief gets the width of the grid
 		 */
-		inline const size_t ncols() const {
+		inline size_t ncols() const {
 			return _data.size2() ;
 		}
 
@@ -197,13 +197,13 @@ namespace SFCGAL {
 		/**
 		 * @brief [advanced]access to grid data
 		 */
-		inline ublas::matrix< double > & data() {
+		inline detail::ublas::matrix< double > & data() {
 			return _data ;
 		}
 		/**
 		 * @brief [advanced]access to grid data
 		 */
-		inline const ublas::matrix< double > & data() const {
+		inline const detail::ublas::matrix< double > & data() const {
 			return _data ;
 		}
 
@@ -218,7 +218,7 @@ namespace SFCGAL {
 		/**
 		 * @brief grid data
 		 */
-		ublas::matrix< double > _data ;
+		detail::ublas::matrix< double > _data ;
 		/**
 		 * @brief grid extent
 		 */

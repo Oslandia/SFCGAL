@@ -29,30 +29,34 @@ namespace SFCGAL {
 	class Geometry;
 	class Solid;
 	class Point;
-	template <int Dim> class GeometrySet;
-	template <int Dim> class PrimitiveHandle;
+	namespace detail {
+		template <int Dim> class GeometrySet;
+		template <int Dim> class PrimitiveHandle;
+	}
 
 	namespace algorithm {
-	/*
+	/**
 	 * Cover test on 2D geometries. Checks if gA covers gB. Force projection to z=0 if needed
+	 * @ingroup@ detail
 	 */
 	SFCGAL_API bool covers( const Geometry& ga, const Geometry& gb );
 
-	/*
+	/**
 	 * Cover test on 3D geometries. Checks if gA covers gB. Assume z = 0 if needed
 	 */
 	SFCGAL_API bool covers3D( const Geometry& ga, const Geometry& gb );
 
-	/*
-	 * Cover test on a list of points against a Solid.  Checks if the solid covers one of the points
+	/**
+	 * @ingroup@ detail
 	 */
-	SFCGAL_API bool covers3D( const Solid& solid, std::vector<const Point*>& pts );
-
 	template <int Dim>
-	bool covers( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b );
+	bool covers( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b );
 
+	/**
+	 * @ingroup@ detail
+	 */
 	template <int Dim>
-	bool covers( const PrimitiveHandle<Dim>& a, const PrimitiveHandle<Dim>& b );
+	bool covers( const detail::PrimitiveHandle<Dim>& a, const detail::PrimitiveHandle<Dim>& b );
     }
 }
 

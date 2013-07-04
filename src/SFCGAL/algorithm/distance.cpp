@@ -19,6 +19,7 @@
  *
  */
 #include <SFCGAL/algorithm/distance.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
@@ -27,8 +28,9 @@
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/Polygon_2_algorithms.h>
 
-#include <SFCGAL/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform3.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/detail/GetPointsVisitor.h>
 
 
 typedef SFCGAL::Kernel::Point_2                                   Point_2 ;
@@ -46,7 +48,7 @@ namespace algorithm {
 ///
 ///
 ///
-double distance( const Geometry & gA, const Geometry& gB )
+double distance( const Geometry & gA, const Geometry& gB, NoValidityCheck )
 {
 	switch ( gA.geometryTypeId() ){
 	case TYPE_POINT:
@@ -65,10 +67,20 @@ double distance( const Geometry & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gA, gB );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
+}
+
+double distance( const Geometry & gA, const Geometry& gB )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(gA);
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(gB);
+	return distance( gA, gB, NoValidityCheck() );
 }
 
 ///
@@ -95,10 +107,13 @@ double distancePointGeometry( const Point & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///
@@ -147,7 +162,7 @@ double distancePointPolygon( const Point & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA,gB) ){
+	if ( intersects( gA , gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 
@@ -200,10 +215,13 @@ double distanceLineStringGeometry( const LineString & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///
@@ -243,7 +261,7 @@ double distanceLineStringPolygon( const LineString & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA, gB) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;
@@ -296,10 +314,13 @@ double distancePolygonGeometry( const Polygon & gA, const Geometry& gB )
 	case TYPE_TRIANGULATEDSURFACE:
 	case TYPE_POLYHEDRALSURFACE:
 		return distanceGeometryCollectionToGeometry( gB, gA );
+	case TYPE_SOLID:
+        BOOST_THROW_EXCEPTION(NotImplementedException(
+            ( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
+        ));
 	}
-	BOOST_THROW_EXCEPTION(Exception(
-		( boost::format("distance(%s,%s) is not implemented") % gA.geometryType() % gB.geometryType() ).str()
-	));
+    BOOST_ASSERT(false);
+    return 0;
 }
 
 ///
@@ -311,7 +332,7 @@ double distancePolygonPolygon( const Polygon & gA, const Polygon& gB )
 		return std::numeric_limits< double >::infinity() ;
 	}
 
-	if ( intersects(gA, gB) ){
+	if ( intersects( gA, gB, NoValidityCheck() ) ){
 		return 0.0 ;
 	}
 	double dMin = std::numeric_limits< double >::infinity() ;
@@ -341,6 +362,49 @@ double distanceTriangleGeometry( const Triangle & gA, const Geometry& gB )
 	return distancePolygonGeometry( gA.toPolygon(), gB );
 }
 
+struct Circle {
+    double radius;
+    CGAL::Vector_2<Kernel> center;
+};
+
+const Circle boundingCircle( const Geometry & geom )
+{
+    BOOST_ASSERT( ! geom.isEmpty() );
+    using namespace SFCGAL::detail;
+    GetPointsVisitor v;
+    const_cast< Geometry & >(geom).accept( v );
+
+    BOOST_ASSERT( v.points.size() );
+
+    typedef CGAL::Vector_2< Kernel > Vector_2 ;
+
+    const GetPointsVisitor::const_iterator end = v.points.end();
+
+    // centroid
+    Vector_2 c(0,0);
+    int numPoint = 0;
+    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+        c = c + (*x)->toVector_2() ;
+        ++numPoint;
+    }
+    BOOST_ASSERT( numPoint );
+    c = c / numPoint;
+
+    // farest point from centroid
+    Vector_2 f = c ;
+    Kernel::FT maxDistanceSq = 0;
+    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
+        const Vector_2 cx = (*x)->toVector_2() - c ;
+        const Kernel::FT dSq = cx * cx ;
+        if ( dSq > maxDistanceSq ) {
+            f = (*x)->toVector_2() ;
+            maxDistanceSq = dSq ;
+        }
+    }
+
+    const Circle circle = { std::sqrt( CGAL::to_double( maxDistanceSq ) ), c };
+    return circle;
+}
 
 ///
 ///
@@ -351,8 +415,46 @@ double distanceGeometryCollectionToGeometry( const Geometry & gA, const Geometry
 		return std::numeric_limits< double >::infinity() ;
 	}
 
+    // if bounding spheres (BS) of gB and gAi don't intersect and
+    // if the closest point of BS(gAj) is further than the farest 
+    // point of BS(gAi) there is no need to compute the distance(gAj, gB)
+    // since it will be greater than distance(gAi, gB)
+    //
+    // The aim is not to find the minimal bounding sphere, but a good enought sphere than
+    // encloses all points
+    std::set<size_t> noTest;
+    if (1)
+    {
+        std::vector<Circle> bcA;
+        for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+            bcA.push_back( boundingCircle(gA.geometryN(i)) );
+        }
+        Circle bcB( boundingCircle( gB ) );
+        std::vector<size_t> noIntersect;
+        for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+            const double l2 = CGAL::to_double( (bcB.center - bcA[i].center).squared_length() );
+            if (std::pow(bcB.radius + bcA[i].radius, 2) < l2 ) {
+                noIntersect.push_back( i );
+            }
+        }
+
+        for ( size_t i = 0; i < noIntersect.size(); i++ ) {
+            const double li = std::sqrt( CGAL::to_double( (bcA[i].center - bcB.center).squared_length() ) );
+            for ( size_t j = i; j < noIntersect.size(); j++ ) {
+                const double lj = std::sqrt( CGAL::to_double( (bcA[j].center - bcB.center).squared_length() ) );
+                if ( li + bcA[i].radius < lj - bcA[j].radius  ) noTest.insert( j );
+                else if ( lj + bcA[j].radius < li - bcA[i].radius  ) noTest.insert( i );
+            }
+        }
+        //if (!noTest.empty()) std::cout << "pruning " << noTest.size() << "/" << gA.numGeometries() << "\n";
+    }
+
+
+
+
 	double dMin = std::numeric_limits< double >::infinity() ;
 	for ( size_t i = 0; i < gA.numGeometries(); i++ ){
+        if ( noTest.end() != noTest.find(i) ) continue;
 		dMin = std::min( dMin, distance( gA.geometryN(i), gB ) );
 	}
 	return dMin ;

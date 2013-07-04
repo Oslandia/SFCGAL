@@ -21,6 +21,8 @@
 #ifndef _SFCGAL_VERSION_H_
 #define _SFCGAL_VERSION_H_
 
+#include <SFCGAL/export.h>
+
 #define SFCGAL_VERSION_MAJOR @SFCGAL_VERSION_MAJOR@
 #define SFCGAL_VERSION_MINOR @SFCGAL_VERSION_MINOR@
 #define SFCGAL_VERSION_PATCH @SFCGAL_VERSION_PATCH@
@@ -28,7 +30,7 @@
 #define SFCGAL_VERSION "@SFCGAL_VERSION@"
 
 namespace SFCGAL {
-    const char* Version();
+    SFCGAL_API const char* Version();
 }
 
 #endif

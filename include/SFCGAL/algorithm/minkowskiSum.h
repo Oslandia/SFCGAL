@@ -28,14 +28,26 @@
 
 namespace SFCGAL {
 namespace algorithm {
+	struct NoValidityCheck;
 
 	/**
 	 * @brief 2D minkowski sum (p+q)
 	 *
 	 * @todo missing cases (union)
+	 * @pre gA and gB are valid geometries
+	 * @ingroup public_api
 	 */
-	SFCGAL_API std::auto_ptr< MultiPolygon > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+	SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
+	/**
+	 * @brief 2D minkowski sum (p+q)
+	 *
+	 * @todo missing cases (union)
+	 * @pre gA and gB are valid geometries
+	 * @ingroup detail
+	 * @warning@ No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck ) ;
 
 } // namespace algorithm
 } // namespace SFCGAL

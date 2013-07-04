@@ -33,7 +33,7 @@ namespace SFCGAL {
 
 	/**
 	 * A MultiPolygon in SFA.
-	 *
+     * @ingroup public_api
 	 * @ŧodo add polygon() etc.
 	 */
 	class SFCGAL_API MultiPolygon : public GeometryCollection {
@@ -49,7 +49,7 @@ namespace SFCGAL {
 		/**
 		 * assign operator
 		 */
-		MultiPolygon& operator = ( const MultiPolygon & other ) ;
+		MultiPolygon& operator = ( MultiPolygon other ) ;
 		/**
 		 * destructor
 		 */
@@ -90,7 +90,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<GeometryCollection>(*this);
 

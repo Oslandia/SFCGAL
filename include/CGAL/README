@@ -1,0 +1,20 @@
+This directory includes some backports from CGAL 4.2 and the upcoming 4.3.
+It is included with the CMake directive include_directories(BEFORE ..)
+in order to overload system include files.
+
+From 4.2 :
+
+use.h
+
+From 4.3 :
+
+intersection_of_Polyhedra_3_refinement_visitor.h
+Triangle_3_Ray_3_do_intersect.h
+Point_inside_polyhedron_3.h
+internal/Operations_on_polyhedra/AABB_triangle_accessor_3_primitive.h
+internal/Operations_on_polyhedra/Ray_3_Triangle_3_traversal_traits.h
+
+File fixing a memory leak :
+
+Triangle_2_Triangle_2_intersection_impl.h
+

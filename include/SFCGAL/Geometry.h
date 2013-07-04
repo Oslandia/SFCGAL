@@ -70,6 +70,8 @@ namespace SFCGAL {
      * @todo solid and triangles as non OGC/SFA geometric types?
      * @warning codes for abstract classes and unimplemented classes are hidden
      * @warning code values have are important for WKB
+     *
+     * @ingroup public_api
      */
     enum GeometryType {
  //      TYPE_GEOMETRY            = 0, //abstract
@@ -100,6 +102,7 @@ namespace SFCGAL {
     /**
      * @brief coordinate types (XY, XYZ, XYM, etc.)
      * @see SFA 2.8.3 LineStringZ = 1003 ( coordinateType + geometryType)
+     * @ingroup public_api
      */
     typedef enum {
     	COORDINATE_XY   = 0 ,
@@ -111,7 +114,7 @@ namespace SFCGAL {
     /**
      * @brief OGC/SFA based Geometry abstract class
      *
-     * @todo store bbox?
+     * @ingroup public_api
      */
     class SFCGAL_API Geometry {
     public:
@@ -140,7 +143,7 @@ namespace SFCGAL {
        virtual int          dimension() const = 0 ;
        /**
         * [OGC/SFA]returns the dimension of the coordinates
-        * @warning suppose no mix of 2D/3D coordinates
+        * @pre suppose no mix of 2D/3D coordinates
         */
        virtual int          coordinateDimension() const = 0 ;
        /**
@@ -150,12 +153,12 @@ namespace SFCGAL {
 
        /**
         * [OGC/SFA]test if geometry is 3d
-        * @warning suppose no mix of 2D/3D coordinates
+        * @pre suppose no mix of 2D/3D coordinates
         */
        virtual bool         is3D() const = 0 ;
        /**
         * [OGC/SFA]test if geometry is measured (has an m)
-        * @warning suppose no mix of M/!M points
+        * @pre suppose no mix of M/!M points
         */
        virtual bool         isMeasured() const = 0 ;
 
@@ -163,7 +166,7 @@ namespace SFCGAL {
 
        /**
         * [OGC/SFA]returns the WKT string
-        * @numDecimals extension specify fix precision output
+        * @param numDecimals extension specify fix precision output
         */
        std::string          asText( const int & numDecimals = -1 ) const ;
 
@@ -230,6 +233,7 @@ namespace SFCGAL {
        /**
         * @brief Downcast to a "Derived" class
         * @warning performs check if boost assertions are enabled
+	* @pre The cast must be doable
         */
        template < typename Derived >
        inline const Derived &  as() const {
@@ -239,6 +243,7 @@ namespace SFCGAL {
        /**
         * @brief Downcast to a "Derived" class
         * @warning performs check if boost assertions are enabled
+	* @pre The cast must be doable
         */
        template < typename Derived >
        inline Derived &        as() {
@@ -248,27 +253,33 @@ namespace SFCGAL {
 
        /**
         * @brief [visitor]dispatch visitor
+	* @ingroup detail
         */
        virtual void accept( GeometryVisitor & visitor ) = 0 ;
        /**
         * @brief [visitor]dispatch visitor
+	* @ingroup detail
         */
        virtual void accept( ConstGeometryVisitor & visitor ) const = 0 ;
 
        /**
         * Serializer
+	* @ingroup detail
         */
        template <class Archive>
-       void serialize( Archive& ar, const unsigned int version )
+       void serialize( Archive& /*ar*/, const unsigned int /*version*/ )
        {
        }
     protected:
        Geometry();
-       Geometry( Geometry const& other );
+       Geometry( const Geometry& );
+       const Geometry& operator=( const Geometry& );
     };
 
     /**
      * Equality operator
+     * @todo only compare coordinate points
+     * @pre the two geometries must be valid
      */
     SFCGAL_API bool operator==( const Geometry&, const Geometry& );
 

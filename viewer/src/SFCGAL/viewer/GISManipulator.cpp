@@ -38,7 +38,7 @@ namespace viewer {
 		setTransformation( /*eye*/ osg::Vec3f( 0.0, 0.0, 100.0 ), /*center*/ osg::Vec3f( 0.0, 0.0, 0.0 ), /* up */ osg::Vec3f( 0.0, 0.0, 1.0 ) );
 	}
 
-	bool GISManipulator::performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy )
+	bool GISManipulator::performMovementLeftMouseButton( const double /*eventTimeDelta*/, const double dx, const double dy )
 	{
 		// TODO: compute the right amount in order for one mouse's pixel movement to correspond to a movement of one object's pixel
 		osg::Vec3d eye, center, up;

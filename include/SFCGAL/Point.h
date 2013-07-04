@@ -24,7 +24,7 @@
 #include <SFCGAL/Coordinate.h>
 
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/TypeForDimension.h>
+#include <SFCGAL/detail/TypeForDimension.h>
 
 #include <boost/serialization/base_object.hpp>
 
@@ -32,10 +32,9 @@ namespace SFCGAL {
 
 	/**
 	 * A point in SFA.
-	 *
+     * @ingroup public_api
 	 * The x(),y(),z() interface is based on CGAL kernel requirements, taken
 	 * from examples/Kernel_23/MyPointC2.h
-
 	 * @todo strong typing on coordinate dimension?
 	 */
 	class SFCGAL_API Point : public Geometry {
@@ -57,11 +56,21 @@ namespace SFCGAL {
 		 */
 		Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double & m = NaN() ) ;
 		/**
-		 * XY[Z] constructor
+		 * XY constructor
 		 */
-		Point( const double & x, const double & y, const double & z = NaN(), const double & m = NaN() ) ;
+		Point( const double & x, const double & y) ;
 
 		/**
+		 * XYZ constructor
+		 */
+		Point( const double & x, const double & y, const double & z ) ;
+
+		/**
+		 * XYZM constructor
+		 */
+		Point( const double & x, const double & y, const double & z, const double & m  ) ;
+		
+        /**
 		 * Constructor from CGAL::Point_2<K>
 		 */
 		Point( const Kernel::Point_2 & other ) ;
@@ -104,15 +113,15 @@ namespace SFCGAL {
 		//--- accessors
 
 		/**
-		 * Returns the x value as a double (NaN for empty Point)
+		 * Returns the x value as a double throw for empty Point
 		 */
 		inline Kernel::RT x() const { return _coordinate.x() ; }
 		/**
-		 * Returns the y value as a double (NaN for empty Point)
+		 * Returns the y value as a double throw for empty Point
 		 */
 		inline Kernel::RT y() const { return _coordinate.y() ; }
 		/**
-		 * Returns the z value
+		 * Returns the z value (zero for 2D) throw for empty Point
 		 */
 		inline Kernel::RT z() const { return _coordinate.z() ; }
 
@@ -185,7 +194,7 @@ namespace SFCGAL {
 		 * @brief Converts to CGAL::Point_2 or CGAL::Point_3
 		 */
 		template <int D>
-		typename TypeForDimension<D>::Point toPoint_d() const;
+		typename detail::TypeForDimension<D>::Point toPoint_d() const;
 
 		inline Coordinate &       coordinate() { return _coordinate; }
 		inline const Coordinate & coordinate() const { return _coordinate; }
@@ -194,7 +203,7 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _coordinate;

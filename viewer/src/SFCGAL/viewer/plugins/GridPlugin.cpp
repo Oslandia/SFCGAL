@@ -25,7 +25,7 @@
 #include <fstream>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/io/OsgFactory.h>
+#include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
@@ -78,7 +78,7 @@ void GridPlugin::loadGridXYZ()
 	ifs.close();
 
 	//create OSG geometry
-	io::OsgFactory factory ;
+	detail::io::OsgFactory factory ;
 	osg::Geode * geode = new osg::Geode();
 	geode->setName( filename.toStdString() );
 

@@ -5,7 +5,7 @@
 
 using namespace SFCGAL ;
 
-int main( int argc, char* argv[] ){
+int main(){
 	std::auto_ptr< Geometry > g( io::readWkt("MULTIPOINT(0 0,5 6,3 2,7 1,4 1,3 5,2 9)") );
 
 	for ( size_t i = 1; i <= 50; i++ ){

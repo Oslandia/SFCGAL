@@ -23,9 +23,10 @@
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/all.h>
 
-#include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
+#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/isValid.h>
 
 #include <iostream>
 
@@ -43,7 +44,11 @@ void triangulatePolygon3D(
 	TriangulatedSurface & triangulatedSurface
 )
 {
-	switch ( g.geometryTypeId() ){
+    if (g.isEmpty() ) return;
+
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );   
+	
+    switch ( g.geometryTypeId() ){
 	case TYPE_TRIANGLE:
 		return triangulatePolygon3D( g.as< Triangle >(), triangulatedSurface );
 	case TYPE_POLYGON:
@@ -56,11 +61,15 @@ void triangulatePolygon3D(
 		return triangulatePolygon3D( g.as< Solid >(), triangulatedSurface );
 	case TYPE_MULTIPOLYGON:
 	case TYPE_MULTISOLID:
-	case TYPE_GEOMETRYCOLLECTION:
-		return triangulatePolygon3D( g.as< GeometryCollection >(), triangulatedSurface );
+	case TYPE_GEOMETRYCOLLECTION:{
+		for ( size_t i = 0; i < g.numGeometries(); i++ ){
+			triangulatePolygon3D( g.geometryN(i), triangulatedSurface ) ;
+		}
+		return ;
+	}
 	default:
 		BOOST_THROW_EXCEPTION(
-				      Exception(
+				      InappropriateGeometryException(
 						( boost::format( "can't triangulate 3d polygons for type '%1%'" ) % g.geometryType() ).str()
 						)
 				      );

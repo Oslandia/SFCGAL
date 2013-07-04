@@ -24,8 +24,9 @@
 #include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/algorithm/force3D.h>
+#include <SFCGAL/algorithm/isValid.h>
 
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 
 namespace SFCGAL {
@@ -280,7 +281,7 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & 
 		//extrusion not available
 		break;
 	}
-	BOOST_THROW_EXCEPTION( Exception(
+	BOOST_THROW_EXCEPTION( InappropriateGeometryException(
 		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
 	));
 }
@@ -289,9 +290,23 @@ std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & 
 ///
 ///
 ///
-std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck )
 {
 	return extrude( g, Kernel::Vector_3(dx,dy,dz) ) ;
+}
+
+std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+{
+	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+	return extrude( g, dx, dy, dz, NoValidityCheck() );
+}
+
+SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, const double& dx, const double& dy, const double& dz )
+{
+    if ( !std::isfinite(dx) || !std::isfinite(dy) || !std::isfinite(dz) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException("trying to extrude with non finite value in direction"));
+    }
+    return extrude( g, Kernel::FT(dx), Kernel::FT(dy), Kernel::FT(dz) );
 }
 
 

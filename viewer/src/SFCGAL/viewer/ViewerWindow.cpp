@@ -22,7 +22,7 @@
 #include <SFCGAL/viewer/ViewerWidget.h>
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
-#include <SFCGAL/tools/Log.h>
+#include <SFCGAL/detail/tools/Log.h>
 
 #include <iostream>
 

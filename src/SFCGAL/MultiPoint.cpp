@@ -45,9 +45,9 @@ MultiPoint::MultiPoint( MultiPoint const& other ):
 ///
 ///
 ///
-MultiPoint& MultiPoint::operator = ( const MultiPoint & other )
+MultiPoint& MultiPoint::operator = ( MultiPoint other )
 {
-	assign(other) ;
+	swap(other) ;
 	return *this ;
 }
 

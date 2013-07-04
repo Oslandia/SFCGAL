@@ -17,9 +17,9 @@ option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
-set( SFCGAL_VERSION_MAJOR 0 )
-set( SFCGAL_VERSION_MINOR 2 )
-set( SFCGAL_VERSION_PATCH 0-master )
+set( SFCGAL_VERSION_MAJOR 1 )
+set( SFCGAL_VERSION_MINOR 0 )
+set( SFCGAL_VERSION_PATCH 0 )
 
 set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
 
@@ -100,11 +100,12 @@ if( ${CGAL_USE_AUTOLINK} )
 	add_definitions( "-DCGAL_NO_AUTOLINK" )
 endif()
 
-find_package( CGAL COMPONENTS Core REQUIRED )
+find_package( CGAL 4.1 COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
-include_directories( 
-	include
+include_directories( include )
+#-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
+include_directories( SYSTEM 
 	${CGAL_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIRS}	
 	${MPFR_INCLUDE_DIRS}	
@@ -120,7 +121,7 @@ link_directories(
 #-- optional OpenSceneGraph support
 if ( SFCGAL_BUILD_OSG )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
-	include_directories( ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
+	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
 	
 	# config.h generation
 	set( SFCGAL_WITH_OSG "ON" )
@@ -129,6 +130,8 @@ endif()
 
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
+option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" OFF )
+option( SFCGAL_BUILD_WITH_GPROF "build with gprof" OFF )
 if(MSVC)
 	# Force to always compile with W4
 	if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
@@ -138,22 +141,31 @@ if(MSVC)
 	endif()
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	# Update if necessary
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Wpointer-arith -Wcast-align -Wcast-qual -Wno-overloaded-virtual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wwrite-strings -Wno-error=undef")#-Wfloat-equal -Wconversion -Wshadow 
+	if( SFCGAL_BUILD_FAILED_ON_WARNING )
+		 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=format")
+	endif()
 
-	add_definitions( "-frounding-math" )
-	
 	# Allows profiling with gprof
-	set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-pg")
+	if(SFCGAL_BUILD_WITH_GPROF)
+		set(CMAKE_EXE_LINKER_FLAGS_DEBUG "-pg")
+	endif()
 endif()
 
 #-- generate library headers
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
 configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h )
 
+enable_testing()
 
 #note : not available on windows without export/import
 OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
 
+# option : do we check geometry validity before each processing ?
+option( SFCGAL_CHECK_VALIDITY "Always checks geometry validity" ON )
+if ( NOT SFCGAL_CHECK_VALIDITY )
+  add_definitions( "-DSFCGAL_NEVER_CHECK_VALIDITY" )
+endif()
 
 #-- build the library
 add_subdirectory( src )

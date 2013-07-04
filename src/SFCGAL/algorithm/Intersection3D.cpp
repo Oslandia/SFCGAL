@@ -25,23 +25,26 @@
 #include <CGAL/intersection_of_Polyhedra_3_refinement_visitor.h>
 #include <CGAL/corefinement_operations.h>
 
-#include <SFCGAL/GeometrySet.h>
+#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/triangulate/triangulateInGeometrySet.h>
+#include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 
 #include <CGAL/Point_inside_polyhedron_3.h>
+
+using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 namespace algorithm {
     
 	void _intersection_solid_segment( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb, GeometrySet<3>& output )
 	{
-		typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
+		//typedef CGAL::Polyhedral_mesh_domain_3<MarkedPolyhedron, Kernel> Mesh_domain;
 
 		const MarkedPolyhedron* ext_poly = pa.as<MarkedPolyhedron>();
+		BOOST_ASSERT( ext_poly->is_closed() );
 		const CGAL::Segment_3<Kernel>* segment = pb.as<CGAL::Segment_3<Kernel> >();
 
 		MarkedPolyhedron *ext_poly_nc = const_cast<MarkedPolyhedron*>( ext_poly );
@@ -52,8 +55,8 @@ namespace algorithm {
 		GeometrySet<3> tpoint( segment->target() );
 		triangulate::triangulate( *ext_poly, triangles );
 
-		bool source_inside = is_in_ext( segment->source() ) || intersects( triangles, spoint );
-		bool target_inside = is_in_ext( segment->target() ) || intersects( triangles, tpoint );
+		bool source_inside = (is_in_ext( segment->source() ) != CGAL::ON_UNBOUNDED_SIDE ) || intersects( triangles, spoint );
+		bool target_inside = (is_in_ext( segment->target() ) != CGAL::ON_UNBOUNDED_SIDE ) || intersects( triangles, tpoint );
 
 		if ( source_inside && target_inside ) {
 			// the entire segment intersects the volume, return the segment
@@ -113,6 +116,7 @@ namespace algorithm {
 	
 	void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>& output )
 	{
+		BOOST_ASSERT( pa.is_closed() );
 		Split_visitor visitor( NULL, true );
 
 		MarkedPolyhedron polyb;
@@ -128,7 +132,7 @@ namespace algorithm {
 			// no surface intersection
 			// if one of the point of the triangle is inside the polyhedron,
 			// the triangle is inside
-			if ( point_inside_q( tri.vertex(0) ) ) {
+			if ( point_inside_q( tri.vertex(0) ) != CGAL::ON_UNBOUNDED_SIDE ) {
 				output.addPrimitive( tri );
 				return;
 			}
@@ -140,9 +144,12 @@ namespace algorithm {
 		Is_not_marked criterion;
 		CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter(decomposition));
 
+		bool hasSurface = false;
 		for ( std::list<MarkedPolyhedron>::iterator it = decomposition.begin(); it != decomposition.end(); ++it ) {
-			std::ofstream decompo("decompo.off");
-			decompo << *it;
+			// char fname[256];
+			// sprintf(fname, "decompo%d.off", k++);
+			// std::ofstream decompo(fname);
+			// decompo << *it;
 
 			// take a point on the component and tests if its inside the other polyhedron
 			//
@@ -185,7 +192,7 @@ namespace algorithm {
 				}
 				else {
 					// strictly inside test
-					bool point_inside_volume =  point_inside_q( test_point );
+					bool point_inside_volume = point_inside_q( test_point ) != CGAL::ON_UNBOUNDED_SIDE;
 
 					if ( point_inside_volume ) {
 						point_is_inside = true;
@@ -193,17 +200,14 @@ namespace algorithm {
 				}
 			}
 			
-			//				if ( is_volume ) {
-			//					return surface_polyhedron_to_geometry( *it );
-			//				}
-			//				return planar_polyhedron_to_geometry( *it );
-			
-			
 			if ( point_is_inside ) {
 				// we know it is a planar intersection
+				hasSurface = true;
 				output.addPrimitive( *it, FLAG_IS_PLANAR );
-				return;
 			}
+		}
+		if ( hasSurface ) {
+			return;
 		}
 
 		for ( std::list<Polyline_3>::const_iterator lit = polylines.begin(); lit != polylines.end(); ++lit ) {
@@ -222,25 +226,43 @@ namespace algorithm {
 
 	void _intersection_solid_solid( const MarkedPolyhedron& pa, const MarkedPolyhedron& pb, GeometrySet<3>& output )
 	{
-		typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
-		MarkedPolyhedron& polya = const_cast<MarkedPolyhedron&>( pa );
-		MarkedPolyhedron& polyb = const_cast<MarkedPolyhedron&>( pb );
-
-		Corefinement coref;
-		CGAL::Emptyset_iterator no_polylines;
-		// vector of <Polyhedron, tag>
-		std::vector<std::pair<MarkedPolyhedron*, int> > result;
-		coref( polya, polyb, no_polylines, std::back_inserter(result), Corefinement::Intersection_tag );
-
-		// empty intersection
-		if (result.size() == 0) {
-			return ;
+		// 1. find intersections on surfaces
+		// CGAL corefinement or polyhedra_intersection do not return polygon intersections between two solids
+		// they only return points, lines and volumes (but no surfaces ...)
+		{
+			// call CGAL::intersection on triangles
+			GeometrySet<3> gsa, gsb;
+			// convert polyhedra to geometry sets
+			// (no actual triangulation is done if the polyhedra are pure_triangle()
+			triangulate::triangulate( pa, gsa );
+			triangulate::triangulate( pb, gsb );
+			// "recurse" call on triangles
+			algorithm::intersection( gsa, gsb, output );
 		}
 
-		// else, we have an intersection
-		MarkedPolyhedron* res_poly = result[0].first;
-		output.addPrimitive( *res_poly );
-		delete res_poly;
+		// 2. find intersections in volumes
+		{
+			typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
+			MarkedPolyhedron& polya = const_cast<MarkedPolyhedron&>( pa );
+			MarkedPolyhedron& polyb = const_cast<MarkedPolyhedron&>( pb );
+
+			Corefinement coref;
+			CGAL::Emptyset_iterator no_polylines;
+			// vector of <Polyhedron, tag>
+			typedef std::vector<std::pair<MarkedPolyhedron*, int> > Decomposition;
+			Decomposition result;
+			coref( polya, polyb, no_polylines, std::back_inserter(result), Corefinement::Intersection_tag );
+
+			// empty intersection
+			if (result.size() == 0) {
+				return ;
+			}
+			
+			// else, we have an intersection
+			MarkedPolyhedron* res_poly = result[0].first;
+			output.addPrimitive( *res_poly );
+			delete res_poly;
+		}
 	}
 
 	//
@@ -270,7 +292,7 @@ namespace algorithm {
 			else if ( pb.handle.which() == PrimitiveSurface ) {
 				const CGAL::Triangle_3<Kernel> *tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
 				CGAL::Object interObj = CGAL::intersection( *tri1, *tri2 );
-				output.addPrimitive( interObj );
+				output.addPrimitive( interObj, /* pointsAsRing */ true );
 			}
 		}
 		else if ( pa.handle.which() == PrimitiveVolume ) {
@@ -283,9 +305,11 @@ namespace algorithm {
 							      output );
 			}
 			else if ( pb.handle.which() == PrimitiveVolume ) {
-				_intersection_solid_solid(  *pa.as<MarkedPolyhedron>(),
-							    *pb.as<MarkedPolyhedron>(),
-							    output );
+				const MarkedPolyhedron& sa = *pa.as<MarkedPolyhedron>();
+				const MarkedPolyhedron& sb = *pb.as<MarkedPolyhedron>();
+				BOOST_ASSERT( sa.is_closed() );
+				BOOST_ASSERT( sb.is_closed() );
+				_intersection_solid_solid( sa, sb, output );
 			}
 		}
 	}

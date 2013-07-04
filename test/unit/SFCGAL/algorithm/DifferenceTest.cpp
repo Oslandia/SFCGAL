@@ -20,7 +20,7 @@
  */
 #include <SFCGAL/algorithm/difference.h>
 #include <SFCGAL/Point.h>
-#include <SFCGAL/tools/Registry.h>
+#include <SFCGAL/detail/tools/Registry.h>
 
 #include <SFCGAL/io/wkt.h>
 

@@ -38,7 +38,7 @@ namespace SFCGAL {
 
 	/**
 	 * A PolyhedralSurface in SFA modeled as a Polygon soup
-	 *
+     * @ingroup public_api
 	 * @todo template < size_t N >?
 	 * @todo do better than a "polygon soup" or add topological view?
 	 */
@@ -58,15 +58,15 @@ namespace SFCGAL {
 		/**
 		 * Constructor from a CGAL::Polyhedron_3
 		 */
-		PolyhedralSurface( const MarkedPolyhedron& poly );
+		PolyhedralSurface( const detail::MarkedPolyhedron& poly );
 		/**
 		 * Copy constructor
 		 */
-		PolyhedralSurface( PolyhedralSurface const& other ) ;
+		PolyhedralSurface( const PolyhedralSurface & other ) ;
 		/**
 		 * assign operator
 		 */
-		PolyhedralSurface& operator = ( const PolyhedralSurface & other ) ;
+		PolyhedralSurface& operator = ( PolyhedralSurface other ) ;
 		/**
 		 * destructor
 		 */
@@ -176,13 +176,18 @@ namespace SFCGAL {
 		 * Serializer
 		 */
 		template <class Archive>
-		void serialize( Archive& ar, const unsigned int version )
+		void serialize( Archive& ar, const unsigned int /*version*/ )
 		{
 			ar & boost::serialization::base_object<Geometry>(*this);
 			ar & _polygons;
 		}
 	private:
 		boost::ptr_vector< Polygon > _polygons ;
+
+        void swap( PolyhedralSurface & other )
+        {
+            std::swap( _polygons, other._polygons );
+        }
 	};
 }
 

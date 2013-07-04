@@ -47,6 +47,7 @@ namespace detail {
 		virtual void visit( const PolyhedralSurface & g ) ;
 		virtual void visit( const TriangulatedSurface & g ) ;
 	public:
+        typedef std::vector< const Point * >::const_iterator const_iterator;
 		std::vector< const Point * > points ;
 	};
 

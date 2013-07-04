@@ -27,12 +27,24 @@
 
 namespace SFCGAL {
 namespace algorithm {
+	struct NoValidityCheck;
 
 	/**
 	 * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
 	 * points, lines, etc.
+	 * @pre g is a valid geometry
+	 * @ingroup public_api
 	 */
 	SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
+
+	/**
+	 * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
+	 * points, lines, etc.
+	 * @pre g is a valid geometry
+	 * @ingroup detail
+	 * @warning No actual validity check is done.
+	 */
+	SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry&, NoValidityCheck );
 
 }//algorithm
 }//SFCGAL

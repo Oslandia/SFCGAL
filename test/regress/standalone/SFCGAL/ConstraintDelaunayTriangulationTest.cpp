@@ -21,7 +21,7 @@
 #include <fstream>
 
 #include <SFCGAL/all.h>
-#include <SFCGAL/triangulate/ConstraintDelaunayTriangulation.h>
+#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 #include <SFCGAL/algorithm/area.h>
 
 
@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( testTriangulateRGC )
 	 * read points from file
 	 */
 	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/regress/data/rgc-france-ign.xyz" ;
+	filename += "/data/rgc-france-ign.xyz" ;
 	std::ifstream ifs( filename.c_str() );
 	BOOST_REQUIRE( ifs.good() ) ;
 

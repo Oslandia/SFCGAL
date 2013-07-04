@@ -21,4 +21,5 @@ endif( ${SFCGAL_WITH_MPFR} )
 
 set_target_properties( test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS test-SFCGAL DESTINATION bin )
+add_test( unit-tests test-SFCGAL )
 
