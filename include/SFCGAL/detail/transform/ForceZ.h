@@ -29,24 +29,24 @@
 namespace SFCGAL {
 namespace transform {
 
-	/**
-	 * Force Z definitions
-	 */
-	class SFCGAL_API ForceZ : public Transform {
-	public:
-		/**
-		 * Constructor with a default Z value
-		 */
-		ForceZ( const Kernel::FT & defaultZ = 0 ) ;
+/**
+ * Force Z definitions
+ */
+class SFCGAL_API ForceZ : public Transform {
+public:
+    /**
+     * Constructor with a default Z value
+     */
+    ForceZ( const Kernel::FT& defaultZ = 0 ) ;
 
-		/*
-		 * [SFCGAL::Transform]
-		 */
-		virtual void transform( Point & p ) ;
+    /*
+     * [SFCGAL::Transform]
+     */
+    virtual void transform( Point& p ) ;
 
-	private:
-		Kernel::FT _defaultZ ;
-	};
+private:
+    Kernel::FT _defaultZ ;
+};
 
 }//transform
 }//SFCGAL

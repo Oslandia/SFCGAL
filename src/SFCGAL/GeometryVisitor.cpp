@@ -37,9 +37,9 @@ GeometryVisitor::~GeometryVisitor()
 ///
 ///
 ///
-void GeometryVisitor::visit( Geometry & g )
+void GeometryVisitor::visit( Geometry& g )
 {
-	g.accept(*this);
+    g.accept( *this );
 }
 //
 /////
@@ -119,9 +119,9 @@ ConstGeometryVisitor::~ConstGeometryVisitor()
 ///
 ///
 ///
-void ConstGeometryVisitor::visit( const Geometry & g )
+void ConstGeometryVisitor::visit( const Geometry& g )
 {
-	g.accept(*this);
+    g.accept( *this );
 }
 //
 /////

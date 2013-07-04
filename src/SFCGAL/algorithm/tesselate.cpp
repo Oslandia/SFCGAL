@@ -31,48 +31,55 @@ namespace algorithm {
 ///
 ///
 ///
-std::auto_ptr<Geometry> tesselate( const Geometry & g, NoValidityCheck )
+std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
 {
-	switch ( g.geometryTypeId() ) {
-	case TYPE_POINT:
-	case TYPE_LINESTRING:
-	case TYPE_TRIANGLE:
-	case TYPE_MULTIPOINT:
-	case TYPE_MULTILINESTRING:
-		return std::auto_ptr<Geometry>( g.clone() );
+    switch ( g.geometryTypeId() ) {
+    case TYPE_POINT:
+    case TYPE_LINESTRING:
+    case TYPE_TRIANGLE:
+    case TYPE_MULTIPOINT:
+    case TYPE_MULTILINESTRING:
+        return std::auto_ptr<Geometry>( g.clone() );
 
-	case TYPE_POLYGON:
-	case TYPE_POLYHEDRALSURFACE: {
-		TriangulatedSurface* triSurf = new TriangulatedSurface();
-		triangulate::triangulatePolygon3D( g, *triSurf );
-		return std::auto_ptr<Geometry>( triSurf );
-	}
-	case TYPE_SOLID: {
-		std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
-		for ( size_t i = 0; i < g.as<Solid>().numShells(); ++i ) {
-			const PolyhedralSurface & shellN = g.as<Solid>().shellN(i) ;
-			if ( ! shellN.isEmpty() )
-				ret->addGeometry( tesselate( shellN ).release() );
-		}
-		return std::auto_ptr<Geometry>( ret.release() );
+    case TYPE_POLYGON:
+    case TYPE_POLYHEDRALSURFACE: {
+        TriangulatedSurface* triSurf = new TriangulatedSurface();
+        triangulate::triangulatePolygon3D( g, *triSurf );
+        return std::auto_ptr<Geometry>( triSurf );
     }
-	// multipolygon and multisolid return a geometrycollection
-	case TYPE_MULTIPOLYGON:
-	case TYPE_MULTISOLID:
-	case TYPE_GEOMETRYCOLLECTION: {
-		std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
-		for ( size_t i = 0; i < g.numGeometries(); ++i ) {
-			ret->addGeometry( tesselate( g.geometryN(i) ).release() );
-		}
-		return std::auto_ptr<Geometry>( ret.release() );
-	}
-	default:
-		break;
-	}
-	return std::auto_ptr<Geometry>( g.clone() );
+    case TYPE_SOLID: {
+        std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
+
+        for ( size_t i = 0; i < g.as<Solid>().numShells(); ++i ) {
+            const PolyhedralSurface& shellN = g.as<Solid>().shellN( i ) ;
+
+            if ( ! shellN.isEmpty() ) {
+                ret->addGeometry( tesselate( shellN ).release() );
+            }
+        }
+
+        return std::auto_ptr<Geometry>( ret.release() );
+    }
+    // multipolygon and multisolid return a geometrycollection
+    case TYPE_MULTIPOLYGON:
+    case TYPE_MULTISOLID:
+    case TYPE_GEOMETRYCOLLECTION: {
+        std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
+
+        for ( size_t i = 0; i < g.numGeometries(); ++i ) {
+            ret->addGeometry( tesselate( g.geometryN( i ) ).release() );
+        }
+
+        return std::auto_ptr<Geometry>( ret.release() );
+    }
+    default:
+        break;
+    }
+
+    return std::auto_ptr<Geometry>( g.clone() );
 }
 
-std::auto_ptr<Geometry> tesselate( const Geometry & g )
+std::auto_ptr<Geometry> tesselate( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
 

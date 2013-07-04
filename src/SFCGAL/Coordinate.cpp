@@ -30,15 +30,15 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-	_storage( Coordinate::Empty() )
+    _storage( Coordinate::Empty() )
 {
 }
 
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y ):
-	_storage( Kernel::Point_2(x, y) )
+Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y ):
+    _storage( Kernel::Point_2( x, y ) )
 {
 
 }
@@ -46,8 +46,8 @@ Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y ):
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ):
-	_storage( Kernel::Point_3(x, y, z) )
+Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z ):
+    _storage( Kernel::Point_3( x, y, z ) )
 {
 
 }
@@ -56,32 +56,32 @@ Coordinate::Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel
 ///
 ///
 ///
-Coordinate::Coordinate( const double & x, const double & y )
+Coordinate::Coordinate( const double& x, const double& y )
 {
-    if (!std::isfinite(x) || !std::isfinite(y) ) {
-        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value"));
+    if ( !std::isfinite( x ) || !std::isfinite( y ) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
     }
 
-	_storage = Kernel::Point_2(x, y);
+    _storage = Kernel::Point_2( x, y );
 }
 
 ///
 ///
 ///
-Coordinate::Coordinate( const double & x, const double & y, const double & z )
+Coordinate::Coordinate( const double& x, const double& y, const double& z )
 {
-    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z)) {
-        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value"));
+    if ( !std::isfinite( x ) || !std::isfinite( y ) || !std::isfinite( z ) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
     }
 
-	_storage = Kernel::Point_3(x, y, z);
+    _storage = Kernel::Point_3( x, y, z );
 }
 
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::Point_2 & other ):
-	_storage( other )
+Coordinate::Coordinate( const Kernel::Point_2& other ):
+    _storage( other )
 {
 
 }
@@ -89,8 +89,8 @@ Coordinate::Coordinate( const Kernel::Point_2 & other ):
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::Point_3 & other ):
-	_storage(other)
+Coordinate::Coordinate( const Kernel::Point_3& other ):
+    _storage( other )
 {
 
 }
@@ -99,8 +99,8 @@ Coordinate::Coordinate( const Kernel::Point_3 & other ):
 ///
 ///
 ///
-Coordinate::Coordinate( const Coordinate & other ):
-	_storage( other._storage )
+Coordinate::Coordinate( const Coordinate& other ):
+    _storage( other._storage )
 {
 
 }
@@ -108,10 +108,10 @@ Coordinate::Coordinate( const Coordinate & other ):
 ///
 ///
 ///
-Coordinate& Coordinate::operator = ( const Coordinate & other )
+Coordinate& Coordinate::operator = ( const Coordinate& other )
 {
-	_storage = other._storage;
-	return *this ;
+    _storage = other._storage;
+    return *this ;
 }
 
 ///
@@ -123,18 +123,17 @@ Coordinate::~Coordinate()
 }
 
 
-class CoordinateDimensionVisitor : public boost::static_visitor<int>
-{
+class CoordinateDimensionVisitor : public boost::static_visitor<int> {
 public:
-	int operator()( const Coordinate::Empty& ) const {
-		return 0;
-	}
-	int operator()( const Kernel::Point_2& ) const {
-		return 2;
-		}
-	int operator()( const Kernel::Point_3& ) const {
-		return 3;
-	}
+    int operator()( const Coordinate::Empty& ) const {
+        return 0;
+    }
+    int operator()( const Kernel::Point_2& ) const {
+        return 2;
+    }
+    int operator()( const Kernel::Point_3& ) const {
+        return 3;
+    }
 };
 
 
@@ -143,8 +142,8 @@ public:
 ///
 int Coordinate::coordinateDimension() const
 {
-	CoordinateDimensionVisitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    CoordinateDimensionVisitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
 
@@ -153,7 +152,7 @@ int Coordinate::coordinateDimension() const
 ///
 bool Coordinate::isEmpty() const
 {
-	return _storage.which() == 0;
+    return _storage.which() == 0;
 }
 
 ///
@@ -161,22 +160,21 @@ bool Coordinate::isEmpty() const
 ///
 bool Coordinate::is3D() const
 {
-	return _storage.which() == 2;
+    return _storage.which() == 2;
 }
 
-class GetXVisitor : public boost::static_visitor<Kernel::FT>
-{
+class GetXVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate x value"));
+    Kernel::FT operator()( const Coordinate::Empty& ) const {
+        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate x value" ) );
         return 0;
-	}
-	Kernel::FT operator()( const Kernel::Point_2& storage ) const {
-		return storage.x();
-		}
-	Kernel::FT operator()( const Kernel::Point_3& storage ) const {
-		return storage.x();
-	}
+    }
+    Kernel::FT operator()( const Kernel::Point_2& storage ) const {
+        return storage.x();
+    }
+    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+        return storage.x();
+    }
 };
 
 ///
@@ -184,23 +182,22 @@ public:
 ///
 Kernel::FT Coordinate::x() const
 {
-	GetXVisitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    GetXVisitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
-class GetYVisitor : public boost::static_visitor<Kernel::FT>
-{
+class GetYVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate y value"));
-		return 0;
-	}
-	Kernel::FT operator()( const Kernel::Point_2& storage ) const {
-		return storage.y();
-	}
-	Kernel::FT operator()( const Kernel::Point_3& storage ) const {
-		return storage.y();
-	}
+    Kernel::FT operator()( const Coordinate::Empty& ) const {
+        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate y value" ) );
+        return 0;
+    }
+    Kernel::FT operator()( const Kernel::Point_2& storage ) const {
+        return storage.y();
+    }
+    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+        return storage.y();
+    }
 };
 
 ///
@@ -208,23 +205,22 @@ public:
 ///
 Kernel::FT Coordinate::y() const
 {
-	GetYVisitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    GetYVisitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
-class GetZVisitor : public boost::static_visitor<Kernel::FT>
-{
+class GetZVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-	Kernel::FT operator()( const Coordinate::Empty& ) const {
-		BOOST_THROW_EXCEPTION(Exception("trying to get an empty coordinate z value"));
-		return 0;
-	}
-	Kernel::FT operator()( const Kernel::Point_2& ) const {
-		return 0;
-	}
-	Kernel::FT operator()( const Kernel::Point_3& storage ) const {
-		return storage.z();
-	}
+    Kernel::FT operator()( const Coordinate::Empty& ) const {
+        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
+        return 0;
+    }
+    Kernel::FT operator()( const Kernel::Point_2& ) const {
+        return 0;
+    }
+    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+        return storage.z();
+    }
 };
 
 ///
@@ -232,78 +228,75 @@ public:
 ///
 Kernel::FT Coordinate::z() const
 {
-	GetZVisitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    GetZVisitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
 //----------------------
 
 
-class RoundVisitor : public boost::static_visitor<>
-{
+class RoundVisitor : public boost::static_visitor<> {
 public:
-	RoundVisitor( const long& scaleFactor ):
-		_scaleFactor(scaleFactor)
-	{
+    RoundVisitor( const long& scaleFactor ):
+        _scaleFactor( scaleFactor ) {
 
-	}
+    }
 
-	void operator()( Coordinate::Empty& ) const {
+    void operator()( Coordinate::Empty& ) const {
 
-	}
-	void operator()( Kernel::Point_2& storage ) const {
-		storage = Kernel::Point_2(
-			_roundFT( storage.x() ),
-			_roundFT( storage.y() )
-		);
-	}
-	void operator()( Kernel::Point_3& storage ) const {
-		storage = Kernel::Point_3(
-			_roundFT( storage.x() ),
-			_roundFT( storage.y() ),
-			_roundFT( storage.z() )
-		);
-	}
+    }
+    void operator()( Kernel::Point_2& storage ) const {
+        storage = Kernel::Point_2(
+                      _roundFT( storage.x() ),
+                      _roundFT( storage.y() )
+                  );
+    }
+    void operator()( Kernel::Point_3& storage ) const {
+        storage = Kernel::Point_3(
+                      _roundFT( storage.x() ),
+                      _roundFT( storage.y() ),
+                      _roundFT( storage.z() )
+                  );
+    }
 
 
 
 private:
-	long _scaleFactor ;
+    long _scaleFactor ;
 
 
-	Kernel::FT _roundFT( const Kernel::FT& v ) const {
-		return Kernel::FT( CGAL::Gmpq(
-			SFCGAL::round( v.exact() * _scaleFactor ),
-			_scaleFactor
-		) ) ;
-	}
+    Kernel::FT _roundFT( const Kernel::FT& v ) const {
+        return Kernel::FT( CGAL::Gmpq(
+                               SFCGAL::round( v.exact() * _scaleFactor ),
+                               _scaleFactor
+                           ) ) ;
+    }
 
 };
 
 
 Coordinate& Coordinate::round( const long& scaleFactor )
 {
-	RoundVisitor roundVisitor( scaleFactor ) ;
-	boost::apply_visitor( roundVisitor, _storage ) ;
-	return *this ;
+    RoundVisitor roundVisitor( scaleFactor ) ;
+    boost::apply_visitor( roundVisitor, _storage ) ;
+    return *this ;
 }
 
 
 
 //----------------------
 
-class ToPoint2Visitor : public boost::static_visitor<Kernel::Point_2>
-{
+class ToPoint2Visitor : public boost::static_visitor<Kernel::Point_2> {
 public:
-	Kernel::Point_2 operator()( const Coordinate::Empty& ) const {
-		return Kernel::Point_2( CGAL::ORIGIN );
-	}
-	Kernel::Point_2 operator()( const Kernel::Point_2& storage ) const {
-		return storage;
-	}
-	Kernel::Point_2 operator()( const Kernel::Point_3& storage ) const {
-		return Kernel::Point_2( storage.x(), storage.y() );
-	}
+    Kernel::Point_2 operator()( const Coordinate::Empty& ) const {
+        return Kernel::Point_2( CGAL::ORIGIN );
+    }
+    Kernel::Point_2 operator()( const Kernel::Point_2& storage ) const {
+        return storage;
+    }
+    Kernel::Point_2 operator()( const Kernel::Point_3& storage ) const {
+        return Kernel::Point_2( storage.x(), storage.y() );
+    }
 };
 
 ///
@@ -311,22 +304,21 @@ public:
 ///
 Kernel::Point_2 Coordinate::toPoint_2() const
 {
-	ToPoint2Visitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    ToPoint2Visitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
-class ToPoint3Visitor : public boost::static_visitor<Kernel::Point_3>
-{
+class ToPoint3Visitor : public boost::static_visitor<Kernel::Point_3> {
 public:
-	Kernel::Point_3 operator()( const Coordinate::Empty& /*storage*/ ) const {
-		return Kernel::Point_3( CGAL::ORIGIN );
-	}
-	Kernel::Point_3 operator()( const Kernel::Point_2& storage ) const {
-		return Kernel::Point_3( storage.x(), storage.y(), 0.0 );
-	}
-	Kernel::Point_3 operator()( const Kernel::Point_3& storage ) const {
-		return storage;
-	}
+    Kernel::Point_3 operator()( const Coordinate::Empty& /*storage*/ ) const {
+        return Kernel::Point_3( CGAL::ORIGIN );
+    }
+    Kernel::Point_3 operator()( const Kernel::Point_2& storage ) const {
+        return Kernel::Point_3( storage.x(), storage.y(), 0.0 );
+    }
+    Kernel::Point_3 operator()( const Kernel::Point_3& storage ) const {
+        return storage;
+    }
 };
 
 ///
@@ -334,73 +326,78 @@ public:
 ///
 Kernel::Point_3 Coordinate::toPoint_3() const
 {
-	ToPoint3Visitor visitor;
-	return boost::apply_visitor( visitor, _storage );
+    ToPoint3Visitor visitor;
+    return boost::apply_visitor( visitor, _storage );
 }
 
 ///
 ///
 ///
-bool Coordinate::operator < ( const Coordinate & other ) const
+bool Coordinate::operator < ( const Coordinate& other ) const
 {
-	// no empty comparison
-	if ( isEmpty() || other.isEmpty() ){
-		BOOST_THROW_EXCEPTION( Exception("try to compare empty points using a < b ") );
-	}
+    // no empty comparison
+    if ( isEmpty() || other.isEmpty() ) {
+        BOOST_THROW_EXCEPTION( Exception( "try to compare empty points using a < b " ) );
+    }
 
-	// no mixed dimension comparison
-	if ( ( is3D() && ! other.is3D() ) || ( ! is3D() && other.is3D() ) ){
-		BOOST_THROW_EXCEPTION( Exception("try to compare empty points with different coordinate dimension using a < b") );
-	}
+    // no mixed dimension comparison
+    if ( ( is3D() && ! other.is3D() ) || ( ! is3D() && other.is3D() ) ) {
+        BOOST_THROW_EXCEPTION( Exception( "try to compare empty points with different coordinate dimension using a < b" ) );
+    }
 
-	// comparison along x
-	if ( x() < other.x() ){
-		return true ;
-	}else if ( other.x() < x() ){
-		return false;
-	}
+    // comparison along x
+    if ( x() < other.x() ) {
+        return true ;
+    }
+    else if ( other.x() < x() ) {
+        return false;
+    }
 
-	// comparison along y
-	if ( y() < other.y() ){
-		return true ;
-	}else if ( other.y() < y() ){
-		return false;
-	}
+    // comparison along y
+    if ( y() < other.y() ) {
+        return true ;
+    }
+    else if ( other.y() < y() ) {
+        return false;
+    }
 
-	// comparison along z if possible
-	if ( is3D() ){
-		if ( z() < other.z() ){
-			return true ;
-		}else if ( other.z() < z() ){
-			return false;
-		}
-	}
+    // comparison along z if possible
+    if ( is3D() ) {
+        if ( z() < other.z() ) {
+            return true ;
+        }
+        else if ( other.z() < z() ) {
+            return false;
+        }
+    }
 
-	// points are equals
-	return false;
+    // points are equals
+    return false;
 }
 
 ///
 ///
 ///
-bool Coordinate::operator == ( const Coordinate & other ) const
+bool Coordinate::operator == ( const Coordinate& other ) const
 {
-	if ( isEmpty() ){
-		return other.isEmpty() ;
-	}
-	if ( is3D() || other.is3D() ){
-		return x() == other.x() && y() == other.y()  && z() == other.z() ;
-	}else{
-		return x() == other.x() && y() == other.y() ;
-	}
+    if ( isEmpty() ) {
+        return other.isEmpty() ;
+    }
+
+    if ( is3D() || other.is3D() ) {
+        return x() == other.x() && y() == other.y()  && z() == other.z() ;
+    }
+    else {
+        return x() == other.x() && y() == other.y() ;
+    }
 }
 
 ///
 ///
 ///
-bool Coordinate::operator != ( const Coordinate & other ) const
+bool Coordinate::operator != ( const Coordinate& other ) const
 {
-	return ! ( *this == other );
+    return ! ( *this == other );
 }
 
 

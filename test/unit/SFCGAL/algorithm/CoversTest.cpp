@@ -40,71 +40,79 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_CoversTest )
  */
 BOOST_AUTO_TEST_CASE( testFileCoversTest )
 {
-	int argc = framework::master_test_suite().argc;
-	char **argv = framework::master_test_suite().argv;
+    int argc = framework::master_test_suite().argc;
+    char** argv = framework::master_test_suite().argv;
 
-	// look for options
-	int test_one_line = -1;
-	for ( int i = 0; i < argc; ++i ) {
-		std::string argi( argv[i] );
-		if ( argi == "--line" ) {
-			// only test one line
-			if ( argc >= i+1 ) {
-				sscanf( argv[i+1], "%d", &test_one_line );
-				++i;
-				continue;
-			}
-		}
-	}
+    // look for options
+    int test_one_line = -1;
 
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/CoversTest.txt" ;
+    for ( int i = 0; i < argc; ++i ) {
+        std::string argi( argv[i] );
 
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
+        if ( argi == "--line" ) {
+            // only test one line
+            if ( argc >= i+1 ) {
+                sscanf( argv[i+1], "%d", &test_one_line );
+                ++i;
+                continue;
+            }
+        }
+    }
 
-	int numLine = 0 ;
-	std::string line;
-	while ( std::getline( ifs, line ) ){
-		numLine++;
-		if ( test_one_line != -1 && test_one_line != numLine ) {
-			continue;
-		}
-		if ( line[0] == '#' || line.empty() )
-			continue ;
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/data/CoversTest.txt" ;
 
-		BOOST_TEST_MESSAGE( boost::format("line#%s:%s") % numLine % line );
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
 
-		std::istringstream iss(line);
+    int numLine = 0 ;
+    std::string line;
 
-		std::string distanceDimension ;
-		std::string wktGA, wktGB ;
-		std::string trueOrFalse ;
+    while ( std::getline( ifs, line ) ) {
+        numLine++;
 
-		std::getline( iss, distanceDimension, '|' ) ;
-		std::getline( iss, wktGA, '|' ) ;
-		std::getline( iss, wktGB, '|' ) ;
-		std::getline( iss, trueOrFalse, '|' ) ;
+        if ( test_one_line != -1 && test_one_line != numLine ) {
+            continue;
+        }
 
-		bool expected = ( trueOrFalse == "true" ) ? true : false ;
+        if ( line[0] == '#' || line.empty() ) {
+            continue ;
+        }
 
-		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
-		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+        BOOST_TEST_MESSAGE( boost::format( "line#%s:%s" ) % numLine % line );
 
-		try {
-			if ( distanceDimension == "2" ){
-				BOOST_CHECK_MESSAGE( algorithm::covers(*gA,*gB) == expected, numLine << ": covers(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-			}else if ( distanceDimension == "3" ){
-				bool got = algorithm::covers3D(*gA,*gB);
-				BOOST_CHECK_MESSAGE( got == expected, numLine << ": covers3D(" << gA->asText() << ", " << gB->asText() << ") should be " << (expected ? "TRUE" : "FALSE") );
-			}else{
-				BOOST_CHECK(false);
-			}
-		}
-		catch ( std::exception& e ) {
-			BOOST_CHECK_MESSAGE( false, numLine << ": " << e.what() );
-		}
-	}
+        std::istringstream iss( line );
+
+        std::string distanceDimension ;
+        std::string wktGA, wktGB ;
+        std::string trueOrFalse ;
+
+        std::getline( iss, distanceDimension, '|' ) ;
+        std::getline( iss, wktGA, '|' ) ;
+        std::getline( iss, wktGB, '|' ) ;
+        std::getline( iss, trueOrFalse, '|' ) ;
+
+        bool expected = ( trueOrFalse == "true" ) ? true : false ;
+
+        std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
+        std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+
+        try {
+            if ( distanceDimension == "2" ) {
+                BOOST_CHECK_MESSAGE( algorithm::covers( *gA,*gB ) == expected, numLine << ": covers(" << gA->asText() << ", " << gB->asText() << ") should be " << ( expected ? "TRUE" : "FALSE" ) );
+            }
+            else if ( distanceDimension == "3" ) {
+                bool got = algorithm::covers3D( *gA,*gB );
+                BOOST_CHECK_MESSAGE( got == expected, numLine << ": covers3D(" << gA->asText() << ", " << gB->asText() << ") should be " << ( expected ? "TRUE" : "FALSE" ) );
+            }
+            else {
+                BOOST_CHECK( false );
+            }
+        }
+        catch ( std::exception& e ) {
+            BOOST_CHECK_MESSAGE( false, numLine << ": " << e.what() );
+        }
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

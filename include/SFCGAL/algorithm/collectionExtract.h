@@ -27,15 +27,16 @@
 #include <SFCGAL/GeometryCollection.h>
 
 namespace SFCGAL {
-    namespace algorithm {
-	    /*
-	     * Given a geometry collection
-	     * returns a MultiPolygon from triangles, polygons, polyhedral and polygons
-	     *
-	     * @warning Ownership is taken from the parameter
-	     */
-	    SFCGAL_API std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> coll );
-    }
+namespace algorithm {
+/*
+ * Given a geometry collection
+ * returns a MultiPolygon from triangles, polygons, polyhedral and polygons
+ *
+ * @warning Ownership is taken from the parameter
+ * @ingroup detail
+ */
+SFCGAL_API std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> coll );
+}
 }
 
 #endif

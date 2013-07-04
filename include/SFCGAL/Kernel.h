@@ -25,16 +25,16 @@
 
 namespace SFCGAL {
 
-	/**
-	 * default Kernel
-	 */
-	typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
+/**
+ * default Kernel
+ */
+typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
 
 
-	/**
-	 * Quotient type
-	 */
-	typedef CGAL::Gmpq QT;
+/**
+ * Quotient type
+ */
+typedef CGAL::Gmpq QT;
 
 }//namespace SFCGAL
 

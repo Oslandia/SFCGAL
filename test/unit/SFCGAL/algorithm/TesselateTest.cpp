@@ -36,15 +36,16 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_TesselateTest )
 
 BOOST_AUTO_TEST_CASE( testEmpty )
 {
-	tools::Registry & registry = tools::Registry::instance() ;
+    tools::Registry& registry = tools::Registry::instance() ;
 
-	std::vector< std::string > geometryTypes = registry.getGeometryTypes() ;
-	for ( size_t i = 0; i < geometryTypes.size(); i++ ){
-		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( geometryTypes[i] ) ) ;
-		BOOST_TEST_MESSAGE( boost::format("tesselate(%s)") % g->asText() );
-		std::auto_ptr< Geometry > result = algorithm::tesselate( *g ) ;
-		BOOST_CHECK( result->isEmpty() );
-	}
+    std::vector< std::string > geometryTypes = registry.getGeometryTypes() ;
+
+    for ( size_t i = 0; i < geometryTypes.size(); i++ ) {
+        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( geometryTypes[i] ) ) ;
+        BOOST_TEST_MESSAGE( boost::format( "tesselate(%s)" ) % g->asText() );
+        std::auto_ptr< Geometry > result = algorithm::tesselate( *g ) ;
+        BOOST_CHECK( result->isEmpty() );
+    }
 }
 
 /*
@@ -53,27 +54,27 @@ BOOST_AUTO_TEST_CASE( testEmpty )
 
 BOOST_AUTO_TEST_CASE( testPoint )
 {
-	std::string wkt = "POINT(3.0 4.0)" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	BOOST_CHECK_EQUAL( algorithm::tesselate(*g)->asText(1), wkt );
+    std::string wkt = "POINT(3.0 4.0)" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    BOOST_CHECK_EQUAL( algorithm::tesselate( *g )->asText( 1 ), wkt );
 }
 BOOST_AUTO_TEST_CASE( testLineString )
 {
-	std::string wkt = "LINESTRING(0.0 0.0,1.0 1.0)" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	BOOST_CHECK_EQUAL( algorithm::tesselate(*g)->asText(1), wkt );
+    std::string wkt = "LINESTRING(0.0 0.0,1.0 1.0)" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    BOOST_CHECK_EQUAL( algorithm::tesselate( *g )->asText( 1 ), wkt );
 }
 BOOST_AUTO_TEST_CASE( testMultiPoint )
 {
-	std::string wkt = "MULTIPOINT((3.0 4.0),(5.0 6.0))" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	BOOST_CHECK_EQUAL( algorithm::tesselate(*g)->asText(1), wkt );
+    std::string wkt = "MULTIPOINT((3.0 4.0),(5.0 6.0))" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    BOOST_CHECK_EQUAL( algorithm::tesselate( *g )->asText( 1 ), wkt );
 }
 BOOST_AUTO_TEST_CASE( testMultiLineString )
 {
-	std::string wkt = "MULTILINESTRING((0.0 0.0,1.0 1.0),(1.0 1.0,2.0 2.0))" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	BOOST_CHECK_EQUAL( algorithm::tesselate(*g)->asText(1), wkt );
+    std::string wkt = "MULTILINESTRING((0.0 0.0,1.0 1.0),(1.0 1.0,2.0 2.0))" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    BOOST_CHECK_EQUAL( algorithm::tesselate( *g )->asText( 1 ), wkt );
 }
 
 
@@ -82,19 +83,19 @@ BOOST_AUTO_TEST_CASE( testMultiLineString )
  */
 BOOST_AUTO_TEST_CASE( testPolygon )
 {
-	std::string wkt = "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" ;
-	std::string wktOut = "TIN(((0.0 1.0,1.0 0.0,1.0 1.0,0.0 1.0)),((0.0 1.0,0.0 0.0,1.0 0.0,0.0 1.0)))" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	std::auto_ptr< Geometry > result( algorithm::tesselate(*g) );
-	BOOST_CHECK_EQUAL( result->asText(1), wktOut );
+    std::string wkt = "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" ;
+    std::string wktOut = "TIN(((0.0 1.0,1.0 0.0,1.0 1.0,0.0 1.0)),((0.0 1.0,0.0 0.0,1.0 0.0,0.0 1.0)))" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    std::auto_ptr< Geometry > result( algorithm::tesselate( *g ) );
+    BOOST_CHECK_EQUAL( result->asText( 1 ), wktOut );
 }
 BOOST_AUTO_TEST_CASE( testMultiPolygon )
 {
-	std::string wkt = "MULTIPOLYGON(((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0)),((2.0 0.0,3.0 0.0,3.0 1.0,2.0 1.0,2.0 0.0)))" ;
-	std::string wktOut = "GEOMETRYCOLLECTION(TIN(((0.0 1.0,1.0 0.0,1.0 1.0,0.0 1.0)),((0.0 1.0,0.0 0.0,1.0 0.0,0.0 1.0))),TIN(((2.0 1.0,3.0 0.0,3.0 1.0,2.0 1.0)),((2.0 1.0,2.0 0.0,3.0 0.0,2.0 1.0))))" ;
-	std::auto_ptr< Geometry > g( io::readWkt(wkt) );
-	std::auto_ptr< Geometry > result( algorithm::tesselate(*g) );
-	BOOST_CHECK_EQUAL( result->asText(1), wktOut );
+    std::string wkt = "MULTIPOLYGON(((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0)),((2.0 0.0,3.0 0.0,3.0 1.0,2.0 1.0,2.0 0.0)))" ;
+    std::string wktOut = "GEOMETRYCOLLECTION(TIN(((0.0 1.0,1.0 0.0,1.0 1.0,0.0 1.0)),((0.0 1.0,0.0 0.0,1.0 0.0,0.0 1.0))),TIN(((2.0 1.0,3.0 0.0,3.0 1.0,2.0 1.0)),((2.0 1.0,2.0 0.0,3.0 0.0,2.0 1.0))))" ;
+    std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+    std::auto_ptr< Geometry > result( algorithm::tesselate( *g ) );
+    BOOST_CHECK_EQUAL( result->asText( 1 ), wktOut );
 }
 
 

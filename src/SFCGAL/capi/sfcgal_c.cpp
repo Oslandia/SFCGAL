@@ -87,23 +87,31 @@ static sfcgal_error_handler_t __sfcgal_error_handler = printf;
 template <class T>
 inline T* down_cast( sfcgal_geometry_t* p )
 {
-	T* q = dynamic_cast<T*>(reinterpret_cast<SFCGAL::Geometry*>(p));
-    if (!q) BOOST_THROW_EXCEPTION( SFCGAL::Exception("wrong geometry type") );
+    T* q = dynamic_cast<T*>( reinterpret_cast<SFCGAL::Geometry*>( p ) );
+
+    if ( !q ) {
+        BOOST_THROW_EXCEPTION( SFCGAL::Exception( "wrong geometry type" ) );
+    }
+
     return q;
 }
 
 template <class T>
 inline const T* down_const_cast( const sfcgal_geometry_t* p )
 {
-	const T* q = dynamic_cast<const T*>(reinterpret_cast<const SFCGAL::Geometry*>(p));
-    if (!q) BOOST_THROW_EXCEPTION( SFCGAL::Exception("wrong geometry type") );
+    const T* q = dynamic_cast<const T*>( reinterpret_cast<const SFCGAL::Geometry*>( p ) );
+
+    if ( !q ) {
+        BOOST_THROW_EXCEPTION( SFCGAL::Exception( "wrong geometry type" ) );
+    }
+
     return q;
 }
 
 extern "C" void sfcgal_set_error_handlers( sfcgal_error_handler_t warning_handler, sfcgal_error_handler_t error_handler )
 {
-	__sfcgal_warning_handler = warning_handler;
-	__sfcgal_error_handler = error_handler;
+    __sfcgal_warning_handler = warning_handler;
+    __sfcgal_error_handler = error_handler;
 }
 
 static sfcgal_alloc_handler_t __sfcgal_alloc_handler = malloc;
@@ -111,64 +119,63 @@ static sfcgal_free_handler_t __sfcgal_free_handler = free;
 
 extern "C" void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t alloc_handler, sfcgal_free_handler_t free_handler )
 {
-	__sfcgal_alloc_handler = alloc_handler;
-	__sfcgal_free_handler = free_handler;
+    __sfcgal_alloc_handler = alloc_handler;
+    __sfcgal_free_handler = free_handler;
 }
 
 extern "C" void sfcgal_init()
 {
-	// Empty for now
+    // Empty for now
 }
 
 extern "C" const char* sfcgal_version()
 {
-	return SFCGAL::Version();
+    return SFCGAL::Version();
 }
 
 extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry_t* geom )
 {
 
-    try{
-        return (sfcgal_geometry_type_t)reinterpret_cast<const SFCGAL::Geometry*>(geom)->geometryTypeId();
+    try {
+        return ( sfcgal_geometry_type_t )reinterpret_cast<const SFCGAL::Geometry*>( geom )->geometryTypeId();
     }
-    catch( std::exception& e ) 
-    { 
-        SFCGAL_ERROR( "%s", e.what() ); 
-        return SFCGAL_TYPE_POINT; // to avoid warning 
+    catch( std::exception& e ) {
+        SFCGAL_ERROR( "%s", e.what() );
+        return SFCGAL_TYPE_POINT; // to avoid warning
     }
 }
 
 extern "C" int sfcgal_geometry_is_3d( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return (int)reinterpret_cast<const SFCGAL::Geometry*>(geom)->is3D();
+        return ( int )reinterpret_cast<const SFCGAL::Geometry*>( geom )->is3D();
     )
 }
 
 extern "C" int sfcgal_geometry_is_empty( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return (int)reinterpret_cast<const SFCGAL::Geometry*>(geom)->isEmpty();
+        return ( int )reinterpret_cast<const SFCGAL::Geometry*>( geom )->isEmpty();
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_clone( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return reinterpret_cast<const SFCGAL::Geometry*>(geom)->clone();
+        return reinterpret_cast<const SFCGAL::Geometry*>( geom )->clone();
     )
 }
 
 extern "C" void sfcgal_geometry_delete( sfcgal_geometry_t* geom )
 {
-	delete reinterpret_cast<SFCGAL::Geometry*>(geom);
+    delete reinterpret_cast<SFCGAL::Geometry*>( geom );
 }
 
 extern "C" void sfcgal_geometry_as_text( const sfcgal_geometry_t* pgeom, char** buffer, size_t* len )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
         std::string wkt = reinterpret_cast<const SFCGAL::Geometry*>( pgeom )->asText();
-        *buffer = (char*)__sfcgal_alloc_handler( wkt.size() + 1 );
+        *buffer = ( char* )__sfcgal_alloc_handler( wkt.size() + 1 );
         *len = wkt.size();
         strncpy( *buffer, wkt.c_str(), *len );
     )
@@ -180,41 +187,41 @@ extern "C" void sfcgal_geometry_as_text( const sfcgal_geometry_t* pgeom, char** 
 extern "C" sfcgal_geometry_t* sfcgal_point_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Point());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Point() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_point_create_from_xy( double x, double y )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Point( x, y ));
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Point( x, y ) );
     )
 }
 extern "C" sfcgal_geometry_t* sfcgal_point_create_from_xyz( double x, double y, double z )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Point( x, y, z ));
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Point( x, y, z ) );
     )
 }
 
 extern "C" double sfcgal_point_x( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->x());
+        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->x() );
     )
 }
 
 extern "C" double sfcgal_point_y( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->y());
+        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->y() );
     )
 }
 
 extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return CGAL::to_double(down_const_cast<SFCGAL::Point>(geom)->z());
+        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->z() );
     )
 }
 
@@ -224,28 +231,28 @@ extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
 extern "C" sfcgal_geometry_t* sfcgal_linestring_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::LineString());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::LineString() );
     )
 }
 
 extern "C" size_t sfcgal_linestring_num_points( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::LineString>(geom)->numPoints();
+        return down_const_cast<SFCGAL::LineString>( geom )->numPoints();
     )
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_linestring_point_n( const sfcgal_geometry_t* geom, size_t i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&(down_const_cast<SFCGAL::LineString>(geom)->pointN( i )));
+        return static_cast<const SFCGAL::Geometry*>( &( down_const_cast<SFCGAL::LineString>( geom )->pointN( i ) ) );
     )
 }
 
 extern "C" void sfcgal_linestring_add_point( sfcgal_geometry_t* geom, sfcgal_geometry_t* point )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::LineString>(geom)->addPoint( down_cast<SFCGAL::Point>(point) );
+        down_cast<SFCGAL::LineString>( geom )->addPoint( down_cast<SFCGAL::Point>( point ) );
     )
 }
 
@@ -255,18 +262,18 @@ extern "C" void sfcgal_linestring_add_point( sfcgal_geometry_t* geom, sfcgal_geo
 extern "C" sfcgal_geometry_t* sfcgal_triangle_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Triangle());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Triangle() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_triangle_create_from_points( const sfcgal_geometry_t* pa,
-								  const sfcgal_geometry_t* pb,
-								  const sfcgal_geometry_t* pc)
+        const sfcgal_geometry_t* pb,
+        const sfcgal_geometry_t* pc )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<SFCGAL::Geometry*>(new SFCGAL::Triangle( *down_const_cast<SFCGAL::Point>(pa),
-								    *down_const_cast<SFCGAL::Point>(pb),
-								    *down_const_cast<SFCGAL::Point>(pc)));
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Triangle( *down_const_cast<SFCGAL::Point>( pa ),
+                *down_const_cast<SFCGAL::Point>( pb ),
+                *down_const_cast<SFCGAL::Point>( pc ) ) );
     )
 }
 
@@ -274,28 +281,28 @@ extern "C" sfcgal_geometry_t* sfcgal_triangle_create_from_points( const sfcgal_g
 extern "C" const sfcgal_geometry_t* sfcgal_triangle_vertex( const sfcgal_geometry_t* geom, int i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Triangle>(geom)->vertex(i));
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::Triangle>( geom )->vertex( i ) );
     )
 }
 
 extern "C" void sfcgal_triangle_set_vertex( sfcgal_geometry_t* geom, int i, const sfcgal_geometry_t* point )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = *down_const_cast<const SFCGAL::Point>(point);
+        down_cast<SFCGAL::Triangle>( geom )->vertex( i ) = *down_const_cast<const SFCGAL::Point>( point );
     )
 }
 
 extern "C" void sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t* geom, int i, double x, double y )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y );
+        down_cast<SFCGAL::Triangle>( geom )->vertex( i ) = SFCGAL::Point( x, y );
     )
 }
 
 extern "C" void sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* geom, int i, double x, double y, double z )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::Triangle>(geom)->vertex( i ) = SFCGAL::Point( x, y, z );
+        down_cast<SFCGAL::Triangle>( geom )->vertex( i ) = SFCGAL::Point( x, y, z );
     )
 }
 
@@ -305,42 +312,42 @@ extern "C" void sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* geom, in
 extern "C" sfcgal_geometry_t* sfcgal_polygon_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Polygon());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Polygon() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* ring )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<SFCGAL::Geometry*>(new SFCGAL::Polygon( down_cast<SFCGAL::LineString>(ring) ));
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Polygon( down_cast<SFCGAL::LineString>( ring ) ) );
     )
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->exteriorRing());
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::Polygon>( geom )->exteriorRing() );
     )
 }
 
 extern "C" size_t sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::Polygon>( geom )->numInteriorRings();
+        return down_const_cast<SFCGAL::Polygon>( geom )->numInteriorRings();
     )
 }
 
-extern "C" const sfcgal_geometry_t* sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t* geom, size_t i)
+extern "C" const sfcgal_geometry_t* sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t* geom, size_t i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Polygon>( geom )->interiorRingN( i ));
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::Polygon>( geom )->interiorRingN( i ) );
     )
 }
 
 extern "C" void sfcgal_polygon_add_interior_ring( sfcgal_geometry_t* geom, sfcgal_geometry_t* ring )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::Polygon>( geom )->addRing( down_cast<SFCGAL::LineString>(ring) );
+        down_cast<SFCGAL::Polygon>( geom )->addRing( down_cast<SFCGAL::LineString>( ring ) );
     )
 }
 
@@ -351,14 +358,14 @@ extern "C" void sfcgal_polygon_add_interior_ring( sfcgal_geometry_t* geom, sfcga
 extern "C" sfcgal_geometry_t* sfcgal_geometry_collection_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::GeometryCollection());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::GeometryCollection() );
     )
 }
 
 extern "C" size_t sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::GeometryCollection>( geom )->numGeometries();
+        return down_const_cast<SFCGAL::GeometryCollection>( geom )->numGeometries();
     )
 }
 
@@ -366,14 +373,14 @@ extern "C" const sfcgal_geometry_t* sfcgal_geometry_collection_geometry_n( const
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
         const SFCGAL::GeometryCollection* g = down_const_cast<SFCGAL::GeometryCollection>( geom );
-        return static_cast<const SFCGAL::Geometry*>(&g->geometryN( i ));
+        return static_cast<const SFCGAL::Geometry*>( &g->geometryN( i ) );
     )
 }
 
 extern "C" void sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t* geom, sfcgal_geometry_t* ngeom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        down_cast<SFCGAL::GeometryCollection>( geom )->addGeometry( reinterpret_cast<SFCGAL::Geometry*>(ngeom) );
+        down_cast<SFCGAL::GeometryCollection>( geom )->addGeometry( reinterpret_cast<SFCGAL::Geometry*>( ngeom ) );
     )
 }
 
@@ -383,21 +390,21 @@ extern "C" void sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t* geom
 extern "C" sfcgal_geometry_t* sfcgal_multi_point_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::MultiPoint());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::MultiPoint() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_multi_linestring_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::MultiLineString());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::MultiLineString() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_multi_polygon_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::MultiPolygon());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::MultiPolygon() );
     )
 }
 
@@ -408,28 +415,28 @@ extern "C" sfcgal_geometry_t* sfcgal_multi_polygon_create()
 extern "C" sfcgal_geometry_t* sfcgal_polyhedral_surface_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::PolyhedralSurface());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::PolyhedralSurface() );
     )
 }
 
 extern "C" size_t sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::PolyhedralSurface>( geom )->numPolygons();
+        return down_const_cast<SFCGAL::PolyhedralSurface>( geom )->numPolygons();
     )
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t* geom, size_t i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::PolyhedralSurface>( geom )->polygonN( i ));
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::PolyhedralSurface>( geom )->polygonN( i ) );
     )
 }
 
 extern "C" void sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t* geom, sfcgal_geometry_t* poly )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-    return down_cast<SFCGAL::PolyhedralSurface>( geom )->addPolygon( down_cast<SFCGAL::Polygon>(poly) );
+        return down_cast<SFCGAL::PolyhedralSurface>( geom )->addPolygon( down_cast<SFCGAL::Polygon>( poly ) );
     )
 }
 
@@ -440,28 +447,28 @@ extern "C" void sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t* geom, 
 extern "C" sfcgal_geometry_t* sfcgal_triangulated_surface_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::TriangulatedSurface());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::TriangulatedSurface() );
     )
 }
 
 extern "C" size_t sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::TriangulatedSurface>( geom )->numTriangles();
+        return down_const_cast<SFCGAL::TriangulatedSurface>( geom )->numTriangles();
     )
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t* geom, size_t i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::TriangulatedSurface>( geom )->triangleN( i ));
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::TriangulatedSurface>( geom )->triangleN( i ) );
     )
 }
 
 extern "C" void sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t* geom, sfcgal_geometry_t* triangle )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-    down_cast<SFCGAL::TriangulatedSurface>( geom )->addTriangle( down_cast<SFCGAL::Triangle>(triangle) );
+        down_cast<SFCGAL::TriangulatedSurface>( geom )->addTriangle( down_cast<SFCGAL::Triangle>( triangle ) );
     )
 }
 
@@ -472,143 +479,144 @@ extern "C" void sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t* geo
 extern "C" sfcgal_geometry_t* sfcgal_solid_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid());
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Solid() );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* shell )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid( down_cast<SFCGAL::PolyhedralSurface>(shell) ));
+        return static_cast<SFCGAL::Geometry*>( new SFCGAL::Solid( down_cast<SFCGAL::PolyhedralSurface>( shell ) ) );
     )
 }
 
 extern "C" size_t sfcgal_solid_num_shells( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return down_const_cast<SFCGAL::Solid>( geom )->numShells();
+        return down_const_cast<SFCGAL::Solid>( geom )->numShells();
     )
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_solid_shell_n( const sfcgal_geometry_t* geom, size_t i )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-    return static_cast<const SFCGAL::Geometry*>(&down_const_cast<SFCGAL::Solid>( geom )->shellN( i ));
+        return static_cast<const SFCGAL::Geometry*>( &down_const_cast<SFCGAL::Solid>( geom )->shellN( i ) );
     )
 }
 
 extern "C" void sfcgal_solid_add_interior_shell( sfcgal_geometry_t* geom , sfcgal_geometry_t* shell )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-    down_cast<SFCGAL::Solid>( geom )->addInteriorShell( down_cast<SFCGAL::PolyhedralSurface>( shell ) );
+        down_cast<SFCGAL::Solid>( geom )->addInteriorShell( down_cast<SFCGAL::PolyhedralSurface>( shell ) );
     )
 }
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create()
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return new SFCGAL::PreparedGeometry();
+        return new SFCGAL::PreparedGeometry();
     )
 }
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geometry( sfcgal_geometry_t* geom, srid_t srid )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return new SFCGAL::PreparedGeometry( reinterpret_cast<SFCGAL::Geometry*>(geom), srid );
+        return new SFCGAL::PreparedGeometry( reinterpret_cast<SFCGAL::Geometry*>( geom ), srid );
     )
 }
 
 extern "C" void sfcgal_prepared_geometry_delete( sfcgal_prepared_geometry_t* pgeom )
 {
-	delete reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom );
+    delete reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom );
 }
 
 extern "C" const sfcgal_geometry_t* sfcgal_prepared_geometry_geometry( const sfcgal_prepared_geometry_t* pgeom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return &reinterpret_cast<const SFCGAL::PreparedGeometry*>(pgeom)->geometry();
+        return &reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->geometry();
     )
 }
 
-extern "C" void sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t* pgeom, sfcgal_geometry_t * geom )
+extern "C" void sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t* pgeom, sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-	reinterpret_cast<SFCGAL::PreparedGeometry*>(pgeom)->resetGeometry( reinterpret_cast<SFCGAL::Geometry*>(geom) );
+        reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom )->resetGeometry( reinterpret_cast<SFCGAL::Geometry*>( geom ) );
     )
 }
 
 extern "C" srid_t sfcgal_prepared_geometry_srid( const sfcgal_prepared_geometry_t* pgeom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->SRID();
+        return reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->SRID();
     )
 }
 
 extern "C" void sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t* pgeom, srid_t srid )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-	reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom )->SRID() = srid;
+        reinterpret_cast<SFCGAL::PreparedGeometry*>( pgeom )->SRID() = srid;
     )
 }
 
 extern "C" void sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* pgeom, int /*num_decimals*/, char** buffer, size_t* len )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-	std::string ewkt = reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->asEWKT();
-	*buffer = (char*)__sfcgal_alloc_handler( ewkt.size() + 1 );
-	*len = ewkt.size();
-	strncpy( *buffer, ewkt.c_str(), *len );
+        std::string ewkt = reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->asEWKT();
+        *buffer = ( char* )__sfcgal_alloc_handler( ewkt.size() + 1 );
+        *len = ewkt.size();
+        strncpy( *buffer, ewkt.c_str(), *len );
     )
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_io_read_wkt( const char* str, size_t len )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-	return SFCGAL::io::readWkt( str, len ).release();
+        return SFCGAL::io::readWkt( str, len ).release();
     )
 }
 
 extern "C" void sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_t* geom, char** buffer, size_t* len )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-	const SFCGAL::PreparedGeometry *g = reinterpret_cast<const SFCGAL::PreparedGeometry*>(geom);
-	std::string str = SFCGAL::io::writeBinaryPrepared( *g );
-	*buffer = (char*)__sfcgal_alloc_handler( str.size() + 1 );
-	*len = str.size();
-	memcpy( *buffer, str.c_str(), *len );
+        const SFCGAL::PreparedGeometry* g = reinterpret_cast<const SFCGAL::PreparedGeometry*>( geom );
+        std::string str = SFCGAL::io::writeBinaryPrepared( *g );
+        *buffer = ( char* )__sfcgal_alloc_handler( str.size() + 1 );
+        *len = str.size();
+        memcpy( *buffer, str.c_str(), *len );
     )
 }
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char* str, size_t len )
 {
-	std::string sstr( str, len );
-	std::auto_ptr<SFCGAL::PreparedGeometry> g;
-	try
-	{
-		g = SFCGAL::io::readBinaryPrepared( sstr );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During read_binary_prepared" );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return g.release();
+    std::string sstr( str, len );
+    std::auto_ptr<SFCGAL::PreparedGeometry> g;
+
+    try {
+        g = SFCGAL::io::readBinaryPrepared( sstr );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During read_binary_prepared" );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return g.release();
 }
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char* str, size_t len )
 {
-	std::auto_ptr<SFCGAL::PreparedGeometry> g;
-	try {
-		g = SFCGAL::io::readEwkt( str, len );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	SFCGAL::PreparedGeometry* pg = g.release();
-	return pg;
+    std::auto_ptr<SFCGAL::PreparedGeometry> g;
+
+    try {
+        g = SFCGAL::io::readEwkt( str, len );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    SFCGAL::PreparedGeometry* pg = g.release();
+    return pg;
 }
 
 // Functions that take two geometries and return a scalar
@@ -716,27 +724,28 @@ SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesse
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area, SFCGAL::algorithm::area )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area_3d, SFCGAL::algorithm::area3D )
 
-extern "C" int sfcgal_geometry_is_planar( const sfcgal_geometry_t* ga ) 
+extern "C" int sfcgal_geometry_is_planar( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
-		SFCGAL_ERROR( "is_planar() only applies to polygons" );
-		return -1;
-	}
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
 
-	bool r;
-	try
-	{
-		r = SFCGAL::algorithm::hasPlane3D< SFCGAL::Kernel >( g->as< const SFCGAL::Polygon >() );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During is_planar(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return -1.0;
-	}
-	return r ? 1 : 0;
+    if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
+        SFCGAL_ERROR( "is_planar() only applies to polygons" );
+        return -1;
+    }
+
+    bool r;
+
+    try {
+        r = SFCGAL::algorithm::hasPlane3D< SFCGAL::Kernel >( g->as< const SFCGAL::Polygon >() );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During is_planar(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return -1.0;
+    }
+
+    return r ? 1 : 0;
 }
 
 /**
@@ -746,181 +755,184 @@ extern "C" int sfcgal_geometry_is_planar( const sfcgal_geometry_t* ga )
  * 1 for a clock wise orientation,
  * 0 for invalid or undetermined orientation
  */
-extern "C" int sfcgal_geometry_orientation( const sfcgal_geometry_t* ga ) 
+extern "C" int sfcgal_geometry_orientation( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
-		SFCGAL_ERROR( "orientation() only applies to polygons" );
-		return 0;
-	}
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
 
-	bool r;
-	try
-	{
-		r = g->as<const SFCGAL::Polygon>().isCounterClockWiseOriented();
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During orientation(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return -1.0;
-	}
-	return r ? -1 : 1;
+    if ( g->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
+        SFCGAL_ERROR( "orientation() only applies to polygons" );
+        return 0;
+    }
+
+    bool r;
+
+    try {
+        r = g->as<const SFCGAL::Polygon>().isCounterClockWiseOriented();
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During orientation(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return -1.0;
+    }
+
+    return r ? -1 : 1;
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_make_solid( const sfcgal_geometry_t* ga ) 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_make_solid( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	if ( g->geometryTypeId() != SFCGAL::TYPE_POLYHEDRALSURFACE ) {
-		SFCGAL_ERROR( "make_solid() only applies to polyhedral surfaces" );
-		return 0;
-	}
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
 
-	return static_cast<SFCGAL::Geometry*>(new SFCGAL::Solid( g->as<const SFCGAL::PolyhedralSurface>() ));
+    if ( g->geometryTypeId() != SFCGAL::TYPE_POLYHEDRALSURFACE ) {
+        SFCGAL_ERROR( "make_solid() only applies to polyhedral surfaces" );
+        return 0;
+    }
+
+    return static_cast<SFCGAL::Geometry*>( new SFCGAL::Solid( g->as<const SFCGAL::PolyhedralSurface>() ) );
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_force_lhr( const sfcgal_geometry_t* ga ) 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_force_lhr( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::Geometry* gb = g->clone();
-	SFCGAL::transform::ForceOrderPoints force( /* ccw */ true );
-	try
-	{
-		gb->accept( force );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During force_lhr(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return gb;
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    SFCGAL::Geometry* gb = g->clone();
+    SFCGAL::transform::ForceOrderPoints force( /* ccw */ true );
+
+    try {
+        gb->accept( force );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During force_lhr(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return gb;
 }
 
-extern "C" sfcgal_geometry_t* sfcgal_geometry_force_rhr( const sfcgal_geometry_t* ga ) 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_force_rhr( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::Geometry* gb = g->clone();
-	SFCGAL::transform::ForceOrderPoints force( /* ccw */ false );
-	try
-	{
-		gb->accept( force );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During force_rhr(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return gb;
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    SFCGAL::Geometry* gb = g->clone();
+    SFCGAL::transform::ForceOrderPoints force( /* ccw */ false );
+
+    try {
+        gb->accept( force );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During force_rhr(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return gb;
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* ga )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
-	try
-	{
-		SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-		SFCGAL::triangulate::triangulate2DZ( *g, cdt );
-		cdt.getTriangles( *surf );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During triangulate_2d(A) :" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return static_cast<SFCGAL::Geometry*>(surf);
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
+
+    try {
+        SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
+        SFCGAL::triangulate::triangulate2DZ( *g, cdt );
+        cdt.getTriangles( *surf );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During triangulate_2d(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return static_cast<SFCGAL::Geometry*>( surf );
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_extrude( const sfcgal_geometry_t* ga, double x, double y, double z )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::Geometry* gb = g->clone();
-	SFCGAL::transform::ForceZOrderPoints forceZ;
-	std::auto_ptr<SFCGAL::Geometry> result;
-	try
-	{
-		gb->accept( forceZ );
-		result = SFCGAL::algorithm::extrude( *gb, x, y, z );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During extrude(A, %g, %g, %g) :", x, y, z );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return result.release();
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    SFCGAL::Geometry* gb = g->clone();
+    SFCGAL::transform::ForceZOrderPoints forceZ;
+    std::auto_ptr<SFCGAL::Geometry> result;
+
+    try {
+        gb->accept( forceZ );
+        result = SFCGAL::algorithm::extrude( *gb, x, y, z );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During extrude(A, %g, %g, %g) :", x, y, z );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return result.release();
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_round( const sfcgal_geometry_t* ga, int scale )
 {
-	const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	SFCGAL::Geometry* gb = g->clone();
-	//	SFCGAL_WARNING( "geom: %s %s", gb->asText().c_str(), typeid(g).name() );
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    SFCGAL::Geometry* gb = g->clone();
+    //	SFCGAL_WARNING( "geom: %s %s", gb->asText().c_str(), typeid(g).name() );
 
-	SFCGAL::transform::RoundTransform roundT( scale );
-	try
-	{
-		gb->accept( roundT );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During round(A):" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	//	SFCGAL_WARNING( "processed geom: %s", gb->asText().c_str() );
-	return gb;
+    SFCGAL::transform::RoundTransform roundT( scale );
+
+    try {
+        gb->accept( roundT );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During round(A):" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    //	SFCGAL_WARNING( "processed geom: %s", gb->asText().c_str() );
+    return gb;
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_minkowski_sum( const sfcgal_geometry_t* ga, const sfcgal_geometry_t* gb )
 {
-	const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	const SFCGAL::Geometry* g2 = reinterpret_cast<const SFCGAL::Geometry*>(gb);
-	if ( g2->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
-		SFCGAL_ERROR( "minkowski_sum(): the second argument must be a polygon" );
-		return 0;
-	}
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    const SFCGAL::Geometry* g2 = reinterpret_cast<const SFCGAL::Geometry*>( gb );
 
-	std::auto_ptr<SFCGAL::Geometry> sum;
-	try
-	{
-		sum = SFCGAL::algorithm::minkowskiSum( *g1, g2->as<const SFCGAL::Polygon>() );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During minkowski_sum(A,B):" );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_WARNING( "   and B: %s", ((const SFCGAL::Geometry*)(gb))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return sum.release();
+    if ( g2->geometryTypeId() != SFCGAL::TYPE_POLYGON ) {
+        SFCGAL_ERROR( "minkowski_sum(): the second argument must be a polygon" );
+        return 0;
+    }
+
+    std::auto_ptr<SFCGAL::Geometry> sum;
+
+    try {
+        sum = SFCGAL::algorithm::minkowskiSum( *g1, g2->as<const SFCGAL::Polygon>() );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During minkowski_sum(A,B):" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_WARNING( "   and B: %s", ( ( const SFCGAL::Geometry* )( gb ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return sum.release();
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_offset_polygon( const sfcgal_geometry_t* ga, double offset )
 {
-	const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>(ga);
-	std::auto_ptr<SFCGAL::MultiPolygon> mp;
-	try
-	{
-		mp = SFCGAL::algorithm::offset( *g1, offset );
-	}
-	catch ( std::exception& e )
-	{
-		SFCGAL_WARNING( "During offset(A,%g):", offset );
-		SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-		SFCGAL_ERROR( "%s", e.what() );
-		return 0;
-	}
-	return mp.release();
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( ga );
+    std::auto_ptr<SFCGAL::MultiPolygon> mp;
+
+    try {
+        mp = SFCGAL::algorithm::offset( *g1, offset );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During offset(A,%g):", offset );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return mp.release();
 }
 

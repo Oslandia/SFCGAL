@@ -39,14 +39,14 @@ BOOST_AUTO_TEST_CASE( cubeVolume )
                                                      ((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),\
                                                      ((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),\
                                                      ((0 0 1,1 0 1,1 1 1,0 1 1,0 0 1)),\
-                                                     ((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))))");
-    BOOST_CHECK_EQUAL( algorithm::volume(*s), 1);
+                                                     ((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))))" );
+    BOOST_CHECK_EQUAL( algorithm::volume( *s ), 1 );
 }
 
 BOOST_AUTO_TEST_CASE( cubeWithHoleVolume )
 {
-    std::auto_ptr<Geometry> s = io::readWkt( 
-        "SOLID((((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
+    std::auto_ptr<Geometry> s = io::readWkt(
+                                    "SOLID((((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
                 ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),\
                 ((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),\
                 ((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),\
@@ -57,12 +57,12 @@ BOOST_AUTO_TEST_CASE( cubeWithHoleVolume )
                 ((.2 .2 .2,.2 .2 .8,.8 .2 .8,.8 .2 .2,.2 .2 .2)),\
                 ((.8 .2 .2,.8 .2 .8,.8 .8 .8,.8 .8 .2,.8 .2 .2)),\
                 ((.2 .2 .8,.2 .8 .8,.8 .8 .8,.8 .2 .8,.2 .2 .8)),\
-                ((.2 .8 .2,.8 .8 .2,.8 .8 .8,.2 .8 .8,.2 .8 .2))))");
-    const Kernel::FT c(.6);
+                ((.2 .8 .2,.8 .8 .2,.8 .8 .8,.2 .8 .8,.2 .8 .2))))" );
+    const Kernel::FT c( .6 );
     const Kernel::FT ref =  1 - c*c*c;
-    BOOST_CHECK_EQUAL( CGAL::to_double(algorithm::volume(s->as<Solid>(), algorithm::NoValidityCheck())), CGAL::to_double(ref));
+    BOOST_CHECK_EQUAL( CGAL::to_double( algorithm::volume( s->as<Solid>(), algorithm::NoValidityCheck() ) ), CGAL::to_double( ref ) );
 }
-    
+
 BOOST_AUTO_TEST_CASE( invertedCubeVolume )
 {
     std::auto_ptr<Geometry> s = io::readWkt( "SOLID((((0 0 0,0 1 0,0 1 1,0 0 1,0 0 0)),\
@@ -70,8 +70,8 @@ BOOST_AUTO_TEST_CASE( invertedCubeVolume )
                                                      ((0 0 0,0 0 1,1 0 1,1 0 0,0 0 0)),\
                                                      ((1 0 0,1 0 1,1 1 1,1 1 0,1 0 0)),\
                                                      ((0 0 1,0 1 1,1 1 1,1 0 1,0 0 1)),\
-                                                     ((0 1 0,1 1 0,1 1 1,0 1 1,0 1 0))))");
-    BOOST_CHECK_EQUAL( algorithm::volume(*s), -1);
+                                                     ((0 1 0,1 1 0,1 1 1,0 1 1,0 1 0))))" );
+    BOOST_CHECK_EQUAL( algorithm::volume( *s ), -1 );
 
 }
 

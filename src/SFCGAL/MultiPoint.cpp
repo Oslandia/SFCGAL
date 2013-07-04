@@ -28,7 +28,7 @@ namespace SFCGAL {
 ///
 ///
 MultiPoint::MultiPoint():
-	GeometryCollection()
+    GeometryCollection()
 {
 
 }
@@ -37,7 +37,7 @@ MultiPoint::MultiPoint():
 ///
 ///
 MultiPoint::MultiPoint( MultiPoint const& other ):
-	GeometryCollection(other)
+    GeometryCollection( other )
 {
 
 }
@@ -47,8 +47,8 @@ MultiPoint::MultiPoint( MultiPoint const& other ):
 ///
 MultiPoint& MultiPoint::operator = ( MultiPoint other )
 {
-	swap(other) ;
-	return *this ;
+    swap( other ) ;
+    return *this ;
 }
 
 ///
@@ -62,9 +62,9 @@ MultiPoint::~MultiPoint()
 ///
 ///
 ///
-MultiPoint *   MultiPoint::clone() const
+MultiPoint*    MultiPoint::clone() const
 {
-	return new MultiPoint(*this);
+    return new MultiPoint( *this );
 }
 
 ///
@@ -72,7 +72,7 @@ MultiPoint *   MultiPoint::clone() const
 ///
 std::string    MultiPoint::geometryType() const
 {
-	return "MultiPoint" ;
+    return "MultiPoint" ;
 }
 
 ///
@@ -80,7 +80,7 @@ std::string    MultiPoint::geometryType() const
 ///
 GeometryType   MultiPoint::geometryTypeId() const
 {
-	return TYPE_MULTIPOINT ;
+    return TYPE_MULTIPOINT ;
 }
 
 ///
@@ -88,7 +88,7 @@ GeometryType   MultiPoint::geometryTypeId() const
 ///
 bool           MultiPoint::isAllowed( Geometry const& g )
 {
-	return g.geometryTypeId() == TYPE_POINT ;
+    return g.geometryTypeId() == TYPE_POINT ;
 }
 
 
@@ -96,17 +96,17 @@ bool           MultiPoint::isAllowed( Geometry const& g )
 ///
 ///
 ///
-void MultiPoint::accept( GeometryVisitor & visitor )
+void MultiPoint::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void MultiPoint::accept( ConstGeometryVisitor & visitor ) const
+void MultiPoint::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

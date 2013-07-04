@@ -10,12 +10,12 @@
 namespace SFCGAL {
 namespace io {
 
-	/**
-	 * @brief read ASC grid from input stream
-	 *
-	 * @see http://en.wikipedia.org/wiki/Esri_grid
-	 */
-	SFCGAL_API std::auto_ptr< Grid > readASC( std::istream& s ) ;
+/**
+ * @brief read ASC grid from input stream
+ *
+ * @see http://en.wikipedia.org/wiki/Esri_grid
+ */
+SFCGAL_API std::auto_ptr< Grid > readASC( std::istream& s ) ;
 
 
 } // namespace io

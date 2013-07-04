@@ -36,14 +36,14 @@ Surface::~Surface()
 ///
 int  Surface::dimension() const
 {
-	return 2 ;
+    return 2 ;
 }
 
 ///
 ///
 ///
 Surface::Surface() :
-	Geometry()
+    Geometry()
 {
 
 }
@@ -52,7 +52,7 @@ Surface::Surface() :
 ///
 ///
 Surface::Surface( Surface const& other ) :
-	Geometry(other)
+    Geometry( other )
 {
 
 }

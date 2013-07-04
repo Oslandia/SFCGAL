@@ -28,24 +28,24 @@
 #include <memory>
 
 namespace SFCGAL {
-	class Geometry ;
-	class PreparedGeometry ;
+class Geometry ;
+class PreparedGeometry ;
 }
 
 namespace SFCGAL {
 namespace io {
-	/**
-	 * Read a EWKT prepared geometry from an input stream
-	 */
-	SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( std::istream & s ) ;
-	/**
-	 * Read a EWKT geometry from a string
-	 */
-	SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( const std::string & s ) ;
-	/**
-	 * Read a EWKT geometry from a char*
-	 */
-	SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( const char*, size_t );
+/**
+ * Read a EWKT prepared geometry from an input stream
+ */
+SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( std::istream& s ) ;
+/**
+ * Read a EWKT geometry from a string
+ */
+SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( const std::string& s ) ;
+/**
+ * Read a EWKT geometry from a char*
+ */
+SFCGAL_API std::auto_ptr< PreparedGeometry > readEwkt( const char*, size_t );
 }
 }
 

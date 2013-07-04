@@ -28,64 +28,64 @@
 #include <vector>
 
 namespace SFCGAL {
-	class Geometry ;
+class Geometry ;
 }
 
 namespace SFCGAL {
 namespace tools {
 
-	/**
-	 * Registry for dynamic information about SFCGAL library
-	 */
-	class SFCGAL_API Registry {
-	public:
-		typedef std::vector< Geometry* >::iterator       prototype_iterator ;
-		typedef std::vector< Geometry* >::const_iterator const_prototype_iterator ;
+/**
+ * Registry for dynamic information about SFCGAL library
+ */
+class SFCGAL_API Registry {
+public:
+    typedef std::vector< Geometry* >::iterator       prototype_iterator ;
+    typedef std::vector< Geometry* >::const_iterator const_prototype_iterator ;
 
-		/**
-		 * destructor
-		 */
-		~Registry();
+    /**
+     * destructor
+     */
+    ~Registry();
 
-		/**
-		 * Register a new Geometry type
-		 */
-		void addPrototype( const Geometry & g ) ;
+    /**
+     * Register a new Geometry type
+     */
+    void addPrototype( const Geometry& g ) ;
 
-		/**
-		 * returns the list of the geometry types
-		 */
-		std::vector< std::string > getGeometryTypes() const ;
+    /**
+     * returns the list of the geometry types
+     */
+    std::vector< std::string > getGeometryTypes() const ;
 
-		/**
-		 * returns a new instance of the given geometryTypeName
-		 */
-		Geometry*  newGeometryByTypeName( const std::string & geometryTypeName ) const ;
+    /**
+     * returns a new instance of the given geometryTypeName
+     */
+    Geometry*  newGeometryByTypeName( const std::string& geometryTypeName ) const ;
 
-		/**
-		 * returns a new instance of the given geometryType
-		 */
-		Geometry*  newGeometryByTypeId( int typeId ) const ;
+    /**
+     * returns a new instance of the given geometryType
+     */
+    Geometry*  newGeometryByTypeId( int typeId ) const ;
 
-		/**
-		 * returns the instance of the registry
-		 */
-		static Registry & instance() ;
-	private:
-		/**
-		 * static instance of the Singleton
-		 */
-		static Registry * _instance ;
-		/**
-		 * prototypes of the geometries
-		 */
-		std::vector< Geometry* > _prototypes ;
+    /**
+     * returns the instance of the registry
+     */
+    static Registry& instance() ;
+private:
+    /**
+     * static instance of the Singleton
+     */
+    static Registry* _instance ;
+    /**
+     * prototypes of the geometries
+     */
+    std::vector< Geometry* > _prototypes ;
 
-		/**
-		 * init registry
-		 */
-		Registry() ;
-	};
+    /**
+     * init registry
+     */
+    Registry() ;
+};
 
 }//namespace tools
 }//namespace SFCGAL

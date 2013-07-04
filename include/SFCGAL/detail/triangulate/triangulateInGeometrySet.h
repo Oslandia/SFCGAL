@@ -28,14 +28,14 @@
 namespace SFCGAL {
 namespace triangulate {
 
-	/**
-	 * Populate the GeometrySet<3> geometry with the triangulation (list of triangles) of a polyhedron
-	 */
-	SFCGAL_API void triangulate( const detail::MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& geometry );
-	/**
-	 * Populate the GeometrySet<2> geometry with the triangulation (list of polygons) of a polygon
-	 */
-	SFCGAL_API void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, detail::GeometrySet<2>& geometry );
+/**
+ * Populate the GeometrySet<3> geometry with the triangulation (list of triangles) of a polyhedron
+ */
+SFCGAL_API void triangulate( const detail::MarkedPolyhedron& polyhedron, detail::GeometrySet<3>& geometry );
+/**
+ * Populate the GeometrySet<2> geometry with the triangulation (list of polygons) of a polygon
+ */
+SFCGAL_API void triangulate( const CGAL::Polygon_with_holes_2<Kernel>& polygon, detail::GeometrySet<2>& geometry );
 
 }//algorithm
 }//SFCGAL

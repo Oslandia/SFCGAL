@@ -30,30 +30,30 @@
 namespace SFCGAL {
 namespace detail {
 
-	/**
-	 * Get the list of points from a Geometry
-	 *
-	 * @todo ConstPointVisitor
-	 */
-	class SFCGAL_API EnvelopeVisitor : public ConstGeometryVisitor {
-	public:
-		EnvelopeVisitor( Envelope & envelope_ );
+/**
+ * Get the list of points from a Geometry
+ *
+ * @todo ConstPointVisitor
+ */
+class SFCGAL_API EnvelopeVisitor : public ConstGeometryVisitor {
+public:
+    EnvelopeVisitor( Envelope& envelope_ );
 
-		virtual void visit( const Point & g ) ;
-		virtual void visit( const LineString & g ) ;
-		virtual void visit( const Polygon & g ) ;
-		virtual void visit( const Triangle & g ) ;
-		virtual void visit( const Solid & g ) ;
-		virtual void visit( const MultiPoint & g ) ;
-		virtual void visit( const MultiLineString & g ) ;
-		virtual void visit( const MultiPolygon & g ) ;
-		virtual void visit( const MultiSolid & g ) ;
-		virtual void visit( const GeometryCollection & g ) ;
-		virtual void visit( const PolyhedralSurface & g ) ;
-		virtual void visit( const TriangulatedSurface & g ) ;
-	public:
-		Envelope & envelope ;
-	};
+    virtual void visit( const Point& g ) ;
+    virtual void visit( const LineString& g ) ;
+    virtual void visit( const Polygon& g ) ;
+    virtual void visit( const Triangle& g ) ;
+    virtual void visit( const Solid& g ) ;
+    virtual void visit( const MultiPoint& g ) ;
+    virtual void visit( const MultiLineString& g ) ;
+    virtual void visit( const MultiPolygon& g ) ;
+    virtual void visit( const MultiSolid& g ) ;
+    virtual void visit( const GeometryCollection& g ) ;
+    virtual void visit( const PolyhedralSurface& g ) ;
+    virtual void visit( const TriangulatedSurface& g ) ;
+public:
+    Envelope& envelope ;
+};
 
 
 }//detail

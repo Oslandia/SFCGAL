@@ -45,16 +45,16 @@ using namespace SFCGAL ;
 using namespace SFCGAL::viewer ;
 
 
-int main(int argc, char** argv)
+int main( int argc, char** argv )
 {
-	Logger::get()->setLogLevel( Logger::Debug );
+    Logger::get()->setLogLevel( Logger::Debug );
 
     // use an ArgumentParser object to manage the program arguments.
-    osg::ArgumentParser arguments(&argc,argv);
+    osg::ArgumentParser arguments( &argc,argv );
 
-    QApplication app(argc, argv);
+    QApplication app( argc, argv );
 
-    ViewerWidget * viewer = ViewerWidget::createFromArguments( arguments );
+    ViewerWidget* viewer = ViewerWidget::createFromArguments( arguments );
 //    osg::Geode* geode = new osg::Geode;
 //    //osg::StateSet* status = geode->getOrCreateStateSet();
 //    //status->setMode(GL_LIGHTING, osg::StateAttribute::ON);
@@ -84,12 +84,12 @@ int main(int argc, char** argv)
 //	viewer->getScene()->addChild( geode ) ;
 
 
-	ViewerWindow window( viewer );
-	window.addPlugin( new plugins::DataPlugin ) ;
-	window.addPlugin( new plugins::DemoPlugin ) ;
-	window.addPlugin( new plugins::GridPlugin ) ;
-	window.addPlugin( new plugins::PSQLPlugin ) ;
-	window.show();
+    ViewerWindow window( viewer );
+    window.addPlugin( new plugins::DataPlugin ) ;
+    window.addPlugin( new plugins::DemoPlugin ) ;
+    window.addPlugin( new plugins::GridPlugin ) ;
+    window.addPlugin( new plugins::PSQLPlugin ) ;
+    window.show();
 
-	return app.exec();
+    return app.exec();
 }

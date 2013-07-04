@@ -25,22 +25,22 @@
 #include <SFCGAL/export.h>
 
 namespace SFCGAL {
-	class Geometry;
-	namespace detail {
-		template <int Dim> class GeometrySet;
-	}
+class Geometry;
+namespace detail {
+template <int Dim> class GeometrySet;
+}
 namespace algorithm {
-	/*
-	 * Difference between two 2D geometries.
-	 */
-	SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
-	
-	/*
-	 * Difference between two geometry sets
-	 */
-	template <int Dim>
-	void difference( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& output );
-    }
+/**
+ * Difference between two 2D geometries.
+ */
+SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
+
+/**
+ * Difference between two geometry sets
+ */
+template <int Dim>
+void difference( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& output );
+}
 }
 
 #endif

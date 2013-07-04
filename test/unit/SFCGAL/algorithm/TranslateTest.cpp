@@ -35,16 +35,17 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_TranslateTest )
 
 BOOST_AUTO_TEST_CASE( testEmpty )
 {
-	tools::Registry & registry = tools::Registry::instance() ;
-	std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
-	for ( size_t i = 0; i < typeNames.size(); i++ ){
-		BOOST_TEST_MESSAGE( typeNames[i] ) ;
+    tools::Registry& registry = tools::Registry::instance() ;
+    std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
 
-		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
-		BOOST_REQUIRE( g.get() != NULL ) ;
-		algorithm::translate( *g, 1.0, 1.0, 1.0 );
-		BOOST_CHECK( g->isEmpty() );
-	}
+    for ( size_t i = 0; i < typeNames.size(); i++ ) {
+        BOOST_TEST_MESSAGE( typeNames[i] ) ;
+
+        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+        BOOST_REQUIRE( g.get() != NULL ) ;
+        algorithm::translate( *g, 1.0, 1.0, 1.0 );
+        BOOST_CHECK( g->isEmpty() );
+    }
 }
 
 //TODO complete with 2D/3D test after having renamed translate to translate3D

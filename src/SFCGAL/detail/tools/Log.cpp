@@ -39,82 +39,94 @@ Logger::~Logger()
 Logger* Logger::get()
 {
     static Logger log( std::cout );
-	return &log;
+    return &log;
 }
 
 ///
 ///
 ///
 void Logger::log(
-	const Level & level,
-	const boost::format& message,
-	const std::string & filename,
-	const int & lineNumber
+    const Level& level,
+    const boost::format& message,
+    const std::string& filename,
+    const int& lineNumber
 )
 {
-	log( level, message.str(), filename, lineNumber );
+    log( level, message.str(), filename, lineNumber );
 }
 
 ///
 ///
 ///
 void Logger::log(
-	const Level & level,
-	const std::string& message,
-	const std::string & filename,
-	const int & lineNumber
+    const Level& level,
+    const std::string& message,
+    const std::string& filename,
+    const int& lineNumber
 )
 {
-	using namespace boost::posix_time;
+    using namespace boost::posix_time;
 
-	if ( level < _logLevel ){
-		return ;
-	}
-
-	//ptime now = second_clock::local_time();
-	//_out << to_iso_string(now) << ":" ;
-
-	if ( _displayFilePosition && ! filename.empty() ){
-		_out << filename << ":" ;
-	}
-	if ( _displayFilePosition && lineNumber >= 0 ){
-		_out << lineNumber <<  ":" ;
-	}
-
-    switch ( level ){
-        case Debug:   _out << " debug: "; break;
-        case Info:    _out << " info: "; break;
-        case Warning: _out << " warning: "; break;
-        case Error:   _out << " error: "; break;
-        case Critical:_out << " critical: "; break;
+    if ( level < _logLevel ) {
+        return ;
     }
-	_out << message << std::endl ;
+
+    //ptime now = second_clock::local_time();
+    //_out << to_iso_string(now) << ":" ;
+
+    if ( _displayFilePosition && ! filename.empty() ) {
+        _out << filename << ":" ;
+    }
+
+    if ( _displayFilePosition && lineNumber >= 0 ) {
+        _out << lineNumber <<  ":" ;
+    }
+
+    switch ( level ) {
+    case Debug:
+        _out << " debug: ";
+        break;
+    case Info:
+        _out << " info: ";
+        break;
+    case Warning:
+        _out << " warning: ";
+        break;
+    case Error:
+        _out << " error: ";
+        break;
+    case Critical:
+        _out << " critical: ";
+        break;
+    }
+
+    _out << message << std::endl ;
 }
 
 
 ///
 ///
 ///
-const Logger::Level & Logger::logLevel() const
+const Logger::Level& Logger::logLevel() const
 {
-	return _logLevel ;
+    return _logLevel ;
 }
 
 ///
 ///
 ///
-void Logger::setLogLevel( const Level & logLevel )
+void Logger::setLogLevel( const Level& logLevel )
 {
-	_logLevel = logLevel ;
+    _logLevel = logLevel ;
 }
 
 ///
 ///
 ///
 Logger::Logger( std::ostream& str ):
-	_logLevel( Warning ),
-	_displayFilePosition(true),
-	_out( str.rdbuf() )
+    _logLevel( Warning ),
+    _displayFilePosition( true ),
+    _out( str.rdbuf() )
 {
 
 }
@@ -122,9 +134,9 @@ Logger::Logger( std::ostream& str ):
 ///
 ///
 ///
-Logger & logger()
+Logger& logger()
 {
-	return * Logger::get() ;
+    return * Logger::get() ;
 }
 
 

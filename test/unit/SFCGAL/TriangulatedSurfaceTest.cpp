@@ -36,20 +36,20 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatedSurfaceTest )
 //TriangulatedSurface() ;
 BOOST_AUTO_TEST_CASE( defaultConstructor )
 {
-	TriangulatedSurface g ;
-	BOOST_CHECK( g.isEmpty() ) ;
-	BOOST_CHECK_EQUAL( g.numTriangles(), 0U ) ;
+    TriangulatedSurface g ;
+    BOOST_CHECK( g.isEmpty() ) ;
+    BOOST_CHECK_EQUAL( g.numTriangles(), 0U ) ;
 }
 //TriangulatedSurface( const std::vector< Triangle > & triangle ) ;
 BOOST_AUTO_TEST_CASE( constructorWithTriangles )
 {
-	std::vector< Triangle > triangles ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,0.0), Point(1.0,1.0) ) ) ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,1.0), Point(0.0,1.0) ) ) ;
+    std::vector< Triangle > triangles ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,0.0 ), Point( 1.0,1.0 ) ) ) ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,1.0 ), Point( 0.0,1.0 ) ) ) ;
 
-	TriangulatedSurface g( triangles ) ;
-	BOOST_CHECK( ! g.isEmpty() ) ;
-	BOOST_CHECK_EQUAL( g.numTriangles(), 2U ) ;
+    TriangulatedSurface g( triangles ) ;
+    BOOST_CHECK( ! g.isEmpty() ) ;
+    BOOST_CHECK_EQUAL( g.numTriangles(), 2U ) ;
 }
 
 //TriangulatedSurface( TriangulatedSurface const& other ) ;
@@ -91,70 +91,70 @@ BOOST_AUTO_TEST_CASE( constructorWithTriangles )
 //virtual Geometry *   Geometry::clone() const = 0 ;
 BOOST_AUTO_TEST_CASE( testClone )
 {
-	std::vector< Triangle > triangles ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,0.0), Point(1.0,1.0) ) ) ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,1.0), Point(0.0,1.0) ) ) ;
+    std::vector< Triangle > triangles ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,0.0 ), Point( 1.0,1.0 ) ) ) ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,1.0 ), Point( 0.0,1.0 ) ) ) ;
 
-	TriangulatedSurface g( triangles ) ;
+    TriangulatedSurface g( triangles ) ;
 
-	std::auto_ptr< Geometry > copy( g.clone() );
-	BOOST_REQUIRE( copy->is< TriangulatedSurface >() );
-	BOOST_CHECK_EQUAL( copy->as< TriangulatedSurface >().numTriangles(), 2U );
+    std::auto_ptr< Geometry > copy( g.clone() );
+    BOOST_REQUIRE( copy->is< TriangulatedSurface >() );
+    BOOST_CHECK_EQUAL( copy->as< TriangulatedSurface >().numTriangles(), 2U );
 }
 
 //virtual Geometry*    Geometry::boundary() const ;
 BOOST_AUTO_TEST_CASE( testBoundary )
 {
-	std::vector< Triangle > triangles ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,0.0), Point(1.0,1.0) ) ) ;
-	triangles.push_back( Triangle( Point(0.0,0.0), Point(1.0,1.0), Point(0.0,1.0) ) ) ;
+    std::vector< Triangle > triangles ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,0.0 ), Point( 1.0,1.0 ) ) ) ;
+    triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,1.0 ), Point( 0.0,1.0 ) ) ) ;
 
-	TriangulatedSurface g( triangles ) ;
-	std::auto_ptr< Geometry > boundary( g.boundary() );
-	// TODO add algorithm::lineMerge and update
-	BOOST_CHECK_EQUAL( boundary->asText(0), "MULTILINESTRING((0 0,1 0),(1 0,1 1),(1 1,0 1),(0 1,0 0))" );
+    TriangulatedSurface g( triangles ) ;
+    std::auto_ptr< Geometry > boundary( g.boundary() );
+    // TODO add algorithm::lineMerge and update
+    BOOST_CHECK_EQUAL( boundary->asText( 0 ), "MULTILINESTRING((0 0,1 0),(1 0,1 1),(1 1,0 1),(0 1,0 0))" );
 }
 BOOST_AUTO_TEST_CASE( testBoundaryClosed )
 {
-	Point a( 0.0, 0.0, 0.0 );
-	Point b( 1.0, 0.0, 0.0 );
-	Point c( 0.0, 1.0, 0.0 );
-	Point d( 0.0, 0.0, 1.0 );
+    Point a( 0.0, 0.0, 0.0 );
+    Point b( 1.0, 0.0, 0.0 );
+    Point c( 0.0, 1.0, 0.0 );
+    Point d( 0.0, 0.0, 1.0 );
 
-	std::vector< Triangle > triangles ;
-	triangles.push_back( Triangle( a, c, b ) ) ;
-	triangles.push_back( Triangle( a, b, d ) ) ;
-	triangles.push_back( Triangle( b, c, d ) ) ;
-	triangles.push_back( Triangle( c, a, d ) ) ;
+    std::vector< Triangle > triangles ;
+    triangles.push_back( Triangle( a, c, b ) ) ;
+    triangles.push_back( Triangle( a, b, d ) ) ;
+    triangles.push_back( Triangle( b, c, d ) ) ;
+    triangles.push_back( Triangle( c, a, d ) ) ;
 
-	TriangulatedSurface g( triangles ) ;
-	std::auto_ptr< Geometry > boundary( g.boundary() );
-	BOOST_CHECK( boundary->isEmpty() );
+    TriangulatedSurface g( triangles ) ;
+    std::auto_ptr< Geometry > boundary( g.boundary() );
+    BOOST_CHECK( boundary->isEmpty() );
 }
 
 
 //Envelope             Geometry::envelope() const ;
 BOOST_AUTO_TEST_CASE( testEnvelope )
 {
-	Point a( 0.0, 0.0, 0.0 );
-	Point b( 1.0, 0.0, 0.0 );
-	Point c( 0.0, 1.0, 0.0 );
-	Point d( 0.0, 0.0, 1.0 );
+    Point a( 0.0, 0.0, 0.0 );
+    Point b( 1.0, 0.0, 0.0 );
+    Point c( 0.0, 1.0, 0.0 );
+    Point d( 0.0, 0.0, 1.0 );
 
-	std::vector< Triangle > triangles ;
-	triangles.push_back( Triangle( a, c, b ) ) ;
-	triangles.push_back( Triangle( a, b, d ) ) ;
-	triangles.push_back( Triangle( b, c, d ) ) ;
-	triangles.push_back( Triangle( c, a, d ) ) ;
+    std::vector< Triangle > triangles ;
+    triangles.push_back( Triangle( a, c, b ) ) ;
+    triangles.push_back( Triangle( a, b, d ) ) ;
+    triangles.push_back( Triangle( b, c, d ) ) ;
+    triangles.push_back( Triangle( c, a, d ) ) ;
 
-	TriangulatedSurface g( triangles ) ;
-	Envelope bbox = g.envelope() ;
-	BOOST_CHECK_EQUAL( bbox.xMin(), 0.0 );
-	BOOST_CHECK_EQUAL( bbox.xMax(), 1.0 );
-	BOOST_CHECK_EQUAL( bbox.yMin(), 0.0 );
-	BOOST_CHECK_EQUAL( bbox.yMax(), 1.0 );
-	BOOST_CHECK_EQUAL( bbox.zMin(), 0.0 );
-	BOOST_CHECK_EQUAL( bbox.zMax(), 1.0 );
+    TriangulatedSurface g( triangles ) ;
+    Envelope bbox = g.envelope() ;
+    BOOST_CHECK_EQUAL( bbox.xMin(), 0.0 );
+    BOOST_CHECK_EQUAL( bbox.xMax(), 1.0 );
+    BOOST_CHECK_EQUAL( bbox.yMin(), 0.0 );
+    BOOST_CHECK_EQUAL( bbox.yMax(), 1.0 );
+    BOOST_CHECK_EQUAL( bbox.zMin(), 0.0 );
+    BOOST_CHECK_EQUAL( bbox.zMax(), 1.0 );
 }
 //std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
 //TODO
@@ -162,21 +162,21 @@ BOOST_AUTO_TEST_CASE( testEnvelope )
 //virtual std::string  Geometry::geometryType() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryType )
 {
-	TriangulatedSurface g;
-	BOOST_CHECK_EQUAL( g.geometryType(), "TriangulatedSurface" );
+    TriangulatedSurface g;
+    BOOST_CHECK_EQUAL( g.geometryType(), "TriangulatedSurface" );
 }
 //virtual GeometryType Geometry::geometryTypeId() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryTypeId )
 {
-	TriangulatedSurface g;
-	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_TRIANGULATEDSURFACE );
+    TriangulatedSurface g;
+    BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_TRIANGULATEDSURFACE );
 }
 
 //virtual int          Geometry::dimension() const = 0 ;
 BOOST_AUTO_TEST_CASE( testDimension )
 {
-	TriangulatedSurface g;
-	BOOST_CHECK_EQUAL( g.dimension(), 2 ); //surface
+    TriangulatedSurface g;
+    BOOST_CHECK_EQUAL( g.dimension(), 2 ); //surface
 }
 
 //virtual int          Geometry::coordinateDimension() const = 0 ;
@@ -187,8 +187,8 @@ BOOST_AUTO_TEST_CASE( testDimension )
 //template < typename Derived > inline bool Geometry::is() const
 BOOST_AUTO_TEST_CASE( isTriangulatedSurface )
 {
-	TriangulatedSurface g;
-	BOOST_CHECK( g.is< TriangulatedSurface >() );
+    TriangulatedSurface g;
+    BOOST_CHECK( g.is< TriangulatedSurface >() );
 }
 //template < typename Derived > inline const Derived &  Geometry::as() const
 //template < typename Derived > inline Derived &        Geometry::as()
@@ -199,20 +199,20 @@ BOOST_AUTO_TEST_CASE( isTriangulatedSurface )
 
 BOOST_AUTO_TEST_CASE( polyhedronConversionTest )
 {
-	// two unit squares sharing a common edge (1,0)-(1,1)
-	std::string gstr = "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),"
-		"((1 0 0,1 1 0,2 1 0,2 0 0,1 0 0)))";
-	// the following surface would generate an exception, since the two polygons have opposite orientations
-	// "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((2 0 0,2 1 0,1 1 0,1 0 0,2 0 0)))";
-	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
+    // two unit squares sharing a common edge (1,0)-(1,1)
+    std::string gstr = "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),"
+                       "((1 0 0,1 1 0,2 1 0,2 0 0,1 0 0)))";
+    // the following surface would generate an exception, since the two polygons have opposite orientations
+    // "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((2 0 0,2 1 0,1 1 0,1 0 0,2 0 0)))";
+    std::auto_ptr<Geometry> g( io::readWkt( gstr ) );
 
-	TriangulatedSurface tri;
-	triangulate::triangulatePolygon3D( *g, tri );
+    TriangulatedSurface tri;
+    triangulate::triangulatePolygon3D( *g, tri );
 
-	std::auto_ptr<CGAL::Polyhedron_3<Kernel> > poly( tri.toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
-	// we check the two squares share a common edge
-	BOOST_CHECK_EQUAL( poly->size_of_facets(), 4U );
-	BOOST_CHECK_EQUAL( poly->size_of_vertices(), 6U );
+    std::auto_ptr<CGAL::Polyhedron_3<Kernel> > poly( tri.toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
+    // we check the two squares share a common edge
+    BOOST_CHECK_EQUAL( poly->size_of_facets(), 4U );
+    BOOST_CHECK_EQUAL( poly->size_of_vertices(), 6U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

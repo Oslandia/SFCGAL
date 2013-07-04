@@ -53,46 +53,55 @@ namespace po = boost::program_options ;
 /*
  * Monkey testing of the SFCGAL pulic api
  */
-int main( int argc, char* argv[] ){
-	/*
-	 * declare options
-	 */
-	po::options_description desc("garden test options : ");
-	desc.add_options()
-	    ("help", "produce help message")
-	    ("progress", "display progress")
-	    ("verbose",  "verbose mode")
-	;
+int main( int argc, char* argv[] )
+{
+    /*
+     * declare options
+     */
+    po::options_description desc( "garden test options : " );
+    desc.add_options()
+    ( "help", "produce help message" )
+    ( "progress", "display progress" )
+    ( "verbose",  "verbose mode" )
+    ;
 
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
+    po::variables_map vm;
+    po::store( po::parse_command_line( argc, argv, desc ), vm );
+    po::notify( vm );
 
-	if (vm.count("help")) {
-	    std::cout << desc << std::endl ;
-	    return 0;
-	}
+    if ( vm.count( "help" ) ) {
+        std::cout << desc << std::endl ;
+        return 0;
+    }
 
-	bool verbose  = vm.count("verbose") != 0 ;
-	bool progress = vm.count("progress") != 0 ;
+    bool verbose  = vm.count( "verbose" ) != 0 ;
+    bool progress = vm.count( "progress" ) != 0 ;
 
 
-	//boost::timer timer ;
-	boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-    if ( verbose ) std::cout << "testing SFCGAL version " << Version() << "\n";
+    //boost::timer timer ;
+    boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+
+    if ( verbose ) {
+        std::cout << "testing SFCGAL version " << Version() << "\n";
+    }
 
 
     // construction of a list valid and invalid test geometries
     GeometryCollection testCollection;
     {
-        if ( verbose ) std::cout << "creating test geometries\n";
+        if ( verbose ) {
+            std::cout << "creating test geometries\n";
+        }
+
         // start with a collection of valid and invalid geometries
         const std::vector< TestGeometry > testGeom( createTestGeometries() ) ;
-        for ( std::vector< TestGeometry >::const_iterator tg=testGeom.begin(); 
-                tg!=testGeom.end(); ++tg) {
-            std::auto_ptr< Geometry > g( io::readWkt(tg->wkt) );
+
+        for ( std::vector< TestGeometry >::const_iterator tg=testGeom.begin();
+                tg!=testGeom.end(); ++tg ) {
+            std::auto_ptr< Geometry > g( io::readWkt( tg->wkt ) );
             testCollection.addGeometry( g.release() );
         }
+
         // default constructed geometries
         testCollection.addGeometry( new Point ) ;
         testCollection.addGeometry( new LineString ) ;
@@ -107,8 +116,8 @@ int main( int argc, char* argv[] ){
         testCollection.addGeometry( new GeometryCollection ) ;
 
         // non default constructed
-        testCollection.addGeometry( new Point(67.8,-57.6568) ) ;
-        testCollection.addGeometry( new Point(67.8,-57.6568, 589.5679) ) ;
+        testCollection.addGeometry( new Point( 67.8,-57.6568 ) ) ;
+        testCollection.addGeometry( new Point( 67.8,-57.6568, 589.5679 ) ) ;
         testCollection.addGeometry( new Polygon( LineString() ) ) ;
         testCollection.addGeometry( new Solid( PolyhedralSurface() ) ) ;
     }
@@ -116,76 +125,107 @@ int main( int argc, char* argv[] ){
     // member function calls
     typedef GeometryCollection::const_iterator GeomIter;
     const size_t numGeom = testCollection.numGeometries();
-    if (verbose) std::cout << "testing member functions on " << numGeom << " geometries\n";
-    for (size_t g=0; g!=numGeom; g++) {
-        const Geometry & geom = testCollection.geometryN(g); // make copy to modify
-        (void)geom.is3D() ;
-        (void)geom.isEmpty() ;
+
+    if ( verbose ) {
+        std::cout << "testing member functions on " << numGeom << " geometries\n";
+    }
+
+    for ( size_t g=0; g!=numGeom; g++ ) {
+        const Geometry& geom = testCollection.geometryN( g ); // make copy to modify
+        ( void )geom.is3D() ;
+        ( void )geom.isEmpty() ;
 
         {
             srid_t srid = 12; // whatever
-            PreparedGeometry prep(geom.clone(), srid);
-            (void)prep.geometry();
+            PreparedGeometry prep( geom.clone(), srid );
+            ( void )prep.geometry();
             BOOST_ASSERT( prep.SRID() == srid );
         }
-        if (verbose) std::cout << (boost::format("% 8d")%g) << " - " << (geom.is3D()?"3D":"2D") << " " << geom.geometryType() << (geom.isEmpty()?" (empty)":"") << (algorithm::isValid(geom)?"":" (invalid)");
-        switch (geom.geometryTypeId())
-        {
-        case TYPE_POINT :
-            {
-                Point p(geom.as<Point>()) ;
-                try{
-                    (void)p.x();
-                    (void)p.y();
-                    (void)p.z();
-                }
-                catch (Exception) {
-                    BOOST_ASSERT(p.isEmpty());
+
+        if ( verbose ) {
+            std::cout << ( boost::format( "% 8d" )%g ) << " - " << ( geom.is3D()?"3D":"2D" ) << " " << geom.geometryType() << ( geom.isEmpty()?" (empty)":"" ) << ( algorithm::isValid( geom )?"":" (invalid)" );
+        }
+
+        switch ( geom.geometryTypeId() ) {
+        case TYPE_POINT : {
+            Point p( geom.as<Point>() ) ;
+
+            try {
+                ( void )p.x();
+                ( void )p.y();
+                ( void )p.z();
+            }
+            catch ( Exception ) {
+                BOOST_ASSERT( p.isEmpty() );
+            }
+        }
+        break;
+        case TYPE_LINESTRING : {
+            LineString l( geom.as<LineString>() );
+            const size_t numPoints = l.numPoints();
+
+            if ( verbose ) {
+                std::cout << ", " << numPoints << " points";
+            }
+
+            for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                if ( i->is<Point>() ) {
+                    l.addPoint( i->as<Point>() );
                 }
             }
-            break;
-        case TYPE_LINESTRING :
-            {
-                LineString l( geom.as<LineString>() );
-                const size_t numPoints = l.numPoints();
-                if (verbose) std::cout << ", " << numPoints << " points";
-                for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                    if ( i->is<Point>() ) l.addPoint( i->as<Point>() );
-                }
-                if (verbose) std::cout << ", added " << l.numPoints()-numPoints << " points";
-                (void)l.pointN(0);
-                (void)l.pointN(l.numPoints()-1);
+
+            if ( verbose ) {
+                std::cout << ", added " << l.numPoints()-numPoints << " points";
+            }
+
+            ( void )l.pointN( 0 );
+            ( void )l.pointN( l.numPoints()-1 );
 #               ifdef DEBUG
-                bool threw = false ;
-                try {(void)l.pointN(l.numPoints());}
-                catch (std::exception) { threw = true; }
-                BOOST_ASSERT(threw);
-#               endif
+            bool threw = false ;
+
+            try {
+                ( void )l.pointN( l.numPoints() );
             }
-            break;
-        case TYPE_POLYGON :
-            {
-                Polygon p(geom.as<Polygon>()) ;
-                for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                    if ( i->is<LineString>() ) {
-                        p.addRing( i->as<LineString>() );
-                        (void)Polygon(  i->as<LineString>() );
-                    }
+            catch ( std::exception ) {
+                threw = true;
+            }
+
+            BOOST_ASSERT( threw );
+#               endif
+        }
+        break;
+        case TYPE_POLYGON : {
+            Polygon p( geom.as<Polygon>() ) ;
+
+            for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                if ( i->is<LineString>() ) {
+                    p.addRing( i->as<LineString>() );
+                    ( void )Polygon(  i->as<LineString>() );
                 }
-                (void)p.exteriorRing();
-                if (p.numInteriorRings()) {
-                    (void)p.interiorRingN(0);
-                    (void)p.interiorRingN(p.numInteriorRings()-1);
-                }
-                (void)p.isCounterClockWiseOriented();
+            }
+
+            ( void )p.exteriorRing();
+
+            if ( p.numInteriorRings() ) {
+                ( void )p.interiorRingN( 0 );
+                ( void )p.interiorRingN( p.numInteriorRings()-1 );
+            }
+
+            ( void )p.isCounterClockWiseOriented();
 #               ifdef DEBUG
-                bool threw = false ;
-                try { (void)p.interiorRingN(p.numInteriorRings());}
-                catch (std::exception) { threw = true; }
-                BOOST_ASSERT(threw);
-#               endif
+            bool threw = false ;
+
+            try {
+                ( void )p.interiorRingN( p.numInteriorRings() );
             }
-            break;
+            catch ( std::exception ) {
+                threw = true;
+            }
+
+            BOOST_ASSERT( threw );
+#               endif
+        }
+        break;
         case TYPE_MULTIPOINT :
             geom.as<MultiPoint>() ;
             break;
@@ -198,78 +238,112 @@ int main( int argc, char* argv[] ){
         case TYPE_GEOMETRYCOLLECTION :
             geom.as<GeometryCollection>() ;
             break;
-        case TYPE_POLYHEDRALSURFACE :
-            {
-                PolyhedralSurface s( geom.as<PolyhedralSurface>() ) ;
-                for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                    if ( i->is<Polygon>() ) s.addPolygon( i->as<Polygon>() );
+        case TYPE_POLYHEDRALSURFACE : {
+            PolyhedralSurface s( geom.as<PolyhedralSurface>() ) ;
+
+            for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                if ( i->is<Polygon>() ) {
+                    s.addPolygon( i->as<Polygon>() );
                 }
-                if (s.numPolygons()) {
-                    (void)s.polygonN(0);
-                    (void)s.polygonN(s.numPolygons()-1);
-                }
-#               ifdef DEBUG
-                bool threw = false ;
-                try { (void)s.polygonN(s.numPolygons()); }
-                catch (std::exception) { threw = true; }
-                BOOST_ASSERT(threw);
-#               endif
             }
-            break;
-        case TYPE_TRIANGULATEDSURFACE :
-            {
-                TriangulatedSurface s( geom.as<TriangulatedSurface>() ) ;
-                for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                    if ( i->is<Triangle>() ) s.addTriangle( i->as<Triangle>() );
-                }
-                if (s.numTriangles()) {
-                    (void)s.triangleN(0);
-                    (void)s.triangleN(s.numTriangles()-1);
-                }
-#               ifdef DEBUG
-                bool threw = false ;
-                try { (void)s.triangleN(s.numTriangles()); }
-                catch (std::exception) { threw = true; }
-                BOOST_ASSERT(threw);
-#               endif
+
+            if ( s.numPolygons() ) {
+                ( void )s.polygonN( 0 );
+                ( void )s.polygonN( s.numPolygons()-1 );
             }
-            break;
-        case TYPE_TRIANGLE :
-            {
-                Triangle t( geom.as<Triangle>() ) ;
-                for (int j=0; j<3; ++j) {
-                    (void)geom.as<Triangle>().vertex(j) ; // to execise const
-                    for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                        if ( i->is<Point>() ) {
-                            t.vertex(j) = i->as<Point>() ;
-                            BOOST_ASSERT( t.vertex(j) ==  i->as<Point>() ); 
-                        }
+
+#               ifdef DEBUG
+            bool threw = false ;
+
+            try {
+                ( void )s.polygonN( s.numPolygons() );
+            }
+            catch ( std::exception ) {
+                threw = true;
+            }
+
+            BOOST_ASSERT( threw );
+#               endif
+        }
+        break;
+        case TYPE_TRIANGULATEDSURFACE : {
+            TriangulatedSurface s( geom.as<TriangulatedSurface>() ) ;
+
+            for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                if ( i->is<Triangle>() ) {
+                    s.addTriangle( i->as<Triangle>() );
+                }
+            }
+
+            if ( s.numTriangles() ) {
+                ( void )s.triangleN( 0 );
+                ( void )s.triangleN( s.numTriangles()-1 );
+            }
+
+#               ifdef DEBUG
+            bool threw = false ;
+
+            try {
+                ( void )s.triangleN( s.numTriangles() );
+            }
+            catch ( std::exception ) {
+                threw = true;
+            }
+
+            BOOST_ASSERT( threw );
+#               endif
+        }
+        break;
+        case TYPE_TRIANGLE : {
+            Triangle t( geom.as<Triangle>() ) ;
+
+            for ( int j=0; j<3; ++j ) {
+                ( void )geom.as<Triangle>().vertex( j ) ; // to execise const
+
+                for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                    if ( i->is<Point>() ) {
+                        t.vertex( j ) = i->as<Point>() ;
+                        BOOST_ASSERT( t.vertex( j ) ==  i->as<Point>() );
                     }
                 }
             }
-            break;
-        case TYPE_SOLID :
-            {
-                Solid s( geom.as<Solid>() ) ;
-                for (GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i) {
-                    if ( i->is<PolyhedralSurface>() ) (void)Solid( i->as<PolyhedralSurface>() );
+        }
+        break;
+        case TYPE_SOLID : {
+            Solid s( geom.as<Solid>() ) ;
+
+            for ( GeomIter i=testCollection.begin(); i!=testCollection.end(); ++i ) {
+                if ( i->is<PolyhedralSurface>() ) {
+                    ( void )Solid( i->as<PolyhedralSurface>() );
                 }
-                if (s.numShells()) {
-                    (void)s.shellN(0);
-                    (void)s.shellN(s.numShells()-1);
-                }
-#               ifdef DEBUG
-                try { (void)s.shellN(s.numShells());}
-                catch (std::exception) { threw = true; }
-                BOOST_ASSERT(threw);
-#               endif
             }
-            break;
+
+            if ( s.numShells() ) {
+                ( void )s.shellN( 0 );
+                ( void )s.shellN( s.numShells()-1 );
+            }
+
+#               ifdef DEBUG
+
+            try {
+                ( void )s.shellN( s.numShells() );
+            }
+            catch ( std::exception ) {
+                threw = true;
+            }
+
+            BOOST_ASSERT( threw );
+#               endif
+        }
+        break;
         case TYPE_MULTISOLID :
             geom.as<MultiSolid>() ;
             break;
         }
-        if (verbose) std::cout << "\n";
+
+        if ( verbose ) {
+            std::cout << "\n";
+        }
     }
 
     size_t numFailure = 0;
@@ -303,63 +377,81 @@ int main( int argc, char* argv[] ){
         catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     }
 
-    for (GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1) {
-        
+    for ( GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1 ) {
+
         GeomIter geom2 = testCollection.end();
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area3D(*geom1) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::area(*geom1) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom1->is<Polygon>()) (void)algorithm::hasPlane3D<Kernel>(geom1->as<Polygon>()) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::straightSkeleton(*geom1) ; )
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::tesselate(*geom1) ; )
-       
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
-            {
-                triangulate::ConstraintDelaunayTriangulation cdt;
-                triangulate::triangulate2DZ( *geom1, cdt );
-                TriangulatedSurface surf;
-                cdt.getTriangles( surf );
-            }
-        )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area3D( *geom1 ) ; )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area( *geom1 ) ; )
 
-        
-        for (geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2) {
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( 
-                if (geom2->is<Point>() && !geom2->isEmpty() ) {
-                    const Point & p = geom2->as<Point>() ;
-                    (void)algorithm::extrude(*geom1, p.x(), p.y(), p.z()) ;
-                }
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom1->is<Polygon>() ) ( void )algorithm::hasPlane3D<Kernel>( geom1->as<Polygon>() ) ; ) {
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ;
+        } )
+
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ;
+                                              )
+
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( {
+            triangulate::ConstraintDelaunayTriangulation cdt;
+            triangulate::triangulate2DZ( *geom1, cdt );
+            TriangulatedSurface surf;
+            cdt.getTriangles( surf );
+        }
+                                              )
+
+
+        for ( geom2=testCollection.begin() {
+            ;
+        }
+
+        geom2!=testCollection.end();
+        ++geom2 ) {
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
+
+            if ( geom2->is<Point>() && !geom2->isEmpty() ) {
+            const Point& p = geom2->as<Point>() ;
+                ( void )algorithm::extrude( *geom1, p.x(), p.y(), p.z() ) ;
+            }
             )
 
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::distance3D(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::distance(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersection3D(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersection(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersects3D(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( (void)algorithm::intersects(*geom1, *geom2) ; )
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if (geom2->is<Polygon>()) (void)algorithm::minkowskiSum(*geom1, geom2->as<Polygon>()) ; )
-        }
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::distance3D( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::distance( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersection3D( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersection( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects3D( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects( *geom1, *geom2 ) ; )
+
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom2->is<Polygon>() ) ( void )algorithm::minkowskiSum( *geom1, geom2->as<Polygon>() ) ; )
+            }
+
         if ( progress || verbose ) std::cout << "performed " << calls << " function calls\n";
     }
-    
-    if (!notImplemented.empty()) {
+
+if ( !notImplemented.empty() ) {
         std::cout << "Missing implementations\n";
-        for (std::set< std::string >::const_iterator i=notImplemented.begin(); 
-                i!=notImplemented.end(); ++i) {
-            std::cout << "    " << *i << "\n" ;    
+
+        for ( std::set< std::string >::const_iterator i=notImplemented.begin();
+                i!=notImplemented.end(); ++i ) {
+            std::cout << "    " << *i << "\n" ;
         }
     }
 
-	boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
-    if ( verbose ) std::cout << "elapsed " << elapsed << "\n";
+    boost::chrono::duration<double> elapsed = boost::chrono::system_clock::now() - start;
 
-    if (numFailure) std::cerr << "\n\n**** " << numFailure << " test failed\n";
+    if ( verbose ) {
+        std::cout << "elapsed " << elapsed << "\n";
+    }
+
+    if ( numFailure ) {
+        std::cerr << "\n\n**** " << numFailure << " test failed\n";
+    }
+
     return numFailure==0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 /* Functions called from lwgeom_sfcgal.c and corresponding C++ api calls
  *
-sfcgal_geometry_collection_add_geometry(ret_geom, g) 
+sfcgal_geometry_collection_add_geometry(ret_geom, g)
     *GeometryCollection::addGeometry(geom)
 sfcgal_geometry_collection_create()
     *GeometryCollection::GeometryCollection()
@@ -406,13 +498,13 @@ sfcgal_polygon_create()
 sfcgal_polygon_create_from_exterior_ring(exterior_ring)
     *Polygon::Polygon(exterior_ring)
 sfcgal_polygon_exterior_ring(geom)
-    *Polygon::exteriorRing()    
+    *Polygon::exteriorRing()
 sfcgal_polygon_interior_ring_n(geom, i)
     *Polygon::interiorRingN(i)
 sfcgal_polygon_num_interior_rings(geom)
     *Polygon::numInteriorRings()
 sfcgal_polyhedral_surface_add_polygon(ret_geom, poly)
-    *PolyhedralSurface::addPolygon(poly)    
+    *PolyhedralSurface::addPolygon(poly)
 sfcgal_polyhedral_surface_create()
     *PolyhedralSurface::PolyhedralSurface()
 sfcgal_polyhedral_surface_num_polygons(geom)

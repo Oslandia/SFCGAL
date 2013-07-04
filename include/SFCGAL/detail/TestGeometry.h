@@ -37,25 +37,24 @@ struct TestGeometry {
 inline
 const std::vector< TestGeometry > createTestGeometries()
 {
-    TestGeometry testGeometry[] = 
-    {
-    // Point2D 
+    TestGeometry testGeometry[] = {
+        // Point2D
         // valid
         {"POINT EMPTY", true, ""},
         {"POINT(-1.0 -1.0)", true, ""},
-    // Point3D 
+        // Point3D
         // valid
         {"POINT(-1.0 -1.0 -1.0)", true, ""},
-    // Linestring2D
+        // Linestring2D
         // valid
         {"LINESTRING EMPTY", true , ""},
         {"LINESTRING(-1.0 -1.0,1.0 1.0)", true , ""},
         // invalid
         {"LINESTRING(-1.0 -1.0,-1.0 -1.0)", false, "zero length"},
-    // Linestring3D
+        // Linestring3D
         {"LINESTRING(-1.0 -1.0 -1.0,1.0 1.0 1.0)", true , ""},
         {"LINESTRING(-1.0 -1.0 -1.0,-1.0 -1.0 -1.0)", false, "zero length"},
-    // Polygon2D
+        // Polygon2D
         // valid
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0))", true , ""},
         {"POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))", true, "duplicated point"},
@@ -83,7 +82,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.2 -0.4,-0.1 0.5,-0.5 0.5,-0.5 -0.5),(0.1 -0.5,0.5 -0.5,0.5 0.5,0.1 0.5,0.1 -0.5))", false, "intersection between interior rings"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,0.5 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5),(-0.2 -0.2,0.2 -0.2,0.2 0.2,-0.2 0.2,-0.2 -0.2))", false, "one inetrior ring is inside the other"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-.7 0,.7 0,0 -.7,-.7 0),(-.5 0,-.5 .5,0 .5,-.5 0),(.5 0,0 .5,.5 .5,.5 0))", false, "3 touching interior ring define an unconnected interior"},
-    // Polygon3D
+        // Polygon3D
         // valid
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", true, ""},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 -0.5 -0.5))", true, "with interior ring"},
@@ -108,23 +107,23 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.0 -0.5,1.0 0.0 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.0 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.0 0.5,1.0 0.0 -0.5))", false, "adjacent interior rings"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.2 -0.4,1.0 -0.1 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 0.1 0.5,1.0 0.1 -0.5))", false, "intersection between interior rings"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 -0.2 -0.2,1.0 0.2 -0.2,1.0 0.2 0.2,1.0 -0.2 0.2,1.0 -0.2 -0.2))", false, "one inetrior ring is inside the other"},
-    // Multipoint2D
+        // Multipoint2D
         // valid
         {"MULTIPOINT((-1.0 -1.0),(1.0 1.0))", true, ""},
-    // Multipoint3D
+        // Multipoint3D
         // valid
         {"MULTIPOINT((-1.0 -1.0 -1),(1.0 1.0 1.0))", true, ""},
-    // MultiLinestring2D 
+        // MultiLinestring2D
         // valid
         {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 -1.0))", true, ""},
         // invalid
         {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 1.0))", false, "second linestring has zero length"},
-    // MultiLinestring3D 
+        // MultiLinestring3D
         // valid
         {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 -1.0))", true, ""},
         // invalid
         {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 1.0))", false, "the second linestring has length zero"},
-    // MultiPolygon2D
+        // MultiPolygon2D
         // valid
         {"MULTIPOLYGON(((-3.0 -1.0,-1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", true, ""},
         {"MULTIPOLYGON(((-3.0 -1.0,1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", true, "one contact point"},
@@ -132,7 +131,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"MULTIPOLYGON(((-3.0 -1.0,-1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0)))", false, "second polygon is invalid"},
         {"MULTIPOLYGON(((-2.0 -1.0,0.0 -1.0,0.0 1.0,-2.0 1.0,-2.0 -1.0)),((0.0 -1.0,2.0 -1.0,2.0 1.0,0.0 1.0,0.0 -1.0)))", false, "adjacent"},
         {"MULTIPOLYGON(((-3.0 -1.0,1.3 0.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", false, "intersection"},
-    // MultiPolygon3D
+        // MultiPolygon3D
         // valid
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", true, ""},
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", true, "one contact point"},
@@ -140,26 +139,26 @@ const std::vector< TestGeometry > createTestGeometries()
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0)))", false, "second polygon is invalid"},
         {"MULTIPOLYGON(((1.0 -2.0 -1.0,1.0 0.0 -1.0,1.0 0.0 1.0,1.0 -2.0 1.0,1.0 -2.0 -1.0)),((1.0 0.0 -1.0,1.0 2.0 -1.0,1.0 2.0 1.0,1.0 0.0 1.0,1.0 0.0 -1.0)))", false, "adjacent"},
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 1.3 0.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", false, "intersection"},
-    // Triangle2D
+        // Triangle2D
         // valid
         {"TRIANGLE((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0))", true, ""},
         // invalid
         {"TRIANGLE((-1.0 -1.0,1.0 -1.0,-1.0 -1.0))", false, "only 3 points"},
         {"TRIANGLE((-1.0 -1.0,1.0 -1.0,-1.0 -1.0,-1.0 -1.0))", false, "zero surface"},
-    // Triangle3D
+        // Triangle3D
         // valid
         {"TRIANGLE((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", true, ""},
-    // invalid
+        // invalid
         {"TRIANGLE((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 -1.0))", false, "only 3 points"},
         {"TRIANGLE((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 -1.0))", false, "zero surface"},
-    // TIN2D
+        // TIN2D
         // valid
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,1.0 1.0,-1.0 1.0)))", true, ""},
         // invalid
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,-1.0 1.0)))", false, "second triangle is invalid"},
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((1.0 -1.0,-1.0 1.0,1.0 1.0,1.0 -1.0)))", false, "inconsitent orientation"},
         {"TIN(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((0.0 1.0,2.0 -1.0,2.0 1.0,0.0 1.0)))", false, "not connected"},
-    // TIN3D
+        // TIN3D
         // valid
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0)))", true, ""},
         // invalid
@@ -167,62 +166,74 @@ const std::vector< TestGeometry > createTestGeometries()
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", false, "inconsitent orientation"},
         {"TIN(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 0.0 1.0,1.0 2.0 -1.0,1.0 2.0 1.0,1.0 0.0 1.0)))", false, "not connected"},
         {"TIN(((0.0 0.0 0.0,1.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 1.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 0.0 1.0,0.5 0.1 -0.1,0.0 0.0 0.0)))", false, "self intersect"},
-    // PolyhedralSurface2D
+        // PolyhedralSurface2D
         // valid
         {"POLYHEDRALSURFACE(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,1.0 1.0,-1.0 1.0)))", true, ""},
         // invalid
         {"POLYHEDRALSURFACE(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((-1.0 1.0,1.0 -1.0,-1.0 1.0)))", false, "second polygon is invalid"},
         {"POLYHEDRALSURFACE(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((1.0 -1.0,-1.0 1.0,1.0 1.0,1.0 -1.0)))", false, "inconsitent orientation"},
         {"POLYHEDRALSURFACE(((-1.0 -1.0,1.0 -1.0,-1.0 1.0,-1.0 -1.0)),((0.0 1.0,2.0 -1.0,2.0 1.0,0.0 1.0)))", false, "not connected"},
-    // PolyhedralSurface3D
+        // PolyhedralSurface3D
         // valid
         {"POLYHEDRALSURFACE(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0)))", true, ""},
-        {"POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+        {
+            "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                             ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                             ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                             ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                             ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                            ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))", true, "a simple cube"},
+                            ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))", true, "a simple cube"
+        },
         // invalid
         {"POLYHEDRALSURFACE(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 -1.0 1.0,1.0 1.0 -1.0,1.0 -1.0 1.0)))", false, "second polygon is invalid"},
         {"POLYHEDRALSURFACE(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", false, "inconsitent orientation"},
         {"POLYHEDRALSURFACE(((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0)),((1.0 0.0 1.0,1.0 2.0 -1.0,1.0 2.0 1.0,1.0 0.0 1.0)))", false, "not connected"},
         {"POLYHEDRALSURFACE(((0.0 0.0 0.0,1.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 1.0 0.0,0.0 0.0 1.0,0.0 0.0 0.0)),((0.0 0.0 0.0,0.0 0.0 1.0,0.5 0.1 -0.1,0.0 0.0 0.0)))", false, "self intersect"},
-        {"POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
+        {
+            "POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
                             ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                             ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                             ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                             ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                            ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))", false, "not connected"},
-     // Solid
+                            ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))", false, "not connected"
+        },
+        // Solid
         // valid
-        {"SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+        {
+            "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                  ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                  ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                  ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                  ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))", true, "a simple cube"},
-        {"SOLID((((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))", true, "a simple cube"
+        },
+        {
+            "SOLID((((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0)),\
                  ((0 0 0, 0 1 0, 0 1 1, 0 0 1, 0 0 0)),\
                  ((0 0 0, 0 0 1, 1 0 1, 1 0 0, 0 0 0)),\
                  ((1 1 1, 1 0 1, 0 0 1, 0 1 1, 1 1 1)),\
                  ((1 1 1, 1 1 0, 1 0 0, 1 0 1, 1 1 1)),\
-                 ((1 1 1, 0 1 1, 0 1 0, 1 1 0, 1 1 1))))", true, "a reversed cube (inside/out)"},
+                 ((1 1 1, 0 1 1, 0 1 0, 1 1 0, 1 1 1))))", true, "a reversed cube (inside/out)"
+        },
         // invalid
-        {"SOLID((((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
+        {
+            "SOLID((((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
                  ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                  ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                  ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                  ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))", false, "not connected"},
-        {"SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))", false, "not connected"
+        },
+        {
+            "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                  ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                  ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                  ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
-                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1))))", false, "not closed"}
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1))))", false, "not closed"
+        }
     };
-    
-    return std::vector<TestGeometry>( testGeometry, testGeometry + sizeof(testGeometry)/sizeof(TestGeometry)) ;
+
+    return std::vector<TestGeometry>( testGeometry, testGeometry + sizeof( testGeometry )/sizeof( TestGeometry ) ) ;
 }
 
 }

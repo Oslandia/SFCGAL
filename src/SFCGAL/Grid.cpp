@@ -31,9 +31,9 @@ namespace SFCGAL {
 ///
 ///
 Grid::Grid():
-	_data(),
-	_limits(Envelope(0.0,1.0,0.0,1.0)),
-	_pixelConvention(PIXEL_IS_POINT)
+    _data(),
+    _limits( Envelope( 0.0,1.0,0.0,1.0 ) ),
+    _pixelConvention( PIXEL_IS_POINT )
 {
 
 }
@@ -42,15 +42,15 @@ Grid::Grid():
 ///
 ///
 Grid::Grid(
-	const size_t & nrows,
-	const size_t & ncols,
-	const double& fillValue,
-	const Envelope & limits,
-	const PixelConvention & pixelType
+    const size_t& nrows,
+    const size_t& ncols,
+    const double& fillValue,
+    const Envelope& limits,
+    const PixelConvention& pixelType
 ):
-	_data( ublas::scalar_matrix< double >( nrows, ncols, fillValue ) ),
-	_limits(limits),
-	_pixelConvention(pixelType)
+    _data( ublas::scalar_matrix< double >( nrows, ncols, fillValue ) ),
+    _limits( limits ),
+    _pixelConvention( pixelType )
 {
 
 }
@@ -60,13 +60,13 @@ Grid::Grid(
 ///
 ///
 Grid::Grid(
-	const ublas::matrix< double > & data,
-	const Envelope & limits,
-	const PixelConvention & pixelType
+    const ublas::matrix< double > & data,
+    const Envelope& limits,
+    const PixelConvention& pixelType
 ):
-	_data(data),
-	_limits(limits),
-	_pixelConvention(pixelType)
+    _data( data ),
+    _limits( limits ),
+    _pixelConvention( pixelType )
 {
 
 }
@@ -74,20 +74,20 @@ Grid::Grid(
 ///
 ///
 ///
-Grid::Grid( const Grid & other )
+Grid::Grid( const Grid& other )
 {
-	(*this) = other ;
+    ( *this ) = other ;
 }
 
 ///
 ///
 ///
-Grid& Grid::operator = ( const Grid & other )
+Grid& Grid::operator = ( const Grid& other )
 {
-	_data      = other._data ;
-	_limits    = other._limits ;
-	_pixelConvention = other._pixelConvention ;
-	return *this ;
+    _data      = other._data ;
+    _limits    = other._limits ;
+    _pixelConvention = other._pixelConvention ;
+    return *this ;
 }
 
 ///
@@ -104,32 +104,35 @@ Grid::~Grid()
 ///
 std::auto_ptr< TriangulatedSurface > Grid::toTrianguledSurface() const
 {
-	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface() ) ;
-	if ( nrows() <= 1 || ncols() <= 1 ){
-		return result ;
-	}
+    std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface() ) ;
 
-	for ( size_t i = 0; i < nrows() - 1; i++ ){
-		for ( size_t j = 0; j < ncols() - 1; j++ ){
-			/*
-			 * a    b
-			 *
-			 * d    c
-			 */
-			Point a = point(i,j);
-			Point b = point(i,j+1);
-			Point c = point(i+1,j+1);
-			Point d = point(i+1,j);
+    if ( nrows() <= 1 || ncols() <= 1 ) {
+        return result ;
+    }
 
-			if ( d.isMeasured() && c.isMeasured() && b.isMeasured() ){
-				result->addTriangle( new Triangle( d, c, b ) );
-			}
-			if ( d.isMeasured() && b.isMeasured() && a.isMeasured() ){
-				result->addTriangle( new Triangle( d, b, a ) );
-			}
-		}
-	}
-	return result ;
+    for ( size_t i = 0; i < nrows() - 1; i++ ) {
+        for ( size_t j = 0; j < ncols() - 1; j++ ) {
+            /*
+             * a    b
+             *
+             * d    c
+             */
+            Point a = point( i,j );
+            Point b = point( i,j+1 );
+            Point c = point( i+1,j+1 );
+            Point d = point( i+1,j );
+
+            if ( d.isMeasured() && c.isMeasured() && b.isMeasured() ) {
+                result->addTriangle( new Triangle( d, c, b ) );
+            }
+
+            if ( d.isMeasured() && b.isMeasured() && a.isMeasured() ) {
+                result->addTriangle( new Triangle( d, b, a ) );
+            }
+        }
+    }
+
+    return result ;
 }
 
 } // namespace SFCGAL

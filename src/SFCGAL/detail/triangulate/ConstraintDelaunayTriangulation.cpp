@@ -33,7 +33,7 @@ namespace triangulate {
 ///
 ///
 ConstraintDelaunayTriangulation::ConstraintDelaunayTriangulation():
-	_cdt()
+    _cdt()
 {
 
 }
@@ -42,23 +42,24 @@ ConstraintDelaunayTriangulation::ConstraintDelaunayTriangulation():
 ///
 ///
 ///
-ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::addVertex( const Coordinate & position )
+ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::addVertex( const Coordinate& position )
 {
-	if ( position.isEmpty() ){
-		BOOST_THROW_EXCEPTION(Exception(
-			"try to add empty position to ConstraintDelaunayTriangulation"
-		));
-	}
+    if ( position.isEmpty() ) {
+        BOOST_THROW_EXCEPTION( Exception(
+                                   "try to add empty position to ConstraintDelaunayTriangulation"
+                               ) );
+    }
 
-	if ( _projectionPlane ){
-		Vertex_handle vertex = _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) );
-		vertex->info().original = position ;
-		return vertex ;
-	}else{
-		Vertex_handle vertex = _cdt.insert( position.toPoint_2() );
-		vertex->info().original = position ;
-		return vertex ;
-	}
+    if ( _projectionPlane ) {
+        Vertex_handle vertex = _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) );
+        vertex->info().original = position ;
+        return vertex ;
+    }
+    else {
+        Vertex_handle vertex = _cdt.insert( position.toPoint_2() );
+        vertex->info().original = position ;
+        return vertex ;
+    }
 }
 
 ///
@@ -66,10 +67,11 @@ ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::
 ///
 void  ConstraintDelaunayTriangulation::addConstraint( Vertex_handle source, Vertex_handle target )
 {
-	if ( source == target ){
-		return ;
-	}
-	_cdt.insert_constraint( source, target );
+    if ( source == target ) {
+        return ;
+    }
+
+    _cdt.insert_constraint( source, target );
 }
 
 ///
@@ -77,7 +79,7 @@ void  ConstraintDelaunayTriangulation::addConstraint( Vertex_handle source, Vert
 ///
 void ConstraintDelaunayTriangulation::clear()
 {
-	_cdt.clear();
+    _cdt.clear();
 }
 
 ///
@@ -85,7 +87,7 @@ void ConstraintDelaunayTriangulation::clear()
 ///
 size_t	ConstraintDelaunayTriangulation::numVertices() const
 {
-	return _cdt.number_of_vertices() ;
+    return _cdt.number_of_vertices() ;
 }
 
 ///
@@ -93,16 +95,16 @@ size_t	ConstraintDelaunayTriangulation::numVertices() const
 ///
 size_t	ConstraintDelaunayTriangulation::numTriangles() const
 {
-	return _cdt.number_of_faces() ;
+    return _cdt.number_of_faces() ;
 }
 
 ///
 ///
 ///
-void ConstraintDelaunayTriangulation::setProjectionPlane( const Kernel::Plane_3 & projectionPlane )
+void ConstraintDelaunayTriangulation::setProjectionPlane( const Kernel::Plane_3& projectionPlane )
 {
-	BOOST_ASSERT( ! projectionPlane.is_degenerate() ) ;
-	_projectionPlane = projectionPlane ;
+    BOOST_ASSERT( ! projectionPlane.is_degenerate() ) ;
+    _projectionPlane = projectionPlane ;
 }
 
 ///
@@ -110,11 +112,12 @@ void ConstraintDelaunayTriangulation::setProjectionPlane( const Kernel::Plane_3 
 ///
 Kernel::Plane_3 ConstraintDelaunayTriangulation::projectionPlane() const
 {
-	if ( _projectionPlane ){
-		return *_projectionPlane ;
-	}else{
-		return Kernel::Plane_3( Kernel::RT(0), Kernel::RT(0), Kernel::RT(1), Kernel::RT(0) );
-	}
+    if ( _projectionPlane ) {
+        return *_projectionPlane ;
+    }
+    else {
+        return Kernel::Plane_3( Kernel::RT( 0 ), Kernel::RT( 0 ), Kernel::RT( 1 ), Kernel::RT( 0 ) );
+    }
 }
 
 
@@ -123,7 +126,7 @@ Kernel::Plane_3 ConstraintDelaunayTriangulation::projectionPlane() const
 ///
 void ConstraintDelaunayTriangulation::markDomains()
 {
-	detail::markDomains( _cdt );
+    detail::markDomains( _cdt );
 }
 
 
@@ -132,27 +135,30 @@ void ConstraintDelaunayTriangulation::markDomains()
 ///
 ///
 ///
-void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triangulatedSurface, bool filterExteriorParts ) const
+void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface& triangulatedSurface, bool filterExteriorParts ) const
 {
-	triangulatedSurface.reserve( triangulatedSurface.numTriangles() + numTriangles() );
-	for ( Finite_faces_iterator it = finite_faces_begin(); it != finite_faces_end(); ++it )
-	{
-		if ( filterExteriorParts && ( it->info().nestingLevel % 2 == 0 ) ){
-			continue ;
-		}
-		const Coordinate & a = it->vertex(0)->info().original ;
-		const Coordinate & b = it->vertex(1)->info().original ;
-		const Coordinate & c = it->vertex(2)->info().original ;
+    triangulatedSurface.reserve( triangulatedSurface.numTriangles() + numTriangles() );
 
-		// check that vertex has an original vertex
-		if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ){
-			BOOST_THROW_EXCEPTION( Exception(
-				( boost::format("Can't convert Triangulation to TriangulatedSurface (constraint intersection found)") ).str()
-			) ) ;
-		}
+    for ( Finite_faces_iterator it = finite_faces_begin(); it != finite_faces_end(); ++it ) {
+        if ( filterExteriorParts && ( it->info().nestingLevel % 2 == 0 ) ) {
+            continue ;
+        }
 
-		triangulatedSurface.addTriangle( new Triangle( Point(a), Point(b), Point(c) ) );
-	}
+        const Coordinate& a = it->vertex( 0 )->info().original ;
+
+        const Coordinate& b = it->vertex( 1 )->info().original ;
+
+        const Coordinate& c = it->vertex( 2 )->info().original ;
+
+        // check that vertex has an original vertex
+        if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ) {
+            BOOST_THROW_EXCEPTION( Exception(
+                                       ( boost::format( "Can't convert Triangulation to TriangulatedSurface (constraint intersection found)" ) ).str()
+                                   ) ) ;
+        }
+
+        triangulatedSurface.addTriangle( new Triangle( Point( a ), Point( b ), Point( c ) ) );
+    }
 }
 
 ///
@@ -160,9 +166,9 @@ void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface & triang
 ///
 std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
 {
-	std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
-	getTriangles(*result, false);
-	return result ;
+    std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
+    getTriangles( *result, false );
+    return result ;
 }
 
 

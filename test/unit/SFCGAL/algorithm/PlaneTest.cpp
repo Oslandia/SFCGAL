@@ -32,18 +32,17 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_PlaneTest )
 
 BOOST_AUTO_TEST_CASE( testPlane1 )
 {
-	std::auto_ptr<Geometry> gA( io::readWkt("POLYGON((0 0,1 0,1 1,0 1,0 0))") );
+    std::auto_ptr<Geometry> gA( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
 
-	CGAL::Plane_3<Kernel> plane = algorithm::plane3D<Kernel>( gA->as<Polygon>() );
-	BOOST_CHECK_EQUAL( plane.a(), 0.0 );
-	BOOST_CHECK_EQUAL( plane.b(), 0.0 );
-	BOOST_CHECK_EQUAL( plane.c(), 2.0 );
+    CGAL::Plane_3<Kernel> plane = algorithm::plane3D<Kernel>( gA->as<Polygon>() );
+    BOOST_CHECK_EQUAL( plane.a(), 0.0 );
+    BOOST_CHECK_EQUAL( plane.b(), 0.0 );
+    BOOST_CHECK_EQUAL( plane.c(), 2.0 );
 }
 
 BOOST_AUTO_TEST_CASE( testPlane )
 {
-    struct TestCase
-    {
+    struct TestCase {
         const std::string _wkt;
         const bool        _isPlane;
     };
@@ -57,14 +56,14 @@ BOOST_AUTO_TEST_CASE( testPlane )
         {"LINESTRING(2 1 0,2 0 0,2 1 1,2 1 0,1 0 3)", false}, // one point out of plane
     };
     const size_t numTest = sizeof( test ) / sizeof( TestCase );
-    for ( size_t t=0; t != numTest; ++t )
-    {
+
+    for ( size_t t=0; t != numTest; ++t ) {
         //std::cout << "test = " << t << "\n";
-        std::auto_ptr<Geometry> g( io::readWkt(test[t]._wkt) );
-        const LineString* l = dynamic_cast<LineString*>(g.get());
-        BOOST_CHECK_MESSAGE( 
+        std::auto_ptr<Geometry> g( io::readWkt( test[t]._wkt ) );
+        const LineString* l = dynamic_cast<LineString*>( g.get() );
+        BOOST_CHECK_MESSAGE(
             algorithm::isPlane3D< Kernel >( *l, 1.e-9 ) == test[t]._isPlane,
-            ( boost::format("LineString %d: %s %s") % t % test[t]._wkt % (test[t]._isPlane ? "is plane" : "isn't plane") )  
+            ( boost::format( "LineString %d: %s %s" ) % t % test[t]._wkt % ( test[t]._isPlane ? "is plane" : "isn't plane" ) )
         );
     }
 }

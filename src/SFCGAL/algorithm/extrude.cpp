@@ -34,214 +34,228 @@ namespace algorithm {
 
 //-- private interface
 
-LineString *          extrude( const Point & g, const Kernel::Vector_3 & v  ) ;
-PolyhedralSurface *   extrude( const LineString & g, const Kernel::Vector_3 & v ) ;
-Solid *               extrude( const Polygon & g, const Kernel::Vector_3 & v ) ;
-Solid *               extrude( const Triangle & g, const Kernel::Vector_3 & v ) ;
+LineString*           extrude( const Point& g, const Kernel::Vector_3& v  ) ;
+PolyhedralSurface*    extrude( const LineString& g, const Kernel::Vector_3& v ) ;
+Solid*                extrude( const Polygon& g, const Kernel::Vector_3& v ) ;
+Solid*                extrude( const Triangle& g, const Kernel::Vector_3& v ) ;
 
-MultiLineString *     extrude( const MultiPoint & g, const Kernel::Vector_3 & v ) ;
-PolyhedralSurface *   extrude( const MultiLineString & g, const Kernel::Vector_3 & v ) ;
-MultiSolid *          extrude( const MultiPolygon & g, const Kernel::Vector_3 & v ) ;
+MultiLineString*      extrude( const MultiPoint& g, const Kernel::Vector_3& v ) ;
+PolyhedralSurface*    extrude( const MultiLineString& g, const Kernel::Vector_3& v ) ;
+MultiSolid*           extrude( const MultiPolygon& g, const Kernel::Vector_3& v ) ;
 
 /**
  * @warning suppose that the TriangulatedSurface is connected
  * @todo take orientation in account
  */
-Solid *               extrude( const TriangulatedSurface & g, const Kernel::Vector_3 & v ) ;
+Solid*                extrude( const TriangulatedSurface& g, const Kernel::Vector_3& v ) ;
 /**
  * @warning doesn't take orientation in account
  * @todo take orientation in account
  */
-Solid *               extrude( const PolyhedralSurface & g, const Kernel::Vector_3 & v ) ;
+Solid*                extrude( const PolyhedralSurface& g, const Kernel::Vector_3& v ) ;
 
 /**
  * extrude each geometry in a GeometryCollection
  */
-GeometryCollection*   extrude( const GeometryCollection & g, const Kernel::Vector_3 & v ) ;
+GeometryCollection*   extrude( const GeometryCollection& g, const Kernel::Vector_3& v ) ;
 
 
 ///
 ///
 ///
-LineString * extrude( const Point & g, const Kernel::Vector_3 & v )
+LineString* extrude( const Point& g, const Kernel::Vector_3& v )
 {
-	BOOST_ASSERT( ! g.isEmpty() );
+    BOOST_ASSERT( ! g.isEmpty() );
 
-	Kernel::Point_3 a = g.toPoint_3() ;
-	Kernel::Point_3 b = a + v ;
+    Kernel::Point_3 a = g.toPoint_3() ;
+    Kernel::Point_3 b = a + v ;
 
-	return new LineString( Point( a ), Point( b ) );
+    return new LineString( Point( a ), Point( b ) );
 }
 
 ///
 ///
 ///
-PolyhedralSurface * extrude( const LineString & g, const Kernel::Vector_3 & v )
+PolyhedralSurface* extrude( const LineString& g, const Kernel::Vector_3& v )
 {
-	BOOST_ASSERT( ! g.isEmpty() );
+    BOOST_ASSERT( ! g.isEmpty() );
 
-	std::auto_ptr< PolyhedralSurface > polyhedralSurface( new PolyhedralSurface() );
-	for ( size_t i = 0; i < g.numPoints() - 1; i++ ){
-		std::auto_ptr< LineString > ring( new LineString ) ;
+    std::auto_ptr< PolyhedralSurface > polyhedralSurface( new PolyhedralSurface() );
 
-		Kernel::Point_3 a = g.pointN(i).toPoint_3() ;
-		Kernel::Point_3 b = g.pointN(i+1).toPoint_3() ;
-		ring->addPoint( new Point(a) );
-		ring->addPoint( new Point(b) );
-		ring->addPoint( new Point(b + v) );
-		ring->addPoint( new Point(a + v) );
-		ring->addPoint( new Point(a) );
+    for ( size_t i = 0; i < g.numPoints() - 1; i++ ) {
+        std::auto_ptr< LineString > ring( new LineString ) ;
 
-		polyhedralSurface->addPolygon( new Polygon( ring.release() ) );
-	}
-	return polyhedralSurface.release() ;
+        Kernel::Point_3 a = g.pointN( i ).toPoint_3() ;
+        Kernel::Point_3 b = g.pointN( i+1 ).toPoint_3() ;
+        ring->addPoint( new Point( a ) );
+        ring->addPoint( new Point( b ) );
+        ring->addPoint( new Point( b + v ) );
+        ring->addPoint( new Point( a + v ) );
+        ring->addPoint( new Point( a ) );
+
+        polyhedralSurface->addPolygon( new Polygon( ring.release() ) );
+    }
+
+    return polyhedralSurface.release() ;
 }
 
 ///
 ///
 ///
-Solid * extrude( const Polygon & g, const Kernel::Vector_3 & v )
+Solid* extrude( const Polygon& g, const Kernel::Vector_3& v )
 {
-	BOOST_ASSERT( ! g.isEmpty() );
+    BOOST_ASSERT( ! g.isEmpty() );
 
-	bool reverseOrientation = ( v * normal3D< Kernel >( g ) ) > 0 ;
+    bool reverseOrientation = ( v * normal3D< Kernel >( g ) ) > 0 ;
 
-	//resulting shell
-	PolyhedralSurface polyhedralSurface ;
+    //resulting shell
+    PolyhedralSurface polyhedralSurface ;
 
-	// "bottom"
-	Polygon bottom(g);
-	force3D( bottom ) ;
-	if ( reverseOrientation ){
-		bottom.reverse();
-	}
-	polyhedralSurface.addPolygon( bottom );
+    // "bottom"
+    Polygon bottom( g );
+    force3D( bottom ) ;
 
-	// "top"
-	Polygon top( bottom );
-	top.reverse() ;
-	translate(top,v);
-	polyhedralSurface.addPolygon( top );
+    if ( reverseOrientation ) {
+        bottom.reverse();
+    }
 
-	// exterior ring and interior rings extruded
-	for ( size_t i = 0; i < bottom.numRings(); i++ ){
-		std::auto_ptr< PolyhedralSurface > boundaryExtruded( extrude( bottom.ringN(i), v ) );
-		for ( size_t j = 0; j < boundaryExtruded->numPolygons(); j++ ){
-			boundaryExtruded->polygonN(j).reverse() ;
-			polyhedralSurface.addPolygon( boundaryExtruded->polygonN(j) ) ;
-		}
-	}
+    polyhedralSurface.addPolygon( bottom );
 
-	return new Solid( polyhedralSurface );
-}
+    // "top"
+    Polygon top( bottom );
+    top.reverse() ;
+    translate( top,v );
+    polyhedralSurface.addPolygon( top );
 
+    // exterior ring and interior rings extruded
+    for ( size_t i = 0; i < bottom.numRings(); i++ ) {
+        std::auto_ptr< PolyhedralSurface > boundaryExtruded( extrude( bottom.ringN( i ), v ) );
 
-///
-///
-///
-Solid *  extrude( const Triangle & g, const Kernel::Vector_3 & v )
-{
-	BOOST_ASSERT( ! g.isEmpty() );
-	return extrude( g.toPolygon(), v );
-}
+        for ( size_t j = 0; j < boundaryExtruded->numPolygons(); j++ ) {
+            boundaryExtruded->polygonN( j ).reverse() ;
+            polyhedralSurface.addPolygon( boundaryExtruded->polygonN( j ) ) ;
+        }
+    }
 
-///
-///
-///
-MultiLineString *     extrude( const MultiPoint & g, const Kernel::Vector_3 & v )
-{
-	std::auto_ptr< MultiLineString > result( new MultiLineString() );
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		result->addGeometry( extrude( g.pointN(i), v ) );
-	}
-	return result.release() ;
+    return new Solid( polyhedralSurface );
 }
 
 
 ///
 ///
 ///
-PolyhedralSurface *   extrude( const MultiLineString & g, const Kernel::Vector_3 & v )
+Solid*   extrude( const Triangle& g, const Kernel::Vector_3& v )
 {
-	std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		std::auto_ptr< PolyhedralSurface > extruded( extrude( g.lineStringN(i), v ) );
-		for ( size_t j = 0; j < extruded->numPolygons(); j++ ){
-			result->addPolygon( extruded->polygonN(j) );
-		}
-	}
-	return result.release() ;
+    BOOST_ASSERT( ! g.isEmpty() );
+    return extrude( g.toPolygon(), v );
+}
+
+///
+///
+///
+MultiLineString*      extrude( const MultiPoint& g, const Kernel::Vector_3& v )
+{
+    std::auto_ptr< MultiLineString > result( new MultiLineString() );
+
+    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
+        result->addGeometry( extrude( g.pointN( i ), v ) );
+    }
+
+    return result.release() ;
 }
 
 
 ///
 ///
 ///
-MultiSolid *          extrude( const MultiPolygon & g, const Kernel::Vector_3 & v )
+PolyhedralSurface*    extrude( const MultiLineString& g, const Kernel::Vector_3& v )
 {
-	std::auto_ptr< MultiSolid > result( new MultiSolid() );
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		result->addGeometry( extrude( g.polygonN(i), v ) );
-	}
-	return result.release() ;
+    std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
+
+    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
+        std::auto_ptr< PolyhedralSurface > extruded( extrude( g.lineStringN( i ), v ) );
+
+        for ( size_t j = 0; j < extruded->numPolygons(); j++ ) {
+            result->addPolygon( extruded->polygonN( j ) );
+        }
+    }
+
+    return result.release() ;
 }
 
 
 ///
 ///
 ///
-Solid *   extrude( const TriangulatedSurface & g, const Kernel::Vector_3 & v )
+MultiSolid*           extrude( const MultiPolygon& g, const Kernel::Vector_3& v )
 {
-	std::auto_ptr< Solid > result( new Solid() );
+    std::auto_ptr< MultiSolid > result( new MultiSolid() );
 
-	//bottom and top
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		Triangle bottomPart( g.geometryN(i) );
-		force3D( bottomPart );
-		bottomPart.reverse() ;
-		result->exteriorShell().addPolygon( bottomPart );
+    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
+        result->addGeometry( extrude( g.polygonN( i ), v ) );
+    }
 
-		Triangle topPart( g.geometryN(i) );
-		force3D( topPart );
-		translate( topPart, v );
-		result->exteriorShell().addPolygon( topPart );
-	}
-
-	//boundary
-	std::auto_ptr< Geometry > boundary( g.boundary() ) ;
-	BOOST_ASSERT( boundary.get() != NULL );
-
-	// closed surface extruded
-	if ( ! boundary->isEmpty() ){
-		std::auto_ptr< Geometry > extrudedBoundary( extrude(*boundary, v) ) ;
-		BOOST_ASSERT( extrudedBoundary->is< PolyhedralSurface >() );
-		result->exteriorShell().addPolygons( extrudedBoundary->as< PolyhedralSurface >() );
-	}
+    return result.release() ;
+}
 
 
-	return result.release() ;
+///
+///
+///
+Solid*    extrude( const TriangulatedSurface& g, const Kernel::Vector_3& v )
+{
+    std::auto_ptr< Solid > result( new Solid() );
+
+    //bottom and top
+    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
+        Triangle bottomPart( g.geometryN( i ) );
+        force3D( bottomPart );
+        bottomPart.reverse() ;
+        result->exteriorShell().addPolygon( bottomPart );
+
+        Triangle topPart( g.geometryN( i ) );
+        force3D( topPart );
+        translate( topPart, v );
+        result->exteriorShell().addPolygon( topPart );
+    }
+
+    //boundary
+    std::auto_ptr< Geometry > boundary( g.boundary() ) ;
+    BOOST_ASSERT( boundary.get() != NULL );
+
+    // closed surface extruded
+    if ( ! boundary->isEmpty() ) {
+        std::auto_ptr< Geometry > extrudedBoundary( extrude( *boundary, v ) ) ;
+        BOOST_ASSERT( extrudedBoundary->is< PolyhedralSurface >() );
+        result->exteriorShell().addPolygons( extrudedBoundary->as< PolyhedralSurface >() );
+    }
+
+
+    return result.release() ;
 }
 
 ///
 ///
 ///
-Solid *   extrude( const PolyhedralSurface & g, const Kernel::Vector_3 & v )
+Solid*    extrude( const PolyhedralSurface& g, const Kernel::Vector_3& v )
 {
-	TriangulatedSurface triangulatedSurface ;
-	triangulate::triangulatePolygon3D( g, triangulatedSurface );
-	return extrude( triangulatedSurface, v ) ;
+    TriangulatedSurface triangulatedSurface ;
+    triangulate::triangulatePolygon3D( g, triangulatedSurface );
+    return extrude( triangulatedSurface, v ) ;
 }
 
 ///
 ///
 ///
-GeometryCollection*   extrude( const GeometryCollection & g, const Kernel::Vector_3 & v )
+GeometryCollection*   extrude( const GeometryCollection& g, const Kernel::Vector_3& v )
 {
-	std::auto_ptr< GeometryCollection > result( new GeometryCollection() ) ;
-	for ( size_t i = 0; i < g.numGeometries(); i++ ){
-		result->addGeometry( extrude( g.geometryN(i), v ).release() );
-	}
-	return result.release() ;
+    std::auto_ptr< GeometryCollection > result( new GeometryCollection() ) ;
+
+    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
+        result->addGeometry( extrude( g.geometryN( i ), v ).release() );
+    }
+
+    return result.release() ;
 }
 
 //-- public interface
@@ -249,64 +263,66 @@ GeometryCollection*   extrude( const GeometryCollection & g, const Kernel::Vecto
 ///
 ///
 ///
-std::auto_ptr< Geometry > extrude( const Geometry & g, const Kernel::Vector_3 & v )
+std::auto_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v )
 {
-	if ( g.isEmpty() ){
-		return std::auto_ptr< Geometry >( new GeometryCollection );
-	}
-
-	switch ( g.geometryTypeId() ){
-	case TYPE_POINT:
-		return std::auto_ptr< Geometry >( extrude( g.as< Point >(), v ));
-	case TYPE_LINESTRING:
-		return std::auto_ptr< Geometry >( extrude( g.as< LineString >(), v ));
-	case TYPE_POLYGON:
-		return std::auto_ptr< Geometry >( extrude( g.as< Polygon >(), v ));
-	case TYPE_TRIANGLE:
-		return std::auto_ptr< Geometry >( extrude( g.as< Triangle >(), v ));
-	case TYPE_GEOMETRYCOLLECTION:
-		return std::auto_ptr< Geometry >( extrude( g.as< GeometryCollection >(), v ) );
-	case TYPE_MULTIPOINT:
-		return std::auto_ptr< Geometry >( extrude( g.as< MultiPoint >(), v ));
-	case TYPE_MULTILINESTRING:
-		return std::auto_ptr< Geometry >( extrude( g.as< MultiLineString >(), v ));
-	case TYPE_MULTIPOLYGON:
-		return std::auto_ptr< Geometry >( extrude( g.as< MultiPolygon >(), v ));
-	case TYPE_TRIANGULATEDSURFACE:
-		return std::auto_ptr< Geometry >( extrude( g.as< TriangulatedSurface >(), v ));
-	case TYPE_POLYHEDRALSURFACE:
-		return std::auto_ptr< Geometry >( extrude( g.as< PolyhedralSurface >(), v ));
-	case TYPE_SOLID:
-	case TYPE_MULTISOLID:
-		//extrusion not available
-		break;
-	}
-	BOOST_THROW_EXCEPTION( InappropriateGeometryException(
-		( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
-	));
-}
-
-
-///
-///
-///
-	std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck )
-{
-	return extrude( g, Kernel::Vector_3(dx,dy,dz) ) ;
-}
-
-std::auto_ptr< Geometry > extrude( const Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
-{
-	SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-	return extrude( g, dx, dy, dz, NoValidityCheck() );
-}
-
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry & g, const double& dx, const double& dy, const double& dz )
-{
-    if ( !std::isfinite(dx) || !std::isfinite(dy) || !std::isfinite(dz) ) {
-        BOOST_THROW_EXCEPTION( NonFiniteValueException("trying to extrude with non finite value in direction"));
+    if ( g.isEmpty() ) {
+        return std::auto_ptr< Geometry >( new GeometryCollection );
     }
-    return extrude( g, Kernel::FT(dx), Kernel::FT(dy), Kernel::FT(dz) );
+
+    switch ( g.geometryTypeId() ) {
+    case TYPE_POINT:
+        return std::auto_ptr< Geometry >( extrude( g.as< Point >(), v ) );
+    case TYPE_LINESTRING:
+        return std::auto_ptr< Geometry >( extrude( g.as< LineString >(), v ) );
+    case TYPE_POLYGON:
+        return std::auto_ptr< Geometry >( extrude( g.as< Polygon >(), v ) );
+    case TYPE_TRIANGLE:
+        return std::auto_ptr< Geometry >( extrude( g.as< Triangle >(), v ) );
+    case TYPE_GEOMETRYCOLLECTION:
+        return std::auto_ptr< Geometry >( extrude( g.as< GeometryCollection >(), v ) );
+    case TYPE_MULTIPOINT:
+        return std::auto_ptr< Geometry >( extrude( g.as< MultiPoint >(), v ) );
+    case TYPE_MULTILINESTRING:
+        return std::auto_ptr< Geometry >( extrude( g.as< MultiLineString >(), v ) );
+    case TYPE_MULTIPOLYGON:
+        return std::auto_ptr< Geometry >( extrude( g.as< MultiPolygon >(), v ) );
+    case TYPE_TRIANGULATEDSURFACE:
+        return std::auto_ptr< Geometry >( extrude( g.as< TriangulatedSurface >(), v ) );
+    case TYPE_POLYHEDRALSURFACE:
+        return std::auto_ptr< Geometry >( extrude( g.as< PolyhedralSurface >(), v ) );
+    case TYPE_SOLID:
+    case TYPE_MULTISOLID:
+        //extrusion not available
+        break;
+    }
+
+    BOOST_THROW_EXCEPTION( InappropriateGeometryException(
+                               ( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
+                           ) );
+}
+
+
+///
+///
+///
+std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck )
+{
+    return extrude( g, Kernel::Vector_3( dx,dy,dz ) ) ;
+}
+
+std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+    return extrude( g, dx, dy, dz, NoValidityCheck() );
+}
+
+SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz )
+{
+    if ( !std::isfinite( dx ) || !std::isfinite( dy ) || !std::isfinite( dz ) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "trying to extrude with non finite value in direction" ) );
+    }
+
+    return extrude( g, Kernel::FT( dx ), Kernel::FT( dy ), Kernel::FT( dz ) );
 }
 
 

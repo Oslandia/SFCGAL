@@ -46,11 +46,11 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_KernelTest )
  */
 BOOST_AUTO_TEST_CASE( testRobustArithmetric )
 {
-	Kernel::FT v = 1 ;
-	v -= Kernel::FT(1) / Kernel::FT(3) ;
-	v -= Kernel::FT(1) / Kernel::FT(3) ;
-	v -= Kernel::FT(1) / Kernel::FT(3) ;
-	BOOST_CHECK_EQUAL(v,0);
+    Kernel::FT v = 1 ;
+    v -= Kernel::FT( 1 ) / Kernel::FT( 3 ) ;
+    v -= Kernel::FT( 1 ) / Kernel::FT( 3 ) ;
+    v -= Kernel::FT( 1 ) / Kernel::FT( 3 ) ;
+    BOOST_CHECK_EQUAL( v,0 );
 }
 
 /**
@@ -59,14 +59,14 @@ BOOST_AUTO_TEST_CASE( testRobustArithmetric )
  */
 BOOST_AUTO_TEST_CASE( testSerializeDeserialize )
 {
-	Kernel::FT a = 1 ;
-	a /= 3 ;
+    Kernel::FT a = 1 ;
+    a /= 3 ;
 
-	std::ostringstream oss ;
-	oss << CGAL::exact(a) ;
+    std::ostringstream oss ;
+    oss << CGAL::exact( a ) ;
 
-	Kernel::FT b( oss.str() );
-	BOOST_CHECK_EQUAL( a, b ) ;
+    Kernel::FT b( oss.str() );
+    BOOST_CHECK_EQUAL( a, b ) ;
 }
 
 
@@ -76,31 +76,31 @@ BOOST_AUTO_TEST_CASE( testSerializeDeserialize )
  */
 BOOST_AUTO_TEST_CASE( testIntersectsRobutness )
 {
-	LineString ab( Point(0.0,0.0),  Point(1.0,3.0) );
-	LineString cd( Point(0.0,1.0) , Point(1.0,1.0) );
-	LineString ef( Point(-1.0,3.0), Point(1.0,0.0) );
+    LineString ab( Point( 0.0,0.0 ),  Point( 1.0,3.0 ) );
+    LineString cd( Point( 0.0,1.0 ) , Point( 1.0,1.0 ) );
+    LineString ef( Point( -1.0,3.0 ), Point( 1.0,0.0 ) );
 
-	//ab, cd
-	CGAL::Object abIcd_ = CGAL::intersection(
-		Segment_2( ab.startPoint().toPoint_2(), ab.endPoint().toPoint_2() ),
-		Segment_2( cd.startPoint().toPoint_2(), cd.endPoint().toPoint_2() )
-	);
-	const Point_2 * abIcd = CGAL::object_cast<Point_2>(&abIcd_) ;
-	BOOST_REQUIRE( abIcd != NULL );
+    //ab, cd
+    CGAL::Object abIcd_ = CGAL::intersection(
+                              Segment_2( ab.startPoint().toPoint_2(), ab.endPoint().toPoint_2() ),
+                              Segment_2( cd.startPoint().toPoint_2(), cd.endPoint().toPoint_2() )
+                          );
+    const Point_2* abIcd = CGAL::object_cast<Point_2>( &abIcd_ ) ;
+    BOOST_REQUIRE( abIcd != NULL );
 
-	//would break robustness if construction history is lost
-	Point intersectionA( *abIcd );
+    //would break robustness if construction history is lost
+    Point intersectionA( *abIcd );
 
-	CGAL::Object abIef_ = CGAL::intersection(
-		intersectionA.toPoint_2(),
-		Segment_2( ef.startPoint().toPoint_2(), ef.endPoint().toPoint_2() )
-	);
-	const Point_2 * abIef = CGAL::object_cast<Point_2>(&abIef_) ;
-	BOOST_REQUIRE( abIef != NULL );
+    CGAL::Object abIef_ = CGAL::intersection(
+                              intersectionA.toPoint_2(),
+                              Segment_2( ef.startPoint().toPoint_2(), ef.endPoint().toPoint_2() )
+                          );
+    const Point_2* abIef = CGAL::object_cast<Point_2>( &abIef_ ) ;
+    BOOST_REQUIRE( abIef != NULL );
 
-	Point intersectionB( *abIef );
+    Point intersectionB( *abIef );
 
-	BOOST_CHECK_EQUAL( intersectionA.toPoint_2(), intersectionB.toPoint_2() );
+    BOOST_CHECK_EQUAL( intersectionA.toPoint_2(), intersectionB.toPoint_2() );
 }
 
 

@@ -34,23 +34,25 @@ namespace generator {
 ///
 ///
 std::auto_ptr< Polygon > disc(
-	const Point& center,
-	const double & radius,
-	const unsigned int & nQuadrantSegments
+    const Point& center,
+    const double& radius,
+    const unsigned int& nQuadrantSegments
 )
 {
-	BOOST_ASSERT( nQuadrantSegments > 1 );
+    BOOST_ASSERT( nQuadrantSegments > 1 );
 
-	std::auto_ptr< LineString > exteriorRing( new LineString() ) ;
+    std::auto_ptr< LineString > exteriorRing( new LineString() ) ;
 
-	double dTheta = M_PI_4 / nQuadrantSegments ;
-	for ( size_t i = 0; i < nQuadrantSegments * 4; i++ ){
-		Kernel::Vector_2 p = center.toVector_2() + radius * Kernel::Vector_2( cos(i*dTheta), sin(i*dTheta) ) ;
-		exteriorRing->addPoint( new Point( p.x(), p.y() ) ) ;
-	}
-	exteriorRing->addPoint( exteriorRing->startPoint() ) ;
+    double dTheta = M_PI_4 / nQuadrantSegments ;
 
-	return std::auto_ptr< Polygon >( new Polygon( exteriorRing.release() ) );
+    for ( size_t i = 0; i < nQuadrantSegments * 4; i++ ) {
+        Kernel::Vector_2 p = center.toVector_2() + radius * Kernel::Vector_2( cos( i*dTheta ), sin( i*dTheta ) ) ;
+        exteriorRing->addPoint( new Point( p.x(), p.y() ) ) ;
+    }
+
+    exteriorRing->addPoint( exteriorRing->startPoint() ) ;
+
+    return std::auto_ptr< Polygon >( new Polygon( exteriorRing.release() ) );
 }
 
 } // namespace generator

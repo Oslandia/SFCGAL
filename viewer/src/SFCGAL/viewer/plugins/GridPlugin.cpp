@@ -52,7 +52,7 @@ GridPlugin::GridPlugin()
 ///
 QString GridPlugin::pluginName() const
 {
-	return "GridPlugin";
+    return "GridPlugin";
 }
 
 ///
@@ -60,39 +60,44 @@ QString GridPlugin::pluginName() const
 ///
 void GridPlugin::loadGridXYZ()
 {
-	viewerWindow()->viewer()->stopAnimation();
-	QString filename = QFileDialog::getOpenFileName( NULL, QString("Open XYZ grid file") );
+    viewerWindow()->viewer()->stopAnimation();
+    QString filename = QFileDialog::getOpenFileName( NULL, QString( "Open XYZ grid file" ) );
 
-	std::ifstream ifs( filename.toStdString().c_str() );
-	if ( ! ifs.good() ){
-		QMessageBox::warning( NULL, QString( "load grid XYZ" ), QString( "can't load file" ) ) ;
-	}
+    std::ifstream ifs( filename.toStdString().c_str() );
 
-	MultiPoint multiPoint ;
-	double x, y, z ;
-	while ( ! ifs.eof() && ( ifs >> x >> y >> z ) ){
-		if ( z == 0.0 )
-			continue ;
-		multiPoint.addGeometry( Point(x,y,z) );
-	}
-	ifs.close();
+    if ( ! ifs.good() ) {
+        QMessageBox::warning( NULL, QString( "load grid XYZ" ), QString( "can't load file" ) ) ;
+    }
 
-	//create OSG geometry
-	detail::io::OsgFactory factory ;
-	osg::Geode * geode = new osg::Geode();
-	geode->setName( filename.toStdString() );
+    MultiPoint multiPoint ;
+    double x, y, z ;
 
-	geode->addDrawable( factory.createGeometry( multiPoint ) );
+    while ( ! ifs.eof() && ( ifs >> x >> y >> z ) ) {
+        if ( z == 0.0 ) {
+            continue ;
+        }
 
-	osgUtil::Optimizer optimizer ;
-	optimizer.optimize(geode);
+        multiPoint.addGeometry( Point( x,y,z ) );
+    }
 
-	geode->setCullingActive(false);
+    ifs.close();
 
-	viewerWindow()->viewer()->getScene()->addChild( geode );
+    //create OSG geometry
+    detail::io::OsgFactory factory ;
+    osg::Geode* geode = new osg::Geode();
+    geode->setName( filename.toStdString() );
+
+    geode->addDrawable( factory.createGeometry( multiPoint ) );
+
+    osgUtil::Optimizer optimizer ;
+    optimizer.optimize( geode );
+
+    geode->setCullingActive( false );
+
+    viewerWindow()->viewer()->getScene()->addChild( geode );
 
 
-	viewerWindow()->viewer()->startAnimation();
+    viewerWindow()->viewer()->startAnimation();
 }
 
 ///
@@ -100,10 +105,10 @@ void GridPlugin::loadGridXYZ()
 ///
 void GridPlugin::load()
 {
-	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("GridPlugin") ;
+    QMenu* pluginMenu = viewerWindow()->menuBar()->addMenu( "GridPlugin" ) ;
 
-	QAction * actionLoadXYZ = pluginMenu->addAction( QString("&load xyz") );
-	connect( actionLoadXYZ, SIGNAL(triggered()), this, SLOT( loadGridXYZ() ) );
+    QAction* actionLoadXYZ = pluginMenu->addAction( QString( "&load xyz" ) );
+    connect( actionLoadXYZ, SIGNAL( triggered() ), this, SLOT( loadGridXYZ() ) );
 }
 
 

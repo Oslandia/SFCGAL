@@ -26,47 +26,47 @@
 #include <memory>
 
 namespace SFCGAL {
-	class Geometry ;
-	class Polygon ;
-	class MultiPolygon ;
-	class MultiLineString ;
+class Geometry ;
+class Polygon ;
+class MultiPolygon ;
+class MultiLineString ;
 }
 
 namespace SFCGAL {
 namespace algorithm {
-	struct NoValidityCheck;
+struct NoValidityCheck;
 
-	/**
-	 * @brief build a 2D straight skeleton for a Polygon
-	 * @todo add supports for TriangulatedSurface and PolyhedralSurface
-	 * @todo output M as distance to border?
-	 * @param g input geometry
-	 * @param autoOrientation check and fix polygon orientation
-	 * @ingroup public_api
-	 * @pre g is a valid geometry
-	 */
-	SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true ) ;
+/**
+ * @brief build a 2D straight skeleton for a Polygon
+ * @todo add supports for TriangulatedSurface and PolyhedralSurface
+ * @todo output M as distance to border?
+ * @param g input geometry
+ * @param autoOrientation check and fix polygon orientation
+ * @ingroup public_api
+ * @pre g is a valid geometry
+ */
+SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true ) ;
 
-	/**
-	 * @brief build a 2D straight skeleton for a Polygon
-	 * @param g input geometry
-	 * @param autoOrientation check and fix polygon orientation
-	 * @ingroup public_api
-	 * @pre g is a valid geometry
-	 * @warning No actual validity check is done
-	 */
-	SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck ) ;
+/**
+ * @brief build a 2D straight skeleton for a Polygon
+ * @param g input geometry
+ * @param autoOrientation check and fix polygon orientation
+ * @ingroup public_api
+ * @pre g is a valid geometry
+ * @warning No actual validity check is done
+ */
+SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck ) ;
 
-	/**
-	 * @brief build a 2D straight skeleton for a Polygon
-	 * @ingroup detail
-	 */
-	SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation = true ) ;
-	/**
-	 * @brief build a 2D straight skeleton for a Polygon
-	 * @ingroup detail
-	 */
-	SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation = true ) ;
+/**
+ * @brief build a 2D straight skeleton for a Polygon
+ * @ingroup detail
+ */
+SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation = true ) ;
+/**
+ * @brief build a 2D straight skeleton for a Polygon
+ * @ingroup detail
+ */
+SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation = true ) ;
 
 }//namespace algorithm
 }//namespace SFCGAL

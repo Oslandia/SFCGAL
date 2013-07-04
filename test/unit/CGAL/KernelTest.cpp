@@ -45,21 +45,21 @@ BOOST_AUTO_TEST_SUITE( CGAL_KernelTest )
 
 BOOST_AUTO_TEST_CASE( testIntersectsRobutness )
 {
-	Segment_2 ab( Point_2(0.0,0.0) , Point_2(1.0,3.0) );
-	Segment_2 cd( Point_2(0.0,1.0) , Point_2(1.0,1.0) );
-	Segment_2 ef( Point_2(-1.0,3.0), Point_2(1.0,0.0) );
+    Segment_2 ab( Point_2( 0.0,0.0 ) , Point_2( 1.0,3.0 ) );
+    Segment_2 cd( Point_2( 0.0,1.0 ) , Point_2( 1.0,1.0 ) );
+    Segment_2 ef( Point_2( -1.0,3.0 ), Point_2( 1.0,0.0 ) );
 
-	CGAL::Object abIcd_ = CGAL::intersection( ab, cd );
-	const Point_2 * abIcd = CGAL::object_cast<Point_2>(&abIcd_) ;
-	BOOST_REQUIRE( abIcd != NULL );
+    CGAL::Object abIcd_ = CGAL::intersection( ab, cd );
+    const Point_2* abIcd = CGAL::object_cast<Point_2>( &abIcd_ ) ;
+    BOOST_REQUIRE( abIcd != NULL );
 
-	CGAL::Object abIef_ = CGAL::intersection( ab, ef );
-	const Point_2 * abIef = CGAL::object_cast<Point_2>(&abIef_) ;
-	BOOST_REQUIRE( abIef != NULL );
+    CGAL::Object abIef_ = CGAL::intersection( ab, ef );
+    const Point_2* abIef = CGAL::object_cast<Point_2>( &abIef_ ) ;
+    BOOST_REQUIRE( abIef != NULL );
 
 //	std::cout << (*abIcd) << std::endl;
 //	std::cout << (*abIef) << std::endl;
-	BOOST_CHECK( (*abIcd) == (*abIef) ) ;
+    BOOST_CHECK( ( *abIcd ) == ( *abIef ) ) ;
 }
 
 

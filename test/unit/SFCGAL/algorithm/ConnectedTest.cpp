@@ -33,12 +33,12 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_Connected )
 BOOST_AUTO_TEST_CASE( allFine )
 {
     std::auto_ptr< Geometry > geom ( io::readWkt(
-                "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                                         "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                                    ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
+                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))" ) );
 
     SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
@@ -48,12 +48,12 @@ BOOST_AUTO_TEST_CASE( allFine )
 BOOST_AUTO_TEST_CASE( notConnected )
 {
     std::auto_ptr< Geometry > geom ( io::readWkt(
-                "POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
+                                         "POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                                    ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
-                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))") );
+                                   ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))" ) );
 
     SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( !isConnected( graph ) , "connected" );
@@ -63,11 +63,11 @@ BOOST_AUTO_TEST_CASE( notConnected )
 BOOST_AUTO_TEST_CASE( notClosed )
 {
     std::auto_ptr< Geometry > geom ( io::readWkt(
-                "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                                         "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                                    ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
-                                   ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)))") );
+                                   ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)))" ) );
 
     SurfaceGraph graph( geom->as< PolyhedralSurface >() );
     BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );

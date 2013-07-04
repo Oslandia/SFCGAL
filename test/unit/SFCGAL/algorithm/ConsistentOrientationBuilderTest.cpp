@@ -34,60 +34,60 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_ConsistentOrientationBuilderTest )
 
 BOOST_AUTO_TEST_CASE( testOppositeTriangle )
 {
-	algorithm::ConsistentOrientationBuilder builder ;
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point( 1.0, 0.0, 0.0 ),
-			Point( 0.0, 1.0, 0.0 )
-		)
-	);
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point(-1.0, 0.0, 0.0 ),
-			Point( 0.0, 1.0, 0.0 )
-		)
-	);
-	TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
-	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
-	BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
+    algorithm::ConsistentOrientationBuilder builder ;
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( 1.0, 0.0, 0.0 ),
+            Point( 0.0, 1.0, 0.0 )
+        )
+    );
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( -1.0, 0.0, 0.0 ),
+            Point( 0.0, 1.0, 0.0 )
+        )
+    );
+    TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
+    BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 2U );
+    BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 }
 
 BOOST_AUTO_TEST_CASE( testFourTriangle )
 {
-	algorithm::ConsistentOrientationBuilder builder ;
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point( 1.0, 0.0, 0.0 ),
-			Point( 0.0, 1.0, 0.0 )
-		)
-	);
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point(-1.0, 0.0, 0.0 ),
-			Point( 0.0, 1.0, 0.0 )
-		)
-	);
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point( 1.0, 0.0, 0.0 ),
-			Point( 0.0,-1.0, 0.0 )
-		)
-	);
-	builder.addTriangle(
-		Triangle(
-			Point( 0.0, 0.0, 0.0 ),
-			Point(-1.0, 0.0, 0.0 ),
-			Point( 0.0,-1.0, 0.0 )
-		)
-	);
-	TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
-	BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 4U );
-	BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
+    algorithm::ConsistentOrientationBuilder builder ;
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( 1.0, 0.0, 0.0 ),
+            Point( 0.0, 1.0, 0.0 )
+        )
+    );
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( -1.0, 0.0, 0.0 ),
+            Point( 0.0, 1.0, 0.0 )
+        )
+    );
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( 1.0, 0.0, 0.0 ),
+            Point( 0.0,-1.0, 0.0 )
+        )
+    );
+    builder.addTriangle(
+        Triangle(
+            Point( 0.0, 0.0, 0.0 ),
+            Point( -1.0, 0.0, 0.0 ),
+            Point( 0.0,-1.0, 0.0 )
+        )
+    );
+    TriangulatedSurface triangulatedSurface = builder.buildTriangulatedSurface();
+    BOOST_CHECK_EQUAL( triangulatedSurface.numGeometries(), 4U );
+    BOOST_CHECK( algorithm::hasConsistentOrientation3D( triangulatedSurface ) );
 }
 
 

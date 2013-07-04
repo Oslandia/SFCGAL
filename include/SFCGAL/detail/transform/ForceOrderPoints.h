@@ -30,29 +30,29 @@ namespace SFCGAL {
 
 namespace transform {
 
-	/**
-	 * If the 2D surface is pointing down, reverse its points
-	 * @todo unittest
-	 * @todo move outside (it's not a coordinate transform)?
-	 */
-	class SFCGAL_API ForceOrderPoints : public Transform {
-	public:
-		/**
-		 * Pass the forced orientation as parameter
-		 */
-		ForceOrderPoints( bool orientCCW = true ) ;
+/**
+ * If the 2D surface is pointing down, reverse its points
+ * @todo unittest
+ * @todo move outside (it's not a coordinate transform)?
+ */
+class SFCGAL_API ForceOrderPoints : public Transform {
+public:
+    /**
+     * Pass the forced orientation as parameter
+     */
+    ForceOrderPoints( bool orientCCW = true ) ;
 
-		/*
-		 * [SFCGAL::Transform]
-		 */
-		virtual void transform( Point & p ) ;
+    /*
+     * [SFCGAL::Transform]
+     */
+    virtual void transform( Point& p ) ;
 
-		virtual void visit( Triangle& );
-		virtual void visit( Polygon& );
+    virtual void visit( Triangle& );
+    virtual void visit( Polygon& );
 
-	private:
-		bool _orientCCW;
-	};
+private:
+    bool _orientCCW;
+};
 
 
 }//transform

@@ -29,20 +29,20 @@ namespace algorithm {
 ///
 ///
 ///
-void       translate( Geometry & g, const Kernel::Vector_3 & v )
+void       translate( Geometry& g, const Kernel::Vector_3& v )
 {
-	transform::AffineTransform3< Kernel > visitor(
-		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
-	);
-	g.accept( visitor ) ;
+    transform::AffineTransform3< Kernel > visitor(
+        CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
+    );
+    g.accept( visitor ) ;
 }
 
 ///
 ///
 ///
-void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+void   translate( Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
-	translate( g, Kernel::Vector_3(dx,dy,dz) );
+    translate( g, Kernel::Vector_3( dx,dy,dz ) );
 }
 
 } // namespace algorithm

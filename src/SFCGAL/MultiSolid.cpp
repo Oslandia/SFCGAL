@@ -27,7 +27,7 @@ namespace SFCGAL {
 ///
 ///
 MultiSolid::MultiSolid():
-	GeometryCollection()
+    GeometryCollection()
 {
 
 }
@@ -36,7 +36,7 @@ MultiSolid::MultiSolid():
 ///
 ///
 MultiSolid::MultiSolid( MultiSolid const& other ):
-	GeometryCollection(other)
+    GeometryCollection( other )
 {
 
 }
@@ -46,8 +46,8 @@ MultiSolid::MultiSolid( MultiSolid const& other ):
 ///
 MultiSolid& MultiSolid::operator = ( MultiSolid other )
 {
-	swap(other) ;
-	return *this ;
+    swap( other ) ;
+    return *this ;
 }
 
 ///
@@ -61,9 +61,9 @@ MultiSolid::~MultiSolid()
 ///
 ///
 ///
-MultiSolid *   MultiSolid::clone() const
+MultiSolid*    MultiSolid::clone() const
 {
-	return new MultiSolid(*this);
+    return new MultiSolid( *this );
 }
 
 ///
@@ -71,7 +71,7 @@ MultiSolid *   MultiSolid::clone() const
 ///
 std::string    MultiSolid::geometryType() const
 {
-	return "MultiSolid" ;
+    return "MultiSolid" ;
 }
 
 ///
@@ -79,7 +79,7 @@ std::string    MultiSolid::geometryType() const
 ///
 GeometryType   MultiSolid::geometryTypeId() const
 {
-	return TYPE_MULTISOLID ;
+    return TYPE_MULTISOLID ;
 }
 
 ///
@@ -87,23 +87,23 @@ GeometryType   MultiSolid::geometryTypeId() const
 ///
 bool           MultiSolid::isAllowed( Geometry const& g )
 {
-	return g.geometryTypeId() == TYPE_SOLID ;
+    return g.geometryTypeId() == TYPE_SOLID ;
 }
 
 ///
 ///
 ///
-void MultiSolid::accept( GeometryVisitor & visitor )
+void MultiSolid::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void MultiSolid::accept( ConstGeometryVisitor & visitor ) const
+void MultiSolid::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

@@ -29,24 +29,24 @@
 namespace SFCGAL {
 namespace transform {
 
-	/**
-	 * Round the coordinates of a Geometry
-	 */
-	class SFCGAL_API RoundTransform : public Transform {
-	public:
-		/**
-		 * Constructor with a scale factor (default is nearest integer)
-		 */
-		RoundTransform( const long & scale = 1 ) ;
+/**
+ * Round the coordinates of a Geometry
+ */
+class SFCGAL_API RoundTransform : public Transform {
+public:
+    /**
+     * Constructor with a scale factor (default is nearest integer)
+     */
+    RoundTransform( const long& scale = 1 ) ;
 
-		/*
-		 * [SFCGAL::Transform]
-		 */
-		virtual void transform( Point & p ) ;
+    /*
+     * [SFCGAL::Transform]
+     */
+    virtual void transform( Point& p ) ;
 
-	private:
-		long _scale ;
-	};
+private:
+    long _scale ;
+};
 
 
 }//transform

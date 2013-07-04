@@ -6,47 +6,47 @@
 namespace SFCGAL {
 namespace viewer {
 
-	class ViewerWindow ;
-	class ViewerWidget ;
+class ViewerWindow ;
+class ViewerWidget ;
 
-	/**
-	 * osgViewer::Viewer wrapped in a QWidget
-	 */
-	class ViewerPlugin : public QObject {
-		Q_OBJECT
+/**
+ * osgViewer::Viewer wrapped in a QWidget
+ */
+class ViewerPlugin : public QObject {
+    Q_OBJECT
 
-		friend class ViewerWindow ;
-	public:
-		/**
-		 * Default constructor
-		 */
-		ViewerPlugin() ;
+    friend class ViewerWindow ;
+public:
+    /**
+     * Default constructor
+     */
+    ViewerPlugin() ;
 
-		/**
-		 * Returns the plugin name
-		 */
-		virtual QString pluginName() const = 0 ;
+    /**
+     * Returns the plugin name
+     */
+    virtual QString pluginName() const = 0 ;
 
-		/**
-		 * returns the window
-		 */
-		ViewerWindow * viewerWindow() ;
-		/**
-		 * returns the window
-		 */
-		ViewerWidget * viewer() ;
-	protected:
-		/**
-		 * Load plugin
-		 */
-		virtual void load() = 0 ;
-		/**
-		 * Unload plugin
-		 */
-		virtual void unload() ;
-	private:
-		ViewerWindow * _viewerWindow ;
-	};
+    /**
+     * returns the window
+     */
+    ViewerWindow* viewerWindow() ;
+    /**
+     * returns the window
+     */
+    ViewerWidget* viewer() ;
+protected:
+    /**
+     * Load plugin
+     */
+    virtual void load() = 0 ;
+    /**
+     * Unload plugin
+     */
+    virtual void unload() ;
+private:
+    ViewerWindow* _viewerWindow ;
+};
 
 }//viewer
 }//SFCGAL

@@ -28,8 +28,8 @@ namespace transform {
 ///
 ///
 ///
-RoundTransform::RoundTransform( const long & scale ):
-	_scale( scale )
+RoundTransform::RoundTransform( const long& scale ):
+    _scale( scale )
 {
 
 }
@@ -37,9 +37,9 @@ RoundTransform::RoundTransform( const long & scale ):
 ///
 ///
 ///
-void RoundTransform::transform( Point & p )
+void RoundTransform::transform( Point& p )
 {
-	p.coordinate().round( _scale ) ;
+    p.coordinate().round( _scale ) ;
 }
 
 }//transform

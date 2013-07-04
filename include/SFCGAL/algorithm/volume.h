@@ -27,21 +27,21 @@
 namespace SFCGAL {
 namespace algorithm {
 
-	struct NoValidityCheck;
+struct NoValidityCheck;
 
-    /**
-     * Computes the volume of a geometry
-     * @pre g is a valid Geometry
-     * @ingroup public_api
-     */
-    const Kernel::FT volume( const Geometry& g );
+/**
+ * Computes the volume of a geometry
+ * @pre g is a valid Geometry
+ * @ingroup public_api
+ */
+const Kernel::FT volume( const Geometry& g );
 
-    /**
-     * Computes the volume of a Solid
-     * @pre (not checked) volume is closed and consistently oriented
-     * @ingroup detail
-     */
-    const Kernel::FT volume( const Solid& g, NoValidityCheck );
+/**
+ * Computes the volume of a Solid
+ * @pre (not checked) volume is closed and consistently oriented
+ * @ingroup detail
+ */
+const Kernel::FT volume( const Solid& g, NoValidityCheck );
 
 }
 }

@@ -37,31 +37,33 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_ConstraintDelaunayTriangulationTest )
 
 BOOST_AUTO_TEST_CASE( testTriangulateRGC )
 {
-	ConstraintDelaunayTriangulation triangulation ;
+    ConstraintDelaunayTriangulation triangulation ;
 
-	/*
-	 * read points from file
-	 */
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/rgc-france-ign.xyz" ;
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
+    /*
+     * read points from file
+     */
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/data/rgc-france-ign.xyz" ;
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
 
-	double x,y,z ;
-	while ( ifs >> x >> y >> z ){
-		triangulation.addVertex( Coordinate(x,y,z) );
-	}
-	ifs.close();
+    double x,y,z ;
 
-	//std::string wkt = triangulation.getTriangulatedSurface()->asText(5.0) ;
-	//std::cerr << "INSERT INTO draw (geometry) VALUES ( '" << "MULTIPOLYGON" << wkt.substr(3) << "'::geometry );" << std::endl;
+    while ( ifs >> x >> y >> z ) {
+        triangulation.addVertex( Coordinate( x,y,z ) );
+    }
 
-	BOOST_CHECK_EQUAL( triangulation.numVertices(), 36566U );
-	BOOST_CHECK_EQUAL( triangulation.numTriangles(), 73114U );
+    ifs.close();
 
-	std::auto_ptr< TriangulatedSurface > triangulatedSurface = triangulation.getTriangulatedSurface() ;
-	BOOST_CHECK_EQUAL( triangulatedSurface->numTriangles(), 73114U );
-	BOOST_CHECK_CLOSE( algorithm::area( *triangulatedSurface ), 818056610000.0, 0.1 );
+    //std::string wkt = triangulation.getTriangulatedSurface()->asText(5.0) ;
+    //std::cerr << "INSERT INTO draw (geometry) VALUES ( '" << "MULTIPOLYGON" << wkt.substr(3) << "'::geometry );" << std::endl;
+
+    BOOST_CHECK_EQUAL( triangulation.numVertices(), 36566U );
+    BOOST_CHECK_EQUAL( triangulation.numTriangles(), 73114U );
+
+    std::auto_ptr< TriangulatedSurface > triangulatedSurface = triangulation.getTriangulatedSurface() ;
+    BOOST_CHECK_EQUAL( triangulatedSurface->numTriangles(), 73114U );
+    BOOST_CHECK_CLOSE( algorithm::area( *triangulatedSurface ), 818056610000.0, 0.1 );
 }
 
 

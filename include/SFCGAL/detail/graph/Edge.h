@@ -26,15 +26,15 @@
 namespace SFCGAL {
 namespace graph {
 
-	/**
-	 * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
-	 * more informations)
-	 */
-	struct SFCGAL_API Edge {
-		Edge( const int & face_ = -1 );
+/**
+ * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
+ * more informations)
+ */
+struct SFCGAL_API Edge {
+    Edge( const int& face_ = -1 );
 
-		int face ;
-	};
+    int face ;
+};
 
 }//graph
 }//SFCGAL

@@ -28,14 +28,14 @@
 
 namespace SFCGAL {
 namespace triangulate {
-	/**
-	 * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, a projectionPlane may be provided)
-	 */
-	SFCGAL_API void triangulate2DZ( const Geometry & g, ConstraintDelaunayTriangulation & triangulate );
-	/**
-	 * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, project points in OXY plane)
-	 */
-	SFCGAL_API ConstraintDelaunayTriangulation triangulate2DZ( const Geometry & g );
+/**
+ * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, a projectionPlane may be provided)
+ */
+SFCGAL_API void triangulate2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangulate );
+/**
+ * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, project points in OXY plane)
+ */
+SFCGAL_API ConstraintDelaunayTriangulation triangulate2DZ( const Geometry& g );
 
 }//algorithm
 }//SFCGAL

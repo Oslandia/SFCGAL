@@ -32,24 +32,24 @@ namespace io {
 ///
 ///
 ///
-std::auto_ptr< PreparedGeometry > readEwkt( std::istream & s )
+std::auto_ptr< PreparedGeometry > readEwkt( std::istream& s )
 {
-	WktReader wktReader(s);
-	srid_t srid = wktReader.readSRID();
-	std::auto_ptr< Geometry > g( wktReader.readGeometry() );
-	return std::auto_ptr<PreparedGeometry>(new PreparedGeometry( g, srid ));
+    WktReader wktReader( s );
+    srid_t srid = wktReader.readSRID();
+    std::auto_ptr< Geometry > g( wktReader.readGeometry() );
+    return std::auto_ptr<PreparedGeometry>( new PreparedGeometry( g, srid ) );
 }
 
 ///
 ///
 ///
-std::auto_ptr< PreparedGeometry > readEwkt( const std::string & s )
+std::auto_ptr< PreparedGeometry > readEwkt( const std::string& s )
 {
-	std::istringstream iss(s);
-	WktReader wktReader(iss);
-	srid_t srid = wktReader.readSRID();
-	std::auto_ptr< Geometry > g( wktReader.readGeometry() );
-	return std::auto_ptr<PreparedGeometry>(new PreparedGeometry( g, srid ));
+    std::istringstream iss( s );
+    WktReader wktReader( iss );
+    srid_t srid = wktReader.readSRID();
+    std::auto_ptr< Geometry > g( wktReader.readGeometry() );
+    return std::auto_ptr<PreparedGeometry>( new PreparedGeometry( g, srid ) );
 }
 
 ///
@@ -57,12 +57,12 @@ std::auto_ptr< PreparedGeometry > readEwkt( const std::string & s )
 ///
 std::auto_ptr< PreparedGeometry > readEwkt( const char* str, size_t len )
 {
-	CharArrayBuffer buf( str, str + len );
-	std::istream istr( &buf );
-	WktReader wktReader( istr );
-	srid_t srid = wktReader.readSRID();
-	std::auto_ptr< Geometry > g( wktReader.readGeometry() );
-	return std::auto_ptr<PreparedGeometry>(new PreparedGeometry( g, srid ));
+    CharArrayBuffer buf( str, str + len );
+    std::istream istr( &buf );
+    WktReader wktReader( istr );
+    srid_t srid = wktReader.readSRID();
+    std::auto_ptr< Geometry > g( wktReader.readGeometry() );
+    return std::auto_ptr<PreparedGeometry>( new PreparedGeometry( g, srid ) );
 }
 
 }//io

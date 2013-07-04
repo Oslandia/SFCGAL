@@ -31,7 +31,7 @@ namespace transform {
 ///
 ///
 ForceOrderPoints::ForceOrderPoints( bool orientCCW ) :
-	_orientCCW( orientCCW )
+    _orientCCW( orientCCW )
 {
 
 }
@@ -39,7 +39,7 @@ ForceOrderPoints::ForceOrderPoints( bool orientCCW ) :
 ///
 ///
 ///
-void ForceOrderPoints::transform( Point & )
+void ForceOrderPoints::transform( Point& )
 {
 }
 
@@ -47,57 +47,62 @@ void ForceOrderPoints::transform( Point & )
 ///
 ///
 ///
-void ForceOrderPoints::visit( Triangle & t )
+void ForceOrderPoints::visit( Triangle& t )
 {
-	if ( ! t.is3D() ) {
-		if ( ! algorithm::isCounterClockWiseOriented( t ) ) {
-			// not pointing up, reverse
-			if ( _orientCCW ) {
-				t.reverse();
-			}
-		}
-		else {
-			if ( ! _orientCCW ) {
-				t.reverse();
-			}
-		}
-		Transform::visit( t );
-	}
-	
+    if ( ! t.is3D() ) {
+        if ( ! algorithm::isCounterClockWiseOriented( t ) ) {
+            // not pointing up, reverse
+            if ( _orientCCW ) {
+                t.reverse();
+            }
+        }
+        else {
+            if ( ! _orientCCW ) {
+                t.reverse();
+            }
+        }
+
+        Transform::visit( t );
+    }
+
 }
 
 void ForceOrderPoints::visit( Polygon& p )
 {
-	if ( ! p.is3D() ) {
-		LineString& ext = p.exteriorRing();
-		if ( ! algorithm::isCounterClockWiseOriented( p.exteriorRing() ) ) {
-			// exterior ring not pointing up, reverse
-			if ( _orientCCW ) {
-				ext.reverse();
-			}
-		}
-		else {
-			if ( ! _orientCCW ) {
-				ext.reverse();
-			}
-		}
-		for ( size_t i = 0; i < p.numInteriorRings(); ++i ) {
-			LineString inter = p.interiorRingN( i );
-			if ( algorithm::isCounterClockWiseOriented( inter ) ) {
-				// interior ring is pointing up, reverse
-				if ( _orientCCW ) {
-					inter.reverse();
-				}
-			}
-			else {
-				if ( ! _orientCCW ) {
-					inter.reverse();
-				}
-			}
-		}
-		Transform::visit( p );
-	}
-	
+    if ( ! p.is3D() ) {
+        LineString& ext = p.exteriorRing();
+
+        if ( ! algorithm::isCounterClockWiseOriented( p.exteriorRing() ) ) {
+            // exterior ring not pointing up, reverse
+            if ( _orientCCW ) {
+                ext.reverse();
+            }
+        }
+        else {
+            if ( ! _orientCCW ) {
+                ext.reverse();
+            }
+        }
+
+        for ( size_t i = 0; i < p.numInteriorRings(); ++i ) {
+            LineString inter = p.interiorRingN( i );
+
+            if ( algorithm::isCounterClockWiseOriented( inter ) ) {
+                // interior ring is pointing up, reverse
+                if ( _orientCCW ) {
+                    inter.reverse();
+                }
+            }
+            else {
+                if ( ! _orientCCW ) {
+                    inter.reverse();
+                }
+            }
+        }
+
+        Transform::visit( p );
+    }
+
 }
 
 }//transform

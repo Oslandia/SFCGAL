@@ -26,17 +26,17 @@
 #include <memory>
 
 namespace SFCGAL {
-	class Polygon ;
+class Polygon ;
 }
 
 namespace SFCGAL {
 namespace generator {
 
-	/**
-	 * generate hoch snowflake
-	 * @todo unittest
-	 */
-	SFCGAL_API std::auto_ptr< Polygon > hoch( const unsigned int & order ) ;
+/**
+ * generate hoch snowflake
+ * @todo unittest
+ */
+SFCGAL_API std::auto_ptr< Polygon > hoch( const unsigned int& order ) ;
 
 } // namespace generator
 } // namespace SFCGAL

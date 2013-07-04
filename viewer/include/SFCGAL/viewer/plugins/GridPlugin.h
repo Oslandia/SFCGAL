@@ -4,40 +4,40 @@
 #include <SFCGAL/viewer/ViewerPlugin.h>
 
 namespace osg {
-	class Node ;
+class Node ;
 }
 
 namespace SFCGAL {
 namespace viewer {
 namespace plugins {
 
-	/**
-	 * data management plugin
-	 */
-	class GridPlugin : public ViewerPlugin {
-		Q_OBJECT
-	public:
-		/**
-		 * Default constructor
-		 */
-		GridPlugin() ;
+/**
+ * data management plugin
+ */
+class GridPlugin : public ViewerPlugin {
+    Q_OBJECT
+public:
+    /**
+     * Default constructor
+     */
+    GridPlugin() ;
 
-		/**
-		 * Returns the plugin name
-		 */
-		virtual QString pluginName() const ;
+    /**
+     * Returns the plugin name
+     */
+    virtual QString pluginName() const ;
 
-	public slots :
-		/**
-		 * display data information
-		 */
-		void loadGridXYZ();
-	protected:
-		/**
-		 * init plugin
-		 */
-		virtual void load() ;
-	};
+public slots :
+    /**
+     * display data information
+     */
+    void loadGridXYZ();
+protected:
+    /**
+     * init plugin
+     */
+    virtual void load() ;
+};
 
 }//plugins
 }//viewer
