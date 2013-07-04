@@ -118,6 +118,12 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the 2D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_geometry.html" title="OGC/SFA based Geometry abstract class.">Geometry</a>.  <a href="#ga97f22f61b4191385527aeb0fef8917f3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__public__api.html#gad9a06067444117e2043030701a959a73">SFCGAL::algorithm::area3D</a> (const Geometry &amp;g)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns 3D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_geometry.html" title="OGC/SFA based Geometry abstract class.">Geometry</a>.  <a href="#gad9a06067444117e2043030701a959a73"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API std::auto_ptr<br class="typebreak"/>
+&lt; Geometry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__public__api.html#gafeded9c4e017d9a86a73ea7118cd673d">SFCGAL::algorithm::convexHull</a> (const Geometry &amp;g)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the 2D convex hull for a geometry.  <a href="#gafeded9c4e017d9a86a73ea7118cd673d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API std::auto_ptr<br class="typebreak"/>
+&lt; Geometry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__public__api.html#gad670420185d98f87e8aea9c14608d9df">SFCGAL::algorithm::convexHull3D</a> (const Geometry &amp;g)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the 3D convex hull for a geometry.  <a href="#gad670420185d98f87e8aea9c14608d9df"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__public__api.html#gab9234f95fbe1f50a21558384f8959010">SFCGAL::algorithm::distance</a> (const Geometry &amp;gA, const Geometry &amp;gB)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the distance between two Geometries.  <a href="#gab9234f95fbe1f50a21558384f8959010"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__public__api.html#gaad6c75dd86eca00de368759712181d33">SFCGAL::algorithm::distance3D</a> (const Geometry &amp;gA, const Geometry &amp;gB)</td></tr>
@@ -274,6 +280,45 @@ code values have are important for WKB </dd></dl>
 <p>Returns 3D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_geometry.html" title="OGC/SFA based Geometry abstract class.">Geometry</a>. </p>
 <dl class="warning"><dt><b>Warning:</b></dt><dd><a class="el" href="class_s_f_c_g_a_l_1_1_solid.html" title="A Solid modeled with an exteriorShell and interiorShells materialized by PolyhedralSurface.">Solid</a> area is set to 0 (might be defined as the area of the surface)</dd></dl>
 <dl class="pre"><dt><b>Precondition:</b></dt><dd>g is a valid geometry </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gafeded9c4e017d9a86a73ea7118cd673d"></a><!-- doxytag: member="SFCGAL::algorithm::convexHull" ref="gafeded9c4e017d9a86a73ea7118cd673d" args="(const Geometry &amp;g)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API std::auto_ptr&lt;Geometry&gt; <a class="el" href="group__public__api.html#gafeded9c4e017d9a86a73ea7118cd673d">SFCGAL::algorithm::convexHull</a> </td>
+          <td>(</td>
+          <td class="paramtype">const Geometry &amp;&#160;</td>
+          <td class="paramname"><em>g</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Compute the 2D convex hull for a geometry. </p>
+
+</div>
+</div>
+<a class="anchor" id="gad670420185d98f87e8aea9c14608d9df"></a><!-- doxytag: member="SFCGAL::algorithm::convexHull3D" ref="gad670420185d98f87e8aea9c14608d9df" args="(const Geometry &amp;g)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API std::auto_ptr&lt;Geometry&gt; <a class="el" href="group__public__api.html#gad670420185d98f87e8aea9c14608d9df">SFCGAL::algorithm::convexHull3D</a> </td>
+          <td>(</td>
+          <td class="paramtype">const Geometry &amp;&#160;</td>
+          <td class="paramname"><em>g</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Compute the 3D convex hull for a geometry. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000007">Todo:</a></b></dt><dd>improve to handle collinear points and coplanar points</dd></dl>
 
 </div>
 </div>
@@ -605,6 +650,7 @@ template&lt;typename Kernel &gt; </div>
 <div class="memdoc">
 
 <p>2D minkowski sum (p+q) </p>
+<dl class="warning"><dt><b>Warning:</b></dt><dd>If gA is a polygon, its orientation is taken into account. A "reversed" polygon (with a clockwise-oriented exterior ring) will involve a minkowski difference rather than a sum.</dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000011">Todo:</a></b></dt><dd>missing cases (union) </dd></dl>
 <dl class="pre"><dt><b>Precondition:</b></dt><dd>gA and gB are valid geometries </dd></dl>
 
@@ -769,7 +815,7 @@ template&lt;typename Kernel &gt; </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 09:53:47 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 4 2013 15:14:09 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -55,12 +55,15 @@
 <dt><a class="anchor" id="_todo000003"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_boundary_visitor.html">SFCGAL::algorithm::BoundaryVisitor</a>  </dt>
 <dd><p class="startdd">MultiPolygon, PolyhedralSurface, TriangulatedSurface (same graph algorithm, edges without parallel or opposite) </p>
 <p>MultiSolid : faced elimination</p>
+<p></p>
 <p class="enddd">GeometryCollection : complex for heterogeneous collection (not supported in GEOS)  </p>
 </dd>
 <dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_boundary_visitor.html#ac8fd7d274669146c3e4e8cbf968078fa">SFCGAL::algorithm::BoundaryVisitor::getBoundaryFromPolygons</a>  (const graph::GeometryGraph &amp;g)</dt>
 <dd>merge resulting edges  </dd>
-<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="namespace_s_f_c_g_a_l_1_1algorithm.html#ad670420185d98f87e8aea9c14608d9df">SFCGAL::algorithm::convexHull3D</a>  (const Geometry &amp;g)</dt>
-<dd>improve to handle collinear points and coplanar points  </dd>
+<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="group__public__api.html#gad670420185d98f87e8aea9c14608d9df">SFCGAL::algorithm::convexHull3D</a>  (const Geometry &amp;g)</dt>
+<dd><p class="startdd">improve to handle collinear points and coplanar points</p>
+<p class="enddd"></p>
+</dd>
 <dt><a class="anchor" id="_todo000008"></a>Member <a class="el" href="group__public__api.html#gaad6c75dd86eca00de368759712181d33">SFCGAL::algorithm::distance3D</a>  (const Geometry &amp;gA, const Geometry &amp;gB)</dt>
 <dd><p class="startdd">complete with solid Compute distance between two 3D Geometries</p>
 <p class="enddd"></p>
@@ -82,7 +85,9 @@
 <p class="enddd">output M as distance to border?  </p>
 </dd>
 <dt><a class="anchor" id="_todo000006"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_surface_graph.html">SFCGAL::algorithm::SurfaceGraph</a>  </dt>
-<dd>unittest  </dd>
+<dd><p class="startdd">unittest</p>
+<p class="enddd"></p>
+</dd>
 <dt><a class="anchor" id="_todo000014"></a>Member <a class="el" href="namespace_s_f_c_g_a_l_1_1algorithm.html#a7913d8f232500bb2ee892f2b8a6fca01">SFCGAL::algorithm::translate</a>  (Geometry &amp;g, const Kernel::Vector_3 &amp;v)</dt>
 <dd><p class="startdd">unittest </p>
 <p class="enddd">rename to translate3D and add translate for 2D  </p>
@@ -117,20 +122,12 @@
 <dd>solid and triangles as non OGC/SFA geometric types?  </dd>
 <dt><a class="anchor" id="_todo000021"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1graph_1_1_geometry_graph_builder_t.html">SFCGAL::graph::GeometryGraphBuilderT&lt; Graph &gt;</a>  </dt>
 <dd>wrap vertex_descriptor, std::vector&lt; edge_descriptor &gt;, etc. in SharedPoint, SharedLineString, SharedPolygon, etc. and add utility method on the Graph?  </dd>
-<dt><a class="anchor" id="_todo000034"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html">SFCGAL::LineString</a>  </dt>
-<dd>template &lt; size_t N &gt;?  </dd>
 <dt><a class="anchor" id="_todo000031"></a>Member <a class="el" href="namespace_s_f_c_g_a_l.html#aab0d56e7d697d4f5f49c81f216d15a95">SFCGAL::operator==</a>  (const Geometry &amp;, const Geometry &amp;)</dt>
 <dd>only compare coordinate points  </dd>
-<dt><a class="anchor" id="_todo000035"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_point.html">SFCGAL::Point</a>  </dt>
+<dt><a class="anchor" id="_todo000034"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_point.html">SFCGAL::Point</a>  </dt>
 <dd>strong typing on coordinate dimension?  </dd>
-<dt><a class="anchor" id="_todo000036"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html">SFCGAL::PolyhedralSurface</a>  </dt>
-<dd><p class="startdd">template &lt; size_t N &gt;? </p>
-<p class="enddd">do better than a "polygon soup" or add topological view?  </p>
-</dd>
-<dt><a class="anchor" id="_todo000037"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_prepared_geometry.html">SFCGAL::PreparedGeometry</a>  </dt>
-<dd>unittest  </dd>
-<dt><a class="anchor" id="_todo000038"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html">SFCGAL::Solid</a>  </dt>
-<dd>template &lt; size_t N &gt;?  </dd>
+<dt><a class="anchor" id="_todo000035"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html">SFCGAL::PolyhedralSurface</a>  </dt>
+<dd>do better than a "polygon soup" or add topological view?  </dd>
 <dt><a class="anchor" id="_todo000025"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1transform_1_1_affine_transform2.html">SFCGAL::transform::AffineTransform2&lt; Kernel &gt;</a>  </dt>
 <dd>unittest  </dd>
 <dt><a class="anchor" id="_todo000026"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1transform_1_1_affine_transform3.html">SFCGAL::transform::AffineTransform3&lt; K &gt;</a>  </dt>
@@ -143,44 +140,42 @@
 <dd><p class="startdd">unittest </p>
 <p class="enddd">move outside (it's not a coordinate transform)?  </p>
 </dd>
-<dt><a class="anchor" id="_todo000043"></a>Member <a class="el" href="group__detail.html#ga1b5cb863379b36db6f3c1d2066b7620f">SFCGAL::triangulate::opentriangulatePolygon3D</a>  (const GeometryCollection &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000040"></a>Member <a class="el" href="group__detail.html#ga1b5cb863379b36db6f3c1d2066b7620f">SFCGAL::triangulate::opentriangulatePolygon3D</a>  (const GeometryCollection &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000044"></a>Member <a class="el" href="group__detail.html#ga9424efeeef1674d527d748e8d041a14c">SFCGAL::triangulate::triangulatePolygon3D</a>  (const PolyhedralSurface &amp;polyhedralSurface, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000042"></a>Member <a class="el" href="group__detail.html#ga948278323849842f2aa35786741d707a">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Solid &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000042"></a>Member <a class="el" href="group__detail.html#ga7cb283174e9682400c526435657265df">SFCGAL::triangulate::triangulatePolygon3D</a>  (const TriangulatedSurface &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000038"></a>Member <a class="el" href="group__detail.html#gae05da4d9986cb3527d97c18cd42b0252">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Triangle &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000040"></a>Member <a class="el" href="group__detail.html#ga8aa872876c49f7c5b3865eff93204686">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Polygon &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000036"></a>Member <a class="el" href="group__detail.html#gab1f2477c60889a1063a74d273276112b">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Geometry &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000039"></a>Member <a class="el" href="group__detail.html#gab1f2477c60889a1063a74d273276112b">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Geometry &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000039"></a>Member <a class="el" href="group__detail.html#ga7cb283174e9682400c526435657265df">SFCGAL::triangulate::triangulatePolygon3D</a>  (const TriangulatedSurface &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000045"></a>Member <a class="el" href="group__detail.html#ga948278323849842f2aa35786741d707a">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Solid &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000041"></a>Member <a class="el" href="group__detail.html#ga9424efeeef1674d527d748e8d041a14c">SFCGAL::triangulate::triangulatePolygon3D</a>  (const PolyhedralSurface &amp;polyhedralSurface, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000041"></a>Member <a class="el" href="group__detail.html#gae05da4d9986cb3527d97c18cd42b0252">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Triangle &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
+<dt><a class="anchor" id="_todo000037"></a>Member <a class="el" href="group__detail.html#ga8aa872876c49f7c5b3865eff93204686">SFCGAL::triangulate::triangulatePolygon3D</a>  (const Polygon &amp;g, TriangulatedSurface &amp;triangulatedSurface)</dt>
 <dd><p class="startdd">unittest</p>
 <p class="enddd"></p>
 </dd>
-<dt><a class="anchor" id="_todo000046"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html">SFCGAL::TriangulatedSurface</a>  </dt>
-<dd><p class="startdd">template &lt; size_t N &gt;? </p>
-<p class="enddd">do better than a "triangle soup" or add topological view?</p>
-</dd>
+<dt><a class="anchor" id="_todo000043"></a>Class <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html">SFCGAL::TriangulatedSurface</a>  </dt>
+<dd>do better than a "triangle soup" or add topological view? </dd>
 </dl>
 </div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 09:53:47 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 4 2013 15:14:09 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

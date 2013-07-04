@@ -48,12 +48,21 @@
 </div>
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Implementation details</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr><td colspan="2"><h2><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_boundary_visitor.html">SFCGAL::algorithm::BoundaryVisitor</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the boundary for a <a class="el" href="class_s_f_c_g_a_l_1_1_geometry.html" title="OGC/SFA based Geometry abstract class.">Geometry</a>.  <a href="class_s_f_c_g_a_l_1_1algorithm_1_1_boundary_visitor.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_surface_graph.html">SFCGAL::algorithm::SurfaceGraph</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Represents a polyhedral surface as a graph where faces are nodes and egde are graph edges.  <a href="class_s_f_c_g_a_l_1_1algorithm_1_1_surface_graph.html#details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_s_f_c_g_a_l_1_1algorithm_1_1_consistent_orientation_builder.html">SFCGAL::algorithm::ConsistentOrientationBuilder</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Make orientation consistent in a triangle set.  <a href="class_s_f_c_g_a_l_1_1algorithm_1_1_consistent_orientation_builder.html#details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#gae3d33daa3472fbb77efeeac8fec0dd55">SFCGAL::algorithm::area</a> (const Geometry &amp;g, NoValidityCheck)</td></tr>
@@ -84,6 +93,19 @@ Functions</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 3D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html" title="[OGC/SFA]Triangle">Triangle</a>.  <a href="#ga27b2a7f61919608c416097c1f0eecc1c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#ga01f3ab9e0e56f711688729087257da65">SFCGAL::algorithm::area3D</a> (const TriangulatedSurface &amp;g)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the 3D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html" title="A TriangulatedSurface in SFA modeled as a Triangle soup.">TriangulatedSurface</a>.  <a href="#ga01f3ab9e0e56f711688729087257da65"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API std::auto_ptr<br class="typebreak"/>
+&lt; Geometry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#ga3a0f7e33ddea97f7559aa61394893df8">SFCGAL::algorithm::collect</a> (const Geometry &amp;ga, const Geometry &amp;gb)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an aggregate of ga and gb.  <a href="#ga3a0f7e33ddea97f7559aa61394893df8"></a><br/></td></tr>
+<tr><td class="memTemplParams" colspan="2">template&lt;typename GeometryIterator &gt; </td></tr>
+<tr><td class="memTemplItemLeft" align="right" valign="top">std::auto_ptr&lt; Geometry &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group__detail.html#gadca99246ede5eabbdbe1e0d4f45bb55e">SFCGAL::algorithm::collect</a> (GeometryIterator begin, GeometryIterator end)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an aggregate of a list of geometries.  <a href="#gadca99246ede5eabbdbe1e0d4f45bb55e"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API std::auto_ptr<br class="typebreak"/>
+&lt; Geometry &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#ga69c6ed0b0d34c0849f74c69fac3fc716">SFCGAL::algorithm::collectionHomogenize</a> (std::auto_ptr&lt; Geometry &gt; coll)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Given a geometry collection, returns the "simplest" representation of the contents.  <a href="#ga69c6ed0b0d34c0849f74c69fac3fc716"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#gae8820c1cafa03eb824b934326094080c">SFCGAL::algorithm::isConnected</a> (const SurfaceGraph &amp;graph)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">test if a surface is connected, the graph should be build beforehand  <a href="#gae8820c1cafa03eb824b934326094080c"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#ga26bb893290961422bbc2fa0b76206cc0">SFCGAL::algorithm::isClosed</a> (const SurfaceGraph &amp;graph)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">test if a surface is closed, the graph should be build beforehand  <a href="#ga26bb893290961422bbc2fa0b76206cc0"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">SFCGAL_API bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__detail.html#gae3af9b97ad512d178967e44d60641a79">SFCGAL::algorithm::covers</a> (const Geometry &amp;ga, const Geometry &amp;gb)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Cover test on 2D geometries.  <a href="#gae3af9b97ad512d178967e44d60641a79"></a><br/></td></tr>
 <tr><td class="memTemplParams" colspan="2">template&lt;int Dim&gt; </td></tr>
@@ -273,7 +295,7 @@ Functions</h2></td></tr>
 
 <p>[visitor]dispatch visitor </p>
 
-<p>Implemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#abd642b5548d29c02a751a416ada04fd7">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#aff537287cf28cf02956994f78257d8b0">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#af34a269957cd17e10c4aa76bb8b9d6b8">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#a7104440f75087253c50b4eb22b60eec8">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#ab3df7b2b08bdb00e96e2e0c8a14fce0a">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a96cd9a65bc60e1b07ebc3f8e3a5eb1fe">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a6ee084893c903255663f71ba2459d4d3">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#ab7374818bdb22215b1f56c917e9dd217">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a7d28083b3dc323872f3c7f09fe6c7af6">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#aac2ce07e36461829f2379d9d7a9f7572">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#a7123a337630ed6c9ea39cbf4138073aa">SFCGAL::MultiLineString</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#abde0811c03591b7b8916fe7cd42aae3e">SFCGAL::MultiSolid</a>.</p>
+<p>Implemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#abd642b5548d29c02a751a416ada04fd7">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#aff537287cf28cf02956994f78257d8b0">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#a7104440f75087253c50b4eb22b60eec8">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#af34a269957cd17e10c4aa76bb8b9d6b8">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a96cd9a65bc60e1b07ebc3f8e3a5eb1fe">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#ab3df7b2b08bdb00e96e2e0c8a14fce0a">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a6ee084893c903255663f71ba2459d4d3">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#ab7374818bdb22215b1f56c917e9dd217">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a7d28083b3dc323872f3c7f09fe6c7af6">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#aac2ce07e36461829f2379d9d7a9f7572">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#abde0811c03591b7b8916fe7cd42aae3e">SFCGAL::MultiSolid</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#a7123a337630ed6c9ea39cbf4138073aa">SFCGAL::MultiLineString</a>.</p>
 
 </div>
 </div>
@@ -294,7 +316,7 @@ Functions</h2></td></tr>
 
 <p>[visitor]dispatch visitor </p>
 
-<p>Implemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#a4ca598977d89b66ee6698333702adc87">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#a9ee47aa6653adac00faddd4bc6dbf01f">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#ae613cd1a8dccf46c228f7622ade6fec4">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#a6ed13d9e002da672affb81a170bbe609">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#a42ac2bddfdce05398bc9a4c549fb36dc">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a2a604d17442c0eb4e1bf8d06f0dd0d1e">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a046186793909ac8916288dca8705767a">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#a1268963cf30001aea05dfe8dc9226636">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a3c39f767200ebd7109ae708d66005f8b">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#ab18fb11ad1844e45da8b072cc309b1bf">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#a2e80112ef665913297be60cb6bf6df89">SFCGAL::MultiLineString</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#a4026302999e687e18d9c3316ad3dfb68">SFCGAL::MultiSolid</a>.</p>
+<p>Implemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#a4ca598977d89b66ee6698333702adc87">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#a9ee47aa6653adac00faddd4bc6dbf01f">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#a6ed13d9e002da672affb81a170bbe609">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#ae613cd1a8dccf46c228f7622ade6fec4">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a2a604d17442c0eb4e1bf8d06f0dd0d1e">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#a42ac2bddfdce05398bc9a4c549fb36dc">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a046186793909ac8916288dca8705767a">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#a1268963cf30001aea05dfe8dc9226636">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a3c39f767200ebd7109ae708d66005f8b">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#ab18fb11ad1844e45da8b072cc309b1bf">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#a4026302999e687e18d9c3316ad3dfb68">SFCGAL::MultiSolid</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#a2e80112ef665913297be60cb6bf6df89">SFCGAL::MultiLineString</a>.</p>
 
 </div>
 </div>
@@ -549,6 +571,87 @@ Functions</h2></td></tr>
 <div class="memdoc">
 
 <p>Returns the 3D area for a <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html" title="A TriangulatedSurface in SFA modeled as a Triangle soup.">TriangulatedSurface</a>. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga3a0f7e33ddea97f7559aa61394893df8"></a><!-- doxytag: member="SFCGAL::algorithm::collect" ref="ga3a0f7e33ddea97f7559aa61394893df8" args="(const Geometry &amp;ga, const Geometry &amp;gb)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API std::auto_ptr&lt;Geometry&gt; <a class="el" href="group__detail.html#ga3a0f7e33ddea97f7559aa61394893df8">SFCGAL::algorithm::collect</a> </td>
+          <td>(</td>
+          <td class="paramtype">const Geometry &amp;&#160;</td>
+          <td class="paramname"><em>ga</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Geometry &amp;&#160;</td>
+          <td class="paramname"><em>gb</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns an aggregate of ga and gb. </p>
+
+</div>
+</div>
+<a class="anchor" id="gadca99246ede5eabbdbe1e0d4f45bb55e"></a><!-- doxytag: member="SFCGAL::algorithm::collect" ref="gadca99246ede5eabbdbe1e0d4f45bb55e" args="(GeometryIterator begin, GeometryIterator end)" -->
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename GeometryIterator &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::auto_ptr&lt;Geometry&gt; <a class="el" href="group__detail.html#ga3a0f7e33ddea97f7559aa61394893df8">SFCGAL::algorithm::collect</a> </td>
+          <td>(</td>
+          <td class="paramtype">GeometryIterator&#160;</td>
+          <td class="paramname"><em>begin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">GeometryIterator&#160;</td>
+          <td class="paramname"><em>end</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Returns an aggregate of a list of geometries. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga69c6ed0b0d34c0849f74c69fac3fc716"></a><!-- doxytag: member="SFCGAL::algorithm::collectionHomogenize" ref="ga69c6ed0b0d34c0849f74c69fac3fc716" args="(std::auto_ptr&lt; Geometry &gt; coll)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API std::auto_ptr&lt;Geometry&gt; <a class="el" href="group__detail.html#ga69c6ed0b0d34c0849f74c69fac3fc716">SFCGAL::algorithm::collectionHomogenize</a> </td>
+          <td>(</td>
+          <td class="paramtype">std::auto_ptr&lt; Geometry &gt;&#160;</td>
+          <td class="paramname"><em>coll</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Given a geometry collection, returns the "simplest" representation of the contents. </p>
+<p>Singletons will be returned as singletons. Collections that are homogeneous will be returned as the appropriate multi-type.</p>
+<dl class="warning"><dt><b>Warning:</b></dt><dd>Ownership is taken from the parameter </dd></dl>
 
 </div>
 </div>
@@ -2347,6 +2450,45 @@ template&lt;int Dim&gt; </div>
 
 </div>
 </div>
+<a class="anchor" id="ga26bb893290961422bbc2fa0b76206cc0"></a><!-- doxytag: member="SFCGAL::algorithm::isClosed" ref="ga26bb893290961422bbc2fa0b76206cc0" args="(const SurfaceGraph &amp;graph)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API bool <a class="el" href="group__detail.html#ga26bb893290961422bbc2fa0b76206cc0">SFCGAL::algorithm::isClosed</a> </td>
+          <td>(</td>
+          <td class="paramtype">const SurfaceGraph &amp;&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>test if a surface is closed, the graph should be build beforehand </p>
+<dl class="note"><dt><b>Note:</b></dt><dd>the surface may not be connected, eg. two spheres will yield a true result </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gae8820c1cafa03eb824b934326094080c"></a><!-- doxytag: member="SFCGAL::algorithm::isConnected" ref="gae8820c1cafa03eb824b934326094080c" args="(const SurfaceGraph &amp;graph)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">SFCGAL_API bool <a class="el" href="group__detail.html#gae8820c1cafa03eb824b934326094080c">SFCGAL::algorithm::isConnected</a> </td>
+          <td>(</td>
+          <td class="paramtype">const SurfaceGraph &amp;&#160;</td>
+          <td class="paramname"><em>graph</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>test if a surface is connected, the graph should be build beforehand </p>
+
+</div>
+</div>
 <a class="anchor" id="gab3c692c2150408719f706314da28a00c"></a><!-- doxytag: member="SFCGAL::algorithm::isPlane3D" ref="gab3c692c2150408719f706314da28a00c" args="(const Geometry &amp;geom, const double &amp;toleranceAbs)" -->
 <div class="memitem">
 <div class="memproto">
@@ -2410,6 +2552,7 @@ template&lt;typename Kernel &gt; </div>
 <div class="memdoc">
 
 <p>2D minkowski sum (p+q) </p>
+<dl class="warning"><dt><b>Warning:</b></dt><dd>If gA is a polygon, its orientation is taken into account. A "reversed" polygon (with a clockwise-oriented exterior ring) will involve a minkowski difference rather than a sum.</dd></dl>
 <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000012">Todo:</a></b></dt><dd>missing cases (union) </dd></dl>
 <dl class="pre"><dt><b>Precondition:</b></dt><dd>gA and gB are valid geometries</dd></dl>
 <dl class="warning"><dt><b>Warning:</b></dt><dd>@ No actual validity check is done. </dd></dl>
@@ -2480,7 +2623,7 @@ template&lt;typename Kernel &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate a 3D <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html" title="A MultiPolygon in SFA.">MultiPolygon</a>. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000043">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000040">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -2667,7 +2810,7 @@ template&lt;class Archive &gt; </div>
 
 <p>Serializer. </p>
 
-<p>Reimplemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#a9064cb148c0d89a9f5a4ed785289fbae">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#aec554f3035b2aca64ea39e801ac2a8b7">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a168b7634012c0a1ef83055693303d493">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#a056ceb8538f552b0144a4ecb61e9c5e3">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#a946ee57c515afab9f978e52fa0ecf53e">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#aafaad196232c7b06b5e7fa101809db3f">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a32c9ce82aca77c5ecb8fd74564ae1671">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#ab43fe7dce451e644d0ab12aadf66a0a1">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a77f96478ab093a3e8b2e3eb4157938bd">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#aa3132352e3fa6237f2343bcd957f570d">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#adf8d0248f9867ed755ec556ecd1172a1">SFCGAL::MultiLineString</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#a0e06733a4f543289ef54e60983f6bbe9">SFCGAL::MultiSolid</a>.</p>
+<p>Reimplemented in <a class="el" href="class_s_f_c_g_a_l_1_1_line_string.html#a9064cb148c0d89a9f5a4ed785289fbae">SFCGAL::LineString</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html#aec554f3035b2aca64ea39e801ac2a8b7">SFCGAL::Polygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_point.html#a168b7634012c0a1ef83055693303d493">SFCGAL::Point</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html#aafaad196232c7b06b5e7fa101809db3f">SFCGAL::Solid</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html#a056ceb8538f552b0144a4ecb61e9c5e3">SFCGAL::TriangulatedSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html#a946ee57c515afab9f978e52fa0ecf53e">SFCGAL::PolyhedralSurface</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html#a32c9ce82aca77c5ecb8fd74564ae1671">SFCGAL::Triangle</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_geometry_collection.html#ab43fe7dce451e644d0ab12aadf66a0a1">SFCGAL::GeometryCollection</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_point.html#a77f96478ab093a3e8b2e3eb4157938bd">SFCGAL::MultiPoint</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_polygon.html#aa3132352e3fa6237f2343bcd957f570d">SFCGAL::MultiPolygon</a>, <a class="el" href="class_s_f_c_g_a_l_1_1_multi_solid.html#a0e06733a4f543289ef54e60983f6bbe9">SFCGAL::MultiSolid</a>, and <a class="el" href="class_s_f_c_g_a_l_1_1_multi_line_string.html#adf8d0248f9867ed755ec556ecd1172a1">SFCGAL::MultiLineString</a>.</p>
 
 </div>
 </div>
@@ -2853,7 +2996,7 @@ template&lt;class Archive &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000039">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000036">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -2883,7 +3026,7 @@ template&lt;class Archive &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate a 3D <a class="el" href="class_s_f_c_g_a_l_1_1_polygon.html" title="A Polygon in SFA with holes.">Polygon</a>. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000040">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000037">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -2913,7 +3056,7 @@ template&lt;class Archive &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate a 3D <a class="el" href="class_s_f_c_g_a_l_1_1_triangle.html" title="[OGC/SFA]Triangle">Triangle</a> (copy triangle) </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000041">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000038">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -2943,7 +3086,7 @@ template&lt;class Archive &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate a 3D <a class="el" href="class_s_f_c_g_a_l_1_1_triangulated_surface.html" title="A TriangulatedSurface in SFA modeled as a Triangle soup.">TriangulatedSurface</a> (copy triangles) </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000042">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000039">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -2973,7 +3116,7 @@ template&lt;class Archive &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate 3D polygons in a <a class="el" href="class_s_f_c_g_a_l_1_1_polyhedral_surface.html" title="A PolyhedralSurface in SFA modeled as a Polygon soup.">PolyhedralSurface</a>. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000044">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000041">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -3003,7 +3146,7 @@ template&lt;class Archive &gt; </div>
 <div class="memdoc">
 
 <p>Triangulate a <a class="el" href="class_s_f_c_g_a_l_1_1_solid.html" title="A Solid modeled with an exteriorShell and interiorShells materialized by PolyhedralSurface.">Solid</a>. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000045">Todo:</a></b></dt><dd>unittest</dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000042">Todo:</a></b></dt><dd>unittest</dd></dl>
 
 </div>
 </div>
@@ -3041,7 +3184,7 @@ template&lt;class Archive &gt; </div>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 4 2013 09:53:47 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jul 4 2013 15:14:09 for SFCGAL by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
