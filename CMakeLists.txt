@@ -11,8 +11,10 @@ option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3
 option( SFCGAL_BUILD_UNIT_TESTS "build unit tests" OFF )
 option( SFCGAL_BUILD_REGRESS_TESTS "build regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
-option( SFCGAL_BUILD_TOOLS "build tools" OFF )
 option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
+
+# disabled, nothing to build
+#option( SFCGAL_BUILD_TOOLS "build tools" OFF )
 
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
@@ -23,8 +25,9 @@ set( SFCGAL_VERSION_PATCH 0 )
 
 set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
 
-include( PrecompiledHeader )
-option( Use_precompiled_headers "Use precompiled headers" OFF )
+# disabled for 1.0
+#include( PrecompiledHeader )
+#option( Use_precompiled_headers "Use precompiled headers" OFF )
 
 include( Libtoolize )
 
