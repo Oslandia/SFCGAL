@@ -39,6 +39,11 @@
 
 <h3>Getting started</h3>
 
+<h4>Source code</h4>
+
+<p>SFCGAL source code is available on the corresponding <a href="https://github.com/Oslandia/SFCGAL">github repository</a>.</p>
+
+<p>The <code>master</code> branch is the development branch and has a tag for each release version.</p>
 
 <h4>Requirements</h4>
 
@@ -113,11 +118,11 @@ make install
 
 <ul>
 <li>MinGW fail to build boost thread for version 1.46.1 (fixed in boost 1.47.0, please upgrade your boost version)</li>
-<li>Use the same cmake option for boost with CGAL and SFCGAL (particularly Boost_USE_STATIC_LIBS=OFF)</li>
+<li>Use the same cmake option for boost with CGAL and SFCGAL (particularly <code>Boost_USE_STATIC_LIBS=OFF</code>)</li>
 <li>Missing boost definitions in CGAL-4.1 to use static libraries (dllexport/dllimport)</li>
 </ul>
 
-<p>Patch CGAL-4.1/CMakeLists.txt with the following lines to build with boost static libraries (Boost_USE_STATIC_LIBS=ON).</p>
+<p>Patch CGAL-4.1/CMakeLists.txt with the following lines to build with boost static libraries (<code>Boost_USE_STATIC_LIBS=ON</code>).</p>
 
 <pre>
 option( Boost_USE_STATIC_LIBS "boost use dynamic libraries" OFF )

@@ -48,7 +48,23 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <h4>Branches</h4>
 
-<p>...</p>
+<p>The <code>master</code> branch of the repository represents the current development version of SFCGAL. Each commit on this branch is enforced not to break the compilation and unit / regression tests.</p>
+
+<p>For each public release, a new tag is created on this branch.</p>
+
+<p>When different major versions are to be maintained, the most recent major version is hosted on the <code>master</code> branch and the older versions have their own branch where fixes can be backported if needed.</p>
+
+<p>In conformance with the git way of development, each new feature is made on a proper on its own temporary branch.</p>
+
+<h4>Tests</h4>
+
+<p>SFCGAL comes with different layers of tests.</p>
+
+<p><strong>Unit tests</strong> are used to test each feature independently with hand-crafted dataset that must cover every possible case.  The <code>SFCGAL_BUILD_UNIT_TESTS</code> CMake option allows to build these tests.</p>
+
+<p><strong>Regression tests</strong> consist of call to functions with real or near-real datasets. The <code>SFCGAL_BUILD_REGRESS_TESTS</code> CMake option allows to build these tests.</p>
+
+<p>A <strong>garden test</strong> (inspired by a PostGIS test of the same name) is used to ensure every combination of parameters are acceptable parameters for each function, <i>i.e.</i> that no function crashes on a specific parameter combination that would not be part of the unit tests. This test is part of the regression suite.</p>
 
       </section>
     </div>
