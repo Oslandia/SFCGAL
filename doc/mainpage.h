@@ -34,7 +34,7 @@
  * 		<li>SFCGAL::LineString is a defined by an ordered list of SFCGAL::Point</li>
  * 		<li>SFCGAL::Polygon is a polygon with optional holes, defined by an exterior ring and interior rings</li>
  * 		<li>SFCGAL::Triangle is a Triangle defined by 3 points (*)</li>
- *		<li>SFCGAL::Solid is a solid with optional holes, defined by an exterior shell and interior shells</li>
+ *		<li>SFCGAL::Solid is a solid with optional holes (**), defined by an exterior shell and interior shells</li>
  * </ul>
  *
  * Geometry collections
@@ -63,6 +63,20 @@
  * On the other hand, it leads to convert between Triangle and Polygon and to duplicate some codes (area for example) so that it could to change
  * that and conform.
  *
+ * (**) A solid may be represented with holes, but no algorithm supports them for now.
+ *
+ * <b>Note on orientations</b>: geometries (surfaces in 2D and volumes in 3D) are oriented. The orientation is used with geometries that have 'holes'. for instance, interior rings of a 2D polygon have an orientation that is reversed to the exterior ring's orientation. The same would apply on solid' shells.
+ * However, there is no enforcement for a particular orientation on exterior rings / shells. This behaviour on solids is subject to changes since OGC standards on Solids are not yet stabilized.
+ * Exceptions to this rule are stated in the reference manual (@link SFCGAL::algorithm::minkowskiSum example @endlink).
+ *
+ * @section geo_validity_policy Geometry validation policy
+ * 
+ * Every processing algorithm takes <b>valid</b> geometries as input parameters (no self intersection, etc.). Validity of geometries is tested with the algorithm::isValid() function and corresponds to validity preconditions asked for by OGC standards.
+ *
+ * Since these validity checkings may be slow, each algorithm comes with a variant where no actual check is made (taking a NoValidityCheck tag as additional parameter).
+ *
+ * Validity checking could also be bypassed at a global level, by setting to 'OFF' the 'SFCGAL_CHECK_VALIDITY' CMake option.
+ * 
  * @section api API
  *
  * Two sets of functionalities are exposed and will be maintained as a stable API :

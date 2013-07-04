@@ -30,12 +30,14 @@ namespace algorithm {
 
 /**
  * Compute the 2D convex hull for a geometry
+ * @ingroup public_api
  */
 SFCGAL_API std::auto_ptr<Geometry> convexHull( const Geometry& g ) ;
 
 /**
  * Compute the 3D convex hull for a geometry
  * @todo improve to handle collinear points and coplanar points
+ * @ingroup public_api
  */
 SFCGAL_API std::auto_ptr<Geometry> convexHull3D( const Geometry& g ) ;
 

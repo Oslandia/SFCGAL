@@ -33,6 +33,8 @@ struct NoValidityCheck;
 /**
  * @brief 2D minkowski sum (p+q)
  *
+ * @warning If gA is a polygon, its orientation is taken into account. A "reversed" polygon (with a clockwise-oriented exterior ring) will involve a minkowski difference rather than a sum.
+ *
  * @todo missing cases (union)
  * @pre gA and gB are valid geometries
  * @ingroup public_api
@@ -41,6 +43,8 @@ SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Pol
 
 /**
  * @brief 2D minkowski sum (p+q)
+ *
+ * @warning If gA is a polygon, its orientation is taken into account. A "reversed" polygon (with a clockwise-oriented exterior ring) will involve a minkowski difference rather than a sum.
  *
  * @todo missing cases (union)
  * @pre gA and gB are valid geometries
