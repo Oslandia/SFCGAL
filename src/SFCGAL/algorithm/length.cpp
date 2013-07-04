@@ -19,7 +19,11 @@
  *
  */
 #include <SFCGAL/algorithm/length.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/GeometryCollection.h>
+
+#include <SFCGAL/Exception.h>
 
 namespace SFCGAL {
 namespace algorithm {

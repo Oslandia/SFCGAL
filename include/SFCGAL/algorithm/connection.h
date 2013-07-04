@@ -21,7 +21,8 @@
 #ifndef _SFCGAL_GRAPH_ISCONNECTED_H_
 #define _SFCGAL_GRAPH_ISCONNECTED_H_
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Geometry.h>
+#include <SFCGAL/Coordinate.h>
 #include <SFCGAL/Validity.h>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>

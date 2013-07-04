@@ -18,8 +18,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <SFCGAL/all.h>
 #include <SFCGAL/algorithm/intersection.h>
+#include <SFCGAL/Exception.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/collect.h>
 #include <SFCGAL/algorithm/collectionHomogenize.h>
@@ -30,6 +30,7 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
+#include <CGAL/box_intersection_d.h>
 
 //
 // Intersection kernel

@@ -21,8 +21,6 @@
 #ifndef _SFCGAL_TESTGEOMETRY_H_
 #define _SFCGAL_TESTGEOMETRY_H_
 
-#include <SFCGAL/all.h>
-
 namespace SFCGAL {
 
 struct TestGeometry {

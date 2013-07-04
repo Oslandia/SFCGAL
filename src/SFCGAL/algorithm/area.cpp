@@ -19,7 +19,15 @@
  *
  */
 #include <SFCGAL/algorithm/area.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
 
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/isValid.h>
@@ -31,7 +39,6 @@
 #include <CGAL/Point_3.h>
 #include <CGAL/Triangle_3.h>
 #include <CGAL/Plane_3.h>
-
 
 #include <SFCGAL/Exception.h>
 #include <boost/format.hpp>

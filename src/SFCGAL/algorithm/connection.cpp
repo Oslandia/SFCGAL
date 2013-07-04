@@ -21,6 +21,13 @@
 
 #include <SFCGAL/algorithm/connection.h>
 
+#include <SFCGAL/Coordinate.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+
 namespace SFCGAL {
 namespace algorithm {
 

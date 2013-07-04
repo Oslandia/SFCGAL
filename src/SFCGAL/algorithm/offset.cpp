@@ -19,7 +19,16 @@
  *
  */
 #include <SFCGAL/algorithm/offset.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/MultiPolygon.h>
+
+#include <SFCGAL/Exception.h>
+
 #include <SFCGAL/detail/polygonSetToMultiPolygon.h>
 #include <SFCGAL/algorithm/isValid.h>
 

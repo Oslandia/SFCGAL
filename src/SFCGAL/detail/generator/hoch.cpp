@@ -20,7 +20,8 @@
  */
 #include <SFCGAL/detail/generator/hoch.h>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
 namespace generator {

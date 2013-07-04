@@ -19,7 +19,12 @@
  *
  */
 #include <SFCGAL/algorithm/collectionHomogenize.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
 namespace SFCGAL {
 namespace algorithm {

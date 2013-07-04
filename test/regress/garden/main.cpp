@@ -27,7 +27,18 @@
 #include <boost/chrono.hpp>
 
 #include <SFCGAL/Exception.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/version.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/vtk.h>
@@ -384,12 +395,10 @@ int main( int argc, char* argv[] )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area3D( *geom1 ) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area( *geom1 ) ; )
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom1->is<Polygon>() ) ( void )algorithm::hasPlane3D<Kernel>( geom1->as<Polygon>() ) ; ) {
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ;
-        } )
+	CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom1->is<Polygon>() ) ( void )algorithm::hasPlane3D<Kernel>( geom1->as<Polygon>() ) ; )
+	CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ; )
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ;
-                                              )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ; )
 
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( {
             triangulate::ConstraintDelaunayTriangulation cdt;
@@ -400,12 +409,7 @@ int main( int argc, char* argv[] )
                                               )
 
 
-        for ( geom2=testCollection.begin() {
-            ;
-        }
-
-        geom2!=testCollection.end();
-        ++geom2 ) {
+        for ( geom2=testCollection.begin(); geom2!=testCollection.end(); ++geom2 ) {
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
 
             if ( geom2->is<Point>() && !geom2->isEmpty() ) {

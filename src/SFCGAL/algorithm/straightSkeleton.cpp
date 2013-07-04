@@ -19,7 +19,15 @@
  *
  */
 #include <SFCGAL/algorithm/straightSkeleton.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+
+#include <SFCGAL/Exception.h>
+
 #include <SFCGAL/algorithm/orientation.h>
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/intersection.h>

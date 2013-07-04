@@ -19,8 +19,14 @@
  *
  */
 #include <SFCGAL/algorithm/collectionToMulti.h>
+
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
+
 #include <SFCGAL/detail/transform/ForceZ.h>
-#include <SFCGAL/all.h>
 
 namespace SFCGAL {
 namespace algorithm {
