@@ -19,8 +19,9 @@
  *
  */
 #include <SFCGAL/detail/generator/sierpinski.h>
-#include <SFCGAL/all.h>
 
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/MultiPolygon.h>
 
 namespace SFCGAL {
 namespace generator {

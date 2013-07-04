@@ -19,12 +19,15 @@
  *
  */
 #include <SFCGAL/viewer/plugins/GridPlugin.h>
+
+#include <SFCGAL/Point.h>
+#include <SFCGAL/MultiPoint.h>
+
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/ViewerWidget.h>
 
 #include <fstream>
 
-#include <SFCGAL/all.h>
 #include <SFCGAL/detail/io/OsgFactory.h>
 
 #include <QtGui/QMenu>

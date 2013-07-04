@@ -21,7 +21,9 @@
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
 
 #include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 

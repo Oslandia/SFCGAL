@@ -19,8 +19,14 @@
  *
  */
 #include <SFCGAL/algorithm/convexHull.h>
+
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/GeometryCollection.h>
+
 #include <SFCGAL/detail/GetPointsVisitor.h>
-#include <SFCGAL/all.h>
 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Exception.h>

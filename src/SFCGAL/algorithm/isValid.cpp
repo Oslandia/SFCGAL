@@ -19,6 +19,18 @@
  *
  */
 #include <SFCGAL/algorithm/isValid.h>
+
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
+
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/length.h>
@@ -29,7 +41,6 @@
 #include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/detail/algorithm/coversPoints.h>
 #include <SFCGAL/algorithm/connection.h>
-#include <SFCGAL/all.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/Kernel.h>

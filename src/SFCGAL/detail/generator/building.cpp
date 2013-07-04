@@ -19,7 +19,11 @@
  *
  */
 #include <SFCGAL/detail/generator/building.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
 #include <SFCGAL/algorithm/force3D.h>
 #include <SFCGAL/algorithm/orientation.h>

@@ -24,7 +24,11 @@
 #endif
 
 #include <SFCGAL/detail/generator/disc.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+
 #include <cmath>
 
 namespace SFCGAL {

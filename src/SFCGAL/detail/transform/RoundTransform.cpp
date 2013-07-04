@@ -20,7 +20,7 @@
  */
 #include <SFCGAL/detail/transform/RoundTransform.h>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
 
 namespace SFCGAL {
 namespace transform {

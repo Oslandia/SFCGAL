@@ -21,7 +21,13 @@
 #ifndef _SFCGAL_GRAPH_GEOMETRYGRAPHBUILDER_H_
 #define _SFCGAL_GRAPH_GEOMETRYGRAPHBUILDER_H_
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+
 #include <SFCGAL/detail/graph/GeometryGraph.h>
 
 namespace SFCGAL {

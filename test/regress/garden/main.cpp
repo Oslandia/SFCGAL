@@ -27,7 +27,18 @@
 #include <boost/chrono.hpp>
 
 #include <SFCGAL/Exception.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/version.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/vtk.h>
@@ -401,7 +412,6 @@ int main( int argc, char* argv[] )
         )
 
         for ( geom2=testCollection.begin() ; geom2!=testCollection.end(); ++geom2 ) {
-
             if ( geom2->is<Point>() && !geom2->isEmpty() ) {
                 CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
                     const Point& p = geom2->as<Point>() ;

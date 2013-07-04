@@ -19,7 +19,13 @@
  *
  */
 #include <SFCGAL/triangulate/triangulate2DZ.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+
+#include <SFCGAL/Exception.h>
 #include <SFCGAL/algorithm/isValid.h>
 
 namespace SFCGAL {

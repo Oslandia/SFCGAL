@@ -24,8 +24,6 @@
 #include <SFCGAL/detail/io/OsgFactory.h>
 #include <SFCGAL/io/wkt.h>
 
-#include <SFCGAL/all.h>
-
 #include <osg/Geode>
 
 #include <QtGui/QMenu>
