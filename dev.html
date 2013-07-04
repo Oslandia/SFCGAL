@@ -60,7 +60,23 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <p><strong>Regression tests</strong> consist of call to functions with real or near-real datasets. The <code>SFCGAL_BUILD_REGRESS_TESTS</code> CMake option allows to build these tests.</p>
 
+<p><strong>Benchmark tests</strong> allow to test processing speed of SFCGAL algorithms. Compilation available through the <code>SFCGAL_BUILD_BENCH</code> CMake option.</p>
+
 <p>A <strong>garden test</strong> (inspired by the eponym PostGIS test) is used to ensure every combination of parameters are acceptable parameters for each function, <i>i.e.</i> that no function crashes on a specific parameter combination that would not be part of the unit tests. This test is part of the regression suite.</p>
+
+<h4>Documentation</h4>
+
+<p>If doxygen is available, you may run 'make doc' to generate the code documentation.</p>
+
+<h4>Supported platforms</h4>
+
+<p>SFCGAL has been successfully compiled and tested with the following platforms :</p>
+<ul>
+<li>g++ on Linux 32 and 64 bits</li>
+<li>clang (3.0) on Linux 32 bits and 64 bits</li>
+<li>mingw on Windows</li>
+<li>clang on MacOSX</li>
+</ul>
 
       </section>
     </div>

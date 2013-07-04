@@ -37,7 +37,7 @@
 -->
 <a href="index.html">About</a> | <a href="authors.html">Authors</a> | <a href="documentation.html">Documentation</a> | <a href="dev.html">Development</a> | <a href="screencast.html">Screencast</a> | <a href="installation.html">Installation</a>
 
-<h3>Getting started</h3>
+<h3>Installation</h3>
 
 <h4>Source code</h4>
 
@@ -50,7 +50,7 @@
 <h4>Requirements</h4>
 
 <ul>
-<li>A C++ compiler, see further for supported platforms and compilers,</li>
+<li>A C++ compiler, see the <a href="dev.html">development section</a> for supported platforms and compilers,</li>
 <li><a href="http://www.cmake.org">CMake</a> 2.8.6+</li>
 <li><a href="http://www.cgal.org">CGAL</a> 4.1 or higher</li>
 <li><a href="http://www.boost.org">Boost</a> 1.46 or higher</li>
@@ -117,32 +117,6 @@ BOOST_ROOT : Boost location
 <p>CGAL uses a lot of templated constructions. The whole building process may then take a while.
 </p>
 
-<h4>Documentation</h4>
-
-<p>If doxygen is available, you may run 'make doc' to generate the code documentation.</p>
-
-<h4>Test & usage</h4>
-
-<p>In addition to the main SFCGAL library, the following optional components are part of the building process:
-
-<ul>
-<li>PostGIS (2.2-trunk) throw --with-sfcgal option in configure</li>
-<li>a unit test suite, see the test/unit directory</li>
-<li>a regression test suite, see the test/regress directory</li>
-<li>a benchmark suite, see the test/bench directory</li>
-<li>a 3D viewer, based on OpenSceneGraph and Qt</li>
-</ul>
-
-<h4>Supported platforms</h4>
-
-<p>SFCGAL has been successfully compiled and tested with the following platforms :</p>
-<ul>
-<li>g++ on Linux 32 and 64 bits</li>
-<li>clang (3.0) on Linux 32 bits and 64 bits</li>
-<li>mingw on Windows</li>
-<li>clang on MacOSX</li>
-</ul>
-
 <h4>Troubleshouting</h4>
 
 <p>Windows/MinGW</p>
@@ -165,6 +139,11 @@ else()
     add_definitions( "-DBOOST_ALL_DYN_LINK" )
 endif()
 </pre>
+
+<h3>Installation with PostGIS</h3>
+
+<p>On a recent PostGIS source tree (2.1beta for instance), an additional option for the <code>configure</code> script called <code>--with-sfcgal</code> is available.
+Set it to wherever your SFCGAL installation is. If you used the default directory <code>/usr/local</code> and if the <code>bin</code> sub-directory is present in your <code>PATH</code>, then SFCGAL should be detected without any aditionnal options.</p>
 
       </section>
     </div>
