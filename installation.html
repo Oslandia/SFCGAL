@@ -45,39 +45,65 @@
 
 <p>The <code>master</code> branch is the development branch and has a tag for each release version.</p>
 
+<p>Source code of the 1.0 release can be found with the tag <code>v1.0</code>. You can direclty download a <a href="https://github.com/Oslandia/SFCGAL/archive/v1.0.zip">zip</a> or <a href="https://github.com/Oslandia/SFCGAL/archive/v1.0.tar.gz">tarball</a>.</p>
+
 <h4>Requirements</h4>
 
 <ul>
-<li>C++ compiler</li>
-<li>CMake 2.8.6+</li>
-<li>CGAL 4.1</li>
-<li>Boost (see CGAL for version)</li>
-<li>MPFR (CGAL Epeck)</li>
-<li>GMP (CGAL Epeck)</li>
+<li>A C++ compiler, see further for supported platforms and compilers,</li>
+<li><a href="http://www.cmake.org">CMake</a> 2.8.6+</li>
+<li><a href="http://www.cgal.org">CGAL</a> 4.1 or higher</li>
+<li><a href="http://www.boost.org">Boost</a> 1.46 or higher</li>
+<li><a href="http://mpfr.org">MPFR</a> (CGAL Epeck) 2.2.1 or higher</li>
+<li><a href="http://gmplib.org">GMP</a> (for CGAL Epeck) 4.2 or higher</li>
 </ul>
 
 <p>Optional dependencies (viewer and 3D format export)</p>
 
 <ul>
-<li>OpenSceneGraph (version >= 3.1)</li>
-<li>Qt4</li>
+<li><a href="http://www.openscenegraph.org">OpenSceneGraph</a> (version >= 3.1)</li>
+<li><a href="http://qt-project.org">Qt4</a></li>
 
 <h4>Compilation</h4>
 
-<p>Use cmake or cmake-gui.</p>
-
-<p>Build options (ON/OFF cmake variable)</p>
+<p>The compilation process is based on CMake. The classic way of building is to first create a building directory and use
+a CMake client to configure the build. For instance using <code>ccmake</code>, the curses-based frontend for cmake (you can also use cmake-gui):</p>
 
 <pre>
-SFCGAL_BUILD_UNIT_TESTS : Build unit tests
-SFCGAL_BUILD_REGRESS_TESTS : Build regress tests
-SFCGAL_BUILD_BENCH : Build bench tests
-SFCGAL_BUILD_EXAMPLES : Build examples
-SFCGAL_BUILD_OSG : Build components depending on OpenSceneGraph
-SFCGAL_BUILD_VIEWER : Build basic viewer
-</pre>
+mkdir build
+cd build
+ccmake ..</pre>
 
-<p>Dependencies location (environment variables)</p>
+<p>Default building options should work out-of-the-box on a recent Linux distribution. You may want to fine tune the compilation process.</p>
+
+<h5>CMake build options</h5>
+
+<ul>
+<li><code>CMAKE_INSTALL_PREFIX</code> (default: <code>/usr/local/</code>) Specifies where SFCGAL will be installed when <code>make install</code> is invoked</li>
+<li><code>CMAKE_BUILD_TYPE</code> (default: <code>Release</code>) is used to switch between a <code>Release</code> build, specially crafted for speed efficiency and a <code>Debug</code> build, specifically crafted for development. The <code>Debug</code> build will also set CGAL to be used in Debug mode. In this case, lots of assertions are kept present in the code and it results in a very slow code.</li>
+</ul>
+
+<h5>SFCGAL specific build options</h5>
+
+<ul>
+<li><code>SFCGAL_CHECK_VALIDITY</code> (default: <code>ON</code>) If set to <code>ON</code>, geometries will be testes for validity before actually calling algorithms. Turn to <code>OFF</code> to disable the validity check. Refer to the <a href="doxygen/index.html">reference manual</a>.</li>
+<li><code>SFCGAL_BUILD_BENCH</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build benchmark tests</li>
+<li><code>SFCGAL_BUILD_EXAMPLES</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build examples</li>
+<li><code>SFCGAL_BUILD_OSG</code> (default: <code>OFF</code>) Turn to <code>ON</code> to enable the use of OpenSceneGraph. It should be turned to <code>ON</code> to use the viewer</li>
+<li><code>SFCGAL_BUILD_REGRESS_TESTS</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build regression tests</li>
+<li><code>SFCGAL_BUILD_UNIT_TESTS</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build unit tests</li>
+<li><code>SFCGAL_BUILD_VIEWER</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build the viewer</li>
+</ul>
+
+<h5>Miscellaneous options</h5>
+
+<ul>
+<li><code>SFCGAL_BUILD_FAILED_ON_WARNING</code> (default: <code>OFF</code>) Turn to <code>ON</code> to convert warnings into errors</li>
+<li><code>SFCGAL_BUILD_WITH_GPROF</code> (default: <code>OFF</code>) Turn to <code>ON</code> to build with GNU gprof</li>
+<li><code>SFCGAL_USE_STATIC_LIBS</code> (default: <code>OFF</code>) If set to <code>ON</code>, compile as a static library. Do not change this setting unless you know what your are doing</li>
+</ul>
+
+<h5>Dependencies location (environment variables)</h5>
 
 <pre>
 GMP_DIR : GMP location
@@ -86,12 +112,7 @@ CGAL_DIR : CGAL location
 BOOST_ROOT : Boost location
 </pre>
 
-<p>then ...</p>
-
-<pre>
-make
-make install
-</pre>
+<p>One everything is properly configured, type <code>make</code> to compile (do not forget a <code>-j X</code> if you have X processors to dedicate to the building). You can install the library with <code>make install</code> as usual.</p>
 
 <p>CGAL uses a lot of templated constructions. The whole building process may then take a while.
 </p>
