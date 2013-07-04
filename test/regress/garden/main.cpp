@@ -352,6 +352,7 @@ int main( int argc, char* argv[] )
     // function calls
     std::set< std::string > notImplemented ;
 #define CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( call )\
+    {\
     ++calls ;\
     try{ call }\
     catch ( GeometryInvalidityException ) {}\
@@ -375,6 +376,7 @@ int main( int argc, char* argv[] )
         std::cerr << "\n";\
         }\
         catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
+    }\
     }
 
     for ( GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1 ) {
@@ -384,35 +386,28 @@ int main( int argc, char* argv[] )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area3D( *geom1 ) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::area( *geom1 ) ; )
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom1->is<Polygon>() ) ( void )algorithm::hasPlane3D<Kernel>( geom1->as<Polygon>() ) ; ) {
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ;
-        } )
+        if ( geom1->is<Polygon>() ) {
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::hasPlane3D<Kernel>( geom1->as<Polygon>() ) ; )
+        }
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ;
-                                              )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ; )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ; )
 
-        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( {
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
             triangulate::ConstraintDelaunayTriangulation cdt;
             triangulate::triangulate2DZ( *geom1, cdt );
             TriangulatedSurface surf;
             cdt.getTriangles( surf );
-        }
-                                              )
+        )
 
-
-        for ( geom2=testCollection.begin() {
-            ;
-        }
-
-        geom2!=testCollection.end();
-        ++geom2 ) {
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
+        for ( geom2=testCollection.begin() ; geom2!=testCollection.end(); ++geom2 ) {
 
             if ( geom2->is<Point>() && !geom2->isEmpty() ) {
-            const Point& p = geom2->as<Point>() ;
-                ( void )algorithm::extrude( *geom1, p.x(), p.y(), p.z() ) ;
+                CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
+                    const Point& p = geom2->as<Point>() ;
+                    ( void )algorithm::extrude( *geom1, p.x(), p.y(), p.z() ) ;
+                )
             }
-            )
 
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::distance3D( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::distance( *geom1, *geom2 ) ; )
@@ -421,13 +416,17 @@ int main( int argc, char* argv[] )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects3D( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects( *geom1, *geom2 ) ; )
 
-            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( if ( geom2->is<Polygon>() ) ( void )algorithm::minkowskiSum( *geom1, geom2->as<Polygon>() ) ; )
+            if ( geom2->is<Polygon>() ) {
+                CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::minkowskiSum( *geom1, geom2->as<Polygon>() ) ; )
             }
+        }
 
-        if ( progress || verbose ) std::cout << "performed " << calls << " function calls\n";
+        if ( progress || verbose ) {
+            std::cout << "performed " << calls << " function calls\n";
+        }
     }
 
-if ( !notImplemented.empty() ) {
+    if ( !notImplemented.empty() ) {
         std::cout << "Missing implementations\n";
 
         for ( std::set< std::string >::const_iterator i=notImplemented.begin();
