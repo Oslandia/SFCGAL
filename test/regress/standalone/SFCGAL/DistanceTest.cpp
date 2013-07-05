@@ -25,7 +25,18 @@
 #include <fstream>
 #include <boost/format.hpp>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 //#include <SFCGAL/io/vtk.h>
 
@@ -42,55 +53,62 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_DistanceTest )
  */
 BOOST_AUTO_TEST_CASE( testFileDistanceTest )
 {
-	logger().setLogLevel( Logger::Debug );
+    logger().setLogLevel( Logger::Debug );
 
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/DistanceTest.txt" ;
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/data/DistanceTest.txt" ;
 
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
 
-	int argc = framework::master_test_suite().argc;
-	char **argv = framework::master_test_suite().argv;
+    int argc = framework::master_test_suite().argc;
+    char** argv = framework::master_test_suite().argv;
 
-	// look for options
-	int test_one_line = -1;
-	for ( int i = 0; i < argc; ++i ) {
-		std::string argi( argv[i] );
-		if ( argi == "--line" ) {
-			// only test one line
-			if ( argc > i+1 ) {
-				sscanf( argv[i+1], "%d", &test_one_line );
-				++i;
-				continue;
-			}
-		}
-	}
+    // look for options
+    int test_one_line = -1;
 
-	std::string line;
+    for ( int i = 0; i < argc; ++i ) {
+        std::string argi( argv[i] );
+
+        if ( argi == "--line" ) {
+            // only test one line
+            if ( argc > i+1 ) {
+                sscanf( argv[i+1], "%d", &test_one_line );
+                ++i;
+                continue;
+            }
+        }
+    }
+
+    std::string line;
     int lineNo = 0;
-	while ( std::getline( ifs, line ) ){
+
+    while ( std::getline( ifs, line ) ) {
         ++lineNo;
-		if ( line[0] == '#' || line.empty() )
-			continue ;
 
-        if ( -1 != test_one_line && lineNo != test_one_line ) continue;
+        if ( line[0] == '#' || line.empty() ) {
+            continue ;
+        }
 
-		BOOST_TEST_MESSAGE( (boost::format("%s:%d") % filename % lineNo).str() );
+        if ( -1 != test_one_line && lineNo != test_one_line ) {
+            continue;
+        }
 
-		std::istringstream iss(line);
+        BOOST_TEST_MESSAGE( ( boost::format( "%s:%d" ) % filename % lineNo ).str() );
 
-		std::string distanceDimension ;
-		std::string wktGA, wktGB ;
-		double expectedDistance ;
+        std::istringstream iss( line );
 
-		std::getline( iss, distanceDimension, '|' ) ;
-		std::getline( iss, wktGA, '|' ) ;
-		std::getline( iss, wktGB, '|' ) ;
-		iss >> expectedDistance ;
+        std::string distanceDimension ;
+        std::string wktGA, wktGB ;
+        double expectedDistance ;
 
-		std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
-		std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+        std::getline( iss, distanceDimension, '|' ) ;
+        std::getline( iss, wktGA, '|' ) ;
+        std::getline( iss, wktGB, '|' ) ;
+        iss >> expectedDistance ;
+
+        std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
+        std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
         //if (43!=lineNo ) continue;
         //if (43==lineNo )
@@ -98,16 +116,18 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
         //    io::vtk(gA->as<Polygon>(), "/tmp/gA.vtk");
         //    io::vtk(gB->as<MultiPolygon>(), "/tmp/gB.vtk");
         //}
-        
 
-		if ( distanceDimension == "2" ){
-			BOOST_CHECK_CLOSE( gA->distance(*gB), expectedDistance, 1e-13 );
-		}else if ( distanceDimension == "3" ){
-			BOOST_CHECK_CLOSE( gA->distance3D(*gB), expectedDistance, 1e-13 );
-		}else{
-			BOOST_CHECK(false);
-		}
-	}
+
+        if ( distanceDimension == "2" ) {
+            BOOST_CHECK_CLOSE( gA->distance( *gB ), expectedDistance, 1e-13 );
+        }
+        else if ( distanceDimension == "3" ) {
+            BOOST_CHECK_CLOSE( gA->distance3D( *gB ), expectedDistance, 1e-13 );
+        }
+        else {
+            BOOST_CHECK( false );
+        }
+    }
 }
 
 

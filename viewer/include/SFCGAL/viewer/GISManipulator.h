@@ -6,18 +6,17 @@
 namespace SFCGAL {
 namespace viewer {
 
-	class GISManipulator : public osgGA::FirstPersonManipulator
-	{
-	public:
-		GISManipulator();
+class GISManipulator : public osgGA::FirstPersonManipulator {
+public:
+    GISManipulator();
 
-		void init (const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &us);
+    void init ( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
 
-	protected:
-		bool performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy );
+protected:
+    bool performMovementLeftMouseButton( const double eventTimeDelta, const double dx, const double dy );
 
-		bool handleMouseWheel( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
-	};
+    bool handleMouseWheel( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& us );
+};
 
 }//viewer
 }//SFCGAL

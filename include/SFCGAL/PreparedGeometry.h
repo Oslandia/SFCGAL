@@ -43,102 +43,101 @@ typedef uint32_t srid_t;
  *
  * It is noncopyable since it stores a std::auto_ptr<SFCGAL::Geometry>
  *
- * @todo unittest
  */
-class SFCGAL_API PreparedGeometry : public boost::noncopyable
-{
- public:
-	/**
-	 * Default constructor
-	 */
-	PreparedGeometry();
+class SFCGAL_API PreparedGeometry : public boost::noncopyable {
+public:
+    /**
+     * Default constructor
+     */
+    PreparedGeometry();
 
-	/**
-	 * Constructor
-	 * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
-	 */
-	PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid = 0 );
+    /**
+     * Constructor
+     * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
+     */
+    PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid = 0 );
 
-	/**
-	 * Constructor
-	 * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
-	 */
-	PreparedGeometry( Geometry* geometry, srid_t srid = 0 );
+    /**
+     * Constructor
+     * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
+     */
+    PreparedGeometry( Geometry* geometry, srid_t srid = 0 );
 
-	virtual ~PreparedGeometry();
+    virtual ~PreparedGeometry();
 
-	/**
-	 * Geometry accessors
-	 */
-	const Geometry& geometry() const;
-	Geometry& geometry();
+    /**
+     * Geometry accessors
+     */
+    const Geometry& geometry() const;
+    Geometry& geometry();
 
-	/**
-	 * Geometry setter
-	 */
-	void resetGeometry( Geometry* geom );
+    /**
+     * Geometry setter
+     */
+    void resetGeometry( Geometry* geom );
 
-	/**
-	 * SRID read only accessor
-	 */
-	const srid_t& SRID() const { return _srid; }
+    /**
+     * SRID read only accessor
+     */
+    const srid_t& SRID() const {
+        return _srid;
+    }
 
-	/**
-	 * SRID accessor
-	 */
-	srid_t& SRID() { return _srid; }
+    /**
+     * SRID accessor
+     */
+    srid_t& SRID() {
+        return _srid;
+    }
 
-	/**
-	 * Envelope accessor (using cache)
-	 */
-	const Envelope& envelope() const;
+    /**
+     * Envelope accessor (using cache)
+     */
+    const Envelope& envelope() const;
 
-	/**
-	 * Resets the cache
-	 */
-	void invalidateCache();
+    /**
+     * Resets the cache
+     */
+    void invalidateCache();
 
-	/**
-	 * Convert to an extended WKT (with SRID)
-	 * @param numDecimals: number of decimals, -1 for keeping the exact rational representation, if possible
-	 */
-	std::string asEWKT( const int& numDecimals = - 1) const;
+    /**
+     * Convert to an extended WKT (with SRID)
+     * @param numDecimals: number of decimals, -1 for keeping the exact rational representation, if possible
+     */
+    std::string asEWKT( const int& numDecimals = - 1 ) const;
 
-	/**
-	 * Serializer
-	 */
-	template <class Archive>
-	void save( Archive& ar, const unsigned int /*version*/ ) const
-	{
-		ar & _srid;
-		const Geometry* pgeom = _geometry.get();
-		ar & pgeom;
-	}
+    /**
+     * Serializer
+     */
+    template <class Archive>
+    void save( Archive& ar, const unsigned int /*version*/ ) const {
+        ar& _srid;
+        const Geometry* pgeom = _geometry.get();
+        ar& pgeom;
+    }
 
-	template <class Archive>
-	void load( Archive& ar, const unsigned int /*version*/ )
-	{
-		ar & _srid;
-		Geometry* pgeom;
-		ar & pgeom;
-		_geometry.reset( pgeom );
-	}
+    template <class Archive>
+    void load( Archive& ar, const unsigned int /*version*/ ) {
+        ar& _srid;
+        Geometry* pgeom;
+        ar& pgeom;
+        _geometry.reset( pgeom );
+    }
 
-	template <class Archive>
-	void serialize( Archive& ar, const unsigned int version )
-	{
-		boost::serialization::split_member(ar, *this, version);
-	}
+    template <class Archive>
+    void serialize( Archive& ar, const unsigned int version ) {
+        boost::serialization::split_member( ar, *this, version );
+    }
 
 protected:
-	// Pointer to underlying Geometry
-	std::auto_ptr<Geometry> _geometry;
+    // Pointer to underlying Geometry
+    std::auto_ptr<Geometry> _geometry;
 
-	// SRID of the geometry
-	srid_t _srid;
+    // SRID of the geometry
+    srid_t _srid;
 
-	// bbox of the geometry
-	mutable boost::optional<Envelope> _envelope;
+    // bbox of the geometry
+    mutable boost::optional<Envelope> _envelope;
 };
 
 }

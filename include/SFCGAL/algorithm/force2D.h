@@ -6,17 +6,17 @@
 #include <SFCGAL/Kernel.h>
 
 namespace SFCGAL {
-	class Geometry ;
+class Geometry ;
 }
 
 namespace SFCGAL {
 namespace algorithm {
 
-	/**
-	 * @brief force a geometry to be 2D (project on O,x,y)
-	 * @warning ignore empty geometries
-	 */
-	SFCGAL_API void force2D( Geometry& g );
+/**
+ * @brief force a geometry to be 2D (project on O,x,y)
+ * @warning ignore empty geometries
+ */
+SFCGAL_API void force2D( Geometry& g );
 
 } // namespace algorithm
 } // namespace SFCGAL

@@ -19,7 +19,20 @@
  *
  */
 #include <SFCGAL/algorithm/translate.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
+
 #include <SFCGAL/detail/transform/AffineTransform3.h>
 
 
@@ -29,20 +42,20 @@ namespace algorithm {
 ///
 ///
 ///
-void       translate( Geometry & g, const Kernel::Vector_3 & v )
+void       translate( Geometry& g, const Kernel::Vector_3& v )
 {
-	transform::AffineTransform3< Kernel > visitor(
-		CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
-	);
-	g.accept( visitor ) ;
+    transform::AffineTransform3< Kernel > visitor(
+        CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
+    );
+    g.accept( visitor ) ;
 }
 
 ///
 ///
 ///
-void   translate( Geometry & g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
+void   translate( Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
-	translate( g, Kernel::Vector_3(dx,dy,dz) );
+    translate( g, Kernel::Vector_3( dx,dy,dz ) );
 }
 
 } // namespace algorithm

@@ -31,28 +31,18 @@ namespace SFCGAL {
 ///
 ///
 Point::Point():
-	Geometry(),
-	_coordinate(),
-	_m(NaN())
+    Geometry(),
+    _coordinate(),
+    _m( NaN() )
 {
 }
 
 ///
 ///
 ///
-Point::Point( const Coordinate & coordinate ):
-	_coordinate(coordinate),
-	_m(NaN())
-{
-
-}
-
-///
-///
-///
-Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
-	_coordinate(x,y),
-	_m(NaN())
+Point::Point( const Coordinate& coordinate ):
+    _coordinate( coordinate ),
+    _m( NaN() )
 {
 
 }
@@ -60,9 +50,9 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y ):
 ///
 ///
 ///
-Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, const double& m ):
-	_coordinate(x,y,z),
-	_m(m)
+Point::Point( const Kernel::FT& x, const Kernel::FT& y ):
+    _coordinate( x,y ),
+    _m( NaN() )
 {
 
 }
@@ -70,10 +60,9 @@ Point::Point( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z, 
 ///
 ///
 ///
-Point::Point( const double & x, const double & y ):
-	Geometry(),
-	_coordinate(x,y),
-	_m(NaN())
+Point::Point( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z, const double& m ):
+    _coordinate( x,y,z ),
+    _m( m )
 {
 
 }
@@ -81,10 +70,10 @@ Point::Point( const double & x, const double & y ):
 ///
 ///
 ///
-Point::Point( const double & x, const double & y, const double & z ):
-	Geometry(),
-	_coordinate(x,y,z),
-	_m(NaN())
+Point::Point( const double& x, const double& y ):
+    Geometry(),
+    _coordinate( x,y ),
+    _m( NaN() )
 {
 
 }
@@ -92,10 +81,10 @@ Point::Point( const double & x, const double & y, const double & z ):
 ///
 ///
 ///
-Point::Point( const double & x, const double & y, const double & z, const double & m ):
-	Geometry(),
-	_coordinate(x,y,z),
-	_m(m)
+Point::Point( const double& x, const double& y, const double& z ):
+    Geometry(),
+    _coordinate( x,y,z ),
+    _m( NaN() )
 {
 
 }
@@ -103,9 +92,10 @@ Point::Point( const double & x, const double & y, const double & z, const double
 ///
 ///
 ///
-Point::Point( const Kernel::Point_2 & other ):
-	_coordinate(other),
-	_m(NaN())
+Point::Point( const double& x, const double& y, const double& z, const double& m ):
+    Geometry(),
+    _coordinate( x,y,z ),
+    _m( m )
 {
 
 }
@@ -113,9 +103,19 @@ Point::Point( const Kernel::Point_2 & other ):
 ///
 ///
 ///
-Point::Point( const Kernel::Point_3 & other ):
-	_coordinate(other),
-	_m(NaN())
+Point::Point( const Kernel::Point_2& other ):
+    _coordinate( other ),
+    _m( NaN() )
+{
+
+}
+
+///
+///
+///
+Point::Point( const Kernel::Point_3& other ):
+    _coordinate( other ),
+    _m( NaN() )
 {
 
 }
@@ -124,10 +124,10 @@ Point::Point( const Kernel::Point_3 & other ):
 ///
 ///
 ///
-Point::Point( const Point & other ):
-	Geometry(),
-	_coordinate(other._coordinate),
-	_m(other._m)
+Point::Point( const Point& other ):
+    Geometry(),
+    _coordinate( other._coordinate ),
+    _m( other._m )
 {
 
 }
@@ -135,11 +135,11 @@ Point::Point( const Point & other ):
 ///
 ///
 ///
-Point& Point::operator = ( const Point & other )
+Point& Point::operator = ( const Point& other )
 {
-	_coordinate = other._coordinate ;
-	_m          = other._m ;
-	return *this ;
+    _coordinate = other._coordinate ;
+    _m          = other._m ;
+    return *this ;
 }
 
 ///
@@ -154,9 +154,9 @@ Point::~Point()
 ///
 ///
 ///
-Point * Point::clone() const
+Point* Point::clone() const
 {
-	return new Point(*this);
+    return new Point( *this );
 }
 
 ///
@@ -164,7 +164,7 @@ Point * Point::clone() const
 ///
 std::string Point::geometryType() const
 {
-	return "Point";
+    return "Point";
 }
 
 ///
@@ -172,7 +172,7 @@ std::string Point::geometryType() const
 ///
 GeometryType Point::geometryTypeId() const
 {
-	return TYPE_POINT ;
+    return TYPE_POINT ;
 }
 
 ///
@@ -180,7 +180,7 @@ GeometryType Point::geometryTypeId() const
 ///
 int Point::dimension() const
 {
-	return 0 ;
+    return 0 ;
 }
 
 ///
@@ -188,7 +188,7 @@ int Point::dimension() const
 ///
 int Point::coordinateDimension() const
 {
-	return _coordinate.coordinateDimension() + ( isMeasured() ? 1 : 0 ) ;
+    return _coordinate.coordinateDimension() + ( isMeasured() ? 1 : 0 ) ;
 }
 
 
@@ -197,7 +197,7 @@ int Point::coordinateDimension() const
 ///
 bool Point::isEmpty() const
 {
-	return _coordinate.isEmpty() ;
+    return _coordinate.isEmpty() ;
 }
 
 ///
@@ -205,7 +205,7 @@ bool Point::isEmpty() const
 ///
 bool Point::is3D() const
 {
-	return _coordinate.is3D() ;
+    return _coordinate.is3D() ;
 }
 
 ///
@@ -213,62 +213,64 @@ bool Point::is3D() const
 ///
 bool  Point::isMeasured() const
 {
-	return ! isNaN(_m) ;
+    return ! isNaN( _m ) ;
 }
 
 ///
 ///
 ///
-void Point::accept( GeometryVisitor & visitor )
+void Point::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void Point::accept( ConstGeometryVisitor & visitor ) const
+void Point::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-bool Point::operator < ( const Point & other ) const
+bool Point::operator < ( const Point& other ) const
 {
-	return _coordinate < other._coordinate ;
+    return _coordinate < other._coordinate ;
 }
 
 ///
 ///
 ///
-bool Point::operator == ( const Point & other ) const
+bool Point::operator == ( const Point& other ) const
 {
-	return _coordinate == other._coordinate ;
+    return _coordinate == other._coordinate ;
 }
 
 ///
 ///
 ///
-bool Point::operator != ( const Point & other ) const
+bool Point::operator != ( const Point& other ) const
 {
-	return _coordinate != other._coordinate ;
+    return _coordinate != other._coordinate ;
 }
 
 
 ///
 /// Private structures used to implement partial function specialization
 template <int D>
-struct do_toPoint_d
-{
-    static CGAL::Point_2<Kernel> toPoint( const Point* p ) { return p->toPoint_2(); }
+struct do_toPoint_d {
+    static CGAL::Point_2<Kernel> toPoint( const Point* p ) {
+        return p->toPoint_2();
+    }
 };
 
 template <>
-struct do_toPoint_d<3>
-{
-    static CGAL::Point_3<Kernel> toPoint( const Point* p ) { return p->toPoint_3(); }
+struct do_toPoint_d<3> {
+    static CGAL::Point_3<Kernel> toPoint( const Point* p ) {
+        return p->toPoint_3();
+    }
 };
 
 template <int Dim>

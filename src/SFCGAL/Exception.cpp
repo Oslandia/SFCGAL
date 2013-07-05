@@ -27,7 +27,7 @@ namespace SFCGAL {
 ///
 ///
 Exception::Exception() throw():
-	_message("unknown exception")
+    _message( "unknown exception" )
 {
 
 }
@@ -37,7 +37,7 @@ Exception::Exception() throw():
 ///
 ///
 Exception::Exception( std::string const& message ) throw():
-	_message(message)
+    _message( message )
 {
 
 }
@@ -55,7 +55,7 @@ Exception::~Exception() throw()
 ///
 const char* Exception::what() const throw()
 {
-	return _message.c_str() ;
+    return _message.c_str() ;
 }
 
 ///
@@ -63,7 +63,7 @@ const char* Exception::what() const throw()
 ///
 std::string Exception::diagnostic() const throw()
 {
-	return boost::diagnostic_information(*this) ;
+    return boost::diagnostic_information( *this ) ;
 }
 
 

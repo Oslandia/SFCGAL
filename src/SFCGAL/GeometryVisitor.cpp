@@ -19,10 +19,19 @@
  *
  */
 #include <SFCGAL/GeometryVisitor.h>
-#include <SFCGAL/all.h>
-//#include <SFCGAL/Exception.h>
 
-
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
 namespace SFCGAL {
 
@@ -37,9 +46,9 @@ GeometryVisitor::~GeometryVisitor()
 ///
 ///
 ///
-void GeometryVisitor::visit( Geometry & g )
+void GeometryVisitor::visit( Geometry& g )
 {
-	g.accept(*this);
+    g.accept( *this );
 }
 //
 /////
@@ -119,9 +128,9 @@ ConstGeometryVisitor::~ConstGeometryVisitor()
 ///
 ///
 ///
-void ConstGeometryVisitor::visit( const Geometry & g )
+void ConstGeometryVisitor::visit( const Geometry& g )
 {
-	g.accept(*this);
+    g.accept( *this );
 }
 //
 /////

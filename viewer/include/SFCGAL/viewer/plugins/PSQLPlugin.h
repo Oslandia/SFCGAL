@@ -18,119 +18,119 @@ namespace SFCGAL {
 namespace viewer {
 namespace plugins {
 
-	class PSQLPluginImpl;
-	/**
-	 * data management plugin
-	 */
-	class PSQLPlugin : public ViewerPlugin {
-		Q_OBJECT
-	public:
-		/**
-		 * Default constructor
-		 */
-		PSQLPlugin() ;
+class PSQLPluginImpl;
+/**
+ * data management plugin
+ */
+class PSQLPlugin : public ViewerPlugin {
+    Q_OBJECT
+public:
+    /**
+     * Default constructor
+     */
+    PSQLPlugin() ;
 
-		~PSQLPlugin();
+    ~PSQLPlugin();
 
-		/**
-		 * Returns the plugin name
-		 */
-		virtual QString pluginName() const ;
+    /**
+     * Returns the plugin name
+     */
+    virtual QString pluginName() const ;
 
-		/**
-		 * Connect to the database
-		 */
-		void connect( const std::string& dbOptions );
+    /**
+     * Connect to the database
+     */
+    void connect( const std::string& dbOptions );
 
-		void disconnect();
+    void disconnect();
 
-		/**
-		 * Do the PostGIS query and returns an osg::Geode
-		 */
-		osg::Geode* doQuery( const std::string& );
+    /**
+     * Do the PostGIS query and returns an osg::Geode
+     */
+    osg::Geode* doQuery( const std::string& );
 
-		/**
-		 * Do the PostGIS queries for all layers
-		 */
-		void computeGeometries();
+    /**
+     * Do the PostGIS queries for all layers
+     */
+    void computeGeometries();
 
-		/**
-		 * Display all visible layers
-		 */
-		void display();
-	public slots :
-		/**
-		 * display data information
-		 */
-		void launchConsole();
+    /**
+     * Display all visible layers
+     */
+    void display();
+public slots :
+    /**
+     * display data information
+     */
+    void launchConsole();
 
-		void saveLayers();
-		void loadLayers();
-		void onRefresh();
-	protected:
-		/**
-		 * init plugin
-		 */
-		virtual void load() ;
+    void saveLayers();
+    void loadLayers();
+    void onRefresh();
+protected:
+    /**
+     * init plugin
+     */
+    virtual void load() ;
 
-	private:
-		PSQLPluginImpl* impl_;
-	};
+private:
+    PSQLPluginImpl* impl_;
+};
 
 
-	///
-	/// SQL editor for a layer
-	class SQLConsole : public QDockWidget
-	{
-		Q_OBJECT
-	public:
-		SQLConsole( PSQLPlugin* plugin );
+///
+/// SQL editor for a layer
+class SQLConsole : public QDockWidget {
+    Q_OBJECT
+public:
+    SQLConsole( PSQLPlugin* plugin );
 
-		//
-		// connect to a QListWidgetItem storing the sql query and the resulting geometry
-		void connectItem( QListWidgetItem* );
+    //
+    // connect to a QListWidgetItem storing the sql query and the resulting geometry
+    void connectItem( QListWidgetItem* );
 
-		//
-		//
-		void disconnectItem();
+    //
+    //
+    void disconnectItem();
 
-	public slots:
-		void onQuery();
-		void onReconnect();
-	private:
-		QPlainTextEdit* sqlEdit_;
-		QPushButton* okBtn_;
-		QPushButton* connectBtn_;
-		QLineEdit* dbOptions_;
+public slots:
+    void onQuery();
+    void onReconnect();
+private:
+    QPlainTextEdit* sqlEdit_;
+    QPushButton* okBtn_;
+    QPushButton* connectBtn_;
+    QLineEdit* dbOptions_;
 
-		QListWidgetItem* item_;
-		
-		PSQLPlugin* plugin_;
-	};
+    QListWidgetItem* item_;
 
-	class LayersWidget : public QDockWidget
-	{
-		Q_OBJECT
-	public:
-		LayersWidget( PSQLPlugin* plugin, SQLConsole* );
+    PSQLPlugin* plugin_;
+};
 
-		QListWidget* widget() { return listWidget_; }
+class LayersWidget : public QDockWidget {
+    Q_OBJECT
+public:
+    LayersWidget( PSQLPlugin* plugin, SQLConsole* );
 
-		void addLayer( const QString& name, bool visible, const QString& dbOptions, const QString& query );
-	public slots:
-		void onAdd();
-		void onClick( const QModelIndex& idx );
+    QListWidget* widget() {
+        return listWidget_;
+    }
 
-		void onEdit();
-		void onRemove();
-		void onZoomToLayer();
-	private:
-		QListWidget* listWidget_;
-		QPushButton* addBtn_;
-		SQLConsole* console_;
+    void addLayer( const QString& name, bool visible, const QString& dbOptions, const QString& query );
+public slots:
+    void onAdd();
+    void onClick( const QModelIndex& idx );
 
-		PSQLPlugin* plugin_;
-	};
+    void onEdit();
+    void onRemove();
+    void onZoomToLayer();
+private:
+    QListWidget* listWidget_;
+    QPushButton* addBtn_;
+    SQLConsole* console_;
+
+    PSQLPlugin* plugin_;
+};
 
 }//plugins
 }//viewer

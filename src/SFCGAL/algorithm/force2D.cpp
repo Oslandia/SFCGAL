@@ -9,8 +9,8 @@ namespace algorithm {
 ///
 void force2D( Geometry& g )
 {
-	transform::Force2D t ;
-	g.accept( t ) ;
+    transform::Force2D t ;
+    g.accept( t ) ;
 }
 
 } // namespace algorithm

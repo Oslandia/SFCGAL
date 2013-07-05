@@ -29,55 +29,55 @@ namespace SFCGAL {
 ///
 ///
 Triangle::Triangle() :
-	Surface()
+    Surface()
 {
-	_vertices[0] = Point();
-	_vertices[1] = Point();
-	_vertices[2] = Point();
+    _vertices[0] = Point();
+    _vertices[1] = Point();
+    _vertices[2] = Point();
 }
 
 ///
 ///
 ///
-Triangle::Triangle( const Kernel::Triangle_2 & triangle )
+Triangle::Triangle( const Kernel::Triangle_2& triangle )
 {
-	for ( int i = 0; i < 3; i++ ){
-		_vertices[i] = triangle.vertex(i) ;
-	}
-}
-
-
-///
-///
-///
-Triangle::Triangle( const Kernel::Triangle_3 & triangle )
-{
-	for ( int i = 0; i < 3; i++ ){
-		_vertices[i] = triangle.vertex(i) ;
-	}
-}
-
-///
-///
-///
-Triangle::Triangle( const Point & p, const Point & q, const Point & r ) :
-	Surface()
-{
-	_vertices[0] = p ;
-	_vertices[1] = q ;
-	_vertices[2] = r ;
+    for ( int i = 0; i < 3; i++ ) {
+        _vertices[i] = triangle.vertex( i ) ;
+    }
 }
 
 
 ///
 ///
 ///
-Triangle::Triangle( const Triangle & other )
-	: Surface()
+Triangle::Triangle( const Kernel::Triangle_3& triangle )
 {
-	_vertices[0] = other._vertices[0] ;
-	_vertices[1] = other._vertices[1] ;
-	_vertices[2] = other._vertices[2] ;
+    for ( int i = 0; i < 3; i++ ) {
+        _vertices[i] = triangle.vertex( i ) ;
+    }
+}
+
+///
+///
+///
+Triangle::Triangle( const Point& p, const Point& q, const Point& r ) :
+    Surface()
+{
+    _vertices[0] = p ;
+    _vertices[1] = q ;
+    _vertices[2] = r ;
+}
+
+
+///
+///
+///
+Triangle::Triangle( const Triangle& other )
+    : Surface()
+{
+    _vertices[0] = other._vertices[0] ;
+    _vertices[1] = other._vertices[1] ;
+    _vertices[2] = other._vertices[2] ;
 }
 
 
@@ -86,12 +86,12 @@ Triangle::Triangle( const Triangle & other )
 ///
 ///
 ///
-Triangle& Triangle::operator = ( const Triangle & other )
+Triangle& Triangle::operator = ( const Triangle& other )
 {
-	_vertices[0] = other._vertices[0] ;
-	_vertices[1] = other._vertices[1] ;
-	_vertices[2] = other._vertices[2] ;
-	return *this ;
+    _vertices[0] = other._vertices[0] ;
+    _vertices[1] = other._vertices[1] ;
+    _vertices[2] = other._vertices[2] ;
+    return *this ;
 }
 
 ///
@@ -107,9 +107,9 @@ Triangle::~Triangle()
 ///
 ///
 ///
-Triangle *   Triangle::clone() const
+Triangle*    Triangle::clone() const
 {
-	return new Triangle( *this );
+    return new Triangle( *this );
 }
 
 
@@ -118,7 +118,7 @@ Triangle *   Triangle::clone() const
 ///
 std::string    Triangle::geometryType() const
 {
-	return "Triangle" ;
+    return "Triangle" ;
 }
 
 
@@ -127,7 +127,7 @@ std::string    Triangle::geometryType() const
 ///
 GeometryType   Triangle::geometryTypeId() const
 {
-	return TYPE_TRIANGLE ;
+    return TYPE_TRIANGLE ;
 }
 
 
@@ -136,7 +136,7 @@ GeometryType   Triangle::geometryTypeId() const
 ///
 int  Triangle::coordinateDimension() const
 {
-	return _vertices[0].coordinateDimension() ;
+    return _vertices[0].coordinateDimension() ;
 }
 
 
@@ -145,7 +145,7 @@ int  Triangle::coordinateDimension() const
 ///
 bool  Triangle::isEmpty() const
 {
-	return _vertices[0].isEmpty();
+    return _vertices[0].isEmpty();
 }
 
 
@@ -154,7 +154,7 @@ bool  Triangle::isEmpty() const
 ///
 bool  Triangle::is3D() const
 {
-	return _vertices[0].is3D() ;
+    return _vertices[0].is3D() ;
 }
 
 ///
@@ -162,7 +162,7 @@ bool  Triangle::is3D() const
 ///
 bool  Triangle::isMeasured() const
 {
-	return _vertices[0].isMeasured() ;
+    return _vertices[0].isMeasured() ;
 }
 
 ///
@@ -170,8 +170,8 @@ bool  Triangle::isMeasured() const
 ///
 void  Triangle::reverse()
 {
-	//note : first point kept to simplify testing
-	std::swap( _vertices[1], _vertices[2] );
+    //note : first point kept to simplify testing
+    std::swap( _vertices[1], _vertices[2] );
 }
 
 
@@ -180,30 +180,33 @@ void  Triangle::reverse()
 ///
 Polygon  Triangle::toPolygon() const
 {
-	if ( isEmpty() ){
-		return Polygon() ;
-	}
-	std::vector< Point > points ;
-	for ( size_t i = 0; i < 4; i++ ){
-		points.push_back( vertex(i) );
-	}
-	return Polygon( LineString( points ) );
+    if ( isEmpty() ) {
+        return Polygon() ;
+    }
+
+    std::vector< Point > points ;
+
+    for ( size_t i = 0; i < 4; i++ ) {
+        points.push_back( vertex( i ) );
+    }
+
+    return Polygon( LineString( points ) );
 }
 
 ///
 ///
 ///
-void Triangle::accept( GeometryVisitor & visitor )
+void Triangle::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void Triangle::accept( ConstGeometryVisitor & visitor ) const
+void Triangle::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

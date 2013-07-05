@@ -28,42 +28,43 @@
 
 namespace SFCGAL {
 namespace detail {
-namespace algorithm
+namespace algorithm {
+template <int Dim>
+bool _coversPoints( const Geometry& ga, const Geometry& gb )
 {
-	template <int Dim>
-	bool _coversPoints( const Geometry& ga, const Geometry& gb )
-	{
-		if ( ga.isEmpty() || gb.isEmpty() ) {
-			return false;
-		}
-		GeometrySet<Dim> gsa( ga );
+    if ( ga.isEmpty() || gb.isEmpty() ) {
+        return false;
+    }
 
-		// get all points of gb;
-		detail::GetPointsVisitor visitor;
-		gb.accept( visitor );
+    GeometrySet<Dim> gsa( ga );
 
-		for ( detail::GetPointsVisitor::const_iterator it = visitor.points.begin(); it != visitor.points.end(); ++it ) {
-			const Point* ppt = *it;
+    // get all points of gb;
+    detail::GetPointsVisitor visitor;
+    gb.accept( visitor );
 
-			// a geometry set of one point
-			GeometrySet<Dim> gsp( *ppt );
+    for ( detail::GetPointsVisitor::const_iterator it = visitor.points.begin(); it != visitor.points.end(); ++it ) {
+        const Point* ppt = *it;
 
-			if ( !SFCGAL::algorithm::intersects( gsp, gsa ) ) {
-				return false;
-			}
-		}
-		return true;
-	}
+        // a geometry set of one point
+        GeometrySet<Dim> gsp( *ppt );
 
-	bool coversPoints( const Geometry& ga, const Geometry& gb )
-	{
-		return _coversPoints<2>( ga, gb );
-	}
+        if ( !SFCGAL::algorithm::intersects( gsp, gsa ) ) {
+            return false;
+        }
+    }
 
-	bool coversPoints3D( const Geometry& ga, const Geometry& gb )
-	{
-		return _coversPoints<3>( ga, gb );
-	}
+    return true;
+}
+
+bool coversPoints( const Geometry& ga, const Geometry& gb )
+{
+    return _coversPoints<2>( ga, gb );
+}
+
+bool coversPoints3D( const Geometry& ga, const Geometry& gb )
+{
+    return _coversPoints<3>( ga, gb );
+}
 }
 }
 }

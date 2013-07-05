@@ -29,205 +29,210 @@
 
 namespace SFCGAL {
 
-	/**
-	 * @brief represents a pixel convention for Grid data
-	 *
-	 * PIXEL_IS_POINT : Each value represents a point of the grid
-	 * PIXEL_IS_AREA : Each value corresponds to an area
-	 *
-	 */
-	typedef enum {
-		PIXEL_IS_POINT,
-		PIXEL_IS_AREA
-	} PixelConvention ;
+/**
+ * @brief represents a pixel convention for Grid data
+ *
+ * PIXEL_IS_POINT : Each value represents a point of the grid
+ * PIXEL_IS_AREA : Each value corresponds to an area
+ *
+ */
+typedef enum {
+    PIXEL_IS_POINT,
+    PIXEL_IS_AREA
+} PixelConvention ;
 
-	/**
-	 * @brief represents a Grid.
-	 *
-	 * left-right, top-down orientation :
-	 *                         i
-	 * +----------------------->
-	 * |
-	 * |
-	 * |
-	 * |
-	 * v j
-	 *
-	 *
-	 * NaN represents undefined values
-	 */
-	class SFCGAL_API Grid {
-	public:
+/**
+ * @brief represents a Grid.
+ *
+ * left-right, top-down orientation :
+ *                         i
+ * +----------------------->
+ * |
+ * |
+ * |
+ * |
+ * v j
+ *
+ *
+ * NaN represents undefined values
+ */
+class SFCGAL_API Grid {
+public:
 
-		/**
-		 * @brief default constructor
-		 */
-		Grid();
-		/**
-		 * @brief default constructor
-		 */
-		Grid(
-			const size_t & nrows,
-			const size_t & ncols,
-			const double& fillValue = NaN(),
-			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
-			const PixelConvention & pixelType = PIXEL_IS_POINT
-		);
-		/**
-		 * @brief copy constructor
-		 */
-		Grid(
-		        const detail::ublas::matrix< double > & data,
-			const Envelope & limits = Envelope(0.0,1.0,0.0,1.0),
-			const PixelConvention & pixelType = PIXEL_IS_POINT
-		);
-		/**
-		 * @brief copy constructor
-		 */
-		Grid( const Grid & other );
-		/**
-		 * @brief copy constructor
-		 */
-		Grid& operator = ( const Grid & other );
-		/**
-		 * @brief destructor
-		 */
-		~Grid();
-
-
-		/**
-		 * @brief test if the grid is empty
-		 */
-		inline bool isEmpty() const {
-			return ( _data.size1() == 0U ) || ( _data.size2() == 0U ) ;
-		}
-
-		/**
-		 * @brief get a point at a specific location
-		 */
-		inline Point point( const size_t & row, const size_t & col ) const {
-			if ( _pixelConvention == PIXEL_IS_POINT ){
-				Point p(
-					_limits.xMin() + col * dx(),
-					_limits.yMax() - row * dy());
-                p.setM( _data(row,col) );
-                return p;
-			}else{
-				Point p(
-					_limits.xMin() + ( 0.5 + col ) * dx(),
-					_limits.yMax() - ( 0.5 + row ) * dy());
-			    p.setM( _data(row,col) );
-                return p;
-			}
-		}
-
-		/**
-		 * @brief get the width of a pixel
-		 */
-		inline double dx() const {
-			if ( _pixelConvention == PIXEL_IS_POINT ){
-				return _limits.boundsN(0).width() / ( _data.size2() - 1 ) ;
-			}else{
-				return _limits.boundsN(0).width() / ( _data.size2() ) ;
-			}
-		}
-
-		/**
-		 * @brief get the height of a pixel
-		 */
-		inline double dy() const {
-			if ( _pixelConvention == PIXEL_IS_POINT ){
-				return _limits.boundsN(1).width() / ( _data.size1() - 1 ) ;
-			}else{
-				return _limits.boundsN(1).width() / ( _data.size1() ) ;
-			}
-		}
-
-		/**
-		 * @brief get Z for a given location
-		 */
-		inline const double & z( const size_t& row, const size_t& col ) const {
-			return _data(row,col) ;
-		}
-		/**
-		 * @brief get Z for a given location
-		 */
-		inline double & z( const size_t& row, const size_t& col ) {
-			return _data(row,col) ;
-		}
+    /**
+     * @brief default constructor
+     */
+    Grid();
+    /**
+     * @brief default constructor
+     */
+    Grid(
+        const size_t& nrows,
+        const size_t& ncols,
+        const double& fillValue = NaN(),
+        const Envelope& limits = Envelope( 0.0,1.0,0.0,1.0 ),
+        const PixelConvention& pixelType = PIXEL_IS_POINT
+    );
+    /**
+     * @brief copy constructor
+     */
+    Grid(
+        const detail::ublas::matrix< double > & data,
+        const Envelope& limits = Envelope( 0.0,1.0,0.0,1.0 ),
+        const PixelConvention& pixelType = PIXEL_IS_POINT
+    );
+    /**
+     * @brief copy constructor
+     */
+    Grid( const Grid& other );
+    /**
+     * @brief copy constructor
+     */
+    Grid& operator = ( const Grid& other );
+    /**
+     * @brief destructor
+     */
+    ~Grid();
 
 
-		/**
-		 * @brief gets the height of the grid
-		 */
-		inline size_t nrows() const {
-			return _data.size1() ;
-		}
-		/**
-		 * @brief gets the width of the grid
-		 */
-		inline size_t ncols() const {
-			return _data.size2() ;
-		}
+    /**
+     * @brief test if the grid is empty
+     */
+    inline bool isEmpty() const {
+        return ( _data.size1() == 0U ) || ( _data.size2() == 0U ) ;
+    }
 
-		/**
-		 * @brief access to grid limits
-		 */
-		inline const Envelope & limits() const { return _limits ; }
-		/**
-		 * @brief Sets the limits
-		 */
-		inline void setLimits( const Envelope & limits ) {
-			_limits = limits ;
-		}
+    /**
+     * @brief get a point at a specific location
+     */
+    inline Point point( const size_t& row, const size_t& col ) const {
+        if ( _pixelConvention == PIXEL_IS_POINT ) {
+            Point p(
+                _limits.xMin() + col * dx(),
+                _limits.yMax() - row * dy() );
+            p.setM( _data( row,col ) );
+            return p;
+        }
+        else {
+            Point p(
+                _limits.xMin() + ( 0.5 + col ) * dx(),
+                _limits.yMax() - ( 0.5 + row ) * dy() );
+            p.setM( _data( row,col ) );
+            return p;
+        }
+    }
 
-		/**
-		 * @brief get pixel type
-		 */
-		inline const PixelConvention & pixelConvention() const {
-			return _pixelConvention ;
-		}
-		/**
-		 * @brief set the pixel type
-		 */
-		inline void setPixelConvention( const PixelConvention & pixelConvention ){
-			_pixelConvention = pixelConvention ;
-		}
+    /**
+     * @brief get the width of a pixel
+     */
+    inline double dx() const {
+        if ( _pixelConvention == PIXEL_IS_POINT ) {
+            return _limits.boundsN( 0 ).width() / ( _data.size2() - 1 ) ;
+        }
+        else {
+            return _limits.boundsN( 0 ).width() / ( _data.size2() ) ;
+        }
+    }
 
-		/**
-		 * @brief [advanced]access to grid data
-		 */
-		inline detail::ublas::matrix< double > & data() {
-			return _data ;
-		}
-		/**
-		 * @brief [advanced]access to grid data
-		 */
-		inline const detail::ublas::matrix< double > & data() const {
-			return _data ;
-		}
+    /**
+     * @brief get the height of a pixel
+     */
+    inline double dy() const {
+        if ( _pixelConvention == PIXEL_IS_POINT ) {
+            return _limits.boundsN( 1 ).width() / ( _data.size1() - 1 ) ;
+        }
+        else {
+            return _limits.boundsN( 1 ).width() / ( _data.size1() ) ;
+        }
+    }
+
+    /**
+     * @brief get Z for a given location
+     */
+    inline const double& z( const size_t& row, const size_t& col ) const {
+        return _data( row,col ) ;
+    }
+    /**
+     * @brief get Z for a given location
+     */
+    inline double& z( const size_t& row, const size_t& col ) {
+        return _data( row,col ) ;
+    }
 
 
-		/**
-		 * @brief converts the Grid to a TriangulatedSurface
-		 */
-		std::auto_ptr< TriangulatedSurface > toTrianguledSurface() const ;
+    /**
+     * @brief gets the height of the grid
+     */
+    inline size_t nrows() const {
+        return _data.size1() ;
+    }
+    /**
+     * @brief gets the width of the grid
+     */
+    inline size_t ncols() const {
+        return _data.size2() ;
+    }
+
+    /**
+     * @brief access to grid limits
+     */
+    inline const Envelope& limits() const {
+        return _limits ;
+    }
+    /**
+     * @brief Sets the limits
+     */
+    inline void setLimits( const Envelope& limits ) {
+        _limits = limits ;
+    }
+
+    /**
+     * @brief get pixel type
+     */
+    inline const PixelConvention& pixelConvention() const {
+        return _pixelConvention ;
+    }
+    /**
+     * @brief set the pixel type
+     */
+    inline void setPixelConvention( const PixelConvention& pixelConvention ) {
+        _pixelConvention = pixelConvention ;
+    }
+
+    /**
+     * @brief [advanced]access to grid data
+     */
+    inline detail::ublas::matrix< double > & data() {
+        return _data ;
+    }
+    /**
+     * @brief [advanced]access to grid data
+     */
+    inline const detail::ublas::matrix< double > & data() const {
+        return _data ;
+    }
 
 
-	private:
-		/**
-		 * @brief grid data
-		 */
-		detail::ublas::matrix< double > _data ;
-		/**
-		 * @brief grid extent
-		 */
-		Envelope _limits ;
-		/**
-		 * @brief pixel type
-		 */
-		PixelConvention _pixelConvention ;
-	};
+    /**
+     * @brief converts the Grid to a TriangulatedSurface
+     */
+    std::auto_ptr< TriangulatedSurface > toTrianguledSurface() const ;
+
+
+private:
+    /**
+     * @brief grid data
+     */
+    detail::ublas::matrix< double > _data ;
+    /**
+     * @brief grid extent
+     */
+    Envelope _limits ;
+    /**
+     * @brief pixel type
+     */
+    PixelConvention _pixelConvention ;
+};
 
 } // namespace SFCGAL
 

@@ -10,71 +10,71 @@
 namespace SFCGAL {
 namespace viewer {
 
-	/**
-	 * osgViewer::Viewer wrapped in a QWidget
-	 */
-	class ViewerWidget : public QWidget, public osgViewer::Viewer {
-		Q_OBJECT
-	public:
-		/**
-		 * Constructor with a threadingModel
-		 */
-		ViewerWidget() ;
-		/**
-		 * Constructor with a threadingModel
-		 */
-		ViewerWidget(osg::ArgumentParser & arguments) ;
+/**
+ * osgViewer::Viewer wrapped in a QWidget
+ */
+class ViewerWidget : public QWidget, public osgViewer::Viewer {
+    Q_OBJECT
+public:
+    /**
+     * Constructor with a threadingModel
+     */
+    ViewerWidget() ;
+    /**
+     * Constructor with a threadingModel
+     */
+    ViewerWidget( osg::ArgumentParser& arguments ) ;
 
-		/**
-		 * returns the scene node
-		 */
-		osg::Group*   getScene() ;
+    /**
+     * returns the scene node
+     */
+    osg::Group*   getScene() ;
 
-		/**
-		 * Get GraphicsWindows
-		 */
-		osgQt::GraphicsWindowQt* getGraphicsWindowQt() ;
-
-
-		//-- [QWidget]
-		virtual void paintEvent( QPaintEvent* event ) ;
-
-		/**
-		 * [factory]create viewer from command line arguments
-		 */
-		static ViewerWidget* createFromArguments( osg::ArgumentParser & arguments ) ;
-
-		/**
-		 * Save image to file
-		 */
-		void saveImageToFile() ;
+    /**
+     * Get GraphicsWindows
+     */
+    osgQt::GraphicsWindowQt* getGraphicsWindowQt() ;
 
 
-		void setCameraToExtent( const osg::BoundingBox& );
-	public slots :
-		/**
-		 * start animation
-		 */
-		void startAnimation() ;
-	    /**
-		 * stop animation
-		 */
-		void stopAnimation() ;
+    //-- [QWidget]
+    virtual void paintEvent( QPaintEvent* event ) ;
 
-	protected:
-		QTimer       _timer;
-		osg::Camera* _camera ;
-		osg::Group*  _scene ;
+    /**
+     * [factory]create viewer from command line arguments
+     */
+    static ViewerWidget* createFromArguments( osg::ArgumentParser& arguments ) ;
+
+    /**
+     * Save image to file
+     */
+    void saveImageToFile() ;
 
 
-		/**
-		 * [helper]create a camera with the given parameters
-		 */
-		osg::Camera* createCamera( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false ) ;
+    void setCameraToExtent( const osg::BoundingBox& );
+public slots :
+    /**
+     * start animation
+     */
+    void startAnimation() ;
+    /**
+     * stop animation
+     */
+    void stopAnimation() ;
 
-	private:
-		void initViewer() ;
-	};
+protected:
+    QTimer       _timer;
+    osg::Camera* _camera ;
+    osg::Group*  _scene ;
+
+
+    /**
+     * [helper]create a camera with the given parameters
+     */
+    osg::Camera* createCamera( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false ) ;
+
+private:
+    void initViewer() ;
+};
 
 }//viewer
 }//SFCGAL

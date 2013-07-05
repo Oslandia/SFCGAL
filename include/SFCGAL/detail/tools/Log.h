@@ -78,100 +78,98 @@
 
 
 namespace SFCGAL {
-	
-	/**
-	 * [Singleton]Logger class
-	 *
-	 * @warning saved_lines and co removed (dangerous for memory and could be done in a LogWriter).
-	 */
-	class SFCGAL_API Logger
-	{
-	public:
-		/**
-		 * destructor
-		 */
-		~Logger();
 
-		/**
-		 * log level
-		 */
-		typedef enum
-		{
-			Debug,
-			Info,
-			Warning,
-			Error,
-			Critical
-		} Level ;
+/**
+ * [Singleton]Logger class
+ *
+ * @warning saved_lines and co removed (dangerous for memory and could be done in a LogWriter).
+ */
+class SFCGAL_API Logger {
+public:
+    /**
+     * destructor
+     */
+    ~Logger();
 
-		/**
-		 * singleton accessor
-		 */
-		static Logger* get() ;
+    /**
+     * log level
+     */
+    typedef enum {
+        Debug,
+        Info,
+        Warning,
+        Error,
+        Critical
+    } Level ;
 
-		/**
-		 * log a message using boost format
-		 * @param level the log level
-		 * @param message the message to log
-		 * @param filename the filename (optional)
-		 * @param lineNumber the line number in the file (optional)
-		 */
-		void log(
-			const Level & level,
-			const boost::format& message,
-			const std::string & filename = "",
-			const int & lineNumber = -1
-		);
+    /**
+     * singleton accessor
+     */
+    static Logger* get() ;
 
-		/**
-		 * log a message
-		 * @param level the log level
-		 * @param message the message to log
-		 * @param filename the filename (optional)
-		 * @param lineNumber the line number in the file (optional)
-		 */
-		void log(
-			const Level & level,
-			const std::string& message,
-			const std::string & filename = "",
-			const int & lineNumber = -1
-		);
+    /**
+     * log a message using boost format
+     * @param level the log level
+     * @param message the message to log
+     * @param filename the filename (optional)
+     * @param lineNumber the line number in the file (optional)
+     */
+    void log(
+        const Level& level,
+        const boost::format& message,
+        const std::string& filename = "",
+        const int& lineNumber = -1
+    );
 
-		/**
-		 * get the current log level
-		 */
-		const Level & logLevel() const ;
-		/**
-		 * set the log level
-		 */
-		void setLogLevel( const Level & logLevel ) ;
+    /**
+     * log a message
+     * @param level the log level
+     * @param message the message to log
+     * @param filename the filename (optional)
+     * @param lineNumber the line number in the file (optional)
+     */
+    void log(
+        const Level& level,
+        const std::string& message,
+        const std::string& filename = "",
+        const int& lineNumber = -1
+    );
 
-	private:
-		/**
-		 * current log level
-		 */
-		Level _logLevel ;
-		/**
-		 * display file position?
-		 */
-		bool _displayFilePosition ;
+    /**
+     * get the current log level
+     */
+    const Level& logLevel() const ;
+    /**
+     * set the log level
+     */
+    void setLogLevel( const Level& logLevel ) ;
 
-		/**
-		 * private constructor
-		 */
-		Logger( std::ostream& );
-		/**
-		 * no copy constructor
-		 */
-		Logger( const Logger & other );
+private:
+    /**
+     * current log level
+     */
+    Level _logLevel ;
+    /**
+     * display file position?
+     */
+    bool _displayFilePosition ;
 
-		std::ostream _out;
-	};
+    /**
+     * private constructor
+     */
+    Logger( std::ostream& );
+    /**
+     * no copy constructor
+     */
+    Logger( const Logger& other );
 
-	/**
-	 * get the logger
-	 */
-	SFCGAL_API Logger & logger() ;
+    std::ostream _out;
+};
+
+/**
+ * get the logger
+ */
+SFCGAL_API Logger& logger() ;
 
 
 }//SFCGAL

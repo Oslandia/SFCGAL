@@ -30,7 +30,19 @@
 
 #include <osg/Geode>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
+
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/detail/io/OsgFactory.h>
 #include <SFCGAL/algorithm/extrude.h>
@@ -45,7 +57,7 @@ namespace plugins {
 ///
 ///
 DemoPlugin::DemoPlugin():
-	ViewerPlugin()
+    ViewerPlugin()
 {
 
 }
@@ -55,7 +67,7 @@ DemoPlugin::DemoPlugin():
 ///
 QString DemoPlugin::pluginName() const
 {
-	return QString( "DemoPlugin" );
+    return QString( "DemoPlugin" );
 }
 
 ///
@@ -63,25 +75,27 @@ QString DemoPlugin::pluginName() const
 ///
 void DemoPlugin::demoExtrude()
 {
-	QString wkt = QInputDialog::getText( NULL, QString("Read WKT"), QString("Type WKT") );
-	if ( wkt.isEmpty() )
-		return ;
+    QString wkt = QInputDialog::getText( NULL, QString( "Read WKT" ), QString( "Type WKT" ) );
 
-	//parse wkt
-	std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
+    if ( wkt.isEmpty() ) {
+        return ;
+    }
 
-	//extrude
-	double h = QInputDialog::getDouble(NULL,"Height","Type height");
-	std::auto_ptr< Geometry > ext( algorithm::extrude(*g,0.,0.,h) );
+    //parse wkt
+    std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
 
-	//create osg::Geode
-	detail::io::OsgFactory factory ;
-	osg::Geometry * osgGeometry = factory.createGeometry( *ext );
-	osg::Geode* geode = new osg::Geode;
-	geode->setName( wkt.toStdString() );
-	geode->addDrawable( osgGeometry );
+    //extrude
+    double h = QInputDialog::getDouble( NULL,"Height","Type height" );
+    std::auto_ptr< Geometry > ext( algorithm::extrude( *g,0.,0.,h ) );
 
-	viewerWindow()->viewer()->getScene()->addChild( geode );
+    //create osg::Geode
+    detail::io::OsgFactory factory ;
+    osg::Geometry* osgGeometry = factory.createGeometry( *ext );
+    osg::Geode* geode = new osg::Geode;
+    geode->setName( wkt.toStdString() );
+    geode->addDrawable( osgGeometry );
+
+    viewerWindow()->viewer()->getScene()->addChild( geode );
 }
 
 
@@ -90,24 +104,26 @@ void DemoPlugin::demoExtrude()
 ///
 void DemoPlugin::demoConvexhull()
 {
-	QString wkt = QInputDialog::getText( NULL, QString("Read WKT"), QString("Type WKT") );
-	if ( wkt.isEmpty() )
-		return ;
+    QString wkt = QInputDialog::getText( NULL, QString( "Read WKT" ), QString( "Type WKT" ) );
 
-	//parse wkt
-	std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
+    if ( wkt.isEmpty() ) {
+        return ;
+    }
 
-	//build convexhull
-	std::auto_ptr< Geometry > hull( algorithm::convexHull3D(*g) );
+    //parse wkt
+    std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
 
-	//create osg::Geode
-	detail::io::OsgFactory factory ;
-	osg::Geometry * osgGeometry = factory.createGeometry( *hull );
-	osg::Geode* geode = new osg::Geode;
-	geode->setName( wkt.toStdString() );
-	geode->addDrawable( osgGeometry );
+    //build convexhull
+    std::auto_ptr< Geometry > hull( algorithm::convexHull3D( *g ) );
 
-	viewerWindow()->viewer()->getScene()->addChild( geode );
+    //create osg::Geode
+    detail::io::OsgFactory factory ;
+    osg::Geometry* osgGeometry = factory.createGeometry( *hull );
+    osg::Geode* geode = new osg::Geode;
+    geode->setName( wkt.toStdString() );
+    geode->addDrawable( osgGeometry );
+
+    viewerWindow()->viewer()->getScene()->addChild( geode );
 }
 
 ///
@@ -115,50 +131,52 @@ void DemoPlugin::demoConvexhull()
 ///
 void DemoPlugin::demoSpiral()
 {
-	std::vector< Point > points ;
+    std::vector< Point > points ;
 
-	double r     = 0.0 ;
-	double z     = 0.0 ;
-	double theta = 0.0 ;
+    double r     = 0.0 ;
+    double z     = 0.0 ;
+    double theta = 0.0 ;
 
-	for ( size_t i = 0; i < 1000; i++ ){
-		Point p( r*cos(theta), r*sin(theta), z );
-		points.push_back( p );
+    for ( size_t i = 0; i < 1000; i++ ) {
+        Point p( r*cos( theta ), r*sin( theta ), z );
+        points.push_back( p );
 
-		if ( i < 500 ){
-			r += 0.01 ;
-		}else{
-			r -= 0.01 ;
-		}
-		z     += 0.01 ;
-		theta += 0.1 ;
-	}
+        if ( i < 500 ) {
+            r += 0.01 ;
+        }
+        else {
+            r -= 0.01 ;
+        }
 
-	LineString g( points );
+        z     += 0.01 ;
+        theta += 0.1 ;
+    }
 
-	/*
-	 * Convert to osg::Geometry
-	 */
-	detail::io::OsgFactory factory ;
-	osg::Geometry * osgGeometry = factory.createGeometry( g );
+    LineString g( points );
 
-
-	/*
-	 * provide a color to osg::Geometry
+    /*
+     * Convert to osg::Geometry
      */
-	osg::Vec3Array * colors = new osg::Vec3Array();
-	colors->push_back( osg::Vec3(1.0f,0.0f,0.0f) );
-	osgGeometry->setColorArray( colors );
-	osgGeometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+    detail::io::OsgFactory factory ;
+    osg::Geometry* osgGeometry = factory.createGeometry( g );
 
-	/*
-	 * Create a named Geode (Geometric Node)
-	 */
-	osg::Geode* geode = new osg::Geode;
-	geode->setName( "DemoPlugin::demoSpiral" );
-	geode->addDrawable( osgGeometry );
 
-	viewerWindow()->viewer()->getScene()->addChild( geode );
+    /*
+     * provide a color to osg::Geometry
+     */
+    osg::Vec3Array* colors = new osg::Vec3Array();
+    colors->push_back( osg::Vec3( 1.0f,0.0f,0.0f ) );
+    osgGeometry->setColorArray( colors );
+    osgGeometry->setColorBinding( osg::Geometry::BIND_OVERALL );
+
+    /*
+     * Create a named Geode (Geometric Node)
+     */
+    osg::Geode* geode = new osg::Geode;
+    geode->setName( "DemoPlugin::demoSpiral" );
+    geode->addDrawable( osgGeometry );
+
+    viewerWindow()->viewer()->getScene()->addChild( geode );
 }
 
 ///
@@ -166,20 +184,22 @@ void DemoPlugin::demoSpiral()
 ///
 void DemoPlugin::demoWkt()
 {
-	QString wkt = QInputDialog::getText( NULL, QString("Read WKT"), QString("Type WKT") );
-	if ( wkt.isEmpty() )
-		return ;
+    QString wkt = QInputDialog::getText( NULL, QString( "Read WKT" ), QString( "Type WKT" ) );
 
-	//parse
-	std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
-	detail::io::OsgFactory factory ;
+    if ( wkt.isEmpty() ) {
+        return ;
+    }
 
-	osg::Geometry * osgGeometry = factory.createGeometry( *g );
-	osg::Geode* geode = new osg::Geode;
-	geode->setName( wkt.toStdString() );
-	geode->addDrawable( osgGeometry );
+    //parse
+    std::auto_ptr< Geometry > g( io::readWkt( wkt.toStdString() ) );
+    detail::io::OsgFactory factory ;
 
-	viewerWindow()->viewer()->getScene()->addChild( geode );
+    osg::Geometry* osgGeometry = factory.createGeometry( *g );
+    osg::Geode* geode = new osg::Geode;
+    geode->setName( wkt.toStdString() );
+    geode->addDrawable( osgGeometry );
+
+    viewerWindow()->viewer()->getScene()->addChild( geode );
 }
 
 
@@ -188,20 +208,20 @@ void DemoPlugin::demoWkt()
 ///
 void DemoPlugin::load()
 {
-	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("DemoPlugin") ;
+    QMenu* pluginMenu = viewerWindow()->menuBar()->addMenu( "DemoPlugin" ) ;
 
-	QAction * actionExtrude = pluginMenu->addAction( QString("&extrude") );
-	connect( actionExtrude, SIGNAL(triggered()), this, SLOT( demoExtrude() ) );
+    QAction* actionExtrude = pluginMenu->addAction( QString( "&extrude" ) );
+    connect( actionExtrude, SIGNAL( triggered() ), this, SLOT( demoExtrude() ) );
 
-	QAction * actionConvexhull = pluginMenu->addAction( QString("&convexhull") );
-	connect( actionConvexhull, SIGNAL(triggered()), this, SLOT( demoConvexhull() ) );
+    QAction* actionConvexhull = pluginMenu->addAction( QString( "&convexhull" ) );
+    connect( actionConvexhull, SIGNAL( triggered() ), this, SLOT( demoConvexhull() ) );
 
 
-	QAction * actionReadWkt = pluginMenu->addAction( QString("&read wkt") );
-	connect( actionReadWkt, SIGNAL(triggered()), this, SLOT( demoWkt() ) );
+    QAction* actionReadWkt = pluginMenu->addAction( QString( "&read wkt" ) );
+    connect( actionReadWkt, SIGNAL( triggered() ), this, SLOT( demoWkt() ) );
 
-	QAction * actionDemoSpiral = pluginMenu->addAction( QString("&create a spiral") );
-	connect( actionDemoSpiral, SIGNAL(triggered()), this, SLOT( demoSpiral() ) );
+    QAction* actionDemoSpiral = pluginMenu->addAction( QString( "&create a spiral" ) );
+    connect( actionDemoSpiral, SIGNAL( triggered() ), this, SLOT( demoSpiral() ) );
 }
 
 

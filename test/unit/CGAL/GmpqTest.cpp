@@ -41,26 +41,26 @@ BOOST_AUTO_TEST_SUITE( CGAL_GmpqTest )
  */
 BOOST_AUTO_TEST_CASE( testPositiveRationalFloor )
 {
-	// 1 / 3 => 0
-	{
-		CGAL::Gmpq q(1,3);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
-	}
-	// 2 / 3 => 0
-	{
-		CGAL::Gmpq q(2,3);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
-	}
-	// 2 / 2 => 1
-	{
-		CGAL::Gmpq q(2,2);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 1 );
-	}
-	// 3 / 2 => 1
-	{
-		CGAL::Gmpq q(3,2);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 1 );
-	}
+    // 1 / 3 => 0
+    {
+        CGAL::Gmpq q( 1,3 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
+    }
+    // 2 / 3 => 0
+    {
+        CGAL::Gmpq q( 2,3 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
+    }
+    // 2 / 2 => 1
+    {
+        CGAL::Gmpq q( 2,2 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 1 );
+    }
+    // 3 / 2 => 1
+    {
+        CGAL::Gmpq q( 3,2 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 1 );
+    }
 }
 
 /*
@@ -68,26 +68,26 @@ BOOST_AUTO_TEST_CASE( testPositiveRationalFloor )
  */
 BOOST_AUTO_TEST_CASE( testNegativeRationalFloor )
 {
-	// - 1 / 3 => 0
-	{
-		CGAL::Gmpq q(-1,3);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
-	}
-	// - 2 / 3 => 0
-	{
-		CGAL::Gmpq q(-2,3);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
-	}
-	// - 2 / 2 => 1
-	{
-		CGAL::Gmpq q(-2,2);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), -1 );
-	}
-	// - 3 / 2 => 1
-	{
-		CGAL::Gmpq q(-3,2);
-		BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), -1 );
-	}
+    // - 1 / 3 => 0
+    {
+        CGAL::Gmpq q( -1,3 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
+    }
+    // - 2 / 3 => 0
+    {
+        CGAL::Gmpq q( -2,3 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), 0 );
+    }
+    // - 2 / 2 => 1
+    {
+        CGAL::Gmpq q( -2,2 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), -1 );
+    }
+    // - 3 / 2 => 1
+    {
+        CGAL::Gmpq q( -3,2 );
+        BOOST_CHECK_EQUAL( q.numerator() / q.denominator(), -1 );
+    }
 }
 
 

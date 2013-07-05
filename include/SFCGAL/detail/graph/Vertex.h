@@ -28,18 +28,18 @@
 namespace SFCGAL {
 namespace graph {
 
-	/**
-	 * @brief [private]A vertex in a GeometryGraph with minimal requirements (some algorithms could need
-	 * a richer class)
-	 */
-	struct SFCGAL_API Vertex {
-		/**
-		 * [requirement]Constructor with coordinate
-		 */
-		Vertex( const Coordinate & coordinate_ = Coordinate() ) ;
+/**
+ * @brief [private]A vertex in a GeometryGraph with minimal requirements (some algorithms could need
+ * a richer class)
+ */
+struct SFCGAL_API Vertex {
+    /**
+     * [requirement]Constructor with coordinate
+     */
+    Vertex( const Coordinate& coordinate_ = Coordinate() ) ;
 
-		Coordinate coordinate ;
-	};
+    Coordinate coordinate ;
+};
 
 }//graph
 }//SFCGAL

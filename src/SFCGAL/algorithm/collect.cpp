@@ -19,45 +19,49 @@
  *
  */
 #include <SFCGAL/algorithm/collect.h>
-#include <SFCGAL/all.h>
+
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
 namespace SFCGAL {
-namespace algorithm
+namespace algorithm {
+std::auto_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb )
 {
-	std::auto_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb )
-	{
-		if ( ga.geometryTypeId() == gb.geometryTypeId() ) {
-			if ( ga.geometryTypeId() == TYPE_POINT ) {
-				MultiPoint *mp = new MultiPoint;
-				mp->addGeometry( ga );
-				mp->addGeometry( gb );
-				return std::auto_ptr<Geometry>(mp);
-			}
-			else if ( ga.geometryTypeId() == TYPE_LINESTRING ) {
-				MultiLineString *mls = new MultiLineString();
-				mls->addGeometry(ga);
-				mls->addGeometry(gb);
-				return std::auto_ptr<Geometry>( mls );
-			}
-			else if ( ga.geometryTypeId() == TYPE_POLYGON ) {
-				MultiPolygon *mp = new MultiPolygon();
-				mp->addGeometry(ga);
-				mp->addGeometry(gb);
-				return std::auto_ptr<Geometry>( mp );
-			}
-			else if ( ga.geometryTypeId() == TYPE_SOLID ) {
-				MultiSolid *mp = new MultiSolid();
-				mp->addGeometry(ga);
-				mp->addGeometry(gb);
-				return std::auto_ptr<Geometry>( mp );
-			}
-		}
+    if ( ga.geometryTypeId() == gb.geometryTypeId() ) {
+        if ( ga.geometryTypeId() == TYPE_POINT ) {
+            MultiPoint* mp = new MultiPoint;
+            mp->addGeometry( ga );
+            mp->addGeometry( gb );
+            return std::auto_ptr<Geometry>( mp );
+        }
+        else if ( ga.geometryTypeId() == TYPE_LINESTRING ) {
+            MultiLineString* mls = new MultiLineString();
+            mls->addGeometry( ga );
+            mls->addGeometry( gb );
+            return std::auto_ptr<Geometry>( mls );
+        }
+        else if ( ga.geometryTypeId() == TYPE_POLYGON ) {
+            MultiPolygon* mp = new MultiPolygon();
+            mp->addGeometry( ga );
+            mp->addGeometry( gb );
+            return std::auto_ptr<Geometry>( mp );
+        }
+        else if ( ga.geometryTypeId() == TYPE_SOLID ) {
+            MultiSolid* mp = new MultiSolid();
+            mp->addGeometry( ga );
+            mp->addGeometry( gb );
+            return std::auto_ptr<Geometry>( mp );
+        }
+    }
 
-		// else
-		GeometryCollection* coll = new GeometryCollection();
-		coll->addGeometry(ga);
-		coll->addGeometry(gb);
-		return std::auto_ptr<Geometry>( coll );
-	}
+    // else
+    GeometryCollection* coll = new GeometryCollection();
+    coll->addGeometry( ga );
+    coll->addGeometry( gb );
+    return std::auto_ptr<Geometry>( coll );
+}
 }
 }

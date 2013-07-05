@@ -36,9 +36,9 @@ namespace algorithm {
 ///
 void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon )
 {
-	if ( polygon.orientation() != CGAL::COUNTERCLOCKWISE ){
-		polygon.reverse_orientation() ;
-	}
+    if ( polygon.orientation() != CGAL::COUNTERCLOCKWISE ) {
+        polygon.reverse_orientation() ;
+    }
 }
 
 ///
@@ -46,80 +46,85 @@ void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon )
 ///
 void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon )
 {
-	typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
+    typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
 
-	if ( polygon.outer_boundary().orientation() != CGAL::COUNTERCLOCKWISE ){
-		polygon.outer_boundary().reverse_orientation() ;
-	}
-	for ( Polygon_with_holes_2::Hole_iterator it = polygon.holes_begin(); it != polygon.holes_end(); ++it ){
-		if ( it->orientation() != CGAL::CLOCKWISE ){
-			it->reverse_orientation() ;
-		}
-	}
+    if ( polygon.outer_boundary().orientation() != CGAL::COUNTERCLOCKWISE ) {
+        polygon.outer_boundary().reverse_orientation() ;
+    }
+
+    for ( Polygon_with_holes_2::Hole_iterator it = polygon.holes_begin(); it != polygon.holes_end(); ++it ) {
+        if ( it->orientation() != CGAL::CLOCKWISE ) {
+            it->reverse_orientation() ;
+        }
+    }
 }
 
 ///
 ///
 ///
-void makeValidOrientation( Polygon & polygon )
+void makeValidOrientation( Polygon& polygon )
 {
-	for ( size_t i = 0; i < polygon.numRings(); i++ ){
-		LineString & ring = polygon.ringN(i);
-		if ( i == 0 ){
-			if ( ring.toPolygon_2().orientation() != CGAL::COUNTERCLOCKWISE ){
-				ring.reverse() ;
-			}
-		}else{
-			if ( ring.toPolygon_2().orientation() != CGAL::CLOCKWISE ){
-				ring.reverse();
-			}
-		}
-	}
+    for ( size_t i = 0; i < polygon.numRings(); i++ ) {
+        LineString& ring = polygon.ringN( i );
+
+        if ( i == 0 ) {
+            if ( ring.toPolygon_2().orientation() != CGAL::COUNTERCLOCKWISE ) {
+                ring.reverse() ;
+            }
+        }
+        else {
+            if ( ring.toPolygon_2().orientation() != CGAL::CLOCKWISE ) {
+                ring.reverse();
+            }
+        }
+    }
 }
 
 ///
 ///
 ///
-bool hasConsistentOrientation3D( const TriangulatedSurface & g )
+bool hasConsistentOrientation3D( const TriangulatedSurface& g )
 {
-	using namespace graph ;
+    using namespace graph ;
 
-	if ( g.isEmpty() )
-		return true ;
-
-
-	GeometryGraph graph ;
-	GeometryGraphBuilder graphBuilder( graph ) ;
-	graphBuilder.addTriangulatedSurface( g );
-	return graph::algorithm::isHalfEdge( graph ) ;
-}
+    if ( g.isEmpty() ) {
+        return true ;
+    }
 
 
-///
-///
-///
-bool hasConsistentOrientation3D( const PolyhedralSurface & g )
-{
-	using namespace graph ;
-
-	if ( g.isEmpty() )
-		return true ;
-
-	GeometryGraph graph ;
-	GeometryGraphBuilder graphBuilder( graph ) ;
-	graphBuilder.addPolyhedralSurface( g );
-	return graph::algorithm::isHalfEdge( graph ) ;
+    GeometryGraph graph ;
+    GeometryGraphBuilder graphBuilder( graph ) ;
+    graphBuilder.addTriangulatedSurface( g );
+    return graph::algorithm::isHalfEdge( graph ) ;
 }
 
 
 ///
 ///
 ///
-void makeConsistentOrientation3D( TriangulatedSurface & g )
+bool hasConsistentOrientation3D( const PolyhedralSurface& g )
 {
-	ConsistentOrientationBuilder builder ;
-	builder.addTriangulatedSurface(g);
-	g = builder.buildTriangulatedSurface() ;
+    using namespace graph ;
+
+    if ( g.isEmpty() ) {
+        return true ;
+    }
+
+    GeometryGraph graph ;
+    GeometryGraphBuilder graphBuilder( graph ) ;
+    graphBuilder.addPolyhedralSurface( g );
+    return graph::algorithm::isHalfEdge( graph ) ;
+}
+
+
+///
+///
+///
+void makeConsistentOrientation3D( TriangulatedSurface& g )
+{
+    ConsistentOrientationBuilder builder ;
+    builder.addTriangulatedSurface( g );
+    g = builder.buildTriangulatedSurface() ;
 }
 
 ///
@@ -127,16 +132,17 @@ void makeConsistentOrientation3D( TriangulatedSurface & g )
 ///
 bool isCounterClockWiseOriented( const LineString& ls )
 {
-	// Compute the 'z' part of the Newell's formula
-	// and test against 0
-	Kernel::FT z = 0 ;
-	for ( size_t i = 0; i < ls.numSegments(); ++i )
-	{
-		const Point& pi = ls.pointN(i);
-		const Point& pj = ls.pointN(i+1);
-		z += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
-	}
-	return z > 0;
+    // Compute the 'z' part of the Newell's formula
+    // and test against 0
+    Kernel::FT z = 0 ;
+
+    for ( size_t i = 0; i < ls.numSegments(); ++i ) {
+        const Point& pi = ls.pointN( i );
+        const Point& pj = ls.pointN( i+1 );
+        z += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
+    }
+
+    return z > 0;
 }
 
 ///
@@ -144,10 +150,10 @@ bool isCounterClockWiseOriented( const LineString& ls )
 ///
 bool isCounterClockWiseOriented( const Triangle& tri )
 {
-	// Compute the 'z' part of the cross product
+    // Compute the 'z' part of the cross product
 
-	return (tri.vertex(2).x() - tri.vertex(1).x()) * (tri.vertex(0).y() - tri.vertex(1).y()) -
-		(tri.vertex(2).y() - tri.vertex(1).y()) * (tri.vertex(0).x() - tri.vertex(1).x()) > 0;
+    return ( tri.vertex( 2 ).x() - tri.vertex( 1 ).x() ) * ( tri.vertex( 0 ).y() - tri.vertex( 1 ).y() ) -
+           ( tri.vertex( 2 ).y() - tri.vertex( 1 ).y() ) * ( tri.vertex( 0 ).x() - tri.vertex( 1 ).x() ) > 0;
 }
 
 ///
@@ -155,7 +161,7 @@ bool isCounterClockWiseOriented( const Triangle& tri )
 ///
 bool isCounterClockWiseOriented( const Polygon& poly )
 {
-	return isCounterClockWiseOriented( poly.exteriorRing() );
+    return isCounterClockWiseOriented( poly.exteriorRing() );
 }
 
 }//algorithm

@@ -27,8 +27,8 @@ namespace SFCGAL {
 ///
 ///
 LineString::LineString():
-	Geometry(),
-	_points()
+    Geometry(),
+    _points()
 {
 
 }
@@ -37,34 +37,34 @@ LineString::LineString():
 ///
 ///
 LineString::LineString( const std::vector< Point > & points ):
-	Geometry(),
-	_points()
+    Geometry(),
+    _points()
 {
-	for ( size_t i = 0; i < points.size(); i++ ){
-		_points.push_back( points[i].clone() ) ;
-	}
+    for ( size_t i = 0; i < points.size(); i++ ) {
+        _points.push_back( points[i].clone() ) ;
+    }
 }
 
 ///
 ///
 ///
-LineString::LineString( const Point & startPoint, const Point & endPoint ):
-	Geometry(),
-	_points()
+LineString::LineString( const Point& startPoint, const Point& endPoint ):
+    Geometry(),
+    _points()
 {
-	_points.push_back( startPoint.clone() );
-	_points.push_back( endPoint.clone() );
+    _points.push_back( startPoint.clone() );
+    _points.push_back( endPoint.clone() );
 }
 
 ///
 ///
 ///
 LineString::LineString( const LineString& other ):
-	Geometry()
+    Geometry()
 {
-	for ( size_t i = 0; i < other.numPoints(); i++ ){
-		_points.push_back( other.pointN(i).clone() ) ;
-	}
+    for ( size_t i = 0; i < other.numPoints(); i++ ) {
+        _points.push_back( other.pointN( i ).clone() ) ;
+    }
 }
 
 ///
@@ -72,8 +72,8 @@ LineString::LineString( const LineString& other ):
 ///
 LineString& LineString::operator = ( LineString other )
 {
-    swap(other);
-	return *this ;
+    swap( other );
+    return *this ;
 }
 
 ///
@@ -87,9 +87,9 @@ LineString::~LineString()
 ///
 ///
 ///
-LineString * LineString::clone() const
+LineString* LineString::clone() const
 {
-	return new LineString( *this );
+    return new LineString( *this );
 }
 
 
@@ -98,7 +98,7 @@ LineString * LineString::clone() const
 ///
 GeometryType LineString::geometryTypeId() const
 {
-	return TYPE_LINESTRING ;
+    return TYPE_LINESTRING ;
 }
 
 ///
@@ -106,7 +106,7 @@ GeometryType LineString::geometryTypeId() const
 ///
 std::string LineString::geometryType() const
 {
-	return "LineString" ;
+    return "LineString" ;
 }
 
 ///
@@ -114,14 +114,14 @@ std::string LineString::geometryType() const
 ///
 int LineString::dimension() const
 {
-	return 1 ;
+    return 1 ;
 }
 
 ///
 ///
 int   LineString::coordinateDimension() const
 {
-	return isEmpty() ? 0 : _points[0].coordinateDimension() ;
+    return isEmpty() ? 0 : _points[0].coordinateDimension() ;
 }
 
 ///
@@ -129,7 +129,7 @@ int   LineString::coordinateDimension() const
 ///
 bool   LineString::isEmpty() const
 {
-	return _points.empty() ;
+    return _points.empty() ;
 }
 
 ///
@@ -137,7 +137,7 @@ bool   LineString::isEmpty() const
 ///
 bool  LineString::is3D() const
 {
-	return ! isEmpty() && startPoint().is3D() ;
+    return ! isEmpty() && startPoint().is3D() ;
 }
 
 ///
@@ -145,7 +145,7 @@ bool  LineString::is3D() const
 ///
 bool  LineString::isMeasured() const
 {
-	return ! isEmpty() && startPoint().isMeasured() ;
+    return ! isEmpty() && startPoint().isMeasured() ;
 }
 
 ///
@@ -153,7 +153,7 @@ bool  LineString::isMeasured() const
 ///
 void LineString::clear()
 {
-	_points.clear();
+    _points.clear();
 }
 
 ///
@@ -161,7 +161,7 @@ void LineString::clear()
 ///
 void LineString::reverse()
 {
-	std::reverse( _points.begin(), _points.end() );
+    std::reverse( _points.begin(), _points.end() );
 }
 
 ///
@@ -169,11 +169,12 @@ void LineString::reverse()
 ///
 size_t LineString::numSegments() const
 {
-	if ( _points.empty() ){
-		return 0 ;
-	}else{
-		return _points.size() - 1 ;
-	}
+    if ( _points.empty() ) {
+        return 0 ;
+    }
+    else {
+        return _points.size() - 1 ;
+    }
 }
 
 ///
@@ -181,32 +182,32 @@ size_t LineString::numSegments() const
 ///
 bool LineString::isClosed() const
 {
-	return ( ! isEmpty() ) && ( startPoint() == endPoint() ) ;
+    return ( ! isEmpty() ) && ( startPoint() == endPoint() ) ;
 }
 
 ///
 ///
 ///
-void LineString::reserve( const size_t & n )
+void LineString::reserve( const size_t& n )
 {
-	_points.reserve( n ) ;
+    _points.reserve( n ) ;
 }
 
 
 ///
 ///
 ///
-void LineString::accept( GeometryVisitor & visitor )
+void LineString::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void LineString::accept( ConstGeometryVisitor & visitor ) const
+void LineString::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
@@ -214,35 +215,40 @@ void LineString::accept( ConstGeometryVisitor & visitor ) const
 ///
 CGAL::Polygon_2< Kernel > LineString::toPolygon_2( bool fixOrientation ) const
 {
-	if ( isEmpty() ){
-		return CGAL::Polygon_2< Kernel >();
-	}
+    if ( isEmpty() ) {
+        return CGAL::Polygon_2< Kernel >();
+    }
 
-	Point_2_const_iterator pend = points_2_end();
-	// skip the last point
-	pend--;
+    Point_2_const_iterator pend = points_2_end();
+    // skip the last point
+    pend--;
 
-	// skip double points
-	// TODO: what to do with cycles ?
-	std::list<Kernel::Point_2> points;
-	Kernel::Point_2 lastP;
-	for ( Point_2_const_iterator pit = points_2_begin(); pit != pend; ++pit ) {
-		if ( pit == points_2_begin() ) {
-			lastP = *pit;
-			points.push_back( *pit );
-			continue;
-		}
-		if ( lastP != *pit ) {
-			points.push_back( *pit );
-		}
-		lastP = *pit;
-	}
+    // skip double points
+    // TODO: what to do with cycles ?
+    std::list<Kernel::Point_2> points;
+    Kernel::Point_2 lastP;
 
-	CGAL::Polygon_2< Kernel > result( points.begin(), points.end() );
-	if ( fixOrientation && result.orientation() == CGAL::CLOCKWISE ){
-		result.reverse_orientation() ;
-	}
-	return result ;
+    for ( Point_2_const_iterator pit = points_2_begin(); pit != pend; ++pit ) {
+        if ( pit == points_2_begin() ) {
+            lastP = *pit;
+            points.push_back( *pit );
+            continue;
+        }
+
+        if ( lastP != *pit ) {
+            points.push_back( *pit );
+        }
+
+        lastP = *pit;
+    }
+
+    CGAL::Polygon_2< Kernel > result( points.begin(), points.end() );
+
+    if ( fixOrientation && result.orientation() == CGAL::CLOCKWISE ) {
+        result.reverse_orientation() ;
+    }
+
+    return result ;
 }
 
 

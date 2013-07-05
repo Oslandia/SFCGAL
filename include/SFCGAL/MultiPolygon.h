@@ -31,74 +31,71 @@
 
 namespace SFCGAL {
 
-	/**
-	 * A MultiPolygon in SFA.
-     * @ingroup public_api
-	 * @ŧodo add polygon() etc.
-	 */
-	class SFCGAL_API MultiPolygon : public GeometryCollection {
-	public:
-		/**
-		 * Empty MultiPolygon constructor
-		 */
-		MultiPolygon() ;
-		/**
-		 * Copy constructor
-		 */
-		MultiPolygon( MultiPolygon const& other ) ;
-		/**
-		 * assign operator
-		 */
-		MultiPolygon& operator = ( MultiPolygon other ) ;
-		/**
-		 * destructor
-		 */
-		virtual ~MultiPolygon() ;
+/**
+ * A MultiPolygon in SFA.
+ * @ingroup public_api
+ * @ŧodo add polygon() etc.
+ */
+class SFCGAL_API MultiPolygon : public GeometryCollection {
+public:
+    /**
+     * Empty MultiPolygon constructor
+     */
+    MultiPolygon() ;
+    /**
+     * Copy constructor
+     */
+    MultiPolygon( MultiPolygon const& other ) ;
+    /**
+     * assign operator
+     */
+    MultiPolygon& operator = ( MultiPolygon other ) ;
+    /**
+     * destructor
+     */
+    virtual ~MultiPolygon() ;
 
-		//-- SFCGAL::Geometry
-		virtual MultiPolygon *   clone() const ;
+    //-- SFCGAL::Geometry
+    virtual MultiPolygon*    clone() const ;
 
-		//-- SFCGAL::Geometry
-		virtual std::string    geometryType() const ;
-		//-- SFCGAL::Geometry
-		virtual GeometryType   geometryTypeId() const ;
+    //-- SFCGAL::Geometry
+    virtual std::string    geometryType() const ;
+    //-- SFCGAL::Geometry
+    virtual GeometryType   geometryTypeId() const ;
 
-		/**
-		 * returns the n-th Geometry as a Polygon
-		 */
-		inline Polygon &       polygonN( const size_t & n )
-		{
-			return geometryN(n).as< Polygon >() ;
-		}
-		/**
-		 * returns the n-th Geometry as a Polygon
-		 */
-		inline const Polygon & polygonN( const size_t & n ) const
-		{
-			return geometryN(n).as< Polygon >() ;
-		}
+    /**
+     * returns the n-th Geometry as a Polygon
+     */
+    inline Polygon&        polygonN( const size_t& n ) {
+        return geometryN( n ).as< Polygon >() ;
+    }
+    /**
+     * returns the n-th Geometry as a Polygon
+     */
+    inline const Polygon& polygonN( const size_t& n ) const {
+        return geometryN( n ).as< Polygon >() ;
+    }
 
 
-		//-- visitors
+    //-- visitors
 
-		//-- SFCGAL::Geometry
-		virtual void accept( GeometryVisitor & visitor ) ;
-		//-- SFCGAL::Geometry
-		virtual void accept( ConstGeometryVisitor & visitor ) const ;
+    //-- SFCGAL::Geometry
+    virtual void accept( GeometryVisitor& visitor ) ;
+    //-- SFCGAL::Geometry
+    virtual void accept( ConstGeometryVisitor& visitor ) const ;
 
-		/**
-		 * Serializer
-		 */
-		template <class Archive>
-		void serialize( Archive& ar, const unsigned int /*version*/ )
-		{
-			ar & boost::serialization::base_object<GeometryCollection>(*this);
+    /**
+     * Serializer
+     */
+    template <class Archive>
+    void serialize( Archive& ar, const unsigned int /*version*/ ) {
+        ar& boost::serialization::base_object<GeometryCollection>( *this );
 
-		}
-	protected:
-		//-- SFCGAL::GeometryCollection
-		virtual bool           isAllowed( Geometry const& g ) ;
-	};
+    }
+protected:
+    //-- SFCGAL::GeometryCollection
+    virtual bool           isAllowed( Geometry const& g ) ;
+};
 
 
 }

@@ -27,7 +27,7 @@ namespace SFCGAL {
 ///
 ///
 MultiPolygon::MultiPolygon():
-	GeometryCollection()
+    GeometryCollection()
 {
 
 }
@@ -36,7 +36,7 @@ MultiPolygon::MultiPolygon():
 ///
 ///
 MultiPolygon::MultiPolygon( MultiPolygon const& other ):
-	GeometryCollection(other)
+    GeometryCollection( other )
 {
 
 }
@@ -46,8 +46,8 @@ MultiPolygon::MultiPolygon( MultiPolygon const& other ):
 ///
 MultiPolygon& MultiPolygon::operator = ( MultiPolygon other )
 {
-	swap(other) ;
-	return *this ;
+    swap( other ) ;
+    return *this ;
 }
 
 ///
@@ -61,9 +61,9 @@ MultiPolygon::~MultiPolygon()
 ///
 ///
 ///
-MultiPolygon *   MultiPolygon::clone() const
+MultiPolygon*    MultiPolygon::clone() const
 {
-	return new MultiPolygon(*this);
+    return new MultiPolygon( *this );
 }
 
 ///
@@ -71,7 +71,7 @@ MultiPolygon *   MultiPolygon::clone() const
 ///
 std::string    MultiPolygon::geometryType() const
 {
-	return "MultiPolygon" ;
+    return "MultiPolygon" ;
 }
 
 ///
@@ -79,7 +79,7 @@ std::string    MultiPolygon::geometryType() const
 ///
 GeometryType   MultiPolygon::geometryTypeId() const
 {
-	return TYPE_MULTIPOLYGON ;
+    return TYPE_MULTIPOLYGON ;
 }
 
 ///
@@ -87,23 +87,23 @@ GeometryType   MultiPolygon::geometryTypeId() const
 ///
 bool           MultiPolygon::isAllowed( Geometry const& g )
 {
-	return g.geometryTypeId() == TYPE_POLYGON ;
+    return g.geometryTypeId() == TYPE_POLYGON ;
 }
 
 ///
 ///
 ///
-void MultiPolygon::accept( GeometryVisitor & visitor )
+void MultiPolygon::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void MultiPolygon::accept( ConstGeometryVisitor & visitor ) const
+void MultiPolygon::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

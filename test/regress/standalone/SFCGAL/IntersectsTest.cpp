@@ -20,7 +20,18 @@
  */
 #include <fstream>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/intersects.h>
 
@@ -79,16 +90,16 @@ BOOST_AUTO_TEST_CASE( testLimitsIntersects )
 {
     std::string filename( SFCGAL_TEST_DIRECTORY );
     filename += "/data/countries.wkt" ;
-    
+
     std::ifstream ifs( filename.c_str() );
     BOOST_REQUIRE( ifs.good() ) ;
 
     std::string wkt1, wkt2;
     std::getline( ifs, wkt1 );
     std::getline( ifs, wkt2 );
-    
-    std::auto_ptr< Geometry > g1( io::readWkt(wkt1) );
-    std::auto_ptr< Geometry > g2( io::readWkt(wkt2) );
+
+    std::auto_ptr< Geometry > g1( io::readWkt( wkt1 ) );
+    std::auto_ptr< Geometry > g2( io::readWkt( wkt2 ) );
 
     // check that a call to intersects() does not throw
     bool throws = false;

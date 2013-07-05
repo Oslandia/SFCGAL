@@ -6,14 +6,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   add_definitions( "-frounding-math" )
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
-#-- build unit tests
-if( SFCGAL_BUILD_UNIT_TESTS )
-	add_subdirectory( unit )
-endif()
-
 #-- build regression tests
-if( SFCGAL_BUILD_REGRESS_TESTS )
+if( SFCGAL_BUILD_TESTS )
+	add_subdirectory( unit )
 	add_subdirectory( regress )
+    add_subdirectory( garden )
 endif()
 
 if( SFCGAL_BUILD_BENCH )

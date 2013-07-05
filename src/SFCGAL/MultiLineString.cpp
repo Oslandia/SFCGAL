@@ -27,7 +27,7 @@ namespace SFCGAL {
 ///
 ///
 MultiLineString::MultiLineString():
-	GeometryCollection()
+    GeometryCollection()
 {
 
 }
@@ -36,7 +36,7 @@ MultiLineString::MultiLineString():
 ///
 ///
 MultiLineString::MultiLineString( MultiLineString const& other ):
-	GeometryCollection(other)
+    GeometryCollection( other )
 {
 
 }
@@ -46,8 +46,8 @@ MultiLineString::MultiLineString( MultiLineString const& other ):
 ///
 MultiLineString& MultiLineString::operator = ( MultiLineString other )
 {
-	swap(other) ;
-	return *this ;
+    swap( other ) ;
+    return *this ;
 }
 
 ///
@@ -61,9 +61,9 @@ MultiLineString::~MultiLineString()
 ///
 ///
 ///
-MultiLineString *   MultiLineString::clone() const
+MultiLineString*    MultiLineString::clone() const
 {
-	return new MultiLineString(*this);
+    return new MultiLineString( *this );
 }
 
 ///
@@ -71,7 +71,7 @@ MultiLineString *   MultiLineString::clone() const
 ///
 std::string    MultiLineString::geometryType() const
 {
-	return "MultiLineString" ;
+    return "MultiLineString" ;
 }
 
 ///
@@ -79,7 +79,7 @@ std::string    MultiLineString::geometryType() const
 ///
 GeometryType   MultiLineString::geometryTypeId() const
 {
-	return TYPE_MULTILINESTRING ;
+    return TYPE_MULTILINESTRING ;
 }
 
 ///
@@ -87,23 +87,23 @@ GeometryType   MultiLineString::geometryTypeId() const
 ///
 bool           MultiLineString::isAllowed( Geometry const& g )
 {
-	return g.geometryTypeId() == TYPE_LINESTRING ;
+    return g.geometryTypeId() == TYPE_LINESTRING ;
 }
 
 ///
 ///
 ///
-void MultiLineString::accept( GeometryVisitor & visitor )
+void MultiLineString::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void MultiLineString::accept( ConstGeometryVisitor & visitor ) const
+void MultiLineString::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

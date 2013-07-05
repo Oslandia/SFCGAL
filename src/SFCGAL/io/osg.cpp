@@ -16,24 +16,24 @@ namespace io {
 ///
 ///
 ///
-void osgWriteFile( const Geometry & g, const std::string& filepath )
+void osgWriteFile( const Geometry& g, const std::string& filepath )
 {
-	SFCGAL::detail::io::OsgFactory factory ;
-	osg::ref_ptr< osg::Geometry > osgGeometry = factory.createGeometry( g );
-	osg::ref_ptr< osg::Geode > geode = new osg::Geode;
-	geode->setName( g.geometryType() );
-	geode->addDrawable( osgGeometry );
-	osgDB::writeNodeFile(*geode, filepath ) ;
+    SFCGAL::detail::io::OsgFactory factory ;
+    osg::ref_ptr< osg::Geometry > osgGeometry = factory.createGeometry( g );
+    osg::ref_ptr< osg::Geode > geode = new osg::Geode;
+    geode->setName( g.geometryType() );
+    geode->addDrawable( osgGeometry );
+    osgDB::writeNodeFile( *geode, filepath ) ;
 }
 
 
 ///
 ///
 ///
-osg::Geometry* toOsgGeometry( const Geometry & g )
+osg::Geometry* toOsgGeometry( const Geometry& g )
 {
-	SFCGAL::detail::io::OsgFactory factory ;
-	return factory.createGeometry( g ) ;
+    SFCGAL::detail::io::OsgFactory factory ;
+    return factory.createGeometry( g ) ;
 }
 
 

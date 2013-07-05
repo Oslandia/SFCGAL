@@ -28,23 +28,23 @@ namespace SFCGAL {
 ///
 Solid::Solid()
 {
-	_shells.push_back( new PolyhedralSurface()  );
+    _shells.push_back( new PolyhedralSurface()  );
 }
 
 ///
 ///
 ///
-Solid::Solid( const PolyhedralSurface & exteriorShell )
+Solid::Solid( const PolyhedralSurface& exteriorShell )
 {
-	_shells.push_back( exteriorShell.clone() );
+    _shells.push_back( exteriorShell.clone() );
 }
 
 ///
 ///
 ///
-Solid::Solid( PolyhedralSurface * exteriorShell )
+Solid::Solid( PolyhedralSurface* exteriorShell )
 {
-	_shells.push_back( exteriorShell );
+    _shells.push_back( exteriorShell );
 }
 
 ///
@@ -52,24 +52,25 @@ Solid::Solid( PolyhedralSurface * exteriorShell )
 ///
 Solid::Solid( const std::vector< PolyhedralSurface > & shells )
 {
-	if ( shells.empty() ){
-		_shells.resize(1, new PolyhedralSurface() );
-	}else{
-		for ( size_t i = 0; i < shells.size(); i++ ){
-			_shells.push_back( shells[i].clone() ) ;
-		}
-	}
+    if ( shells.empty() ) {
+        _shells.resize( 1, new PolyhedralSurface() );
+    }
+    else {
+        for ( size_t i = 0; i < shells.size(); i++ ) {
+            _shells.push_back( shells[i].clone() ) ;
+        }
+    }
 }
 
 ///
 ///
 ///
 Solid::Solid( const Solid& other ):
-    Geometry(other)
+    Geometry( other )
 {
-	for ( size_t i = 0; i < other.numShells(); i++ ){
-		_shells.push_back( other.shellN(i).clone() );
-	}
+    for ( size_t i = 0; i < other.numShells(); i++ ) {
+        _shells.push_back( other.shellN( i ).clone() );
+    }
 }
 
 ///
@@ -77,8 +78,8 @@ Solid::Solid( const Solid& other ):
 ///
 Solid& Solid::operator = ( Solid other )
 {
-    swap(other);
-	return *this ;
+    swap( other );
+    return *this ;
 }
 
 ///
@@ -92,9 +93,9 @@ Solid::~Solid()
 ///
 ///
 ///
-Solid *  Solid::clone() const
+Solid*   Solid::clone() const
 {
-	return new Solid( *this );
+    return new Solid( *this );
 }
 
 
@@ -105,7 +106,7 @@ Solid *  Solid::clone() const
 ///
 std::string  Solid::geometryType() const
 {
-	return "Solid" ;
+    return "Solid" ;
 }
 
 ///
@@ -113,7 +114,7 @@ std::string  Solid::geometryType() const
 ///
 GeometryType  Solid::geometryTypeId() const
 {
-	return TYPE_SOLID ;
+    return TYPE_SOLID ;
 }
 
 ///
@@ -121,7 +122,7 @@ GeometryType  Solid::geometryTypeId() const
 ///
 int  Solid::dimension() const
 {
-	return 3 ;
+    return 3 ;
 }
 
 ///
@@ -129,7 +130,7 @@ int  Solid::dimension() const
 ///
 int  Solid::coordinateDimension() const
 {
-	return exteriorShell().coordinateDimension() ;
+    return exteriorShell().coordinateDimension() ;
 }
 
 ///
@@ -137,7 +138,7 @@ int  Solid::coordinateDimension() const
 ///
 bool  Solid::isEmpty() const
 {
-	return exteriorShell().isEmpty();
+    return exteriorShell().isEmpty();
 }
 
 ///
@@ -145,7 +146,7 @@ bool  Solid::isEmpty() const
 ///
 bool  Solid::is3D() const
 {
-	return exteriorShell().is3D();
+    return exteriorShell().is3D();
 }
 
 ///
@@ -153,23 +154,23 @@ bool  Solid::is3D() const
 ///
 bool  Solid::isMeasured() const
 {
-	return exteriorShell().isMeasured();
+    return exteriorShell().isMeasured();
 }
 
 ///
 ///
 ///
-void Solid::accept( GeometryVisitor & visitor )
+void Solid::accept( GeometryVisitor& visitor )
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 ///
 ///
 ///
-void Solid::accept( ConstGeometryVisitor & visitor ) const
+void Solid::accept( ConstGeometryVisitor& visitor ) const
 {
-	return visitor.visit(*this);
+    return visitor.visit( *this );
 }
 
 }//SFCGAL

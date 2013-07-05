@@ -26,8 +26,8 @@ namespace graph {
 ///
 ///
 ///
-Vertex::Vertex( const Coordinate & coordinate_ ):
-	coordinate(coordinate_)
+Vertex::Vertex( const Coordinate& coordinate_ ):
+    coordinate( coordinate_ )
 {
 
 }

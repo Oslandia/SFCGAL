@@ -86,30 +86,30 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_SolidTest )
 
 BOOST_AUTO_TEST_CASE( solidReadTest )
 {
-	// the unit cube where half of a cube has been substracted
-	std::string gstr = "SOLID("
-		// exterior shell
-		"("
-		"((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0))," // front face
-		"((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0))," // right face
-		"((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))," // top face
-		"((0 0 1,0 1 1,0 1 0,0 0 0,0 0 1))," // left face
-		"((1 0 1,1 1 1,0 1 1,0 0 1,1 0 1))," // back face
-		"((1 0 0,1 0 1,0 0 1,0 0 0,1 0 0))" // bottom face
-		"),"
-		// interior shell, a.k.a. a hole
-		"("
-		"((0 0 0,0 0.5 0,0.5 0.5 0,0.5 0 0,0 0 0))," // front face
-		"((0.5 0 0,0.5 0.5 0,0.5 0.5 0.5,0.5 0 0.5,0.5 0 0))," // right face
-		"((0 0.5 0,0 0.5 0.5,0.5 0.5 0.5,0.5 0.5 0,0 0.5 0))," // top face
-		"((0 0 0.5,0 0.5 0.5,0 0.5 0,0 0 0,0 0 0.5))," // left face
-		"((0.5 0 0.5,0.5 0.5 0.5,0 0.5 0.5,0 0 0.5,0.5 0 0.5))," // back face
-		"((0.5 0 0,0.5 0 0.5,0 0 0.5,0 0 0,0.5 0 0))" // bottom face
-		")"
-		")";
+    // the unit cube where half of a cube has been substracted
+    std::string gstr = "SOLID("
+                       // exterior shell
+                       "("
+                       "((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0))," // front face
+                       "((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0))," // right face
+                       "((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))," // top face
+                       "((0 0 1,0 1 1,0 1 0,0 0 0,0 0 1))," // left face
+                       "((1 0 1,1 1 1,0 1 1,0 0 1,1 0 1))," // back face
+                       "((1 0 0,1 0 1,0 0 1,0 0 0,1 0 0))" // bottom face
+                       "),"
+                       // interior shell, a.k.a. a hole
+                       "("
+                       "((0 0 0,0 0.5 0,0.5 0.5 0,0.5 0 0,0 0 0))," // front face
+                       "((0.5 0 0,0.5 0.5 0,0.5 0.5 0.5,0.5 0 0.5,0.5 0 0))," // right face
+                       "((0 0.5 0,0 0.5 0.5,0.5 0.5 0.5,0.5 0.5 0,0 0.5 0))," // top face
+                       "((0 0 0.5,0 0.5 0.5,0 0.5 0,0 0 0,0 0 0.5))," // left face
+                       "((0.5 0 0.5,0.5 0.5 0.5,0 0.5 0.5,0 0 0.5,0.5 0 0.5))," // back face
+                       "((0.5 0 0,0.5 0 0.5,0 0 0.5,0 0 0,0.5 0 0))" // bottom face
+                       ")"
+                       ")";
 
-	std::auto_ptr<Geometry> g( io::readWkt( gstr ));
-	BOOST_CHECK_EQUAL(g->as< Solid >().numShells(),2U);
+    std::auto_ptr<Geometry> g( io::readWkt( gstr ) );
+    BOOST_CHECK_EQUAL( g->as< Solid >().numShells(),2U );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

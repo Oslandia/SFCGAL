@@ -25,7 +25,18 @@
 #include <fstream>
 #include <boost/format.hpp>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <SFCGAL/algorithm/area.h>
@@ -38,15 +49,14 @@ using namespace SFCGAL ;
 class RotateCoordinate : public Transform {
 public:
 
-	virtual void transform( Point & p )
-	{
-		BOOST_ASSERT( ! p.isEmpty() );
-		p = Point(
-			p.is3D() ? p.z() : 0.0,
-			p.x(),
-			p.y()
-		);
-	}
+    virtual void transform( Point& p ) {
+        BOOST_ASSERT( ! p.isEmpty() );
+        p = Point(
+                p.is3D() ? p.z() : 0.0,
+                p.x(),
+                p.y()
+            );
+    }
 
 };
 
@@ -59,41 +69,43 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_AreaTest )
  */
 BOOST_AUTO_TEST_CASE( testComputeArea )
 {
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/AreaTest.txt" ;
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/data/AreaTest.txt" ;
 
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
 
-	std::string line;
-	while ( std::getline( ifs, line ) ){
-		if ( line[0] == '#' || line.empty() )
-			continue ;
+    std::string line;
 
-		std::istringstream iss(line);
+    while ( std::getline( ifs, line ) ) {
+        if ( line[0] == '#' || line.empty() ) {
+            continue ;
+        }
 
-		std::string id ;
-		iss >> id ;
+        std::istringstream iss( line );
 
-		double expectedArea ;
-		iss >> expectedArea ;
+        std::string id ;
+        iss >> id ;
 
-		std::string inputWkt ;
-		std::getline( iss, inputWkt ) ;
+        double expectedArea ;
+        iss >> expectedArea ;
 
-		std::auto_ptr< Geometry > g( io::readWkt(inputWkt) );
-		double area = algorithm::area3D( *g ) ;
-		BOOST_TEST_MESSAGE( boost::format("area( '%1%' ) = %2%") % inputWkt % area );
+        std::string inputWkt ;
+        std::getline( iss, inputWkt ) ;
 
-		RotateCoordinate rotateCoordinate ;
-		g->accept(rotateCoordinate);
-		double areaRotate = algorithm::area3D( *g ) ;
+        std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
+        double area = algorithm::area3D( *g ) ;
+        BOOST_TEST_MESSAGE( boost::format( "area( '%1%' ) = %2%" ) % inputWkt % area );
 
-		//check area == areaRotate
-		BOOST_CHECK_CLOSE( area, areaRotate, 0.5 );
-		//check area == expectedArea
-		BOOST_CHECK_CLOSE( area, expectedArea, 0.5 );
-	}
+        RotateCoordinate rotateCoordinate ;
+        g->accept( rotateCoordinate );
+        double areaRotate = algorithm::area3D( *g ) ;
+
+        //check area == areaRotate
+        BOOST_CHECK_CLOSE( area, areaRotate, 0.5 );
+        //check area == expectedArea
+        BOOST_CHECK_CLOSE( area, expectedArea, 0.5 );
+    }
 }
 
 

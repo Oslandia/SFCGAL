@@ -31,56 +31,56 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_CoordinateTest )
 /// Coordinate() ;
 BOOST_AUTO_TEST_CASE( testDefaultConstructor )
 {
-	Coordinate g ;
-	BOOST_CHECK( g.isEmpty() );
-	BOOST_CHECK_THROW( g.x(), Exception );
-	BOOST_CHECK_THROW( g.y(), Exception );
-	BOOST_CHECK_THROW( g.z(), Exception );
+    Coordinate g ;
+    BOOST_CHECK( g.isEmpty() );
+    BOOST_CHECK_THROW( g.x(), Exception );
+    BOOST_CHECK_THROW( g.y(), Exception );
+    BOOST_CHECK_THROW( g.z(), Exception );
 }
 
 /// Coordinate( const Kernel::FT & x, const Kernel::FT & y ) ;
 BOOST_AUTO_TEST_CASE( testXYConstructor )
 {
-	Coordinate g( 3, 4 );
-	BOOST_CHECK( ! g.isEmpty() );
-	BOOST_CHECK( ! g.is3D() );
-	BOOST_CHECK_EQUAL( g.x(), 3 );
-	BOOST_CHECK_EQUAL( g.y(), 4 );
+    Coordinate g( 3, 4 );
+    BOOST_CHECK( ! g.isEmpty() );
+    BOOST_CHECK( ! g.is3D() );
+    BOOST_CHECK_EQUAL( g.x(), 3 );
+    BOOST_CHECK_EQUAL( g.y(), 4 );
 }
 
 
 /// Coordinate( const Kernel::FT & x, const Kernel::FT & y, const Kernel::FT & z ) ;
 BOOST_AUTO_TEST_CASE( testXYZConstructor )
 {
-	Coordinate g( 3, 4, 5 );
-	BOOST_CHECK( ! g.isEmpty() );
-	BOOST_CHECK( g.is3D() );
-	BOOST_CHECK_EQUAL( g.x(), 3 );
-	BOOST_CHECK_EQUAL( g.y(), 4 );
-	BOOST_CHECK_EQUAL( g.z(), 5 );
+    Coordinate g( 3, 4, 5 );
+    BOOST_CHECK( ! g.isEmpty() );
+    BOOST_CHECK( g.is3D() );
+    BOOST_CHECK_EQUAL( g.x(), 3 );
+    BOOST_CHECK_EQUAL( g.y(), 4 );
+    BOOST_CHECK_EQUAL( g.z(), 5 );
 }
 
 /// Coordinate( const double & x, const double & y ) ;
 BOOST_AUTO_TEST_CASE( testXYConstructorDouble )
 {
-	Coordinate g( 3.0, 4.0 );
-	BOOST_CHECK( ! g.isEmpty() );
-	BOOST_CHECK( ! g.is3D() );
-	BOOST_CHECK_EQUAL( g.x(), 3 );
-	BOOST_CHECK_EQUAL( g.y(), 4 );
+    Coordinate g( 3.0, 4.0 );
+    BOOST_CHECK( ! g.isEmpty() );
+    BOOST_CHECK( ! g.is3D() );
+    BOOST_CHECK_EQUAL( g.x(), 3 );
+    BOOST_CHECK_EQUAL( g.y(), 4 );
 }
 /// Coordinate( const double & x, const double & y, const double& z ) ;
 BOOST_AUTO_TEST_CASE( testXYZConstructorDouble )
 {
-	Coordinate g( 3.0, 4.0, 5.0 );
-	BOOST_CHECK( ! g.isEmpty() );
-	BOOST_CHECK( g.is3D() );
-	BOOST_CHECK_EQUAL( g.x(), 3 );
-	BOOST_CHECK_EQUAL( g.y(), 4 );
-	BOOST_CHECK_EQUAL( g.z(), 5 );
-    BOOST_CHECK_THROW( Coordinate(std::numeric_limits<double>::infinity(),0,0), NonFiniteValueException);
-    BOOST_CHECK_THROW( Coordinate(0,std::numeric_limits<double>::infinity(),0), NonFiniteValueException);
-    BOOST_CHECK_THROW( Coordinate(0,0,std::numeric_limits<double>::infinity()), NonFiniteValueException);
+    Coordinate g( 3.0, 4.0, 5.0 );
+    BOOST_CHECK( ! g.isEmpty() );
+    BOOST_CHECK( g.is3D() );
+    BOOST_CHECK_EQUAL( g.x(), 3 );
+    BOOST_CHECK_EQUAL( g.y(), 4 );
+    BOOST_CHECK_EQUAL( g.z(), 5 );
+    BOOST_CHECK_THROW( Coordinate( std::numeric_limits<double>::infinity(),0,0 ), NonFiniteValueException );
+    BOOST_CHECK_THROW( Coordinate( 0,std::numeric_limits<double>::infinity(),0 ), NonFiniteValueException );
+    BOOST_CHECK_THROW( Coordinate( 0,0,std::numeric_limits<double>::infinity() ), NonFiniteValueException );
 }
 
 /// Coordinate( const CGAL::Point_2< K > & other ):
@@ -88,16 +88,16 @@ BOOST_AUTO_TEST_CASE( testXYZConstructorDouble )
 /// Coordinate( const Coordinate & other ) ;
 BOOST_AUTO_TEST_CASE( testCopyConstructorEmpty )
 {
-	Coordinate g ;
-	Coordinate copy( g );
-	BOOST_CHECK( copy.isEmpty() );
+    Coordinate g ;
+    Coordinate copy( g );
+    BOOST_CHECK( copy.isEmpty() );
 }
 BOOST_AUTO_TEST_CASE( testCopyConstructorXY )
 {
-	Coordinate g(3,4) ;
-	Coordinate copy( g );
-	BOOST_CHECK_EQUAL( copy.x(), 3 );
-	BOOST_CHECK_EQUAL( copy.y(), 4 );
+    Coordinate g( 3,4 ) ;
+    Coordinate copy( g );
+    BOOST_CHECK_EQUAL( copy.x(), 3 );
+    BOOST_CHECK_EQUAL( copy.y(), 4 );
 }
 
 /// Coordinate& operator = ( const Coordinate & other ) ;
@@ -105,18 +105,18 @@ BOOST_AUTO_TEST_CASE( testCopyConstructorXY )
 /// int          coordinateDimension() const ;
 BOOST_AUTO_TEST_CASE( testCoordinateDimensionEmpty )
 {
-	Coordinate g ;
-	BOOST_CHECK_EQUAL( g.coordinateDimension(), 0 );
+    Coordinate g ;
+    BOOST_CHECK_EQUAL( g.coordinateDimension(), 0 );
 }
 BOOST_AUTO_TEST_CASE( testCoordinateDimensionXY )
 {
-	Coordinate g(3,4) ;
-	BOOST_CHECK_EQUAL( g.coordinateDimension(), 2 );
+    Coordinate g( 3,4 ) ;
+    BOOST_CHECK_EQUAL( g.coordinateDimension(), 2 );
 }
 BOOST_AUTO_TEST_CASE( testCoordinateDimensionXYZ )
 {
-	Coordinate g(3,4,5) ;
-	BOOST_CHECK_EQUAL( g.coordinateDimension(), 3 );
+    Coordinate g( 3,4,5 ) ;
+    BOOST_CHECK_EQUAL( g.coordinateDimension(), 3 );
 }
 
 /// bool         isEmpty() const ;
@@ -128,22 +128,22 @@ BOOST_AUTO_TEST_CASE( testCoordinateDimensionXYZ )
 /// Coordinate& round( const Kernel::FT& scaleFactor ) ;
 BOOST_AUTO_TEST_CASE( testRoundInteger )
 {
-	Coordinate g(0.5,1.5);
-	g.round();
-	BOOST_CHECK_EQUAL( g.x(), 1 );
-	BOOST_CHECK_EQUAL( g.y(), 2 );
+    Coordinate g( 0.5,1.5 );
+    g.round();
+    BOOST_CHECK_EQUAL( g.x(), 1 );
+    BOOST_CHECK_EQUAL( g.y(), 2 );
 }
 BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
 {
-	Coordinate g(0.52,1.57);
-	g.round( 10 );
-	BOOST_CHECK_CLOSE( g.x(), 0.5, 0.1 );
-	BOOST_CHECK_CLOSE( g.y(), 1.6, 0.1 );
+    Coordinate g( 0.52,1.57 );
+    g.round( 10 );
+    BOOST_CHECK_CLOSE( g.x(), 0.5, 0.1 );
+    BOOST_CHECK_CLOSE( g.y(), 1.6, 0.1 );
 
 
-	std::ostringstream oss;
-	oss << CGAL::exact(g.x()) << " " << CGAL::exact(g.y());
-	BOOST_CHECK_EQUAL( oss.str(), "1/2 8/5" ); //16/10
+    std::ostringstream oss;
+    oss << CGAL::exact( g.x() ) << " " << CGAL::exact( g.y() );
+    BOOST_CHECK_EQUAL( oss.str(), "1/2 8/5" ); //16/10
 }
 
 
@@ -154,27 +154,27 @@ BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
 /// bool operator < ( const Coordinate & other ) const ;
 BOOST_AUTO_TEST_CASE( testLessEmpty )
 {
-	Coordinate gA ;
-	Coordinate gB ;
-	BOOST_CHECK_THROW( (gA < gB), Exception ) ;
+    Coordinate gA ;
+    Coordinate gB ;
+    BOOST_CHECK_THROW( ( gA < gB ), Exception ) ;
 }
 BOOST_AUTO_TEST_CASE( testLessXY_XY )
 {
-	BOOST_CHECK( ! ( Coordinate(0,0) < Coordinate(0,0) ) ) ;
-	BOOST_CHECK(   ( Coordinate(0,0) < Coordinate(1,0) ) ) ;
-	BOOST_CHECK(   ( Coordinate(1,0) < Coordinate(1,1) ) ) ;
+    BOOST_CHECK( ! ( Coordinate( 0,0 ) < Coordinate( 0,0 ) ) ) ;
+    BOOST_CHECK(   ( Coordinate( 0,0 ) < Coordinate( 1,0 ) ) ) ;
+    BOOST_CHECK(   ( Coordinate( 1,0 ) < Coordinate( 1,1 ) ) ) ;
 }
 BOOST_AUTO_TEST_CASE( testLessXYZ_XYZ )
 {
-	BOOST_CHECK( ! ( Coordinate(0,0,0) < Coordinate(0,0,0) ) ) ;
-	BOOST_CHECK(   ( Coordinate(0,0,0) < Coordinate(1,0,0) ) ) ;
-	BOOST_CHECK(   ( Coordinate(1,0,0) < Coordinate(1,1,0) ) ) ;
-	BOOST_CHECK( ! ( Coordinate(1,1,0) < Coordinate(1,1,0) ) ) ;
-	BOOST_CHECK(   ( Coordinate(1,1,0) < Coordinate(1,1,1) ) ) ;
+    BOOST_CHECK( ! ( Coordinate( 0,0,0 ) < Coordinate( 0,0,0 ) ) ) ;
+    BOOST_CHECK(   ( Coordinate( 0,0,0 ) < Coordinate( 1,0,0 ) ) ) ;
+    BOOST_CHECK(   ( Coordinate( 1,0,0 ) < Coordinate( 1,1,0 ) ) ) ;
+    BOOST_CHECK( ! ( Coordinate( 1,1,0 ) < Coordinate( 1,1,0 ) ) ) ;
+    BOOST_CHECK(   ( Coordinate( 1,1,0 ) < Coordinate( 1,1,1 ) ) ) ;
 }
 BOOST_AUTO_TEST_CASE( testLessXY_XYZ )
 {
-	BOOST_CHECK_THROW( (Coordinate(0,0) < Coordinate(0,0,0) ), Exception ) ;
+    BOOST_CHECK_THROW( ( Coordinate( 0,0 ) < Coordinate( 0,0,0 ) ), Exception ) ;
 }
 
 /// bool operator == ( const Coordinate & other ) const ;

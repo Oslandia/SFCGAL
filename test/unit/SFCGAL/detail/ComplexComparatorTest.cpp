@@ -34,12 +34,12 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_detail_ComplexComparatorTest )
 
 BOOST_AUTO_TEST_CASE( testComparator )
 {
-	ComplexComparator less ;
+    ComplexComparator less ;
 
-	BOOST_CHECK( ! less( std::complex< double >(1.0,0.0), std::complex< double >(0.0,0.0) ) );
-	BOOST_CHECK( ! less( std::complex< double >(0.0,0.0), std::complex< double >(0.0,0.0) ) );
-	BOOST_CHECK( less( std::complex< double >(0.0,0.0), std::complex< double >(1.0,0.0) ) );
-	BOOST_CHECK( less( std::complex< double >(0.0,0.0), std::complex< double >(0.0,1.0) ) );
+    BOOST_CHECK( ! less( std::complex< double >( 1.0,0.0 ), std::complex< double >( 0.0,0.0 ) ) );
+    BOOST_CHECK( ! less( std::complex< double >( 0.0,0.0 ), std::complex< double >( 0.0,0.0 ) ) );
+    BOOST_CHECK( less( std::complex< double >( 0.0,0.0 ), std::complex< double >( 1.0,0.0 ) ) );
+    BOOST_CHECK( less( std::complex< double >( 0.0,0.0 ), std::complex< double >( 0.0,1.0 ) ) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

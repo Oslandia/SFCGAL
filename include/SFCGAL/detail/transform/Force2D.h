@@ -29,16 +29,16 @@
 namespace SFCGAL {
 namespace transform {
 
-	/**
-	 * Force 2D definitions
-	 */
-	class SFCGAL_API Force2D : public Transform {
-	public:
-		/*
-		 * [SFCGAL::Transform]
-		 */
-		virtual void transform( Point & p ) ;
-	};
+/**
+ * Force 2D definitions
+ */
+class SFCGAL_API Force2D : public Transform {
+public:
+    /*
+     * [SFCGAL::Transform]
+     */
+    virtual void transform( Point& p ) ;
+};
 
 }//transform
 }//SFCGAL

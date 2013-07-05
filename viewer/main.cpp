@@ -28,7 +28,18 @@
 #include <osg/Material>
 #include <osgDB/Registry>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/detail/tools/Log.h>
 
 #include <SFCGAL/viewer/ViewerWidget.h>
@@ -45,16 +56,16 @@ using namespace SFCGAL ;
 using namespace SFCGAL::viewer ;
 
 
-int main(int argc, char** argv)
+int main( int argc, char** argv )
 {
-	Logger::get()->setLogLevel( Logger::Debug );
+    Logger::get()->setLogLevel( Logger::Debug );
 
     // use an ArgumentParser object to manage the program arguments.
-    osg::ArgumentParser arguments(&argc,argv);
+    osg::ArgumentParser arguments( &argc,argv );
 
-    QApplication app(argc, argv);
+    QApplication app( argc, argv );
 
-    ViewerWidget * viewer = ViewerWidget::createFromArguments( arguments );
+    ViewerWidget* viewer = ViewerWidget::createFromArguments( arguments );
 //    osg::Geode* geode = new osg::Geode;
 //    //osg::StateSet* status = geode->getOrCreateStateSet();
 //    //status->setMode(GL_LIGHTING, osg::StateAttribute::ON);
@@ -84,12 +95,12 @@ int main(int argc, char** argv)
 //	viewer->getScene()->addChild( geode ) ;
 
 
-	ViewerWindow window( viewer );
-	window.addPlugin( new plugins::DataPlugin ) ;
-	window.addPlugin( new plugins::DemoPlugin ) ;
-	window.addPlugin( new plugins::GridPlugin ) ;
-	window.addPlugin( new plugins::PSQLPlugin ) ;
-	window.show();
+    ViewerWindow window( viewer );
+    window.addPlugin( new plugins::DataPlugin ) ;
+    window.addPlugin( new plugins::DemoPlugin ) ;
+    window.addPlugin( new plugins::GridPlugin ) ;
+    window.addPlugin( new plugins::PSQLPlugin ) ;
+    window.show();
 
-	return app.exec();
+    return app.exec();
 }

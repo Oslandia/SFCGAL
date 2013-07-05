@@ -34,58 +34,59 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_MultiPolygonTest )
 
 BOOST_AUTO_TEST_CASE( defaultConstructor )
 {
-	MultiPolygon g;
-	BOOST_CHECK( g.isEmpty() ) ;
-	BOOST_CHECK( ! g.is3D() );
-	BOOST_CHECK_EQUAL( g.numGeometries(), 0U );
+    MultiPolygon g;
+    BOOST_CHECK( g.isEmpty() ) ;
+    BOOST_CHECK( ! g.is3D() );
+    BOOST_CHECK_EQUAL( g.numGeometries(), 0U );
 }
 
-BOOST_AUTO_TEST_CASE( testGeometryTypeId ){
-	MultiPolygon g;
-	BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_MULTIPOLYGON );
+BOOST_AUTO_TEST_CASE( testGeometryTypeId )
+{
+    MultiPolygon g;
+    BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_MULTIPOLYGON );
 }
 
 //-- addAllowedGeometry
 BOOST_AUTO_TEST_CASE( addPolygon )
 {
-	MultiPolygon g;
-	g.addGeometry( new Polygon() );
-	BOOST_CHECK_EQUAL( g.numGeometries(), 1U );
+    MultiPolygon g;
+    g.addGeometry( new Polygon() );
+    BOOST_CHECK_EQUAL( g.numGeometries(), 1U );
 }
 //-- addForbidenGeometry
 BOOST_AUTO_TEST_CASE( addLineStringThrow )
 {
-	MultiPolygon g;
-	BOOST_CHECK_THROW( g.addGeometry( LineString() ), std::exception );
+    MultiPolygon g;
+    BOOST_CHECK_THROW( g.addGeometry( LineString() ), std::exception );
 }
 
 //-- asText
 
 BOOST_AUTO_TEST_CASE( asTextEmpty )
 {
-	MultiPolygon g;
-	BOOST_CHECK_EQUAL( g.asText(1), "MULTIPOLYGON EMPTY" );
+    MultiPolygon g;
+    BOOST_CHECK_EQUAL( g.asText( 1 ), "MULTIPOLYGON EMPTY" );
 }
 BOOST_AUTO_TEST_CASE( asText2d )
 {
-	MultiPolygon g;
-	g.addGeometry( Envelope(0.0,1.0,0.0,1.0).toPolygon().release() );
-	g.addGeometry( Envelope(2.0,3.0,4.0,5.0).toPolygon().release() );
-	BOOST_CHECK_EQUAL( g.asText(3), "MULTIPOLYGON(((0.000 0.000,1.000 0.000,1.000 1.000,0.000 1.000,0.000 0.000)),((2.000 4.000,3.000 4.000,3.000 5.000,2.000 5.000,2.000 4.000)))" );
+    MultiPolygon g;
+    g.addGeometry( Envelope( 0.0,1.0,0.0,1.0 ).toPolygon().release() );
+    g.addGeometry( Envelope( 2.0,3.0,4.0,5.0 ).toPolygon().release() );
+    BOOST_CHECK_EQUAL( g.asText( 3 ), "MULTIPOLYGON(((0.000 0.000,1.000 0.000,1.000 1.000,0.000 1.000,0.000 0.000)),((2.000 4.000,3.000 4.000,3.000 5.000,2.000 5.000,2.000 4.000)))" );
 }
 
 //-- is< T >
 
 BOOST_AUTO_TEST_CASE( isGeometryCollection )
 {
-	MultiPolygon g;
-	BOOST_CHECK( g.is< GeometryCollection >() );
+    MultiPolygon g;
+    BOOST_CHECK( g.is< GeometryCollection >() );
 }
 
 BOOST_AUTO_TEST_CASE( isMultiPolygon )
 {
-	MultiPolygon g;
-	BOOST_CHECK( g.is< MultiPolygon >() );
+    MultiPolygon g;
+    BOOST_CHECK( g.is< MultiPolygon >() );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

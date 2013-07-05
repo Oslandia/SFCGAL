@@ -21,7 +21,18 @@
 #include <boost/test/unit_test.hpp>
 
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/force3D.h>
 
@@ -36,41 +47,42 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_Force3DTest )
 
 BOOST_AUTO_TEST_CASE( testIgnoreEmpty )
 {
-	tools::Registry & registry = tools::Registry::instance() ;
-	std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
-	for ( size_t i = 0; i < typeNames.size(); i++ ){
-		BOOST_TEST_MESSAGE( typeNames[i] ) ;
+    tools::Registry& registry = tools::Registry::instance() ;
+    std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
 
-		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
-		BOOST_REQUIRE( g.get() != NULL ) ;
-		algorithm::force3D( *g ) ;
-		BOOST_CHECK( g->isEmpty() ) ;
-	}
+    for ( size_t i = 0; i < typeNames.size(); i++ ) {
+        BOOST_TEST_MESSAGE( typeNames[i] ) ;
+
+        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+        BOOST_REQUIRE( g.get() != NULL ) ;
+        algorithm::force3D( *g ) ;
+        BOOST_CHECK( g->isEmpty() ) ;
+    }
 }
 
-BOOST_AUTO_TEST_CASE( testPointForceZ)
+BOOST_AUTO_TEST_CASE( testPointForceZ )
 {
-	Point p(3.0,4.0);
-	algorithm::force3D(p);
-	BOOST_CHECK_EQUAL( p.asText(1), "POINT(3.0 4.0 0.0)" );
+    Point p( 3.0,4.0 );
+    algorithm::force3D( p );
+    BOOST_CHECK_EQUAL( p.asText( 1 ), "POINT(3.0 4.0 0.0)" );
 }
-BOOST_AUTO_TEST_CASE( testPointForceZWithValue)
+BOOST_AUTO_TEST_CASE( testPointForceZWithValue )
 {
-	Point p(3.0,4.0);
-	algorithm::force3D(p,-9999.0);
-	BOOST_CHECK_EQUAL( p.asText(1), "POINT(3.0 4.0 -9999.0)" );
+    Point p( 3.0,4.0 );
+    algorithm::force3D( p,-9999.0 );
+    BOOST_CHECK_EQUAL( p.asText( 1 ), "POINT(3.0 4.0 -9999.0)" );
 }
 
 
-BOOST_AUTO_TEST_CASE( test_MixedLineString2D3D)
+BOOST_AUTO_TEST_CASE( test_MixedLineString2D3D )
 {
-	LineString lineString ;
-	lineString.addPoint( Point(1.0,1.0) );
-	lineString.addPoint( Point(2.0,2.0,1.0) );
-	lineString.addPoint( Point(3.0,3.0) );
-	algorithm::force3D(lineString);
-	// should keep 1.0 for the second point
-	BOOST_CHECK_EQUAL( lineString.asText(1), "LINESTRING(1.0 1.0 0.0,2.0 2.0 1.0,3.0 3.0 0.0)" );
+    LineString lineString ;
+    lineString.addPoint( Point( 1.0,1.0 ) );
+    lineString.addPoint( Point( 2.0,2.0,1.0 ) );
+    lineString.addPoint( Point( 3.0,3.0 ) );
+    algorithm::force3D( lineString );
+    // should keep 1.0 for the second point
+    BOOST_CHECK_EQUAL( lineString.asText( 1 ), "LINESTRING(1.0 1.0 0.0,2.0 2.0 1.0,3.0 3.0 0.0)" );
 }
 
 

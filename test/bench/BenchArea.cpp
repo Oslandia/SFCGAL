@@ -21,7 +21,18 @@
 #include <fstream>
 
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
 #include "../test_config.h"
 #include "Bench.h"
@@ -40,24 +51,28 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_BenchArea )
 
 BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 {
-	std::auto_ptr< MultiPolygon > fractal( generator::sierpinski(9) ) ;
+    std::auto_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
 
-	bench().start( "area sierpinski" ) ;
-	for ( int i = 0; i < 10; i++ ){
-		algorithm::area( *fractal ) ;
-	}
-	bench().stop();
+    bench().start( "area sierpinski" ) ;
+
+    for ( int i = 0; i < 10; i++ ) {
+        algorithm::area( *fractal ) ;
+    }
+
+    bench().stop();
 }
 
 BOOST_AUTO_TEST_CASE( testAreaSierpinski3D )
 {
-	std::auto_ptr< MultiPolygon > fractal( generator::sierpinski(9) ) ;
+    std::auto_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
 
-	bench().start( "area sierpinski" ) ;
-	for ( int i = 0; i < 10; i++ ){
-		algorithm::area3D( *fractal ) ;
-	}
-	bench().stop() ;
+    bench().start( "area sierpinski" ) ;
+
+    for ( int i = 0; i < 10; i++ ) {
+        algorithm::area3D( *fractal ) ;
+    }
+
+    bench().stop() ;
 }
 
 

@@ -21,7 +21,18 @@
 #include <boost/test/unit_test.hpp>
 
 #include <SFCGAL/Kernel.h>
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/translate.h>
 
@@ -35,16 +46,17 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_TranslateTest )
 
 BOOST_AUTO_TEST_CASE( testEmpty )
 {
-	tools::Registry & registry = tools::Registry::instance() ;
-	std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
-	for ( size_t i = 0; i < typeNames.size(); i++ ){
-		BOOST_TEST_MESSAGE( typeNames[i] ) ;
+    tools::Registry& registry = tools::Registry::instance() ;
+    std::vector< std::string > typeNames = tools::Registry::instance().getGeometryTypes();
 
-		std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
-		BOOST_REQUIRE( g.get() != NULL ) ;
-		algorithm::translate( *g, 1.0, 1.0, 1.0 );
-		BOOST_CHECK( g->isEmpty() );
-	}
+    for ( size_t i = 0; i < typeNames.size(); i++ ) {
+        BOOST_TEST_MESSAGE( typeNames[i] ) ;
+
+        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+        BOOST_REQUIRE( g.get() != NULL ) ;
+        algorithm::translate( *g, 1.0, 1.0, 1.0 );
+        BOOST_CHECK( g->isEmpty() );
+    }
 }
 
 //TODO complete with 2D/3D test after having renamed translate to translate3D

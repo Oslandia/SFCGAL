@@ -23,7 +23,18 @@
 #include <fstream>
 #include <boost/format.hpp>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/detail/tools/Log.h>
 
@@ -42,66 +53,71 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_TriangulatePolygonTest )
  */
 BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
 {
-	//logger().setLogLevel( Logger::Debug );
+    //logger().setLogLevel( Logger::Debug );
 
-	std::string filename( SFCGAL_TEST_DIRECTORY );
-	filename += "/data/TriangulatePolygonTest.txt" ;
+    std::string filename( SFCGAL_TEST_DIRECTORY );
+    filename += "/data/TriangulatePolygonTest.txt" ;
 
-	std::ifstream ifs( filename.c_str() );
-	BOOST_REQUIRE( ifs.good() ) ;
+    std::ifstream ifs( filename.c_str() );
+    BOOST_REQUIRE( ifs.good() ) ;
 
-	int numLine = 0 ;
-	std::string line;
-	while ( std::getline( ifs, line ) ){
-		numLine++ ;
-		if ( line[0] == '#' || line.empty() )
-			continue ;
+    int numLine = 0 ;
+    std::string line;
 
-		BOOST_TEST_MESSAGE( boost::format("[line#%s]%s") % numLine % line );
+    while ( std::getline( ifs, line ) ) {
+        numLine++ ;
 
-		std::istringstream iss(line);
-		bool shouldThrowException ;
-		iss >> shouldThrowException ;
+        if ( line[0] == '#' || line.empty() ) {
+            continue ;
+        }
 
-		std::string inputWkt ;
-		std::getline( iss, inputWkt ) ;
+        BOOST_TEST_MESSAGE( boost::format( "[line#%s]%s" ) % numLine % line );
 
-		/*
-		 * parse wkt
-		 */
-		std::auto_ptr< Geometry > g( io::readWkt(inputWkt) );
+        std::istringstream iss( line );
+        bool shouldThrowException ;
+        iss >> shouldThrowException ;
 
-		/*
-		 * check polygon
-		 */
-		BOOST_CHECK( g->is< Polygon >() || g->is< MultiPolygon >() );
+        std::string inputWkt ;
+        std::getline( iss, inputWkt ) ;
 
-		/*
-		 * triangulate polygon
-		 */
-		TriangulatedSurface triangulatedSurface ;
-		if ( shouldThrowException ){
-			BOOST_CHECK_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ), Exception );
-			continue ;
-		}
-		BOOST_CHECK_NO_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ) ;
+        /*
+         * parse wkt
+         */
+        std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
 
-		BOOST_TEST_MESSAGE( boost::format("#%1% triangle(s)") % triangulatedSurface.numGeometries() );
+        /*
+         * check polygon
+         */
+        BOOST_CHECK( g->is< Polygon >() || g->is< MultiPolygon >() );
 
-		/*
-		 * make some checks
-		 */
-		if ( ! g->isEmpty() ){
-			BOOST_CHECK( ! triangulatedSurface.isEmpty() );
-		}
+        /*
+         * triangulate polygon
+         */
+        TriangulatedSurface triangulatedSurface ;
 
-		if ( g->is3D() ){
-			BOOST_CHECK( triangulatedSurface.is3D() );
-		}
+        if ( shouldThrowException ) {
+            BOOST_CHECK_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ), Exception );
+            continue ;
+        }
 
-		//check area
-		BOOST_CHECK_CLOSE( algorithm::area3D(*g), algorithm::area3D( triangulatedSurface ), 0.5 );
-	}
+        BOOST_CHECK_NO_THROW( triangulate::triangulatePolygon3D( *g, triangulatedSurface ) ) ;
+
+        BOOST_TEST_MESSAGE( boost::format( "#%1% triangle(s)" ) % triangulatedSurface.numGeometries() );
+
+        /*
+         * make some checks
+         */
+        if ( ! g->isEmpty() ) {
+            BOOST_CHECK( ! triangulatedSurface.isEmpty() );
+        }
+
+        if ( g->is3D() ) {
+            BOOST_CHECK( triangulatedSurface.is3D() );
+        }
+
+        //check area
+        BOOST_CHECK_CLOSE( algorithm::area3D( *g ), algorithm::area3D( triangulatedSurface ), 0.5 );
+    }
 }
 
 

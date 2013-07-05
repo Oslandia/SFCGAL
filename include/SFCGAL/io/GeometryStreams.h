@@ -27,18 +27,18 @@
 
 namespace SFCGAL {
 
-	class Envelope;
-	class Geometry;
-	
-	/**
-	 * Ostream operator for Envelope;
-	 */
-	SFCGAL_API std::ostream& operator<< (std::ostream&, const Envelope& );
+class Envelope;
+class Geometry;
 
-	/**
-	 * Ostream operator for Geometry;
-	 */
-	SFCGAL_API std::ostream& operator<< (std::ostream&, const Geometry& );
+/**
+ * Ostream operator for Envelope;
+ */
+SFCGAL_API std::ostream& operator<< ( std::ostream&, const Envelope& );
+
+/**
+ * Ostream operator for Geometry;
+ */
+SFCGAL_API std::ostream& operator<< ( std::ostream&, const Geometry& );
 }
 
 #endif

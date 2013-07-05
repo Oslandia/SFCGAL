@@ -31,7 +31,7 @@ namespace viewer {
 ///
 ///
 ViewerPlugin::ViewerPlugin():
-	_viewerWindow(0)
+    _viewerWindow( 0 )
 {
 
 }
@@ -40,17 +40,17 @@ ViewerPlugin::ViewerPlugin():
 ///
 ///
 ///
-ViewerWindow * ViewerPlugin::viewerWindow()
+ViewerWindow* ViewerPlugin::viewerWindow()
 {
-	return _viewerWindow ;
+    return _viewerWindow ;
 }
 
 ///
 ///
 ///
-ViewerWidget * ViewerPlugin::viewer()
+ViewerWidget* ViewerPlugin::viewer()
 {
-	return _viewerWindow->viewer() ;
+    return _viewerWindow->viewer() ;
 }
 
 ///

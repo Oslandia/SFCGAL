@@ -41,11 +41,11 @@ BOOST_AUTO_TEST_SUITE( CGAL_Plane3Test )
 
 BOOST_AUTO_TEST_CASE( testTo2D_UnitNormalForPlane )
 {
-	Plane_3 plane(1.0,0.0,0.0,0.0);
-	BOOST_CHECK_EQUAL( plane.to_2d( Point_3(1.0,0.0,0.0) ), Point_2(0.0,0.0) );
-	BOOST_CHECK_EQUAL( plane.to_2d( Point_3(1.0,0.0,1.0) ), Point_2(0.0,1.0) );
-	BOOST_CHECK_EQUAL( plane.to_2d( Point_3(1.0,1.0,1.0) ), Point_2(1.0,1.0) );
-	BOOST_CHECK_EQUAL( plane.to_2d( Point_3(1.0,1.0,0.0) ), Point_2(1.0,0.0) );
+    Plane_3 plane( 1.0,0.0,0.0,0.0 );
+    BOOST_CHECK_EQUAL( plane.to_2d( Point_3( 1.0,0.0,0.0 ) ), Point_2( 0.0,0.0 ) );
+    BOOST_CHECK_EQUAL( plane.to_2d( Point_3( 1.0,0.0,1.0 ) ), Point_2( 0.0,1.0 ) );
+    BOOST_CHECK_EQUAL( plane.to_2d( Point_3( 1.0,1.0,1.0 ) ), Point_2( 1.0,1.0 ) );
+    BOOST_CHECK_EQUAL( plane.to_2d( Point_3( 1.0,1.0,0.0 ) ), Point_2( 1.0,0.0 ) );
 }
 
 

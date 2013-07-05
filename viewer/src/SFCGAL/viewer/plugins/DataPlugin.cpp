@@ -46,32 +46,35 @@ DataPlugin::DataPlugin()
 ///
 QString DataPlugin::pluginName() const
 {
-	return QString("DataPlugin");
+    return QString( "DataPlugin" );
 }
 
 ///
 ///
 ///
-void DataPlugin::displayNodeInformation( osg::Node* node, std::ostream & s, const size_t & depth )
+void DataPlugin::displayNodeInformation( osg::Node* node, std::ostream& s, const size_t& depth )
 {
-	std::string indent ;
-	for ( size_t i = 0; i < depth; i++ ){
-		indent += ' ';
-	}
+    std::string indent ;
 
-	s << indent << "Node[" << node->getName() << "]" << std::endl;
-	osg::Group * group = node->asGroup() ;
-	if ( group ){
-		for ( size_t i = 0; i < group->getNumChildren(); i++ ){
-			s << indent << "child[" << i << "]" << std::endl;
-			displayNodeInformation( group->getChild(i), s, depth + 1 ) ;
-		}
-	}else{
-		osg::Geode* geode = dynamic_cast< osg::Geode* >( node ) ;
-		s << indent << "Geode[" << geode->getBoundingBox().xMin() << " " << geode->getBoundingBox().xMax() << " " ;
-		s << geode->getBoundingBox().yMin() << " " << geode->getBoundingBox().yMax() << " " ;
-		s << geode->getBoundingBox().zMin() << " " << geode->getBoundingBox().zMax() << "]" << std::endl;
-	}
+    for ( size_t i = 0; i < depth; i++ ) {
+        indent += ' ';
+    }
+
+    s << indent << "Node[" << node->getName() << "]" << std::endl;
+    osg::Group* group = node->asGroup() ;
+
+    if ( group ) {
+        for ( size_t i = 0; i < group->getNumChildren(); i++ ) {
+            s << indent << "child[" << i << "]" << std::endl;
+            displayNodeInformation( group->getChild( i ), s, depth + 1 ) ;
+        }
+    }
+    else {
+        osg::Geode* geode = dynamic_cast< osg::Geode* >( node ) ;
+        s << indent << "Geode[" << geode->getBoundingBox().xMin() << " " << geode->getBoundingBox().xMax() << " " ;
+        s << geode->getBoundingBox().yMin() << " " << geode->getBoundingBox().yMax() << " " ;
+        s << geode->getBoundingBox().zMin() << " " << geode->getBoundingBox().zMax() << "]" << std::endl;
+    }
 }
 
 ///
@@ -79,7 +82,7 @@ void DataPlugin::displayNodeInformation( osg::Node* node, std::ostream & s, cons
 ///
 void DataPlugin::displayInformations()
 {
-	displayNodeInformation( viewerWindow()->viewer()->getScene(), std::cout );
+    displayNodeInformation( viewerWindow()->viewer()->getScene(), std::cout );
 }
 
 ///
@@ -87,10 +90,10 @@ void DataPlugin::displayInformations()
 ///
 void DataPlugin::load()
 {
-	QMenu * pluginMenu = viewerWindow()->menuBar()->addMenu("Data") ;
+    QMenu* pluginMenu = viewerWindow()->menuBar()->addMenu( "Data" ) ;
 
-	QAction * actionDisplayInformations = pluginMenu->addAction( QString("&display informations") );
-	connect( actionDisplayInformations, SIGNAL(triggered()), this, SLOT( displayInformations() ) );
+    QAction* actionDisplayInformations = pluginMenu->addAction( QString( "&display informations" ) );
+    connect( actionDisplayInformations, SIGNAL( triggered() ), this, SLOT( displayInformations() ) );
 }
 
 

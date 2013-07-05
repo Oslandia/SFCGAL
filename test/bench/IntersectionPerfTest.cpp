@@ -20,7 +20,18 @@
  */
 #include <fstream>
 
-#include <SFCGAL/all.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/PolyhedralSurface.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/Solid.h>
+#include <SFCGAL/GeometryCollection.h>
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/intersects.h>
@@ -46,26 +57,30 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_IntersectionPerfTest )
 BOOST_AUTO_TEST_CASE( testIntersectionPerf )
 {
 
-	//
-	// generate polygons
-	std::vector<Geometry *> polygons;
+    //
+    // generate polygons
+    std::vector<Geometry*> polygons;
 
-	for ( size_t i = 0; i < N_POLYGONS; ++i ) {
-		MultiPoint mp;
-		for ( size_t j = 0; j < N_POINTS; ++j ) {
-			double x = (rand() +.0) / RAND_MAX * 10.0;
-			double y = (rand() +.0) / RAND_MAX * 10.0;
-			mp.addGeometry( Point( x, y ) );
-		}
-		std::auto_ptr<Geometry> g( algorithm::convexHull( mp ) );
-		polygons.push_back( g.release() );
-	}
+    for ( size_t i = 0; i < N_POLYGONS; ++i ) {
+        MultiPoint mp;
 
-	bench().start("intersects convex hull");
-	for ( size_t i = 0; i < N_POLYGONS / 2; ++i ) {
-		algorithm::intersects( *polygons[2*i], *polygons[2*i+1] );
-	}
-	bench().stop();
+        for ( size_t j = 0; j < N_POINTS; ++j ) {
+            double x = ( rand() +.0 ) / RAND_MAX * 10.0;
+            double y = ( rand() +.0 ) / RAND_MAX * 10.0;
+            mp.addGeometry( Point( x, y ) );
+        }
+
+        std::auto_ptr<Geometry> g( algorithm::convexHull( mp ) );
+        polygons.push_back( g.release() );
+    }
+
+    bench().start( "intersects convex hull" );
+
+    for ( size_t i = 0; i < N_POLYGONS / 2; ++i ) {
+        algorithm::intersects( *polygons[2*i], *polygons[2*i+1] );
+    }
+
+    bench().stop();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
