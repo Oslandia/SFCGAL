@@ -1,6 +1,3 @@
-#include <iostream>
-
-#include <SFCGAL/Geometry.h>
 #include <SFCGAL/MultiPolygon.h>
 
 #include <SFCGAL/io/wkt.h>

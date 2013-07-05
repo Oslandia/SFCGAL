@@ -21,6 +21,7 @@
 #ifndef _SFCGAL_ALGORITHM_VOLUME_H_
 #define _SFCGAL_ALGORITHM_VOLUME_H_
 
+#include <SFCGAL/export.h> 
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
 
@@ -34,14 +35,14 @@ struct NoValidityCheck;
  * @pre g is a valid Geometry
  * @ingroup public_api
  */
-const Kernel::FT volume( const Geometry& g );
+SFCGAL_API const Kernel::FT volume( const Geometry& g );
 
 /**
  * Computes the volume of a Solid
  * @pre (not checked) volume is closed and consistently oriented
  * @ingroup detail
  */
-const Kernel::FT volume( const Solid& g, NoValidityCheck );
+SFCGAL_API const Kernel::FT volume( const Solid& g, NoValidityCheck );
 
 }
 }
