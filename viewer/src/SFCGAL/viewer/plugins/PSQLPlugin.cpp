@@ -18,6 +18,8 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include <iostream>
+
 #include <SFCGAL/viewer/plugins/PSQLPlugin.h>
 #include <SFCGAL/viewer/ViewerWindow.h>
 #include <SFCGAL/viewer/ViewerWidget.h>

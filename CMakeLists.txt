@@ -15,14 +15,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
-option( SFCGAL_BUILD_OSG "build SFCGAL with OpenSceneGraph support (outputs in 3D formats)" OFF )
-option( SFCGAL_BUILD_UNIT_TESTS "build unit tests" OFF )
-option( SFCGAL_BUILD_REGRESS_TESTS "build regress tests" OFF )
+option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
-option( SFCGAL_BUILD_VIEWER "build viewer" OFF )
-
-# disabled, nothing to build
-#option( SFCGAL_BUILD_TOOLS "build tools" OFF )
+option( SFCGAL_BUILD_VIEWER "build viewer and OpenSceneGraph support (outputs in 3D formats)" OFF )
 
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
@@ -69,11 +64,11 @@ endif()
 #-- minimalist build allowed with boost version older than 1.48
 set( SFCGAL_Boost_COMPONENTS date_time thread system serialization )
 #-- unit test
-if ( SFCGAL_BUILD_UNIT_TESTS OR SFCGAL_BUILD_REGRESS_TESTS )
+if ( SFCGAL_BUILD_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework ${SFCGAL_Boost_COMPONENTS} )
 endif()
 #-- program_options
-if ( SFCGAL_BUILD_REGRESS_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_TOOLS OR SFCGAL_BUILD_VIEWER )
+if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_VIEWER )
 	set( SFCGAL_Boost_COMPONENTS program_options chrono filesystem timer ${SFCGAL_Boost_COMPONENTS} )
 endif()
 find_package( Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED )
@@ -130,18 +125,19 @@ link_directories(
 )
 
 #-- optional OpenSceneGraph support
-if ( SFCGAL_BUILD_OSG )
+if ( SFCGAL_BUILD_VIEWER )
 	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
 	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
 	
 	# config.h generation
 	set( SFCGAL_WITH_OSG "ON" )
+	add_subdirectory( viewer )
 endif()
 
 
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
-option( SFCGAL_BUILD_FAILED_ON_WARNING "fail the build on warnings" OFF )
+option( SFCGAL_WARNING_AS_ERROR "fail the build on warnings" OFF )
 option( SFCGAL_BUILD_WITH_GPROF "build with gprof" OFF )
 if(MSVC)
 	# Force to always compile with W4
@@ -153,7 +149,7 @@ if(MSVC)
 elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 	# Update if necessary
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-long-long -pedantic -Wpointer-arith -Wcast-align -Wcast-qual -Wno-overloaded-virtual -Wformat=2 -Winit-self -Wmissing-include-dirs -Wwrite-strings -Wno-error=undef")#-Wfloat-equal -Wconversion -Wshadow 
-	if( SFCGAL_BUILD_FAILED_ON_WARNING )
+    if( SFCGAL_WARNING_AS_ERROR )
 		 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=format")
 	endif()
 
@@ -187,19 +183,6 @@ add_subdirectory( test )
 #-- build examples
 if( SFCGAL_BUILD_EXAMPLES )
 	add_subdirectory( example )
-endif()
-
-#-- build tools
-if( SFCGAL_BUILD_TOOLS )
-	add_subdirectory( tools )
-endif()
-
-#-- viewer 
-if( SFCGAL_BUILD_VIEWER )
-	if ( NOT SFCGAL_BUILD_OSG )
-		message( FATAL_ERROR "can't build viewer without OSG support (set SFCGAL_BUILD_OSG to ON)" )
-	endif()
-	add_subdirectory( viewer )
 endif()
 
 #-- doxygen documentation (allows make doc when doxygen is found)
