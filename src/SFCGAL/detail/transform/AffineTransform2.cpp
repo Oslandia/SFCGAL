@@ -18,44 +18,31 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef _SFCGAL_TRANSFORM_AFFINETRANSFORM2_H_
-#define _SFCGAL_TRANSFORM_AFFINETRANSFORM2_H_
+#include <SFCGAL/detail/transform/AffineTransform2.h>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/Transform.h>
-
-#include <CGAL/Aff_transformation_2.h>
-
+#include <SFCGAL/Point.h>
 
 namespace SFCGAL {
 namespace transform {
 
-/**
- * Wrapper for CGAL::Aff_transform_2
- * @todo unittest
+///
+///
+///
+AffineTransform2::AffineTransform2( CGAL::Aff_transformation_2< Kernel > transform ):
+	_transform( transform ) {
+
+}
+
+/*
+ * [SFCGAL::Transform]
  */
-class AffineTransform2 : public Transform {
-public:
-    /**
-     * Constructor with a transform
-     */
-    AffineTransform2( CGAL::Aff_transformation_2< Kernel > transform ) ;
-
-    /*
-     * [SFCGAL::Transform]
-     */
-    virtual void transform( Point& p ) ;
-
-private:
-    CGAL::Aff_transformation_2< Kernel > _transform ;
-};
+void AffineTransform2::transform( Point& p ) {
+	if ( ! p.isEmpty() ){
+		p = Point( p.toPoint_2().transform( _transform ) );
+	}
+}
 
 
 }//transform
 }//SFCGAL
-
-
-
-
-#endif
 
