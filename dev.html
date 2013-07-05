@@ -54,19 +54,33 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <h4>Tests</h4>
 
-<p>SFCGAL comes with different layers of tests.</p>
+<p>SFCGAL comes with different layers of tests. The <code>SFCGAL_BUILD_TESTS</code> CMake option allows to build these tests.</p>
 
-<p><strong>Unit tests</strong> are used to test each feature independently with hand-crafted dataset that must cover every possible case.  The <code>SFCGAL_BUILD_UNIT_TESTS</code> CMake option allows to build these tests.</p>
+<p><strong>Unit tests</strong> are used to test each feature independently with hand-crafted dataset that must cover every possible case. Run it with <code>unit-test-SFCGAL</code></p>
 
-<p><strong>Regression tests</strong> consist of call to functions with real or near-real datasets. The <code>SFCGAL_BUILD_REGRESS_TESTS</code> CMake option allows to build these tests.</p>
+<p><strong>Regression tests</strong> consist of call to functions with real or near-real datasets. Run it with <code>standalone-regress-test-SFCGAL</code></p>
+
+<p>A <strong>garden test</strong> (inspired by the eponym PostGIS test) is used to ensure every combination of parameters are acceptable parameters for each function, <i>i.e.</i> that no function crashes on a specific parameter combination that would not be part of the unit tests. Run it with <code>garden-test-SFCGAL</code></p>
+
+<p>A <strong>style test</strong> to ensure that code is properly formatted before committing. Run the script <code>test-style-SFCGAL.sh</code>.</p>
 
 <p><strong>Benchmark tests</strong> allow to test processing speed of SFCGAL algorithms. Compilation available through the <code>SFCGAL_BUILD_BENCH</code> CMake option.</p>
 
-<p>A <strong>garden test</strong> (inspired by the eponym PostGIS test) is used to ensure every combination of parameters are acceptable parameters for each function, <i>i.e.</i> that no function crashes on a specific parameter combination that would not be part of the unit tests. This test is part of the regression suite.</p>
+<h4>Valgrind</h4>
+
+<p> <a href=http://valgrind.org>Valgrind</a> can automatically detect many memory management and threading bugs, and profile programs in detail. Since SFCGAL uses a CGAL Kernel that depends on floating point rounding modes that are not supported by the current version of valgrind, a patched version is necessary:</p>
+
+<pre>
+git clone https://github.com/trast/valgrind.git
+cd valgrind/
+git clone https://github.com/trast/valgrind-VEX.git VEX
+./autogen.sh
+./configure && make -j 8 && sudo make install </pre>
+
 
 <h4>Documentation</h4>
 
-<p>If doxygen is available, you may run 'make doc' to generate the code documentation.</p>
+<p>The SFCGAL documentation is primarilly written in <a href="http://www.doxygen.org">doxygen</a>. If doxygen is available, you may run <code>make doc</code> to generate the code documentation.</p>
 
       </section>
     </div>
