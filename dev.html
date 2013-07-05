@@ -52,6 +52,17 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <p>In conformance with the git way of development, each new feature is made on a proper on its own temporary branch.</p>
 
+<h4>Building</h4>
+
+<p>The classic way of building with cmake is to first create a build directory and use a CMake client to configure the build (ccmake or cmake-gui). </p>
+
+<pre>
+mkdir build_debug
+cd build_debug
+ccmake -DCMAKE_BUILD_TYPE=Debug .. && make -j 2 </pre>
+
+<p>Environment variables and build options are listed in the <a href="installation.html">instalation section</a>.</p>
+
 <h4>Tests</h4>
 
 <p>SFCGAL comes with different layers of tests. The <code>SFCGAL_BUILD_TESTS</code> CMake option allows to build these tests.</p>
@@ -62,9 +73,10 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <p>A <strong>garden test</strong> (inspired by the eponym PostGIS test) is used to ensure every combination of parameters are acceptable parameters for each function, <i>i.e.</i> that no function crashes on a specific parameter combination that would not be part of the unit tests. Run it with <code>garden-test-SFCGAL</code></p>
 
-<p>A <strong>style test</strong> to ensure that code is properly formatted before committing. Run the script <code>test-style-SFCGAL.sh</code>.</p>
+<p>A <strong>style test</strong> is used to ensure that code is properly formatted before committing. Run the script <code>test-style-SFCGAL.sh</code>.</p>
 
 <p><strong>Benchmark tests</strong> allow to test processing speed of SFCGAL algorithms. Compilation available through the <code>SFCGAL_BUILD_BENCH</code> CMake option.</p>
+
 
 <h4>Valgrind</h4>
 

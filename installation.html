@@ -75,16 +75,13 @@
 
 <h4>Compilation</h4>
 
-<p>The compilation process is based on CMake. The classic way of building is to first create a build directory and use a CMake client to configure the build (cmake, ccmake, or cmake-gui). On linux run:</p>
+<p>The compilation process is based on CMake. On linux run:</p>
 <pre>
-cd SFCGAL-1.0
-mkdir build
-cd build
-ccmake .. && make -j 2 && sudo make install</pre>
-
-<p>CGAL uses a lot of templated constructions. Therefore the building process may take a while.
+ccmake && make && sudo make install</pre>
 
 <p>You may specify dependencies locations with environment variables in case cmake doesn't find them automatically (see below).</p>
+
+<p>CGAL uses a lot of templated constructions. Therefore the building process may take a while.
 
 <p>Default building options should work out-of-the-box. You may want to fine tune the compilation process with build options.</p>
 
