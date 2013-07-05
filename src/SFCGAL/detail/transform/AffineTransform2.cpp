@@ -29,17 +29,19 @@ namespace transform {
 ///
 ///
 AffineTransform2::AffineTransform2( CGAL::Aff_transformation_2< Kernel > transform ):
-	_transform( transform ) {
+    _transform( transform )
+{
 
 }
 
 /*
  * [SFCGAL::Transform]
  */
-void AffineTransform2::transform( Point& p ) {
-	if ( ! p.isEmpty() ){
-		p = Point( p.toPoint_2().transform( _transform ) );
-	}
+void AffineTransform2::transform( Point& p )
+{
+    if ( ! p.isEmpty() ) {
+        p = Point( p.toPoint_2().transform( _transform ) );
+    }
 }
 
 
