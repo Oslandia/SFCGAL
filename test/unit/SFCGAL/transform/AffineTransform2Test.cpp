@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE( simpleTranslate )
         CGAL::Vector_2< Kernel >( 1.0,2.0 )
     );
 
-    transform::AffineTransform2< Kernel > transform( affine ) ;
+    transform::AffineTransform2 transform( affine ) ;
     g.accept( transform );
 
     BOOST_CHECK_EQUAL( g.pointN( 0 ).asText( 5 ), "POINT(1.00000 2.00000)" );

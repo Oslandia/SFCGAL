@@ -21,8 +21,10 @@
 #ifndef _SFCGAL_TRANSFORM_AFFINETRANSFORM3_H_
 #define _SFCGAL_TRANSFORM_AFFINETRANSFORM3_H_
 
-#include <CGAL/Aff_transformation_3.h>
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
+
+#include <CGAL/Aff_transformation_3.h>
 
 namespace SFCGAL {
 namespace transform {
@@ -31,66 +33,30 @@ namespace transform {
  * Wrapper for CGAL::Aff_transform_3
  * @todo unittest
  */
-template < typename K >
 class AffineTransform3 : public Transform {
 public:
     /**
      * Constructor with a transform
      */
-    AffineTransform3( CGAL::Aff_transformation_3< Kernel > transform ):
-        _transform( transform ) {
-
-    }
+    AffineTransform3( CGAL::Aff_transformation_3< Kernel > transform ) ;
 
     /*
      * [SFCGAL::Transform]
      */
-    virtual void transform( Point& p ) {
-        if ( ! p.isEmpty() ) {
-            p = Point( p.toPoint_3().transform( _transform ) ) ;
-        }
-    }
+    virtual void transform( Point& p ) ;
 
-    virtual void transform( LineString& ls ) {
-        for ( size_t i = 0; i < ls.numPoints(); ++i ) {
-            transform( ls.pointN( i ) );
-        }
-    }
-    virtual void transform( Triangle& tri ) {
-        transform( tri.vertex( 0 ) );
-        transform( tri.vertex( 1 ) );
-        transform( tri.vertex( 2 ) );
-    }
-    virtual void transform( Polygon& poly ) {
-        transform( poly.exteriorRing() );
+    virtual void transform( LineString& ls ) ;
+    virtual void transform( Triangle& tri ) ;
+    virtual void transform( Polygon& poly ) ;
 
-        for ( size_t i = 0; i < poly.numInteriorRings(); ++i ) {
-            transform( poly.interiorRingN( i ) );
-        }
-    }
+    virtual void transform( PolyhedralSurface& surf ) ;
 
-    virtual void transform( PolyhedralSurface& surf ) {
-        for ( size_t i = 0; i < surf.numPolygons(); ++i ) {
-            transform( surf.polygonN( i ) );
-        }
-    }
+    virtual void transform( TriangulatedSurface& surf ) ;
 
-    virtual void transform( TriangulatedSurface& surf ) {
-        for ( size_t i = 0; i < surf.numGeometries(); ++i ) {
-            transform( surf.geometryN( i ) );
-        }
-    }
-
-    virtual void transform( Solid& solid ) {
-        transform( solid.exteriorShell() );
-
-        for ( size_t i = 0; i < solid.numInteriorShells(); ++i ) {
-            transform( solid.interiorShellN( i ) );
-        }
-    }
+    virtual void transform( Solid& solid ) ;
 
 private:
-    CGAL::Aff_transformation_3< K > _transform ;
+    CGAL::Aff_transformation_3< Kernel > _transform ;
 };
 
 
