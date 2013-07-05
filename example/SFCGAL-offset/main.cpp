@@ -1,4 +1,7 @@
-#include <SFCGAL/all.h>
+#include <iostream>
+
+#include <SFCGAL/Geometry.h>
+#include <SFCGAL/MultiPolygon.h>
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/offset.h>
