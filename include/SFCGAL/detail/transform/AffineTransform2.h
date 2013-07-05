@@ -21,6 +21,7 @@
 #ifndef _SFCGAL_TRANSFORM_AFFINETRANSFORM2_H_
 #define _SFCGAL_TRANSFORM_AFFINETRANSFORM2_H_
 
+#include <SFCGAL/config.h>
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Transform.h>
 
@@ -34,7 +35,7 @@ namespace transform {
  * Wrapper for CGAL::Aff_transform_2
  * @todo unittest
  */
-class AffineTransform2 : public Transform {
+class SFCGAL_API AffineTransform2 : public Transform {
 public:
     /**
      * Constructor with a transform
