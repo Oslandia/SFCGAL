@@ -6,7 +6,7 @@ include_directories(
 	include
 	# postgresql
 	/usr/include/postgresql
-	${QT_INCLUDE_DIR} 
+    ${QT_INCLUDES} 
 	${OPENSCENEGRAPH_INCLUDE_DIRS} 
 )
 
