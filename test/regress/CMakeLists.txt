@@ -5,6 +5,7 @@ add_subdirectory( standalone )
 add_subdirectory( polygon_triangulator )
 add_subdirectory( convex_hull )
 
+add_subdirectory( osgwriter )
 
 
 
