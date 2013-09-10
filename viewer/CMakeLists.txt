@@ -21,6 +21,8 @@ add_executable( viewer-SFCGAL
 	${VIEWER_SFCGAL_SOURCES}
 	${VIEWER_SFCGAL_MOC}
 )
+
+set(QT_LIBRARIES QtCore QtGui)
 set_target_properties( viewer-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 target_link_libraries( viewer-SFCGAL
 	SFCGAL
