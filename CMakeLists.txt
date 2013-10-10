@@ -65,7 +65,7 @@ endif()
 set( SFCGAL_Boost_COMPONENTS date_time thread system serialization )
 #-- unit test
 if ( SFCGAL_BUILD_TESTS )
-	set( SFCGAL_Boost_COMPONENTS unit_test_framework ${SFCGAL_Boost_COMPONENTS} )
+	set( SFCGAL_Boost_COMPONENTS unit_test_framework program_options ${SFCGAL_Boost_COMPONENTS} )
 endif()
 #-- program_options
 if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_VIEWER )

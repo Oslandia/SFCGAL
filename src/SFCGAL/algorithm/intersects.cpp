@@ -388,12 +388,8 @@ template bool intersects<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<
 
 bool intersects( const Geometry& ga, const Geometry& gb )
 {
-    // If a geometry is 3D, then we only test that it is valid in 3D, since its 2D projection would generate
-    // possibly invalid geometries (like polygons that are lines or points), but they won't disturb the
-    // intersects algorithm
-    // It allows for instance to test intersection between a 2D tile and a 3D geometry
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY( ga );
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY( gb );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
     GeometrySet<2> gsa( ga );
     GeometrySet<2> gsb( gb );
