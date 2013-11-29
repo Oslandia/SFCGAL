@@ -5,7 +5,7 @@ add_subdirectory( CGAL-triangulation2 )
 add_subdirectory( CGAL-polygon_triangulation2 )
 add_subdirectory( SFCGAL-offset )
 
-if ( SFCGAL_BUILD_OSG )
+if ( SFCGAL_WITH_OSG )
 	add_subdirectory( SFCGAL-export-osg )
 	add_subdirectory( SFCGAL-asc2osg )
 	add_subdirectory( SFCGAL-building )

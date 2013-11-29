@@ -19,9 +19,9 @@
  */
 #include <iostream>
 
-#include <SFCGAL/all.h>
 #include <SFCGAL/io/wkt.h>
 
+#include <SFCGAL/MultiPolygon.h>
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/algorithm/offset.h>
 #include <SFCGAL/algorithm/extrude.h>
@@ -56,7 +56,7 @@ int main(){
 	//buffer & extrude
 	{
 		double radius = 0.7 ;
-		std::auto_ptr< Geometry > buffer( algorithm::offset( *g, radius ) );
+		std::auto_ptr< MultiPolygon > buffer( algorithm::offset( *g, radius ) );
 		algorithm::translate( *buffer, Kernel::Vector_3( 0.0, 0.0, radius ) );
 
 		std::auto_ptr< Geometry > extruded( algorithm::extrude(*buffer,3.0,3.0,3.0) );

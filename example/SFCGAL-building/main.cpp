@@ -17,14 +17,13 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#include <SFCGAL/all.h>
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
+#include <SFCGAL/GeometryCollection.h>
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/detail/generator/building.h>
@@ -52,7 +51,9 @@ public:
 };
 
 
+/**
  * @brief read input file
+ */
 std::vector< InputData > readInputFile( const std::string & filename ){
 	std::vector< InputData > result ;
 
