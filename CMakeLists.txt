@@ -110,6 +110,16 @@ find_package( CGAL 4.1 COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
 include_directories( include )
+
+# For CGAL versions < 4.3, we add a local directory that contains some tweaked include files from unreleased versions
+# They will overwrite files from the CGAL installation
+if( "${CGAL_VERSION}" VERSION_LESS "4.3" )
+  include_directories( patches/CGAL-4.2 )
+else()
+  include_directories( patches/CGAL-4.3 )
+  add_definitions( "-DCGAL_INTERSECTION_VERSION=1" )
+endif()
+
 #-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
 include_directories( SYSTEM 
 	${CGAL_INCLUDE_DIRS}

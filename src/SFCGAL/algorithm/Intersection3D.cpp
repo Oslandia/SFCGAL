@@ -108,7 +108,24 @@ void _intersection_solid_segment( const PrimitiveHandle<3>& pa, const PrimitiveH
 }
 
 
+#if CGAL_VERSION_NR < 1040301000 // version 4.3
+// Before 4.3, we pass CGAL::Tag_true to mark boundary halfedges
 typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron, Kernel, CGAL::Tag_true> Split_visitor;
+#else
+// Starting with 4.3, we must now pass a property_map
+template<class Polyhedron>
+struct Edge_mark_property_map{
+  typedef bool value_type;
+  typedef value_type reference;
+  typedef std::pair<typename Polyhedron::Halfedge_handle,Polyhedron*> key_type;
+  typedef boost::read_write_property_map_tag category;
+
+  friend reference get(Edge_mark_property_map,const key_type& key) {return key.first->mark;}
+  friend void put(Edge_mark_property_map,key_type key,value_type v) {key.first->mark=v;}
+};
+typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron,Kernel,Edge_mark_property_map<MarkedPolyhedron> > Split_visitor;
+#endif
+
 typedef std::vector<Kernel::Point_3> Polyline_3;
 
 struct Is_not_marked {

@@ -1,6 +1,8 @@
-This directory includes some backports from CGAL 4.2 and the upcoming 4.3.
-It is included with the CMake directive include_directories(BEFORE ..)
+This directory includes some backports and fixes from CGAL 4.2 and 4.3.
+It is included with the CMake directive include_directories()
 in order to overload system include files.
+
+* When compiling SFCGAL with CGAL < 4.3, CGAL-4.2 is included. It contains :
 
 From 4.2 :
 
@@ -17,4 +19,9 @@ internal/Operations_on_polyhedra/Ray_3_Triangle_3_traversal_traits.h
 File fixing a memory leak :
 
 Triangle_2_Triangle_2_intersection_impl.h
+
+* When compiling SFCGAL with version 4.3, CGAL-4.3 is included.
+
+It contains a bug fix for Triangle_3_Triangle_3_intersection
+
 
