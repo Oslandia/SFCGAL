@@ -1,4 +1,3 @@
-
 find_path(CGAL_INCLUDE_DIRS CGAL/gmp.h
     HINTS $ENV{CGAL_DIR}/include ${CGAL_DIR}/include ${CGAL_INCLUDE_DIRS}
     PATH_SUFFIXES CGAL
@@ -29,7 +28,7 @@ if(CGAL_FIND_VERSION)
     file(STRINGS ${version_file} version_str REGEX "# *define +CGAL_VERSION +")
     string( REGEX REPLACE "# *define +CGAL_VERSION +" "" CGAL_VERSION ${version_str})
     if("${CGAL_VERSION}" VERSION_LESS "${CGAL_FIND_VERSION}")
-        message(FATAL_ERROR "CGAL " ${CGAL_FIND_VERSION} " is requiered (found " ${CGAL_VERSION} " in ${version_file})" )
+        message(FATAL_ERROR "CGAL " ${CGAL_FIND_VERSION} " is required (found " ${CGAL_VERSION} " in ${version_file})" )
     endif()
 
 endif()
