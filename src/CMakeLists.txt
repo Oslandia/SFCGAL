@@ -18,6 +18,9 @@ else()
     )
 endif()
 
+# set VERSION and SOVERSION
+set_target_properties( SFCGAL PROPERTIES VERSION ${SFCGAL_VERSION}
+                                         SOVERSION ${SFCGAL_VERSION_MAJOR} )
 
 target_link_libraries( SFCGAL ${CGAL_LIBRARIES} )
 if( ${SFCGAL_WITH_GMP} )
