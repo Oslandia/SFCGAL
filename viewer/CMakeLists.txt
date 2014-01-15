@@ -1,11 +1,12 @@
 find_package( Qt4 COMPONENTS QtGui QtCore REQUIRED )
-find_package( OpenSceneGraph COMPONENTS osgQt osgViewer osgGA osgDB osgUtil REQUIRED )
+find_package( OpenSceneGraph COMPONENTS osgQt osgViewer osgGA osgDB osgUtil PostgreSQL REQUIRED )
+find_package( PostgreSQL REQUIRED )
 
 
 include_directories(
 	include
 	# postgresql
-	/usr/include/postgresql
+	${POSTGRESQL_INCLUDE_DIRS}
     ${QT_INCLUDES} 
 	${OPENSCENEGRAPH_INCLUDE_DIRS} 
 )
