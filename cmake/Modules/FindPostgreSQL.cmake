@@ -20,7 +20,9 @@ if(POSTGRESQL_INCLUDE_DIR AND POSTGRESQL_LIBRARIES)
 else(POSTGRESQL_INCLUDE_DIR AND POSTGRESQL_LIBRARIES)
 
   FIND_PATH(POSTGRESQL_INCLUDE_DIR libpq-fe.h
+    /usr/include/postgresql/
     /usr/include/postgresql*/
+    /usr/pgsql/include
     /usr/pgsql*/include
     /usr/local/pgsql/include
     /usr/local/include
