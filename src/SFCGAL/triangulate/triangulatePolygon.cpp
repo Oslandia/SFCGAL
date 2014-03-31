@@ -28,6 +28,7 @@
 #include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/normal.h>
 #include <SFCGAL/algorithm/isValid.h>
 
 #include <iostream>
@@ -162,17 +163,18 @@ void triangulatePolygon3D(
     for ( size_t i = 0; i < polygon.numRings(); i++ ) {
         const LineString& ring  = polygon.ringN( i );
 
-        Vertex_handle v_prev ;
-
-        for ( size_t j = 0; j < ring.numPoints(); j++ ) {
+        /*
+         * note, we do not include the last point, since it's equal to the last and that
+         */
+        if (!ring.numPoints()) continue;
+        Vertex_handle v_prev = cdt.addVertex( ring.pointN( 0 ).coordinate() );
+        Vertex_handle v_0 = v_prev;
+        for ( size_t j = 1; j < ring.numPoints()-1; j++ ) {
             Vertex_handle vh = cdt.addVertex( ring.pointN( j ).coordinate() );
-
-            if ( j != 0 ) {
-                cdt.addConstraint( vh, v_prev );
-            }
-
+            cdt.addConstraint( v_prev, vh );
             v_prev = vh;
         }
+        cdt.addConstraint( v_prev, v_0 );
     }
 
     /*

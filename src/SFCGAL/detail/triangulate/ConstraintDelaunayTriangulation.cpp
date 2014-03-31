@@ -50,16 +50,11 @@ ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::
                                ) );
     }
 
-    if ( _projectionPlane ) {
-        Vertex_handle vertex = _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) );
-        vertex->info().original = position ;
-        return vertex ;
-    }
-    else {
-        Vertex_handle vertex = _cdt.insert( position.toPoint_2() );
-        vertex->info().original = position ;
-        return vertex ;
-    }
+    Vertex_handle vertex = _projectionPlane
+        ? _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) )
+        : _cdt.insert( position.toPoint_2() );
+    vertex->info().original = position ;
+    return vertex ;
 }
 
 ///

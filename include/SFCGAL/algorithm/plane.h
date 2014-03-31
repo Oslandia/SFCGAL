@@ -112,8 +112,13 @@ void plane3D(
 template < typename Kernel >
 CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact = true )
 {
-    CGAL::Vector_3< Kernel > normal = normal3D< Kernel >( polygon, exact );
-    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), normal );
+    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, exact );
+    if ( !exact )
+    {
+        const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
+        nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
+    }
+    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
 }
 
 
