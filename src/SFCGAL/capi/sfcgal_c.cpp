@@ -42,6 +42,7 @@
 
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
+#include <SFCGAL/algorithm/union.h>
 #include <SFCGAL/algorithm/convexHull.h>
 #include <SFCGAL/algorithm/distance.h>
 #include <SFCGAL/algorithm/distance3d.h>
@@ -679,6 +680,8 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_MEASURE( distance_3d, SFCGAL::algorithm::distanc
 
 SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( intersection, SFCGAL::algorithm::intersection )
 SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( intersection_3d, SFCGAL::algorithm::intersection3D )
+SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union, SFCGAL::algorithm::union_ )
+SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union_3d, SFCGAL::algorithm::union3D )
 
 #define SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( name, sfcgal_function ) \
 	extern "C" sfcgal_geometry_t* sfcgal_geometry_##name( const sfcgal_geometry_t* ga ) \
