@@ -132,27 +132,27 @@ struct PrimitiveDimension {
 };
 
 template <>
-struct PrimitiveDimension<typename TypeForDimension<2>::Segment> {
+struct PrimitiveDimension<TypeForDimension<2>::Segment> {
     static const int value = 1;
 };
 template <>
-struct PrimitiveDimension<typename TypeForDimension<3>::Segment> {
+struct PrimitiveDimension<TypeForDimension<3>::Segment> {
     static const int value = 1;
 };
 template <>
-struct PrimitiveDimension<typename TypeForDimension<2>::Surface> {
+struct PrimitiveDimension<TypeForDimension<2>::Surface> {
     static const int value = 2;
 };
 template <>
-struct PrimitiveDimension<typename TypeForDimension<3>::Surface> {
+struct PrimitiveDimension<TypeForDimension<3>::Surface> {
     static const int value = 2;
 };
 template <>
-struct PrimitiveDimension<typename TypeForDimension<2>::Volume> {
+struct PrimitiveDimension<TypeForDimension<2>::Volume> {
     static const int value = 3;
 };
 template <>
-struct PrimitiveDimension<typename TypeForDimension<3>::Volume> {
+struct PrimitiveDimension<TypeForDimension<3>::Volume> {
     static const int value = 3;
 };
 
