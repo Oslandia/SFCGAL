@@ -178,13 +178,13 @@ void GeometrySet<2>::addPrimitive( const PrimitiveHandle<2>& p )
 {
     switch ( p.handle.which() ) {
     case PrimitivePoint:
-        _points.insert( *boost::get<const typename TypeForDimension<2>::Point*>( p.handle ) );
+        _points.insert( *boost::get<const TypeForDimension<2>::Point*>( p.handle ) );
         break;
     case PrimitiveSegment:
-        _segments.insert( *boost::get<const typename TypeForDimension<2>::Segment*>( p.handle ) );
+        _segments.insert( *boost::get<const TypeForDimension<2>::Segment*>( p.handle ) );
         break;
     case PrimitiveSurface:
-        _surfaces.push_back( *boost::get<const typename TypeForDimension<2>::Surface*>( p.handle ) );
+        _surfaces.push_back( *boost::get<const TypeForDimension<2>::Surface*>( p.handle ) );
         break;
     default:
         break;
@@ -196,16 +196,16 @@ void GeometrySet<3>::addPrimitive( const PrimitiveHandle<3>& p )
 {
     switch ( p.handle.which() ) {
     case PrimitivePoint:
-        _points.insert( *boost::get<const typename TypeForDimension<3>::Point*>( p.handle ) );
+        _points.insert( *boost::get<const TypeForDimension<3>::Point*>( p.handle ) );
         break;
     case PrimitiveSegment:
-        _segments.insert( *boost::get<const typename TypeForDimension<3>::Segment*>( p.handle ) );
+        _segments.insert( *boost::get<const TypeForDimension<3>::Segment*>( p.handle ) );
         break;
     case PrimitiveSurface:
-        _surfaces.push_back( *boost::get<const typename TypeForDimension<3>::Surface*>( p.handle ) );
+        _surfaces.push_back( *boost::get<const TypeForDimension<3>::Surface*>( p.handle ) );
         break;
     case PrimitiveVolume: {
-        const TypeForDimension<3>::Volume& vol = *boost::get<const typename TypeForDimension<3>::Volume*>( p.handle );
+        const TypeForDimension<3>::Volume& vol = *boost::get<const TypeForDimension<3>::Volume*>( p.handle );
         BOOST_ASSERT( !vol.empty() );
         _volumes.push_back( vol );
         break;
@@ -216,10 +216,10 @@ void GeometrySet<3>::addPrimitive( const PrimitiveHandle<3>& p )
 template <>
 void GeometrySet<3>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
 {
-    typedef typename TypeForDimension<3>::Point TPoint;
-    typedef typename TypeForDimension<3>::Segment TSegment;
-    typedef typename TypeForDimension<3>::Surface TSurface;
-    typedef typename TypeForDimension<3>::Volume TVolume;
+    typedef TypeForDimension<3>::Point TPoint;
+    typedef TypeForDimension<3>::Segment TSegment;
+    typedef TypeForDimension<3>::Surface TSurface;
+    typedef TypeForDimension<3>::Volume TVolume;
 
     if ( const TPoint* p = CGAL::object_cast<TPoint>( &o ) ) {
         _points.insert( TPoint( *p ) );
@@ -259,10 +259,10 @@ void GeometrySet<3>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
 template <>
 void GeometrySet<2>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
 {
-    typedef typename TypeForDimension<2>::Point TPoint;
-    typedef typename TypeForDimension<2>::Segment TSegment;
-    typedef typename TypeForDimension<2>::Surface TSurface;
-    typedef typename TypeForDimension<2>::Volume TVolume;
+    typedef TypeForDimension<2>::Point TPoint;
+    typedef TypeForDimension<2>::Segment TSegment;
+    typedef TypeForDimension<2>::Surface TSurface;
+    typedef TypeForDimension<2>::Volume TVolume;
 
     if ( const TPoint* p = CGAL::object_cast<TPoint>( &o ) ) {
         _points.insert( TPoint( *p ) );
@@ -317,14 +317,14 @@ void GeometrySet<Dim>::addPrimitive( const typename TypeForDimension<Dim>::Segme
 }
 
 template <>
-void GeometrySet<2>::addPrimitive( const typename TypeForDimension<2>::Surface& p, int flags )
+void GeometrySet<2>::addPrimitive( const TypeForDimension<2>::Surface& p, int flags )
 {
     BOOST_ASSERT( ! p.is_unbounded() );
     _surfaces.push_back( p );
     _surfaces.back().setFlags( flags );
 }
 template <>
-void GeometrySet<3>::addPrimitive( const typename TypeForDimension<3>::Surface& p, int flags )
+void GeometrySet<3>::addPrimitive( const TypeForDimension<3>::Surface& p, int flags )
 {
     _surfaces.push_back( p );
     _surfaces.back().setFlags( flags );
@@ -388,7 +388,7 @@ bool GeometrySet<3>::hasSurfaces() const
     }
 
     if ( ! volumes().empty() ) {
-        for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
+        for ( VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
             if ( ! it->primitive().is_closed() ) {
                 return true;
             }
@@ -411,7 +411,7 @@ bool GeometrySet<3>::hasVolumes() const
     }
 
     if ( ! volumes().empty() ) {
-        for ( typename VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
+        for ( VolumeCollection::const_iterator it = _volumes.begin(); it != _volumes.end(); ++it ) {
             if ( it->primitive().is_closed() ) {
                 return true;
             }

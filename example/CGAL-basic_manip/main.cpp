@@ -247,7 +247,7 @@ int main(){
 	    std::cout << "nef1.is_valid() " << nef1.is_valid() << std::endl;
 	    std::cout << "nef1.is_empty() " << nef1.is_empty() << std::endl;
 
-	    typedef typename Nef_polyhedron::Halffacet_const_iterator GeometryIterator;
+	    typedef Nef_polyhedron::Halffacet_const_iterator GeometryIterator;
 	    typedef CGAL::Box_intersection_d::Box_with_handle_d<double,3,GeometryIterator> Box;
 	    std::list<Box> boxes;
 
