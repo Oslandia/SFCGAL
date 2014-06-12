@@ -1,6 +1,12 @@
 file( GLOB_RECURSE SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h" )
 file( GLOB_RECURSE SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/*.cpp" )
 
+if ( NOT SFCGAL_WITH_OSG )
+    message( STATUS "removing ${CMAKE_SOURCE_DIR}/include/SFCGAL/io/osg.h and ${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp from the library")
+    list(REMOVE_ITEM SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/SFCGAL/io/osg.h")
+    list(REMOVE_ITEM SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp")
+endif()
+
 if( SFCGAL_USE_STATIC_LIBS )
   add_definitions( "-fPIC" )
   add_library(
