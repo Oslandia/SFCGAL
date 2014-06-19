@@ -99,6 +99,17 @@ public:
 
 };
 
+/**
+ * SFCGAL Exception thrown when parsing WKT
+ */
+class SFCGAL_API WktParseException : public Exception {
+public:
+    WktParseException( std::string const& message ):
+        Exception( message )
+    {}
+
+};
+
 } // namespace SFCGAL
 
 #endif

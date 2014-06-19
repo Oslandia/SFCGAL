@@ -108,8 +108,15 @@ int main( int argc, char* argv[] )
 
         for ( std::vector< TestGeometry >::const_iterator tg=testGeom.begin();
                 tg!=testGeom.end(); ++tg ) {
-            std::auto_ptr< Geometry > g( io::readWkt( tg->wkt ) );
-            testCollection.addGeometry( g.release() );
+            try
+            {
+                std::auto_ptr< Geometry > g( io::readWkt( tg->wkt ) );
+                testCollection.addGeometry( g.release() );
+            }
+            catch (WktParseException)
+            {
+                BOOST_ASSERT( !tg->isValid );
+            }
         }
 
         // default constructed geometries

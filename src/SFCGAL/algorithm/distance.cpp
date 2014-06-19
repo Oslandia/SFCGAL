@@ -393,18 +393,31 @@ double distanceTriangleGeometry( const Triangle& gA, const Geometry& gB )
 }
 
 struct Circle {
-    double radius;
-    CGAL::Vector_2<Kernel> center;
+    Circle( const double & r, CGAL::Vector_2<Kernel> & c )
+        : _radius(r)
+        , _center(c)
+        , _empty(false)
+    {}
+    Circle()
+        : _empty(true)
+    {}
+    bool isEmpty() const {return _empty;}
+    double radius() const {BOOST_ASSERT(!_empty); return _radius;}
+    const CGAL::Vector_2<Kernel> & center() const {BOOST_ASSERT(!_empty); return _center;}
+private:
+    double _radius;
+    CGAL::Vector_2<Kernel> _center;
+    bool _empty;
 };
 
 const Circle boundingCircle( const Geometry& geom )
 {
-    BOOST_ASSERT( ! geom.isEmpty() );
+    if ( geom.isEmpty() ) return Circle();
     using namespace SFCGAL::detail;
     GetPointsVisitor v;
     const_cast< Geometry& >( geom ).accept( v );
 
-    BOOST_ASSERT( v.points.size() );
+    if( !v.points.size() ) return Circle();
 
     typedef CGAL::Vector_2< Kernel > Vector_2 ;
 
@@ -436,9 +449,7 @@ const Circle boundingCircle( const Geometry& geom )
         }
     }
 
-    const Circle circle = { std::sqrt( CGAL::to_double( maxDistanceSq ) ), c };
-
-    return circle;
+    return Circle( std::sqrt( CGAL::to_double( maxDistanceSq ) ), c );
 }
 
 ///
@@ -467,36 +478,35 @@ double distanceGeometryCollectionToGeometry( const Geometry& gA, const Geometry&
         }
 
         Circle bcB( boundingCircle( gB ) );
+        if ( bcB.isEmpty() ) return  std::numeric_limits< double >::infinity() ;
         std::vector<size_t> noIntersect;
 
         for ( size_t i = 0; i < gA.numGeometries(); i++ ) {
-            const double l2 = CGAL::to_double( ( bcB.center - bcA[i].center ).squared_length() );
+            if ( bcA[i].isEmpty() ) continue;
+            const double l2 = CGAL::to_double( ( bcB.center() - bcA[i].center() ).squared_length() );
 
-            if ( std::pow( bcB.radius + bcA[i].radius, 2 ) < l2 ) {
+            if ( std::pow( bcB.radius() + bcA[i].radius(), 2 ) < l2 ) {
                 noIntersect.push_back( i );
             }
         }
 
         for ( size_t i = 0; i < noIntersect.size(); i++ ) {
-            const double li = std::sqrt( CGAL::to_double( ( bcA[i].center - bcB.center ).squared_length() ) );
+            const double li = std::sqrt( CGAL::to_double( ( bcA[noIntersect[i]].center() - bcB.center() ).squared_length() ) );
 
             for ( size_t j = i; j < noIntersect.size(); j++ ) {
-                const double lj = std::sqrt( CGAL::to_double( ( bcA[j].center - bcB.center ).squared_length() ) );
+                const double lj = std::sqrt( CGAL::to_double( ( bcA[noIntersect[j]].center() - bcB.center() ).squared_length() ) );
 
-                if ( li + bcA[i].radius < lj - bcA[j].radius  ) {
-                    noTest.insert( j );
+                if ( li + bcA[noIntersect[i]].radius() < lj - bcA[noIntersect[j]].radius()  ) {
+                    noTest.insert( noIntersect[j] );
                 }
-                else if ( lj + bcA[j].radius < li - bcA[i].radius  ) {
-                    noTest.insert( i );
+                else if ( lj + bcA[noIntersect[j]].radius() < li - bcA[noIntersect[i]].radius()  ) {
+                    noTest.insert( noIntersect[i] );
                 }
             }
         }
 
         //if (!noTest.empty()) std::cout << "pruning " << noTest.size() << "/" << gA.numGeometries() << "\n";
     }
-
-
-
 
     double dMin = std::numeric_limits< double >::infinity() ;
 

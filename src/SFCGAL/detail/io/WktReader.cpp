@@ -62,7 +62,7 @@ srid_t WktReader::readSRID()
         _reader.read( srid );
 
         if ( !_reader.match( ";" ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+            BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
         }
     }
 
@@ -90,21 +90,7 @@ Geometry*    WktReader::readGeometry()
     }
     case TYPE_TRIANGLE: {
         std::auto_ptr< Triangle > g( new Triangle() );
-
-        if ( _reader.match( "EMPTY" ) ) {
-            return g.release();
-        }
-
-        if ( ! _reader.match( '(' ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-        }
-
         readInnerTriangle( *g );
-
-        if ( ! _reader.match( ')' ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-        }
-
         return g.release() ;
     }
     case TYPE_POLYGON: {
@@ -154,7 +140,7 @@ Geometry*    WktReader::readGeometry()
     }
     }
 
-    BOOST_THROW_EXCEPTION( Exception( "unexpected geometry" ) );
+    BOOST_THROW_EXCEPTION( WktParseException( "unexpected geometry" ) );
 }
 
 ///
@@ -204,7 +190,7 @@ GeometryType WktReader::readGeometryType()
 
     std::ostringstream oss;
     oss << "can't parse WKT geometry type (" << _reader.context() << ")" ;
-    BOOST_THROW_EXCEPTION( Exception( oss.str() ) );
+    BOOST_THROW_EXCEPTION( WktParseException( oss.str() ) );
 }
 
 
@@ -218,17 +204,13 @@ void   WktReader::readInnerPoint( Point& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-    }
-
-    if ( _reader.imatch( "EMPTY" ) ) {
-        return ;
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     readPointCoordinate( g );
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -242,13 +224,10 @@ void   WktReader::readInnerLineString( LineString& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while ( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break;
-        }
 
         std::auto_ptr< Point > p( new Point() ) ;
 
@@ -256,7 +235,7 @@ void   WktReader::readInnerLineString( LineString& g )
             g.addPoint( p.release() );
         }
         else {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+            BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
         }
 
         if ( _reader.match( ',' ) ) {
@@ -268,12 +247,12 @@ void   WktReader::readInnerLineString( LineString& g )
 
 
     if ( g.numPoints() < 2U ) {
-        BOOST_THROW_EXCEPTION( Exception( "WKT parse error, LineString should have at least 2 points" ) );
+        BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, LineString should have at least 2 points" ) );
     }
 
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -287,11 +266,7 @@ void   WktReader::readInnerPolygon( Polygon& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-    }
-
-    if ( _reader.imatch( "EMPTY" ) ) {
-        return ;
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     for( int i = 0; ! _reader.eof() ; i++ ) {
@@ -311,7 +286,7 @@ void   WktReader::readInnerPolygon( Polygon& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -326,11 +301,11 @@ void   WktReader::readInnerTriangle( Triangle& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
-    if ( _reader.imatch( "EMPTY" ) ) {
-        return ;
+    if ( ! _reader.match( '(' ) ) {
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     // 4 points to read
@@ -345,18 +320,21 @@ void   WktReader::readInnerTriangle( Triangle& g )
         }
     }
 
-    if ( ! points.size() ) {
-        BOOST_THROW_EXCEPTION( Exception( "WKT parse error, expected 4 points for triangle" ) );
+    if ( points.size() != 4 ) {
+        BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, expected 4 points for triangle" ) );
     }
 
     if ( points.back() != points.front() ) {
-        BOOST_THROW_EXCEPTION( Exception( "WKT parse error, first point different of the last point for triangle" ) );
+        BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, first point different of the last point for triangle" ) );
     }
 
     g = Triangle( points[0], points[1], points[2] );
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
+    }
+    if ( ! _reader.match( ')' ) ) {
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -370,25 +348,27 @@ void    WktReader::readInnerMultiPoint( MultiPoint& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
         std::auto_ptr< Point > p( new Point() );
 
-        // optional open/close parenthesis
-        bool parenthesisOpen = false ;
+        if ( !_reader.imatch( "EMPTY" ) ) {
+            // optional open/close parenthesis
+            bool parenthesisOpen = false ;
 
-        if ( _reader.match( '(' ) ) {
-            parenthesisOpen = true ;
+            if ( _reader.match( '(' ) ) {
+                parenthesisOpen = true ;
+            }
+
+            readPointCoordinate( *p );
+
+            if ( parenthesisOpen && ! _reader.match( ')' ) ) {
+                BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
+            }
         }
-
-        readPointCoordinate( *p );
         g.addGeometry( p.release() );
-
-        if ( parenthesisOpen && ! _reader.match( ')' ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-        }
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
@@ -397,7 +377,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
 }
@@ -412,13 +392,10 @@ void   WktReader::readInnerMultiLineString( MultiLineString& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break;
-        }
 
         std::auto_ptr< LineString > lineString( new LineString() );
         readInnerLineString( *lineString );
@@ -431,7 +408,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -445,13 +422,10 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break;
-        }
 
         std::auto_ptr< Polygon > polygon( new Polygon() );
         readInnerPolygon( *polygon );
@@ -464,7 +438,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -478,13 +452,10 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break ;
-        }
 
         //read a full wkt geometry ex : POINT(2.0 6.0)
         g.addGeometry( readGeometry() );
@@ -496,7 +467,7 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -510,40 +481,23 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break ;
-        }
+        std::auto_ptr< Triangle > triangle( new Triangle() ) ;
+        readInnerTriangle( *triangle );
+        g.addTriangle( triangle.release() ) ;
 
-        if ( ! _reader.match( '(' ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-        }
-
-        while( ! _reader.eof() ) {
-            std::auto_ptr< Triangle > triangle( new Triangle() ) ;
-            readInnerTriangle( *triangle );
-            g.addTriangle( triangle.release() ) ;
-
-            //break if not Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.followed by another points
-            if ( ! _reader.match( ',' ) ) {
-                break ;
-            }
-        }
-
-        if ( ! _reader.match( ')' ) ) {
-            BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
-        }
-
+        //break if not Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.followed by another points
         if ( ! _reader.match( ',' ) ) {
             break ;
         }
     }
 
+
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -557,14 +511,10 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break ;
-        }
-
         std::auto_ptr< Polygon > polygon( new Polygon() ) ;
         readInnerPolygon( *polygon );
         g.addPolygon( polygon.release() );
@@ -576,7 +526,7 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -592,14 +542,10 @@ void WktReader::readInnerSolid( Solid& g )
 
     //solid begin
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     for ( int i = 0; ! _reader.eof(); i++ ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break ;
-        }
-
         if ( i == 0 ) {
             readInnerPolyhedralSurface( g.exteriorShell() );
         }
@@ -617,7 +563,7 @@ void WktReader::readInnerSolid( Solid& g )
 
     //solid end
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -631,13 +577,10 @@ void WktReader::readInnerMultiSolid( MultiSolid& g )
     }
 
     if ( ! _reader.match( '(' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 
     while( ! _reader.eof() ) {
-        if ( _reader.imatch( "EMPTY" ) ) {
-            break ;
-        }
 
         std::auto_ptr< Solid > solid( new Solid() );
         readInnerSolid( *solid );
@@ -650,7 +593,7 @@ void WktReader::readInnerMultiSolid( MultiSolid& g )
     }
 
     if ( ! _reader.match( ')' ) ) {
-        BOOST_THROW_EXCEPTION( Exception( parseErrorMessage() ) );
+        BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
 }
 
@@ -673,19 +616,19 @@ bool WktReader::readPointCoordinate( Point& p )
     }
 
     if ( coordinates.size() < 2 ) {
-        BOOST_THROW_EXCEPTION( Exception(
+        BOOST_THROW_EXCEPTION( WktParseException(
                                    ( boost::format( "WKT parse error, Coordinate dimension < 2 (%s)" ) % _reader.context() ).str()
                                ) );
     }
 
     if ( coordinates.size() > 4 ) {
-        BOOST_THROW_EXCEPTION( Exception( "WKT parse error, Coordinate dimension > 4" ) );
+        BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, Coordinate dimension > 4" ) );
     }
 
     if ( _isMeasured && _is3D ) {
         // XYZM
         if ( coordinates.size() != 4 ) {
-            BOOST_THROW_EXCEPTION( Exception( "bad coordinate dimension" ) );
+            BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension" ) );
         }
 
         p = Point( coordinates[0], coordinates[1], coordinates[2] );
@@ -694,7 +637,7 @@ bool WktReader::readPointCoordinate( Point& p )
     else if ( _isMeasured && ! _is3D ) {
         // XYM
         if ( coordinates.size() != 3 ) {
-            BOOST_THROW_EXCEPTION( Exception( "bad coordinate dimension (expecting XYM coordinates)" ) );
+            BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension (expecting XYM coordinates)" ) );
         }
 
         p = Point( coordinates[0], coordinates[1] );

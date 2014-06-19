@@ -107,22 +107,31 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 0.5 -0.5,1.0 0.5 0.5,1.0 -0.5 0.5,1.0 -0.5 -0.5),(1.0 -0.2 -0.2,1.0 0.2 -0.2,1.0 0.2 0.2,1.0 -0.2 0.2,1.0 -0.2 -0.2))", false, "one inetrior ring is inside the other"},
         // Multipoint2D
         // valid
+        {"MULTIPOINT(EMPTY,EMPTY)", true, ""},
+        {"MULTIPOINT((-1.0 -1.0),EMPTY)", true, ""},
         {"MULTIPOINT((-1.0 -1.0),(1.0 1.0))", true, ""},
         // Multipoint3D
         // valid
         {"MULTIPOINT((-1.0 -1.0 -1),(1.0 1.0 1.0))", true, ""},
         // MultiLinestring2D
         // valid
+        {"MULTILINESTRING(EMPTY,EMPTY)", true, ""},
+        {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),EMPTY)", true, ""},
         {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 -1.0))", true, ""},
         // invalid
         {"MULTILINESTRING((-1.0 -1.0,1.0 1.0),(1.0 1.0,1.0 1.0))", false, "second linestring has zero length"},
         // MultiLinestring3D
         // valid
+        {"MULTILINESTRING(EMPTY,EMPTY)", true, ""},
+        {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),EMPTY)", true, ""},
+        {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 -1.0))", true, ""},
         {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 -1.0))", true, ""},
         // invalid
         {"MULTILINESTRING((1.0 -1.0 -1.0,1.0 1.0 1.0),(1.0 1.0 1.0,1.0 1.0 1.0))", false, "the second linestring has length zero"},
         // MultiPolygon2D
         // valid
+        {"MULTIPOLYGON(EMPTY,EMPTY)", true, ""},
+        {"MULTIPOLYGON(((-3.0 -1.0,-1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),EMPTY)", true, ""},
         {"MULTIPOLYGON(((-3.0 -1.0,-1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", true, ""},
         {"MULTIPOLYGON(((-3.0 -1.0,1.0 -1.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", true, "one contact point"},
         // invalid
@@ -131,6 +140,8 @@ const std::vector< TestGeometry > createTestGeometries()
         {"MULTIPOLYGON(((-3.0 -1.0,1.3 0.0,-1.0 1.0,-3.0 1.0,-3.0 -1.0)),((1.0 -1.0,3.0 -1.0,3.0 1.0,1.0 1.0,1.0 -1.0)))", false, "intersection"},
         // MultiPolygon3D
         // valid
+        {"MULTIPOLYGON(EMPTY,EMPTY)", true, ""},
+        {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),EMPTY)", true, ""},
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", true, ""},
         {"MULTIPOLYGON(((1.0 -3.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 1.0,1.0 -3.0 1.0,1.0 -3.0 -1.0)),((1.0 1.0 -1.0,1.0 3.0 -1.0,1.0 3.0 1.0,1.0 1.0 1.0,1.0 1.0 -1.0)))", true, "one contact point"},
         // invalid

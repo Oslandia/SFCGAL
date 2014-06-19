@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( geometryTest )
     std::auto_ptr<Geometry> g2 = io::readWkt( "LINESTRING( 3.4 4.5 5.6, 5 6 8 )" );
     std::auto_ptr<Geometry> g3 = io::readWkt( "TRIANGLE(( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0))" );
     std::auto_ptr<Geometry> g4 = io::readWkt( "POLYGON(( 0 0 0, 1 1 1, 3.4 5.6 6.7,2 3 4, 0 0 0))" );
-    std::auto_ptr<Geometry> g5 = io::readWkt( "TIN((( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0)), ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))" );
+    std::auto_ptr<Geometry> g5 = io::readWkt( "TIN((( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0)), ((0 0 0,0 1 0,1 1 0,0 0 0)))" );
     std::auto_ptr<Geometry> g6 = io::readWkt( "POLYHEDRALSURFACE((( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0)), ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))" );
     std::auto_ptr<Geometry> g7 = io::readWkt( "SOLID(((( 0 0 0, 3.4 5.6 6.7,2 3 4, 0 0 0)), ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0))))" );
     std::auto_ptr<Geometry> g8 = io::readWkt( "MULTIPOINT(( 3.4 4.5 5.6 ))" );

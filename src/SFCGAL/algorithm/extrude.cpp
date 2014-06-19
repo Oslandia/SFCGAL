@@ -79,7 +79,7 @@ GeometryCollection*   extrude( const GeometryCollection& g, const Kernel::Vector
 ///
 LineString* extrude( const Point& g, const Kernel::Vector_3& v )
 {
-    BOOST_ASSERT( ! g.isEmpty() );
+    if( g.isEmpty() ) return new LineString() ;
 
     Kernel::Point_3 a = g.toPoint_3() ;
     Kernel::Point_3 b = a + v ;
@@ -92,9 +92,9 @@ LineString* extrude( const Point& g, const Kernel::Vector_3& v )
 ///
 PolyhedralSurface* extrude( const LineString& g, const Kernel::Vector_3& v )
 {
-    BOOST_ASSERT( ! g.isEmpty() );
 
     std::auto_ptr< PolyhedralSurface > polyhedralSurface( new PolyhedralSurface() );
+    if ( g.isEmpty() ) return polyhedralSurface.release();
 
     for ( size_t i = 0; i < g.numPoints() - 1; i++ ) {
         std::auto_ptr< LineString > ring( new LineString ) ;
@@ -118,7 +118,7 @@ PolyhedralSurface* extrude( const LineString& g, const Kernel::Vector_3& v )
 ///
 Solid* extrude( const Polygon& g, const Kernel::Vector_3& v )
 {
-    BOOST_ASSERT( ! g.isEmpty() );
+    if ( g.isEmpty() ) return new Solid();
 
     bool reverseOrientation = ( v * normal3D< Kernel >( g ) ) > 0 ;
 
@@ -160,7 +160,6 @@ Solid* extrude( const Polygon& g, const Kernel::Vector_3& v )
 ///
 Solid*   extrude( const Triangle& g, const Kernel::Vector_3& v )
 {
-    BOOST_ASSERT( ! g.isEmpty() );
     return extrude( g.toPolygon(), v );
 }
 
@@ -170,6 +169,7 @@ Solid*   extrude( const Triangle& g, const Kernel::Vector_3& v )
 MultiLineString*      extrude( const MultiPoint& g, const Kernel::Vector_3& v )
 {
     std::auto_ptr< MultiLineString > result( new MultiLineString() );
+    if (g.isEmpty()) return result.release();
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         result->addGeometry( extrude( g.pointN( i ), v ) );
@@ -182,9 +182,11 @@ MultiLineString*      extrude( const MultiPoint& g, const Kernel::Vector_3& v )
 ///
 ///
 ///
-PolyhedralSurface*    extrude( const MultiLineString& g, const Kernel::Vector_3& v )
+PolyhedralSurface* extrude( const MultiLineString& g, const Kernel::Vector_3& v )
 {
     std::auto_ptr< PolyhedralSurface > result( new PolyhedralSurface() );
+
+    if (g.isEmpty()) return result.release();
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         std::auto_ptr< PolyhedralSurface > extruded( extrude( g.lineStringN( i ), v ) );
@@ -204,6 +206,7 @@ PolyhedralSurface*    extrude( const MultiLineString& g, const Kernel::Vector_3&
 MultiSolid*           extrude( const MultiPolygon& g, const Kernel::Vector_3& v )
 {
     std::auto_ptr< MultiSolid > result( new MultiSolid() );
+    if ( g.isEmpty() ) return result.release();
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         result->addGeometry( extrude( g.polygonN( i ), v ) );
@@ -219,6 +222,7 @@ MultiSolid*           extrude( const MultiPolygon& g, const Kernel::Vector_3& v 
 Solid*    extrude( const TriangulatedSurface& g, const Kernel::Vector_3& v )
 {
     std::auto_ptr< Solid > result( new Solid() );
+    if (g.isEmpty()) return result.release();
 
     //bottom and top
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
@@ -253,6 +257,7 @@ Solid*    extrude( const TriangulatedSurface& g, const Kernel::Vector_3& v )
 ///
 Solid*    extrude( const PolyhedralSurface& g, const Kernel::Vector_3& v )
 {
+    if ( g.isEmpty() ) return new Solid();
     TriangulatedSurface triangulatedSurface ;
     triangulate::triangulatePolygon3D( g, triangulatedSurface );
     return extrude( triangulatedSurface, v ) ;
@@ -264,6 +269,7 @@ Solid*    extrude( const PolyhedralSurface& g, const Kernel::Vector_3& v )
 GeometryCollection*   extrude( const GeometryCollection& g, const Kernel::Vector_3& v )
 {
     std::auto_ptr< GeometryCollection > result( new GeometryCollection() ) ;
+    if (g.isEmpty()) return result.release();
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         result->addGeometry( extrude( g.geometryN( i ), v ).release() );
@@ -279,10 +285,6 @@ GeometryCollection*   extrude( const GeometryCollection& g, const Kernel::Vector
 ///
 std::auto_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v )
 {
-    if ( g.isEmpty() ) {
-        return std::auto_ptr< Geometry >( new GeometryCollection );
-    }
-
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
         return std::auto_ptr< Geometry >( extrude( g.as< Point >(), v ) );

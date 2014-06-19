@@ -479,18 +479,31 @@ double distanceSolidSolid3D( const Solid& gA, const Solid& gB )
 }
 
 struct Sphere {
-    double radius;
-    CGAL::Vector_3<Kernel> center;
+    Sphere( const double & r, CGAL::Vector_3<Kernel> & c )
+        : _radius(r)
+        , _center(c)
+        , _empty(false)
+    {}
+    Sphere()
+        : _empty(true)
+    {}
+    bool isEmpty() const {return _empty;}
+    double radius() const {BOOST_ASSERT(!_empty); return _radius;}
+    const CGAL::Vector_3<Kernel> & center() const {BOOST_ASSERT(!_empty); return _center;}
+private:
+    double _radius;
+    CGAL::Vector_3<Kernel> _center;
+    bool _empty;
 };
 
 const Sphere boundingSphere( const Geometry& geom )
 {
-    BOOST_ASSERT( ! geom.isEmpty() );
+    if ( geom.isEmpty() ) return Sphere();
     using namespace SFCGAL::detail;
     GetPointsVisitor v;
     const_cast< Geometry& >( geom ).accept( v );
 
-    BOOST_ASSERT( v.points.size() );
+    if( !v.points.size() ) return Sphere();
 
     typedef CGAL::Vector_3< Kernel > Vector_3 ;
 
@@ -522,9 +535,7 @@ const Sphere boundingSphere( const Geometry& geom )
         }
     }
 
-    const Sphere sphere = { std::sqrt( CGAL::to_double( maxDistanceSq ) ), c };
-
-    return sphere;
+    return Sphere( std::sqrt( CGAL::to_double( maxDistanceSq ) ), c );
 }
 
 ///
@@ -556,27 +567,29 @@ double distanceGeometryCollectionToGeometry3D( const Geometry& gA, const Geometr
         }
 
         Sphere bsB( boundingSphere( gB ) );
+        if ( bsB.isEmpty() ) return  std::numeric_limits< double >::infinity() ;
+
         std::vector<size_t> noIntersect;
 
         for ( size_t i = 0; i < gA.numGeometries(); i++ ) {
-            const double l2 = CGAL::to_double( ( bsB.center - bsA[i].center ).squared_length() );
-
-            if ( std::pow( bsB.radius + bsA[i].radius, 2 ) < l2 ) {
+            if ( bsA[i].isEmpty() ) continue;
+            const double l2 = CGAL::to_double( ( bsB.center() - bsA[i].center() ).squared_length() );
+            if ( std::pow( bsB.radius() + bsA[i].radius(), 2 ) < l2 ) {
                 noIntersect.push_back( i );
             }
         }
 
         for ( size_t i = 0; i < noIntersect.size(); i++ ) {
-            const double li = std::sqrt( CGAL::to_double( ( bsA[i].center - bsB.center ).squared_length() ) );
+            const double li = std::sqrt( CGAL::to_double( ( bsA[noIntersect[i]].center() - bsB.center() ).squared_length() ) );
 
             for ( size_t j = i; j < noIntersect.size(); j++ ) {
-                const double lj = std::sqrt( CGAL::to_double( ( bsA[j].center - bsB.center ).squared_length() ) );
+                const double lj = std::sqrt( CGAL::to_double( ( bsA[noIntersect[j]].center() - bsB.center() ).squared_length() ) );
 
-                if ( li + bsA[i].radius < lj - bsA[j].radius  ) {
-                    noTest.insert( j );
+                if ( li + bsA[noIntersect[i]].radius() < lj - bsA[noIntersect[j]].radius()  ) {
+                    noTest.insert( noIntersect[j] );
                 }
-                else if ( lj + bsA[j].radius < li - bsA[i].radius  ) {
-                    noTest.insert( i );
+                else if ( lj + bsA[noIntersect[j]].radius() < li - bsA[noIntersect[i]].radius()  ) {
+                    noTest.insert( noIntersect[i] );
                 }
             }
         }

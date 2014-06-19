@@ -47,8 +47,15 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
 
     for ( std::size_t t=0; t<nbOfTest; t++ ) {
         const TestGeometry& tg = testGeometry[t];
-        //std::cerr << t << ":" << tg._wkt << "\n";
-        std::auto_ptr< Geometry > g( io::readWkt( tg.wkt ) );
+        //std::cerr << t << ":" << tg.wkt << "\n";
+        std::auto_ptr< Geometry > g;
+        try {
+            g = io::readWkt( tg.wkt );
+        }
+        catch ( WktParseException ) {
+            BOOST_CHECK_MESSAGE( !tg.isValid, ( boost::format( "%d: parse error on valid geometry %s" ) % t % tg.wkt ));
+            continue;
+        }
         Validity v = algorithm::isValid( *g );
         BOOST_CHECK_MESSAGE( v == tg.isValid, ( boost::format( "%d:%s should be %s (%s)%s%s : %s" ) % t % g->geometryType() % ( tg.isValid?"valid":"invalid" ) % tg.comment % ( v?".":", reason: " ) % v.reason() % tg.wkt ) );
     }
