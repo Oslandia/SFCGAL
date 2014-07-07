@@ -74,7 +74,7 @@ void ForceZOrderPoints::visit( Polygon& p )
         }
 
         for ( size_t i = 0; i < p.numInteriorRings(); ++i ) {
-            LineString inter = p.interiorRingN( i );
+            LineString& inter = p.interiorRingN( i );
 
             if ( algorithm::isCounterClockWiseOriented( inter ) ) {
                 // interior ring is pointing up, reverse
