@@ -50,7 +50,15 @@ The project uses git and <a href="https://www.github.com">GitHub</a> to manage t
 
 <p>When different major versions are to be maintained, the most recent major version is hosted on the <code>master</code> branch and the older versions have their own branch where fixes can be backported if needed.</p>
 
-<p>In conformance with the git way of development, each new feature is made on a proper on its own temporary branch.</p>
+<p>In conformance with the git way of development, each new feature is made on its own temporary branch.</p>
+
+<p>Version numbers follow the <a href="http://semver.org">Semantic Versioning 2.0.0</a> policy and are tagged as <b>x.y.z</b> where :
+<ul>
+<li><b>x</b> is the major version number. It changes in case of API break or major redesign,</li>
+<li><b>y</b> is the minor version number. It changes when new functionalities are added, without majour API break,</li>
+<li><b>z</b> is the patch version number. It changes when bug or packaging issues are resolved.</li>
+</ul>
+</p>
 
 <h4>Building</h4>
 
