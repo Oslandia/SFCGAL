@@ -1,3 +1,14 @@
+1.0.5:
+    * Fix validity check message when converting to 2D
+    * Fix a polygon orientation test (postgis bug #2818)
+    * Fix a bug in plane3D
+    * Add better handling of EMPTY in collections
+    * Compilation issues:
+      * Fix a cmake issue (FindOsgQT)
+      * Fix compilation issue with gcc < 4.5
+      * Avoid osg dependency when viewer is not built
+      * Fix postgresql include directory
+      * Add detection of lib64 directories
 1.0.4:
     Fix compilation with CGAL 4.3
  
