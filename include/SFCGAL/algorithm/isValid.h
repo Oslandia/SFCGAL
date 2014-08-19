@@ -41,13 +41,13 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
  * @note exception message is apparently limited in length, thus print the reason for invalidity before its text representation (that can be very long)
  */
 #ifndef SFCGAL_NEVER_CHECK_VALIDITY
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) \
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g, ctxt)  \
     {\
         using namespace SFCGAL;\
         const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );\
         if ( ! sfcgalAssertGeometryValidity ) {\
             BOOST_THROW_EXCEPTION(GeometryInvalidityException(\
-                ( boost::format("%s is invalid : %s : %s")\
+                ( boost::format(ctxt "%s is invalid : %s : %s")\
                   % g.geometryType()\
                   % sfcgalAssertGeometryValidity.reason()\
                   % g.asText()\
@@ -55,13 +55,16 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
             ));\
         }\
     }
+#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) \
+        SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"")
+        
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
     {\
         using namespace SFCGAL;\
         if ( g.is3D() ) {\
             std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( g.clone() );\
             algorithm::force2D( *sfcgalAssertGeometryValidityClone );\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY( (*sfcgalAssertGeometryValidityClone) );\
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 2D - " ); \
         }\
         else {\
             SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );\
@@ -73,7 +76,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         if ( !g.is3D() ) {\
             std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( g.clone() );\
             algorithm::force3D( *sfcgalAssertGeometryValidityClone );\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY( (*sfcgalAssertGeometryValidityClone) );\
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 3D - " ); \
         }\
         else {\
             SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );\
