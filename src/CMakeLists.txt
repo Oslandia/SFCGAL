@@ -1,10 +1,17 @@
-file( GLOB_RECURSE SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/*.h" )
-file( GLOB_RECURSE SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/*.cpp" )
+file( GLOB_RECURSE SFCGAL_SOURCES "*.cpp" )
+file( GLOB_RECURSE SFCGAL_HEADERS "*.h" )
+
+file( GLOB_RECURSE SFCGAL_HEADERS_COPIED RELATIVE ${CMAKE_SOURCE_DIR}/src "*.h" )
+add_custom_target(copy)
+foreach (header ${SFCGAL_HEADERS_COPIED})
+    add_custom_command(TARGET copy
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/src/${header} ${CMAKE_BINARY_DIR}/include/SFCGAL/${header} DEPENDS ${CMAKE_SOURCE_DIR}/src/${header})
+endforeach()
 
 if ( NOT SFCGAL_WITH_OSG )
-    message( STATUS "removing ${CMAKE_SOURCE_DIR}/include/SFCGAL/io/osg.h and ${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp from the library")
-    list(REMOVE_ITEM SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/include/SFCGAL/io/osg.h")
-    list(REMOVE_ITEM SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp")
+    message( STATUS "removing ${CMAKE_SOURCE_DIR}/src/io/osg.h and ${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp from the library")
+    list(REMOVE_ITEM SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/src/io/osg.h")
+    list(REMOVE_ITEM SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/io/osg.cpp")
 endif()
 
 if( SFCGAL_USE_STATIC_LIBS )
@@ -23,6 +30,8 @@ else()
     ${SFCGAL_SOURCES}
     )
 endif()
+
+add_dependencies( SFCGAL copy )
 
 # set VERSION and SOVERSION
 set_target_properties( SFCGAL PROPERTIES VERSION ${SFCGAL_VERSION}
@@ -49,7 +58,7 @@ if ( ${Use_precompiled_headers} )
       set( pch_option "-fPIC" )
     endif()
     add_precompiled_header(SFCGAL
-      ${CMAKE_CURRENT_SOURCE_DIR}/../include/CGAL/all.h
+      include/CGAL/all.h
       ${pch_option}
       )
   endif()

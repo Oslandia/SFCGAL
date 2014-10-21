@@ -109,7 +109,7 @@ endif()
 find_package( CGAL 4.1 COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
-include_directories( include )
+include_directories( ${CMAKE_BINARY_DIR}/include )
 
 # For CGAL versions < 4.3, we add a local directory that contains some tweaked include files from unreleased versions
 # They will overwrite files from the CGAL installation
@@ -200,8 +200,8 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #SET(CMAKE_MACOSX_RPATH ON)
 
 #-- generate library headers
-configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/config.h )
-configure_file( ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/include/SFCGAL/version.h )
+configure_file( ${CMAKE_SOURCE_DIR}/src/config.h.cmake include/SFCGAL/config.h )
+configure_file( ${CMAKE_SOURCE_DIR}/src/version.h.cmake include/SFCGAL/version.h )
 
 enable_testing()
 
@@ -229,7 +229,7 @@ endif()
 add_subdirectory( doc )
 
 #-- install directories
-install(DIRECTORY ./include DESTINATION .)
+install(DIRECTORY ${CMAKE_BINARY_DIR}/include DESTINATION .)
 
 
 #-- create a libtool file for SFCGAL (needed by PostGIS)

@@ -2,8 +2,8 @@
 
 base=$(dirname $(dirname $0)) # we should be in SFCAGL/script
 
-if [ ! -f "$base/include/SFCGAL/version.h" ]; then
-    echo "Can't find $base/SFCGAL/version.h"
+if [ ! -f "$base/src/version.h.cmake" ]; then
+    echo "Can't find $base/src/version.h.cmake"
     exit 1
 fi
 
@@ -21,7 +21,7 @@ done
 
 
 err=""
-for dir in "$base/include/SFCGAL" "$base/src/SFCGAL" "$base/test" "$base/viewer"; do
+for dir in "$base/src" "$base/test" "$base/viewer"; do
     #echo processing $dir
     for src in $(find $dir -name '*.cpp' -or -name '*.h'); do
         #echo "   " $src
