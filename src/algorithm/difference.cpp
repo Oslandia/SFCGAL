@@ -18,174 +18,82 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <SFCGAL/algorithm/difference.h>
+#include <SFCGAL/Exception.h>
+#include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/collect.h>
+#include <SFCGAL/algorithm/collectionHomogenize.h>
+#include <SFCGAL/detail/tools/Registry.h>
+#include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/algorithm/isValid.h>
 
+#include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/box_intersection_d.h>
 
-#include <SFCGAL/algorithm/difference.h>
-#include <SFCGAL/algorithm/intersects.h>
-#include <SFCGAL/algorithm/intersection.h>
-#include <SFCGAL/Geometry.h>
-#include <SFCGAL/detail/GeometrySet.h>
+//
+// Intersection kernel
 
 using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 
+typedef CGAL::Point_2<Kernel> Point_2;
+typedef CGAL::Segment_2<Kernel> Segment_2;
+typedef CGAL::Triangle_2<Kernel> Triangle_2;
+
 namespace algorithm {
-// get the point position on segment
-// in [0,1] if its on the interior
-static Kernel::FT point_position( const CGAL::Segment_2<Kernel>& seg, const CGAL::Point_2<Kernel>& pt )
-{
-    CGAL::Point_2<Kernel> pA = seg.source();
-    CGAL::Point_2<Kernel> pB = seg.target();
-    Kernel::FT num = pt.x() - pA.x();
-    Kernel::FT den = pB.x() - pA.x();
-
-    if ( den == 0 ) {
-        num = pt.y() - pA.y();
-        den = pB.y() - pA.y();
-    }
-
-    return num / den;
-}
 
 template <int Dim>
-static void substract_from_segment( const PrimitiveHandle<Dim>& seg, const PrimitiveHandle<Dim>& prim, GeometrySet<Dim>& output )
+struct difference_cb {
+    void operator()( const typename PrimitiveBox<Dim>::Type& a,
+                     const typename PrimitiveBox<Dim>::Type& b ) {
+        //*a.handle() -= *b.handle();
+    }
+};
+
+/**
+ * difference post processing
+ */
+void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
 {
-    if ( prim.handle.which() == PrimitiveSegment ) {
-        const typename Segment_d<Dim>::Type* sega = seg.template as<typename Segment_d<Dim>::Type>();
-        const typename Segment_d<Dim>::Type* segb = prim.template as<typename Segment_d<Dim>::Type>();
-        typename Point_d<Dim>::Type pA( sega->source() );
-        typename Point_d<Dim>::Type pB( sega->target() );
-        typename Point_d<Dim>::Type pC( segb->source() );
-        typename Point_d<Dim>::Type pD( segb->target() );
-        Kernel::FT sC = point_position( *sega, pC );
-        Kernel::FT sD = point_position( *sega, pD );
+    //
+    // reverse orientation of polygons if needed
+    for ( GeometrySet<2>::SurfaceCollection::const_iterator it = input.surfaces().begin();
+            it != input.surfaces().end();
+            ++it ) {
+        const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
+        CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
 
-        if ( sC > sD ) {
-            std::swap( sC, sD );
-            std::swap( pC, pD );
+        if ( outer.orientation() == CGAL::CLOCKWISE ) {
+            outer.reverse_orientation();
         }
 
-        if ( sC > 0 ) {
-            output.addPrimitive( typename Segment_d<Dim>::Type( pA, pC ) );
+        std::list<CGAL::Polygon_2<Kernel> > rings;
+
+        for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = p.holes_begin();
+                hit != p.holes_end();
+                ++hit ) {
+            rings.push_back( *hit );
+
+            if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
+                rings.back().reverse_orientation();
+            }
         }
 
-        if ( sD < 1 ) {
-            output.addPrimitive( typename Segment_d<Dim>::Type( pD, pB ) );
-        }
+        output.surfaces().push_back( CGAL::Polygon_with_holes_2<Kernel>( outer, rings.begin(), rings.end() ) );
     }
-    else {
-        output.addPrimitive( seg );
-    }
+
+    output.points() = input.points();
+    output.segments() = input.segments();
+    output.volumes() = input.volumes();
 }
 
-template <int Dim>
-// pa and pb intersects
-static void difference_primitive( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb, GeometrySet<Dim>& output )
+void post_difference( const GeometrySet<3>& input, GeometrySet<3>& output )
 {
-    if ( pa.handle.which() == PrimitivePoint ) {
-        // difference = empty
-    }
-    else if ( pa.handle.which() == PrimitiveSegment ) {
-        GeometrySet<Dim> inter;
-        algorithm::intersection( pa, pb, inter );
-
-        if ( ! inter.segments().empty() ) {
-            for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = inter.segments().begin();
-                    it != inter.segments().end();
-                    ++it ) {
-                PrimitiveHandle<Dim> p( &it->primitive() );
-                substract_from_segment( pa, p, output );
-            }
-        }
-        else {
-            output.addPrimitive( pa );
-        }
-    }
-}
-
-template <int Dim>
-static void filter_self_intersection( const GeometrySet<Dim>& input, GeometrySet<Dim>& output )
-{
-    {
-        typedef std::list< CollectionElement<typename Point_d<Dim>::Type> > PointList;
-        PointList points;
-
-        std::copy( input.points().begin(), input.points().end(), std::back_inserter( points ) );
-
-        typename PointList::iterator it = points.begin();
-
-        while ( it != points.end() ) {
-            bool intersectsA = false;
-
-            for ( typename PointList::iterator it2 = points.begin(); it2 != points.end(); ++it2 ) {
-                if ( it == it2 ) {
-                    continue;
-                }
-
-                PrimitiveHandle<Dim> pa1( &it->primitive() );
-                PrimitiveHandle<Dim> pa2( &it2->primitive() );
-
-                if ( CGAL::do_overlap( it->primitive().bbox(), it2->primitive().bbox() ) &&
-                        algorithm::intersects( pa1, pa2 ) ) {
-                    intersectsA = true;
-                    GeometrySet<Dim> temp;
-                    algorithm::intersection( pa1, pa2, temp );
-                    std::copy( temp.points().begin(), temp.points().end(), std::back_inserter( points ) );
-                    // erase it2
-                    points.erase( it2 );
-                    break;
-                }
-            }
-
-            if ( ! intersectsA ) {
-                output.addPrimitive( it->primitive() );
-            }
-
-            // suppress A
-            it = points.erase( it );
-        }
-    }
-    {
-        typedef std::list< CollectionElement<typename Segment_d<Dim>::Type> > SegmentList;
-        SegmentList segments;
-
-        std::copy( input.segments().begin(), input.segments().end(), std::back_inserter( segments ) );
-
-        typename SegmentList::iterator it = segments.begin();
-
-        while ( it != segments.end() ) {
-            bool intersectsA = false;
-
-            for ( typename SegmentList::iterator it2 = segments.begin(); it2 != segments.end(); ++it2 ) {
-                if ( it == it2 ) {
-                    continue;
-                }
-
-                PrimitiveHandle<Dim> pa1( &it->primitive() );
-                PrimitiveHandle<Dim> pa2( &it2->primitive() );
-
-                if ( CGAL::do_overlap( it->primitive().bbox(), it2->primitive().bbox() ) &&
-                        algorithm::intersects( pa1, pa2 ) ) {
-                    intersectsA = true;
-                    GeometrySet<Dim> temp;
-                    algorithm::intersection( pa1, pa2, temp );
-                    std::copy( temp.segments().begin(), temp.segments().end(), std::back_inserter( segments ) );
-                    // erase it2
-                    segments.erase( it2 );
-                    break;
-                }
-            }
-
-            if ( ! intersectsA ) {
-                output.addPrimitive( it->primitive() );
-            }
-
-            // suppress A
-            it = segments.erase( it );
-        }
-    }
+    // nothing special to do
+    output = input;
 }
 
 template <int Dim>
@@ -196,41 +104,54 @@ void difference( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometryS
     a.computeBoundingBoxes( ahandles, aboxes );
     b.computeBoundingBoxes( bhandles, bboxes );
 
-    for ( size_t i = 0; i < aboxes.size(); ++i ) {
-        bool intersectsA = false;
-        GeometrySet<Dim> tempOut;
+    GeometrySet<Dim> temp, temp2;
+    difference_cb<Dim> cb;
+    CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+                              bboxes.begin(), bboxes.end(),
+                              cb );
 
-        for ( size_t j = 0; j < bboxes.size(); ++j ) {
-            if ( CGAL::do_overlap( aboxes[i].bbox(), bboxes[j].bbox() ) ) {
-                const PrimitiveHandle<Dim>* pa = aboxes[i].handle();
-                const PrimitiveHandle<Dim>* pb = bboxes[j].handle();
-
-                if ( algorithm::intersects( *pa, *pb ) ) {
-                    intersectsA = true;
-
-                    difference_primitive( *pa, *pb, tempOut );
-                }
-            }
-        }
-
-        if ( ! intersectsA ) {
-            tempOut.addPrimitive( *aboxes[i].handle() );
-        }
-
-        filter_self_intersection( tempOut, output );
-    }
+    post_difference( temp, temp2 );
+    output.merge( temp2 );
 }
 
 template void difference<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );
-//	template void difference<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
+template void difference<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
 
-std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
+std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     GeometrySet<2> gsa( ga ), gsb( gb ), output;
     algorithm::difference( gsa, gsb, output );
 
-    return output.recompose();
+    GeometrySet<2> filtered;
+    output.filterCovered( filtered );
+    return filtered.recompose();
 }
 
+std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
+
+    return difference( ga, gb, NoValidityCheck() );
+}
+
+std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+{
+    GeometrySet<3> gsa( ga ), gsb( gb ), output;
+    algorithm::difference( gsa, gsb, output );
+
+    GeometrySet<3> filtered;
+    output.filterCovered( filtered );
+
+    return filtered.recompose();
+}
+
+std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
+
+    return difference3D( ga, gb, NoValidityCheck() );
+}
 }
 }

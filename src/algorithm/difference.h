@@ -21,25 +21,56 @@
 #ifndef SFCGAL_DIFFERENCE_ALGORITHM
 #define SFCGAL_DIFFERENCE_ALGORITHM
 
+#include <SFCGAL/config.h>
+
 #include <memory>
-#include <SFCGAL/export.h>
 
 namespace SFCGAL {
 class Geometry;
 namespace detail {
 template <int Dim> class GeometrySet;
+template <int Dim> class PrimitiveHandle;
 }
+
 namespace algorithm {
+struct NoValidityCheck;
+
 /**
- * Difference between two 2D geometries.
+ * Intersection on 2D geometries.
+ * @pre ga and gb are valid geometries
+ * @ingroup public_api
  */
 SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
 
 /**
- * Difference between two geometry sets
+ * Intersection on 2D geometries. No validity check variant
+ * @pre ga and gb are valid geometries
+ * @ingroup detail
+ * @warning No actual validity check is done.
+ */
+SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb,NoValidityCheck );
+
+/**
+ * Intersection on 3D geometries. Assume z = 0 if needed
+ * @pre ga and gb are valid geometries
+ * @ingroup public_api
+ */
+SFCGAL_API std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb );
+
+/**
+ * Intersection on 3D geometries. Assume z = 0 if needed
+ * @pre ga and gb are valid geometries
+ * @ingroup detail
+ * @warning@ No actual validity check is done
+ */
+SFCGAL_API std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
+
+/**
+ * @ingroup detail
  */
 template <int Dim>
-void difference( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& output );
+void difference( const detail::GeometrySet<Dim>& a, const detail::GeometrySet<Dim>& b, detail::GeometrySet<Dim>& );
+
 }
 }
 
