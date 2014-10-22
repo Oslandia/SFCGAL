@@ -574,6 +574,24 @@ extern "C" {
     SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
     /**
+     * Returns the difference of geom1 and geom2
+     * @pre isValid(geom1) == true
+     * @pre isValid(geom2) == true
+     * @post isValid(return) == true
+     * @ingroup capi
+     */
+    SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+
+    /**
+     * Returns the 3D difference of geom1 and geom2
+     * @pre isValid(geom1) == true
+     * @pre isValid(geom2) == true
+     * @post isValid(return) == true
+     * @ingroup capi
+     */
+    SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+
+    /**
      * Returns the convex hull of geom
      * @pre isValid(geom) == true
      * @post isValid(return) == true

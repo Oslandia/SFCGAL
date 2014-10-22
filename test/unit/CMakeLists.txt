@@ -21,5 +21,10 @@ endif( ${SFCGAL_WITH_MPFR} )
 
 set_target_properties( unit-test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS unit-test-SFCGAL DESTINATION bin )
-add_test( unit-test unit-test-SFCGAL )
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" )
+    add_test( unit-testd ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGALd )
+else()
+    add_test( unit-test ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGAL )
+endif()
 

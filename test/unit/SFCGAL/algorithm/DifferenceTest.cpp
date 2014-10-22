@@ -17,11 +17,15 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
+#include <SFCGAL/Exception.h>
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/difference.h>
+#include <SFCGAL/algorithm/volume.h>
 #include <SFCGAL/Point.h>
 #include <SFCGAL/detail/tools/Registry.h>
 
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/vtk.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -116,6 +120,261 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
             BOOST_CHECK( *newGeo == *diffGeo );
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE( testDifferencePolygonPolygon2D )
+{
+    // two identical polygons 
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+
+    // two polygons, one of wich is invalid for CGAL but valid for SFS 
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5,-0.5 -0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-0.5 -0.5,1 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))" ) );
+        BOOST_CHECK( algorithm::isValid( *diff ) );
+    }
+
+    // two polygons the result has a hole touching the outer boundary
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-0.5 -0.5,1 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( algorithm::isValid( *diff ) );
+        BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-1 -1,1 -1,1 -0.5,1 1,-1 1,-1 -1),(1 -0.5,-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5))" ) );
+    }
+
+    // two polygons,  the result from CGAL has self intersecting outer ring, to be dealt with latter
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
+        bool caugh = false;
+        try {
+            std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        }
+        catch (NotImplementedException) {
+            caugh = true;
+        }
+        BOOST_CHECK( caugh );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( testDifferenceVolumeVolume )
+{
+
+    // two cubes
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+    // two cubes
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0.5, 0 1 0.5, 1 1 0.5, 1 0 0.5, 0 0 0.5)),\
+                 ((0 0 0.5, 0 0 1, 0 1 1, 0 1 0.5, 0 0 0.5)),\
+                 ((0 0 0.5, 1 0 0.5, 1 0 1, 0 0 1, 0 0 0.5)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0.5, 1 1 0.5, 1 1 1)),\
+                 ((1 1 1, 1 1 0.5, 0 1 0.5, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( algorithm::volume(*diff) == Kernel::FT(0.5) );
+    }
+
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferenceLinePolygon )
+{
+
+    // segment - polygon in 2D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-10 0,10 0)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((-10 0,-1 0),(-0.5 0,0 0,0.5 0),(1 0,10 0))" ) );
+    }
+
+    // segment - polygon in 2D, with sement lying on hole border
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-10 0,10 0)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0,0.5 -0.5,0 0,0.5 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((-10 0,-1 0),(-0.5 0,0 0),(1 0,10 0))" ) );
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferencePoinLine )
+{
+    // point - segment in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.6)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 0 0,1 1 1)" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(0.5 0.5 0.6)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 0 0,1 1 1)" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferencePoinPolygon2D )
+{
+    // point - triangle in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.6)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((0 0 0,1 1 1,1 0 1,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(0.5 0.5 0.6)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((0 0 0,1 1 1,1 0 1,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( testDifferencePoinVolume )
+{
+
+    // point - volume
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(1.001 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(1.001 0.5 0.5)" ) );
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferenceTriangleTriangle3D )
+{
+    // triangle - trangle in 3D don't share the same plane
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((0 0 0,0 1 1.01,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" ) );
+    }
+    // triangle - trangle in 3D don't intersect
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((.6 .6 .6,1.6 1.6 1.6,1.6 .6 .6,.6 .6 .6))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" ) );
+    }
+	// triangle - triangle in 3D do intersect
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((.1 .1 .1,1.6 1.6 1.6,1.6 .6 .6,.1 .1 .1))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "TIN(((0 1 1,.5 .5 .5,.1 .1 .1,0 1 1)),((0 0 0,0 1 1,.1 .1 .1,0 0 0)),((.7 .3 .3,1 0 0,.1 .1 .1,.7 .3 .3)),((1 0 0,0 0 0,.1 .1 .1,1 0 0)))" ) );
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferenceTriangleVolume )
+{
+	// triangle - volume in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 .5,10 0 .5,0 10 .5,0 0 .5))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        std::auto_ptr<Geometry> ref = io::readWkt("TIN(((0/1 10/1 1/2,9/20 1/1 1/2,1/2 1/1 1/2,0/1 10/1 1/2)),((0/1 10/1 1/2,1/2 1/1 1/2,18/19 1/1 1/2,0/1 10/1 1/2)),((0/1 10/1 1/2,0/1 1/1 1/2,9/20 1/1 1/2,0/1 10/1 1/2)),((1/1 0/1 1/2,10/1 0/1 1/2,1/1 1/2 1/2,1/1 0/1 1/2)),((1/1 1/1 1/2,0/1 10/1 1/2,18/19 1/1 1/2,1/1 1/1 1/2)),((10/1 0/1 1/2,0/1 10/1 1/2,1/1 1/1 1/2,10/1 0/1 1/2)),((1/1 1/2 1/2,10/1 0/1 1/2,1/1 1/1 1/2,1/1 1/2 1/2)))");
+        BOOST_CHECK( *diff == *ref );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( testDifferenceLineVolume )
+{
+	// segment - volume in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-3 -3 .5,3 3 .5,1 1.1 .5,1 .1 .5,.1 .1 .5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt("MULTILINESTRING((-3 -3 .5,0 0 .5),(1 1 .5,3 3 .5,1 1.1 .5,1 1 .5))" ) );
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testDifferencePolygonVolume )
+{
+
+    // polygon - volume crashing the algo in garden
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((1 -1 -1,1 1 -1,1 1 1,1 -1 1,1 -1 -1))");
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),\
+                        ((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
+                        ((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),\
+                        ((1 1 1,0 1 1,0 0 1,1 0 1,1 1 1)),\
+                        ((1 1 1,1 0 1,1 0 0,1 1 0,1 1 1)),\
+                        ((1 1 1,1 1 0,0 1 0,0 1 1,1 1 1))))");
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+    }
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
