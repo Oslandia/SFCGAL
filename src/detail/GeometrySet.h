@@ -339,6 +339,8 @@ private:
     SegmentCollection _segments;
     SurfaceCollection _surfaces;
     VolumeCollection _volumes;
+
+    GeometrySet & operator=( const GeometrySet & ); // ban the use because not implemented
 };
 
 ///
