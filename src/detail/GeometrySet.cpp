@@ -42,10 +42,7 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/depth_first_search.hpp>
-#include <boost/graph/connected_components.hpp>
 
 #include <map>
 
@@ -508,25 +505,6 @@ void GeometrySet<Dim>::_decompose( const Geometry& g )
     }
 }
 
-// bbox of a 'volume' for 2D, will never be called
-CGAL::Bbox_2 compute_solid_bbox( const NoVolume&, dim_t<2> )
-{
-    return CGAL::Bbox_2();
-}
-
-CGAL::Bbox_3 compute_solid_bbox( const TypeForDimension<3>::Volume& vol, dim_t<3> )
-{
-    BOOST_ASSERT( vol.size_of_vertices () );
-    MarkedPolyhedron::Point_const_iterator pit = vol.points_begin();
-    CGAL::Bbox_3 ret( pit->bbox() );
-    ++pit;
-
-    for ( ; pit != vol.points_end(); ++pit ) {
-        ret = ret + pit->bbox();
-    }
-
-    return ret;
-}
 
 template <int Dim>
 void GeometrySet<Dim>::computeBoundingBoxes( typename HandleCollection<Dim>::Type& handles,

@@ -43,12 +43,12 @@ class Geometry;
 namespace detail {
 
 ///
-/// Primitive type enumeration.
+/// Primitive type enumeration. Note that the value is the dimension !
 enum PrimitiveType {
-    PrimitivePoint,
-    PrimitiveSegment,
-    PrimitiveSurface,
-    PrimitiveVolume
+    PrimitivePoint = 0,
+    PrimitiveSegment = 1,
+    PrimitiveSurface = 2,
+    PrimitiveVolume = 3
 };
 
 ///
@@ -347,6 +347,29 @@ SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
 ///
 /// Display operator
 SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
+
+
+// bbox of a 'volume' for 2D, will never be called
+inline
+CGAL::Bbox_2 compute_solid_bbox( const NoVolume&, dim_t<2> )
+{
+    return CGAL::Bbox_2();
+}
+
+inline
+CGAL::Bbox_3 compute_solid_bbox( const TypeForDimension<3>::Volume& vol, dim_t<3> )
+{
+    BOOST_ASSERT( vol.size_of_vertices () );
+    MarkedPolyhedron::Point_const_iterator pit = vol.points_begin();
+    CGAL::Bbox_3 ret( pit->bbox() );
+    ++pit;
+
+    for ( ; pit != vol.points_end(); ++pit ) {
+        ret = ret + pit->bbox();
+    }
+
+    return ret;
+}
 } // namespace detail
 } // namespace SFCGAL
 
