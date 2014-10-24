@@ -71,7 +71,7 @@ SegmentOutputIteratorType difference( const CGAL::Segment_2<Kernel> & , const CG
 {
     // we triangulate the polygon and substract each triangle
 
-    BOOST_ASSERT(false);
+    BOOST_THROW_EXCEPTION( NotImplementedException("Segment-2 - Polygon_with_holes_2 is not implemented") );
 
     return out;
 }
@@ -159,7 +159,15 @@ OutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & primit
         *out++ = primitive;
         break;
     case PrimitiveSurface:
-        CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
+        try {
+            CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
+        }
+        catch (std::logic_error) {
+            // one of the polygon may be valid for SFS, but not for SFCGAL if the
+            // rings intersect on one point and this point is not a vertex
+            // we can add points on rings to fix this
+            BOOST_THROW_EXCEPTION( NotImplementedException("Fixing polygons that are valid for SFS but not for CGAL is not implemented") );
+        }
         break;
     }
     return out;
@@ -174,13 +182,13 @@ OutputIteratorType difference( const CGAL::Point_3<Kernel> & primitive, const Pr
         break;
     case PrimitiveSegment:
         // CGAL::do_intersect( CGAL::Point_3<Kernel>, CGAL::Segment_3<Kernel> ) does not exist 
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - Segment_3 is not implemented") );
         break;
     case PrimitiveSurface:
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - Triangle_3 is not implemented") );
         break;
     case PrimitiveVolume:
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - MarkedPolyhedron is not implemented") );
         break;
     }
     return out;
@@ -200,7 +208,7 @@ OutputIteratorType difference( const CGAL::Segment_3<Kernel> & primitive, const 
         difference( primitive, *pb.as< CGAL::Triangle_3<Kernel> >(), out);
         break;
     case PrimitiveVolume:
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
         break;
     }
     return out;
@@ -217,10 +225,10 @@ OutputIteratorType difference( const CGAL::Triangle_3<Kernel> & primitive, const
         *out++ = primitive;
         break;
     case PrimitiveSurface:
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - Triangle_3 is not implemented") );
         break;
     case PrimitiveVolume:
-        BOOST_ASSERT(false);
+        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - MarkedPolyhedron is not implemented") );
         break;
     }
     return out;

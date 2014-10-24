@@ -18,10 +18,12 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 #include <SFCGAL/algorithm/difference.h>
+#include <SFCGAL/algorithm/volume.h>
 #include <SFCGAL/Point.h>
 #include <SFCGAL/detail/tools/Registry.h>
 
 #include <SFCGAL/io/wkt.h>
+#include <SFCGAL/io/vtk.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -103,6 +105,66 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
         BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((0 0,0.3 0),(1 0.4,1 1))" ) );
     }
+
+    // two identical polygons 
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+
+
+    // two cubes
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+    // two cubes
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0.5, 0 1 0.5, 1 1 0.5, 1 0 0.5, 0 0 0.5)),\
+                 ((0 0 0.5, 0 0 1, 0 1 1, 0 1 0.5, 0 0 0.5)),\
+                 ((0 0 0.5, 1 0 0.5, 1 0 1, 0 0 1, 0 0 0.5)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0.5, 1 1 0.5, 1 1 1)),\
+                 ((1 1 1, 1 1 0.5, 0 1 0.5, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        io::vtk(*diff, "difference.vtk");
+        BOOST_CHECK( algorithm::volume(*diff) == Kernel::FT(0.5) );
+    }
+
+    // two polygons, one of wich is invalid for CGAL but valid for SFS 
+    // (remove the 1 -0.5 to see the bug)
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5,-0.5 -0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-0.5 -0.5,1 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))" ) );
+    }
+
+
 
     // check difference(X, linestring) == X, with dimension(X) > 1
     // TODO: add generators of random geometries to avoid empty geometries here ?
