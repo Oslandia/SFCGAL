@@ -114,72 +114,66 @@ bool do_intersect( const CGAL::Point_2<Kernel>& point, const CGAL::Polygon_with_
     return true;
 }
 
-std::vector< CGAL::Point_2<Kernel> > difference( const CGAL::Point_2<Kernel> & primitive, const PrimitiveHandle<2>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Point_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
-    std::vector< CGAL::Point_2<Kernel> > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        if ( primitive != *pb.as< CGAL::Point_2<Kernel> >() ) 
-            result.push_back( primitive );
+        if ( primitive != *pb.as< CGAL::Point_2<Kernel> >() ) *out++ = primitive;
         break;
     case PrimitiveSegment:
-        if ( ! CGAL::do_intersect( primitive, *pb.as< CGAL::Segment_2<Kernel> >() ) ) 
-            result.push_back( primitive );
+        if ( ! CGAL::do_intersect( primitive, *pb.as< CGAL::Segment_2<Kernel> >() ) ) *out++ = primitive;
         break;
     case PrimitiveSurface:
-        if ( ! do_intersect( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >()  ) )
-            result.push_back( primitive );
+        if ( ! do_intersect( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >()  ) ) *out++=primitive;
         break;
     }
-    return result;
+    return out;
 }
 
-std::vector< CGAL::Segment_2<Kernel> > difference( const CGAL::Segment_2<Kernel> & primitive, const PrimitiveHandle<2>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Segment_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
-    std::vector< CGAL::Segment_2<Kernel> > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSegment:
-        difference( primitive, *pb.as< CGAL::Segment_2<Kernel> >(), std::back_inserter(result));
+        difference( primitive, *pb.as< CGAL::Segment_2<Kernel> >(), out);
         break;
     case PrimitiveSurface:
-        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), std::back_inserter(result));
+        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
         break;
     }
-    return result;
+    return out;
 }
 
-std::vector< CGAL::Polygon_with_holes_2<Kernel> > difference( const CGAL::Polygon_with_holes_2<Kernel> & primitive, const PrimitiveHandle<2>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
-    std::vector< CGAL::Polygon_with_holes_2<Kernel> > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSegment:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSurface:
-        CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), std::back_inserter(result));
+        CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
         break;
     }
-    return result;
+    return out;
 }
 
-std::vector< CGAL::Point_3<Kernel> > difference( const CGAL::Point_3<Kernel> & primitive, const PrimitiveHandle<3>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Point_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
-    std::vector< CGAL::Point_3<Kernel> > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        if ( primitive != *pb.as< CGAL::Point_3<Kernel> >() ) 
-            result.push_back( primitive );
+        if ( primitive != *pb.as< CGAL::Point_3<Kernel> >() ) *out++ = primitive; 
         break;
     case PrimitiveSegment:
-        //if ( ! CGAL::do_intersect( primitive, *pb.as< CGAL::Segment_3<Kernel> >() ) ) 
-        //    result.push_back( primitive );
-
+        // CGAL::do_intersect( CGAL::Point_3<Kernel>, CGAL::Segment_3<Kernel> ) does not exist 
         BOOST_ASSERT(false);
         break;
     case PrimitiveSurface:
@@ -189,66 +183,67 @@ std::vector< CGAL::Point_3<Kernel> > difference( const CGAL::Point_3<Kernel> & p
         BOOST_ASSERT(false);
         break;
     }
-    return result;
-}
-std::vector< CGAL::Segment_3<Kernel> > difference( const CGAL::Segment_3<Kernel> & primitive, const PrimitiveHandle<3>& pb )
-{
-    std::vector< CGAL::Segment_3<Kernel> > result;
-    switch ( pb.handle.which() ){
-    case PrimitivePoint:
-        result.push_back( primitive );
-        break;
-    case PrimitiveSegment:
-        difference( primitive, *pb.as< CGAL::Segment_3<Kernel> >(), std::back_inserter(result));
-        break;
-    case PrimitiveSurface:
-        difference( primitive, *pb.as< CGAL::Triangle_3<Kernel> >(), std::back_inserter(result));
-        break;
-    case PrimitiveVolume:
-        BOOST_ASSERT(false);
-        break;
-    }
-    return result;
+    return out;
 }
 
-std::vector< CGAL::Triangle_3<Kernel> > difference( const CGAL::Triangle_3<Kernel> & primitive, const PrimitiveHandle<3>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Segment_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
-    std::vector< CGAL::Triangle_3<Kernel> > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSegment:
-        result.push_back( primitive );
+        difference( primitive, *pb.as< CGAL::Segment_3<Kernel> >(), out);
         break;
     case PrimitiveSurface:
-        BOOST_ASSERT(false);
+        difference( primitive, *pb.as< CGAL::Triangle_3<Kernel> >(), out);
         break;
     case PrimitiveVolume:
         BOOST_ASSERT(false);
         break;
     }
-    return result;
+    return out;
 }
 
-std::vector< MarkedPolyhedron > difference( const MarkedPolyhedron & primitive, const PrimitiveHandle<3>& pb )
+template < typename OutputIteratorType >
+OutputIteratorType difference( const CGAL::Triangle_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
-    std::vector< MarkedPolyhedron > result;
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSegment:
-        result.push_back( primitive );
+        *out++ = primitive;
         break;
     case PrimitiveSurface:
-        result.push_back( primitive );
+        BOOST_ASSERT(false);
         break;
     case PrimitiveVolume:
-        difference( primitive, *pb.as< MarkedPolyhedron >(), std::back_inserter(result));
+        BOOST_ASSERT(false);
         break;
     }
-    return result;
+    return out;
+}
+
+template < typename OutputIteratorType >
+OutputIteratorType difference( const MarkedPolyhedron & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
+{
+    switch ( pb.handle.which() ){
+    case PrimitivePoint:
+        *out++ = primitive;
+        break;
+    case PrimitiveSegment:
+        *out++ = primitive;
+        break;
+    case PrimitiveSurface:
+        *out++ = primitive;
+        break;
+    case PrimitiveVolume:
+        difference( primitive, *pb.as< MarkedPolyhedron >(), out);
+        break;
+    }
+    return out;
 }
 
 
@@ -262,8 +257,7 @@ difference( const Primitive & primitive, PrimitiveHandleConstIterator begin, Pri
         std::vector< Primitive > new_primitives; 
         for ( typename std::vector< Primitive >::const_iterator a = primitives.begin(); 
            a != primitives.end(); ++a ){
-            std::vector< Primitive > res( difference( *a, *(*b) ) );
-            new_primitives.insert( new_primitives.end(), res.begin(), res.end() );
+            difference( *a, *(*b), std::back_inserter( new_primitives ) );
         }
         primitives.swap(new_primitives);
     }
