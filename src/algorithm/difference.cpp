@@ -31,6 +31,7 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/box_intersection_d.h>
+#include <CGAL/corefinement_operations.h>
 
 //
 // Intersection kernel
@@ -45,24 +46,51 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace algorithm {
 
-template < typename K, typename OutputIterator>
-OutputIterator difference( const CGAL::Segment_2<K> & a, const CGAL::Segment_2<K> & b, OutputIterator out)
+template < typename SegmentType , typename SegmentOrSurfaceType, typename SegmentOutputIteratorType>
+SegmentOutputIteratorType difference( const SegmentType & a, const SegmentOrSurfaceType & b, SegmentOutputIteratorType out)
 {
     CGAL::Object inter = CGAL::intersection( a, b );
-    const CGAL::Segment_2<K>* s = CGAL::object_cast< CGAL::Segment_2<K> >(&inter);
+    const SegmentType* s = CGAL::object_cast< SegmentType >(&inter);
     if ( s ){ // there maybe zero, one or two segments as a result
         if (CGAL::squared_distance( a.source(), s->source() ) < CGAL::squared_distance( a.source(), s->target() )){
-            if ( a.source() != s->source() ) *out++ = CGAL::Segment_2<K>( a.source(), s->source() );
-            if ( s->target() != a.target() ) *out++ = CGAL::Segment_2<K>( s->target(), a.target() );
+            if ( a.source() != s->source() ) *out++ = SegmentType( a.source(), s->source() );
+            if ( s->target() != a.target() ) *out++ = SegmentType( s->target(), a.target() );
         }
         else{
-            if ( a.source() != s->target() ) *out++ = CGAL::Segment_2<K>( a.source(), s->target() );
-            if ( s->source() != a.target() ) *out++ = CGAL::Segment_2<K>( s->source(), a.target() );
+            if ( a.source() != s->target() ) *out++ = SegmentType( a.source(), s->target() );
+            if ( s->source() != a.target() ) *out++ = SegmentType( s->source(), a.target() );
         }
-
     }
     else { // intersection is a point or nothing, leave a unchanged
         *out++ = a;
+    }
+    return out;
+}
+template < typename SegmentOutputIteratorType>
+SegmentOutputIteratorType difference( const CGAL::Segment_2<Kernel> & , const CGAL::Polygon_with_holes_2<Kernel> & , SegmentOutputIteratorType out)
+{
+    // we triangulate the polygon and substract each triangle
+
+    BOOST_ASSERT(false);
+
+    return out;
+}
+
+template < typename VolumeOutputIteratorType>
+VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPolyhedron & b, VolumeOutputIteratorType out)
+{
+    MarkedPolyhedron& p = const_cast<MarkedPolyhedron&>( a );
+    MarkedPolyhedron& q = const_cast<MarkedPolyhedron&>( b );
+    typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
+    Corefinement coref;
+    CGAL::Emptyset_iterator no_polylines;
+    typedef std::vector<std::pair<MarkedPolyhedron*, int> >  ResultType;
+    ResultType result;
+    coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::P_minus_Q_tag );
+
+    for ( ResultType::iterator it = result.begin(); it != result.end(); it++){
+        *out++ = *it->first;
+        delete it->first;
     }
     return out;
 }
@@ -114,12 +142,10 @@ std::vector< CGAL::Segment_2<Kernel> > difference( const CGAL::Segment_2<Kernel>
         result.push_back( primitive );
         break;
     case PrimitiveSegment:
-        difference( primitive,
-                *pb.as< CGAL::Segment_2<Kernel> >(), 
-                std::back_insert_iterator< std::vector< CGAL::Segment_2<Kernel> > >(result));
+        difference( primitive, *pb.as< CGAL::Segment_2<Kernel> >(), std::back_inserter(result));
         break;
     case PrimitiveSurface:
-        BOOST_ASSERT(false);
+        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), std::back_inserter(result));
         break;
     }
     return result;
@@ -136,9 +162,7 @@ std::vector< CGAL::Polygon_with_holes_2<Kernel> > difference( const CGAL::Polygo
         result.push_back( primitive );
         break;
     case PrimitiveSurface:
-        CGAL::difference( primitive,
-                *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), 
-                std::back_insert_iterator< std::vector< CGAL::Polygon_with_holes_2<Kernel> > >(result));
+        CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), std::back_inserter(result));
         break;
     }
     return result;
@@ -175,10 +199,10 @@ std::vector< CGAL::Segment_3<Kernel> > difference( const CGAL::Segment_3<Kernel>
         result.push_back( primitive );
         break;
     case PrimitiveSegment:
-        BOOST_ASSERT(false);
+        difference( primitive, *pb.as< CGAL::Segment_3<Kernel> >(), std::back_inserter(result));
         break;
     case PrimitiveSurface:
-        BOOST_ASSERT(false);
+        difference( primitive, *pb.as< CGAL::Triangle_3<Kernel> >(), std::back_inserter(result));
         break;
     case PrimitiveVolume:
         BOOST_ASSERT(false);
@@ -221,7 +245,7 @@ std::vector< MarkedPolyhedron > difference( const MarkedPolyhedron & primitive, 
         result.push_back( primitive );
         break;
     case PrimitiveVolume:
-        BOOST_ASSERT(false);
+        difference( primitive, *pb.as< MarkedPolyhedron >(), std::back_inserter(result));
         break;
     }
     return result;
