@@ -70,10 +70,63 @@ template < typename SegmentOutputIteratorType>
 SegmentOutputIteratorType difference( const CGAL::Segment_2<Kernel> & , const CGAL::Polygon_with_holes_2<Kernel> & , SegmentOutputIteratorType out)
 {
     // we triangulate the polygon and substract each triangle
+    //
+    // we could also cut the line by polygon contours and test if the middle of the segment is inside
+    // but if the segment lies on the contour it's a special case
+    // we first substract the contours to take care of this
+    // special case, we obtain a vector of segments,
+    // for each segment of this vector, we subdivide it with the intersection
+    // points with the rings
+    // once done, we check, for each subdivision that has distinct end-points
+    // if the middle is in or out.
+
 
     BOOST_THROW_EXCEPTION( NotImplementedException("Segment-2 - Polygon_with_holes_2 is not implemented") );
 
     return out;
+}
+
+CGAL::Polygon_with_holes_2<Kernel> 
+fix_sfs_valid_polygon(const CGAL::Polygon_with_holes_2<Kernel> & p )
+{
+    // a polygon is valid for sfs and invalid for CGAL when two rings intersect
+    // on a point that is not a ring vertex
+    // we add this vertex to fix the polygon
+    // for each ring segment
+    //    for every other ring point
+    //        add point to segment
+
+    // put all rings in a vector to avoid distinction between outer and holes
+    typedef typename CGAL::Polygon_2<Kernel> Polygon;
+    std::vector< Polygon > rings(1, p.outer_boundary());
+    rings.insert(rings.end(), p.holes_begin(), p.holes_end());
+
+    std::vector< Polygon > out;
+    for ( std::vector< Polygon >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
+        out.push_back( Polygon() );
+        for ( Polygon::Vertex_const_iterator target = ring->vertices_begin(); target != ring->vertices_end(); ++target ){
+            CGAL::Segment_2<Kernel> segment( 
+                    target == ring->vertices_begin() 
+                    ? *(ring->vertices_end() - 1) 
+                    : *(target - 1)
+                    , 
+                    *target );
+            // for every other ring
+            for ( std::vector< Polygon >::const_iterator other = rings.begin(); other != rings.end(); ++other ){
+                if ( ring == other ) continue;
+                for ( CGAL::Polygon_2<Kernel>::Vertex_const_iterator vertex = other->vertices_begin(); 
+                        vertex != other->vertices_end(); ++vertex ){
+                    if ( CGAL::do_intersect( *vertex, segment ) ){
+                        std::cerr << "adding vertex " << *vertex << "\n";
+                        out.back().push_back( *vertex );
+                    }
+                }
+            }
+            out.back().push_back( *target );
+        }
+    }
+
+    return CGAL::Polygon_with_holes_2<Kernel>(out[0], out.begin()+1, out.end());
 }
 
 template < typename VolumeOutputIteratorType>
@@ -94,7 +147,32 @@ VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPol
     }
     return out;
 }
+
+template < typename PolygonOutputIteratorType>
+PolygonOutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & a, const CGAL::Polygon_with_holes_2<Kernel> & b, PolygonOutputIteratorType out)
+{
+    CGAL::Gps_segment_traits_2<Kernel> traits;
+    typedef CGAL::Polygon_with_holes_2<Kernel> Polygon;
     
+    std::cerr << "polygon 1 " << a << "\n";
+    std::cerr << "polygon 2 " << b << "\n";
+    std::vector< Polygon > temp;
+    CGAL::difference( 
+            are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ), 
+            are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
+            std::back_inserter( temp ) );
+    for ( std::vector< Polygon >::const_iterator i=temp.begin(); i!=temp.end(); ++i  ){
+        if ( ! is_simple_polygon( i->outer_boundary(), traits ) ){
+            std::cerr << "polygon outer ring is not simple!\n";
+        }
+        *out++ = *i;
+    }
+    
+    // polygon outer rings from difference can self intersect at points
+    // therefore we need to split the generated polygons so that they are valid for SFS
+    std::cerr << "done\n";
+    return out;
+}
 bool do_intersect( const CGAL::Point_2<Kernel>& point, const CGAL::Polygon_with_holes_2<Kernel> & polygon )
 {
     // point intersects if it's inside the ext ring and outside all holes
@@ -131,6 +209,8 @@ OutputIteratorType difference( const CGAL::Point_2<Kernel> & primitive, const Pr
     return out;
 }
 
+
+
 template < typename OutputIteratorType >
 OutputIteratorType difference( const CGAL::Segment_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
@@ -159,15 +239,7 @@ OutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & primit
         *out++ = primitive;
         break;
     case PrimitiveSurface:
-        try {
-            CGAL::difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
-        }
-        catch (std::logic_error) {
-            // one of the polygon may be valid for SFS, but not for SFCGAL if the
-            // rings intersect on one point and this point is not a vertex
-            // we can add points on rings to fix this
-            BOOST_THROW_EXCEPTION( NotImplementedException("Fixing polygons that are valid for SFS but not for CGAL is not implemented") );
-        }
+        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out );
         break;
     }
     return out;
@@ -368,6 +440,7 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
             ++it ) {
         const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
         CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
+        std::cerr << "outer boundary " << outer << "\n";
 
         if ( outer.orientation() == CGAL::CLOCKWISE ) {
             outer.reverse_orientation();
@@ -379,6 +452,7 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
                 hit != p.holes_end();
                 ++hit ) {
             rings.push_back( *hit );
+            std::cerr << "hole ring " << rings.back() << "\n";
 
             if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
                 rings.back().reverse_orientation();
