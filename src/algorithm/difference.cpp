@@ -32,6 +32,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/box_intersection_d.h>
 #include <CGAL/corefinement_operations.h>
+#include <CGAL/Point_inside_polyhedron_3.h>
 
 //
 // Intersection kernel
@@ -326,7 +327,8 @@ OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3
         if ( ! pb.as< Triangle_3 >()->has_on(primitive) ) *out++ = primitive; 
         break;
     case PrimitiveVolume:
-        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - MarkedPolyhedron is not implemented") );
+        CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *pb.as< MarkedPolyhedron >() );
+        if ( ! is_in_poly( primitive ) ) *out++ = primitive;
         break;
     }
     return out;
@@ -482,8 +484,7 @@ void appendDifference( const PrimitiveHandle<3>& pa,
         }
     case PrimitiveVolume:
         {
-        std::vector< MarkedPolyhedron > res = difference( 
-                *pa.as< MarkedPolyhedron >(), begin, end );
+        std::vector< MarkedPolyhedron > res = difference( *pa.as< MarkedPolyhedron >(), begin, end );
         output.addVolumes( res.begin(), res.end() );
         break;
         }

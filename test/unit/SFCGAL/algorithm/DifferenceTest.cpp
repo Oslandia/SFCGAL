@@ -153,7 +153,6 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
                  ((1 1 1, 1 0 1, 1 0 0.5, 1 1 0.5, 1 1 1)),\
                  ((1 1 1, 1 1 0.5, 0 1 0.5, 0 1 1, 1 1 1))))" );
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
-        io::vtk(*diff, "difference.vtk");
         BOOST_CHECK( algorithm::volume(*diff) == Kernel::FT(0.5) );
     }
 
@@ -245,6 +244,32 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((0 0 0,1 1 1,1 0 1,0 0 0))" );
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
         BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+
+    // point - volume
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(1.001 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(1.001 0.5 0.5)" ) );
     }
 }
 
