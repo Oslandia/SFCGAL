@@ -320,10 +320,10 @@ OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3
         if ( primitive != *pb.as< Point_3 >() ) *out++ = primitive; 
         break;
     case PrimitiveSegment:
-        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - Segment_3 is not implemented") );
+        if ( ! pb.as< Segment_3 >()->has_on(primitive) ) *out++ = primitive; 
         break;
     case PrimitiveSurface:
-        BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - Triangle_3 is not implemented") );
+        if ( ! pb.as< Triangle_3 >()->has_on(primitive) ) *out++ = primitive; 
         break;
     case PrimitiveVolume:
         BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - MarkedPolyhedron is not implemented") );

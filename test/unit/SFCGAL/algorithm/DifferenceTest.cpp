@@ -218,6 +218,34 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
         BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((-10 0,-1 0),(-0.5 0,0 0),(1 0,10 0))" ) );
     }
+
+    // point - segment in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.6)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 0 0,1 1 1)" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(0.5 0.5 0.6)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "LINESTRING(0 0 0,1 1 1)" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
+
+    // point - triangle in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.6)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((0 0 0,1 1 1,1 0 1,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "POINT(0.5 0.5 0.6)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POINT(0.5 0.5 0.5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((0 0 0,1 1 1,1 0 1,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
