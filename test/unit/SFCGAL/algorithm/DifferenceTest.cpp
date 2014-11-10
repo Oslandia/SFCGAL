@@ -17,6 +17,7 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
+#include <SFCGAL/Exception.h>
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/difference.h>
 #include <SFCGAL/algorithm/volume.h>
@@ -156,38 +157,52 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         BOOST_CHECK( algorithm::volume(*diff) == Kernel::FT(0.5) );
     }
 
+
+    // check difference(X, linestring) == X, with dimension(X) > 1
+    // TODO: add generators of random geometries to avoid empty geometries here ?
+    std::vector<std::string> typeNames;
+
+    for ( size_t i = 0; i < typeNames.size(); ++i ) {
+        std::auto_ptr<Geometry> newGeo( tools::Registry::instance().newGeometryByTypeName( typeNames[i] ) );
+
+        if ( newGeo->dimension() > 1 ) {
+            std::auto_ptr<Geometry> diffGeo = algorithm::difference( *newGeo, Point( 0, 0 ) );
+            BOOST_CHECK( *newGeo == *diffGeo );
+        }
+    }
+
     // two polygons, one of wich is invalid for CGAL but valid for SFS 
     {
         std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
         std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5,-0.5 -0.5))" );
         std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
         BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-0.5 -0.5,1 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))" ) );
+        BOOST_CHECK( algorithm::isValid( *diff ) );
     }
 
-    // two polygons, for the second one touching holes is invalid for CGAL but valid for SFS 
+    // two polygons the result has a hole touching the outer boundary
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-0.5 -0.5,1 -0.5,0.5 0.5,-0.5 0.5,-0.5 -0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( algorithm::isValid( *diff ) );
+        BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-1 -1,1 -1,1 -0.5,1 1,-1 1,-1 -1),(1 -0.5,-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5))" ) );
+    }
+
+    // two polygons,  the result from CGAL has self intersecting outer ring, to be dealt with latter
     {
         std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
         //std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1/1 -1/1,1/1 -1/1,1/1 1/1,-1/1 1/1,-1/1 -1/1),(-1/2 -1/2,-1/2 1/2,-1/10 1/2,1/10 -1/2,-1/2 -1/2),(1/10 -1/2,1/10 1/2,1/2 1/2,1/2 -1/2,1/10 -1/2))" );
         std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
-        std::cerr << "ls2 is valid " << algorithm::isValid( *ls2 ) << "\n";
-        io::vtk(*ls1, "p1.vtk");
-        io::vtk(*ls2, "p2.vtk");
-
-        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        bool caugh = false;
+        try {
+            std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        }
+        catch (NotImplementedException) {
+            caugh = true;
+        }
+        BOOST_CHECK( caugh );
     }
-
-    //// check difference(X, linestring) == X, with dimension(X) > 1
-    //// TODO: add generators of random geometries to avoid empty geometries here ?
-    //std::vector<std::string> typeNames;
-
-    //for ( size_t i = 0; i < typeNames.size(); ++i ) {
-    //    std::auto_ptr<Geometry> newGeo( tools::Registry::instance().newGeometryByTypeName( typeNames[i] ) );
-
-    //    if ( newGeo->dimension() > 1 ) {
-    //        std::auto_ptr<Geometry> diffGeo = algorithm::difference( *newGeo, Point( 0, 0 ) );
-    //        BOOST_CHECK( *newGeo == *diffGeo );
-    //    }
-    //}
 }
 
 BOOST_AUTO_TEST_SUITE_END()

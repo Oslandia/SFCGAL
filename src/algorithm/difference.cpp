@@ -117,7 +117,6 @@ fix_sfs_valid_polygon(const CGAL::Polygon_with_holes_2<Kernel> & p )
                 for ( CGAL::Polygon_2<Kernel>::Vertex_const_iterator vertex = other->vertices_begin(); 
                         vertex != other->vertices_end(); ++vertex ){
                     if ( CGAL::do_intersect( *vertex, segment ) ){
-                        std::cerr << "adding vertex " << *vertex << "\n";
                         out.back().push_back( *vertex );
                     }
                 }
@@ -152,25 +151,30 @@ template < typename PolygonOutputIteratorType>
 PolygonOutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & a, const CGAL::Polygon_with_holes_2<Kernel> & b, PolygonOutputIteratorType out)
 {
     CGAL::Gps_segment_traits_2<Kernel> traits;
-    typedef CGAL::Polygon_with_holes_2<Kernel> Polygon;
+    typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH;
+    typedef typename CGAL::Polygon_2<Kernel> Polygon;
     
-    std::cerr << "polygon 1 " << a << "\n";
-    std::cerr << "polygon 2 " << b << "\n";
-    std::vector< Polygon > temp;
+    std::vector< PolygonWH > temp;
     CGAL::difference( 
             are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ), 
             are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
             std::back_inserter( temp ) );
-    for ( std::vector< Polygon >::const_iterator i=temp.begin(); i!=temp.end(); ++i  ){
-        if ( ! is_simple_polygon( i->outer_boundary(), traits ) ){
-            std::cerr << "polygon outer ring is not simple!\n";
-        }
-        *out++ = *i;
-    }
-    
+
     // polygon outer rings from difference can self intersect at points
     // therefore we need to split the generated polygons so that they are valid for SFS
-    std::cerr << "done\n";
+    for ( std::vector< PolygonWH >::const_iterator poly=temp.begin(); poly!=temp.end(); ++poly  ){
+        const Polygon & outer = poly->outer_boundary();
+        for ( Polygon::Vertex_const_iterator v = outer.vertices_begin(); 
+                v != outer.vertices_end(); ++v ){
+            for ( Polygon::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ){
+                if ( *o == *v ){
+                    BOOST_THROW_EXCEPTION(NotImplementedException("Difference yelding a polygon which exterior ring self intersect is not implemented") );
+                }
+            }
+        }
+        *out++ = *poly;
+    }
+    
     return out;
 }
 bool do_intersect( const CGAL::Point_2<Kernel>& point, const CGAL::Polygon_with_holes_2<Kernel> & polygon )
@@ -179,7 +183,7 @@ bool do_intersect( const CGAL::Point_2<Kernel>& point, const CGAL::Polygon_with_
 
     if ( CGAL::bounded_side_2(polygon.outer_boundary().vertices_begin(), 
                 polygon.outer_boundary().vertices_end(), point, Kernel() ) 
-            ==  CGAL::ON_UNBOUNDED_SIDE) return false;
+            == CGAL::ON_UNBOUNDED_SIDE) return false;
 
     for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = polygon.holes_begin();
             hit != polygon.holes_end();
@@ -440,7 +444,6 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
             ++it ) {
         const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
         CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
-        std::cerr << "outer boundary " << outer << "\n";
 
         if ( outer.orientation() == CGAL::CLOCKWISE ) {
             outer.reverse_orientation();
@@ -452,7 +455,6 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
                 hit != p.holes_end();
                 ++hit ) {
             rings.push_back( *hit );
-            std::cerr << "hole ring " << rings.back() << "\n";
 
             if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
                 rings.back().reverse_orientation();
