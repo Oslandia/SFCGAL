@@ -212,6 +212,28 @@ fix_sfs_valid_polygon(const PolygonWH_2 & p )
     return PolygonWH_2(out[0], out.begin()+1, out.end());
 }
 
+template < typename OutputIteratorType >
+OutputIteratorType difference( const Triangle_3 & p, const Triangle_3 & q, OutputIteratorType out )
+{
+
+    if ( p.supporting_plane() != q.supporting_plane() || !CGAL::do_intersect(p,q) ){
+        *out++ = p;
+    } 
+    else {
+        // project on plane
+        // difference between polygons
+        // triangulate the result
+        //
+        // nice but the projection is a pain (non isometry, or loss of exact coord)
+        //
+        // instead we could use the intersection between triangles
+        // this gives us a polygon...
+        // and we have to triangulate in 3D
+        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - Triangle_3 is not implemented") );
+    }
+    return out;
+}
+
 template < typename VolumeOutputIteratorType>
 VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPolyhedron & b, VolumeOutputIteratorType out)
 {
@@ -348,6 +370,11 @@ OutputIteratorType difference( const Segment_3 & primitive, const PrimitiveHandl
         difference( primitive, *pb.as< Triangle_3 >(), out);
         break;
     case PrimitiveVolume:
+        // this is a bit of a pain
+        // the algo should follow the same lines as the Segment_2 - PolygonWH_2
+        // namely, remove the pieces of the segment were it touches facets, 
+        // then compute the intersections with facets to cute the segments and
+        // create segments for output were the middle point is inside
         BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
         break;
     }
@@ -365,7 +392,7 @@ OutputIteratorType difference( const Triangle_3 & primitive, const PrimitiveHand
         *out++ = primitive;
         break;
     case PrimitiveSurface:
-        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - Triangle_3 is not implemented") );
+        difference( primitive, *pb.as< Triangle_3 >(), out );
         break;
     case PrimitiveVolume:
         BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - MarkedPolyhedron is not implemented") );

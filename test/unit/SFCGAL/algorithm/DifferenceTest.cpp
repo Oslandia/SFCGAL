@@ -271,6 +271,21 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
         BOOST_CHECK( *diff == *io::readWkt( "POINT(1.001 0.5 0.5)" ) );
     }
+
+    // triangle - trangle in 3D don't share the same plane
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((0 0 0,0 1 1.01,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" ) );
+    }
+    // triangle - trangle in 3D don't intersect
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((.6 .6 .6,1.6 1.6 1.6,1.6 .6 .6,.6 .6 .6))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" ) );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()
