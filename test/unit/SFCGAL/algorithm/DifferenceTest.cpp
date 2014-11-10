@@ -192,7 +192,6 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
     // two polygons,  the result from CGAL has self intersecting outer ring, to be dealt with latter
     {
         std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
-        //std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1/1 -1/1,1/1 -1/1,1/1 1/1,-1/1 1/1,-1/1 -1/1),(-1/2 -1/2,-1/2 1/2,-1/10 1/2,1/10 -1/2,-1/2 -1/2),(1/10 -1/2,1/10 1/2,1/2 1/2,1/2 -1/2,1/10 -1/2))" );
         std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
         bool caugh = false;
         try {
@@ -202,6 +201,22 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
             caugh = true;
         }
         BOOST_CHECK( caugh );
+    }
+
+    // segment - polygon in 2D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-10 0,10 0)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((-10 0,-1 0),(-0.5 0,0 0,0.5 0),(1 0,10 0))" ) );
+    }
+
+    // segment - polygon in 2D, with sement lying on hole border
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-10 0,10 0)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0,0.5 -0.5,0 0,0.5 0))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt( "MULTILINESTRING((-10 0,-1 0),(-0.5 0,0 0),(1 0,10 0))" ) );
     }
 }
 

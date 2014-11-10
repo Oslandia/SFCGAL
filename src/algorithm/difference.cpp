@@ -43,8 +43,33 @@ namespace SFCGAL {
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
+typedef CGAL::Polygon_2<Kernel> Polygon_2;
+typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH_2;
+
+typedef CGAL::Point_3<Kernel> Point_3;
+typedef CGAL::Segment_3<Kernel> Segment_3;
+typedef CGAL::Triangle_3<Kernel> Triangle_3;
 
 namespace algorithm {
+
+bool do_intersect( const Point_2& point, const PolygonWH_2 & polygon )
+{
+    // point intersects if it's inside the ext ring and outside all holes
+
+    if ( CGAL::bounded_side_2(polygon.outer_boundary().vertices_begin(), 
+                polygon.outer_boundary().vertices_end(), point, Kernel() ) 
+            == CGAL::ON_UNBOUNDED_SIDE) return false;
+
+    for ( PolygonWH_2::Hole_const_iterator hit = polygon.holes_begin();
+            hit != polygon.holes_end();
+            ++hit ) {
+        if ( CGAL::bounded_side_2(hit->vertices_begin(), 
+                    hit->vertices_end(), point, Kernel() ) 
+                !=  CGAL::ON_UNBOUNDED_SIDE) return false;
+    }
+
+    return true;
+}
 
 template < typename SegmentType , typename SegmentOrSurfaceType, typename SegmentOutputIteratorType>
 SegmentOutputIteratorType difference( const SegmentType & a, const SegmentOrSurfaceType & b, SegmentOutputIteratorType out)
@@ -66,10 +91,22 @@ SegmentOutputIteratorType difference( const SegmentType & a, const SegmentOrSurf
     }
     return out;
 }
-template < typename SegmentOutputIteratorType>
-SegmentOutputIteratorType difference( const CGAL::Segment_2<Kernel> & , const CGAL::Polygon_with_holes_2<Kernel> & , SegmentOutputIteratorType out)
+
+struct Nearer
 {
-    // we triangulate the polygon and substract each triangle
+    Nearer( const Point_2 & reference ) :_ref( reference ) {}
+    bool operator()( const Point_2 & lhs, const Point_2 & rhs ) const
+    {
+        return CGAL::squared_distance(_ref, lhs) < CGAL::squared_distance(_ref, rhs);
+    }
+private:
+    const Point_2 _ref;
+};
+
+template < typename SegmentOutputIteratorType>
+SegmentOutputIteratorType difference( const Segment_2 & segment, const PolygonWH_2 & polygon, SegmentOutputIteratorType out)
+{
+    // we could triangulate the polygon and substract each triangle
     //
     // we could also cut the line by polygon contours and test if the middle of the segment is inside
     // but if the segment lies on the contour it's a special case
@@ -80,14 +117,61 @@ SegmentOutputIteratorType difference( const CGAL::Segment_2<Kernel> & , const CG
     // once done, we check, for each subdivision that has distinct end-points
     // if the middle is in or out.
 
+    std::vector< Segment_2 > result(1, segment);
+    std::vector< Polygon_2 > rings(1, polygon.outer_boundary());
+    rings.insert(rings.end(), polygon.holes_begin(), polygon.holes_end());
 
-    BOOST_THROW_EXCEPTION( NotImplementedException("Segment-2 - Polygon_with_holes_2 is not implemented") );
+    for ( std::vector< Polygon_2 >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
+        for ( Polygon_2::Vertex_const_iterator target = ring->vertices_begin(); 
+                target != ring->vertices_end(); ++target ){
+            const Segment_2 sc( target == ring->vertices_begin() 
+                    ? *(ring->vertices_end() - 1) 
+                    : *(target - 1)
+                    , 
+                    *target );
+            std::vector< Segment_2 > tmp;
+            for ( std::vector< Segment_2 >::const_iterator s = result.begin(); s != result.end(); ++s ){
+                difference( *s, sc, std::back_inserter(tmp) );
+            }
+            tmp.swap( result );
+        }
+    }
+
+    for ( std::vector< Segment_2 >::const_iterator s = result.begin(); s != result.end(); ++s ){
+        std::vector< Point_2 > points;
+        points.push_back( s->source() );
+        for ( std::vector< Polygon_2 >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
+            for ( Polygon_2::Vertex_const_iterator target = ring->vertices_begin(); 
+                    target != ring->vertices_end(); ++target ){
+                Segment_2 sc( target == ring->vertices_begin() 
+                        ? *(ring->vertices_end() - 1) 
+                        : *(target - 1)
+                        , 
+                        *target );
+                CGAL::Object inter = CGAL::intersection( *s, sc );
+                const Point_2 * p = CGAL::object_cast< Point_2 >(&inter);
+                if (p) points.push_back( *p );
+            }
+        }
+        points.push_back( s->target() );
+        // order point according to the distance from source
+        const Nearer nearer( s->source() );
+        std::sort( points.begin()+1, points.end()-1, nearer );
+
+        // append segments that has length and wich midpoint is outside polygon to result
+        for ( std::vector< Point_2 >::const_iterator p = points.begin(); p != points.end()-1; ++p ){
+            std::vector< Point_2 >::const_iterator q = p+1;
+            if ( *p != *q && !do_intersect( CGAL::midpoint(*p,*q), polygon ) ){
+                *out++ = Segment_2( *p, *q );
+            }
+        }
+    }
 
     return out;
 }
 
-CGAL::Polygon_with_holes_2<Kernel> 
-fix_sfs_valid_polygon(const CGAL::Polygon_with_holes_2<Kernel> & p )
+PolygonWH_2
+fix_sfs_valid_polygon(const PolygonWH_2 & p )
 {
     // a polygon is valid for sfs and invalid for CGAL when two rings intersect
     // on a point that is not a ring vertex
@@ -97,24 +181,23 @@ fix_sfs_valid_polygon(const CGAL::Polygon_with_holes_2<Kernel> & p )
     //        add point to segment
 
     // put all rings in a vector to avoid distinction between outer and holes
-    typedef typename CGAL::Polygon_2<Kernel> Polygon;
-    std::vector< Polygon > rings(1, p.outer_boundary());
+    std::vector< Polygon_2 > rings(1, p.outer_boundary());
     rings.insert(rings.end(), p.holes_begin(), p.holes_end());
 
-    std::vector< Polygon > out;
-    for ( std::vector< Polygon >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
-        out.push_back( Polygon() );
-        for ( Polygon::Vertex_const_iterator target = ring->vertices_begin(); target != ring->vertices_end(); ++target ){
-            CGAL::Segment_2<Kernel> segment( 
+    std::vector< Polygon_2 > out;
+    for ( std::vector< Polygon_2 >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
+        out.push_back( Polygon_2() );
+        for ( Polygon_2::Vertex_const_iterator target = ring->vertices_begin(); target != ring->vertices_end(); ++target ){
+            Segment_2 segment( 
                     target == ring->vertices_begin() 
                     ? *(ring->vertices_end() - 1) 
                     : *(target - 1)
                     , 
                     *target );
             // for every other ring
-            for ( std::vector< Polygon >::const_iterator other = rings.begin(); other != rings.end(); ++other ){
+            for ( std::vector< Polygon_2 >::const_iterator other = rings.begin(); other != rings.end(); ++other ){
                 if ( ring == other ) continue;
-                for ( CGAL::Polygon_2<Kernel>::Vertex_const_iterator vertex = other->vertices_begin(); 
+                for ( Polygon_2::Vertex_const_iterator vertex = other->vertices_begin(); 
                         vertex != other->vertices_end(); ++vertex ){
                     if ( CGAL::do_intersect( *vertex, segment ) ){
                         out.back().push_back( *vertex );
@@ -125,7 +208,7 @@ fix_sfs_valid_polygon(const CGAL::Polygon_with_holes_2<Kernel> & p )
         }
     }
 
-    return CGAL::Polygon_with_holes_2<Kernel>(out[0], out.begin()+1, out.end());
+    return PolygonWH_2(out[0], out.begin()+1, out.end());
 }
 
 template < typename VolumeOutputIteratorType>
@@ -148,13 +231,11 @@ VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPol
 }
 
 template < typename PolygonOutputIteratorType>
-PolygonOutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & a, const CGAL::Polygon_with_holes_2<Kernel> & b, PolygonOutputIteratorType out)
+PolygonOutputIteratorType difference( const PolygonWH_2 & a, const PolygonWH_2 & b, PolygonOutputIteratorType out)
 {
     CGAL::Gps_segment_traits_2<Kernel> traits;
-    typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH;
-    typedef typename CGAL::Polygon_2<Kernel> Polygon;
     
-    std::vector< PolygonWH > temp;
+    std::vector< PolygonWH_2 > temp;
     CGAL::difference( 
             are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ), 
             are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
@@ -162,11 +243,11 @@ PolygonOutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> &
 
     // polygon outer rings from difference can self intersect at points
     // therefore we need to split the generated polygons so that they are valid for SFS
-    for ( std::vector< PolygonWH >::const_iterator poly=temp.begin(); poly!=temp.end(); ++poly  ){
-        const Polygon & outer = poly->outer_boundary();
-        for ( Polygon::Vertex_const_iterator v = outer.vertices_begin(); 
+    for ( std::vector< PolygonWH_2 >::const_iterator poly=temp.begin(); poly!=temp.end(); ++poly  ){
+        const Polygon_2 & outer = poly->outer_boundary();
+        for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin(); 
                 v != outer.vertices_end(); ++v ){
-            for ( Polygon::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ){
+            for ( Polygon_2::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ){
                 if ( *o == *v ){
                     BOOST_THROW_EXCEPTION(NotImplementedException("Difference yelding a polygon which exterior ring self intersect is not implemented") );
                 }
@@ -177,37 +258,19 @@ PolygonOutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> &
     
     return out;
 }
-bool do_intersect( const CGAL::Point_2<Kernel>& point, const CGAL::Polygon_with_holes_2<Kernel> & polygon )
-{
-    // point intersects if it's inside the ext ring and outside all holes
-
-    if ( CGAL::bounded_side_2(polygon.outer_boundary().vertices_begin(), 
-                polygon.outer_boundary().vertices_end(), point, Kernel() ) 
-            == CGAL::ON_UNBOUNDED_SIDE) return false;
-
-    for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = polygon.holes_begin();
-            hit != polygon.holes_end();
-            ++hit ) {
-        if ( CGAL::bounded_side_2(hit->vertices_begin(), 
-                    hit->vertices_end(), point, Kernel() ) 
-                !=  CGAL::ON_UNBOUNDED_SIDE) return false;
-    }
-
-    return true;
-}
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Point_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
+OutputIteratorType difference( const Point_2 & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        if ( primitive != *pb.as< CGAL::Point_2<Kernel> >() ) *out++ = primitive;
+        if ( primitive != *pb.as< Point_2 >() ) *out++ = primitive;
         break;
     case PrimitiveSegment:
-        if ( ! CGAL::do_intersect( primitive, *pb.as< CGAL::Segment_2<Kernel> >() ) ) *out++ = primitive;
+        if ( ! CGAL::do_intersect( primitive, *pb.as< Segment_2 >() ) ) *out++ = primitive;
         break;
     case PrimitiveSurface:
-        if ( ! do_intersect( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >()  ) ) *out++=primitive;
+        if ( ! do_intersect( primitive, *pb.as< PolygonWH_2 >()  ) ) *out++=primitive;
         break;
     }
     return out;
@@ -216,24 +279,24 @@ OutputIteratorType difference( const CGAL::Point_2<Kernel> & primitive, const Pr
 
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Segment_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
+OutputIteratorType difference( const Segment_2 & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
         *out++ = primitive;
         break;
     case PrimitiveSegment:
-        difference( primitive, *pb.as< CGAL::Segment_2<Kernel> >(), out);
+        difference( primitive, *pb.as< Segment_2 >(), out);
         break;
     case PrimitiveSurface:
-        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out);
+        difference( primitive, *pb.as< PolygonWH_2 >(), out);
         break;
     }
     return out;
 }
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
+OutputIteratorType difference( const PolygonWH_2 & primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
@@ -243,21 +306,20 @@ OutputIteratorType difference( const CGAL::Polygon_with_holes_2<Kernel> & primit
         *out++ = primitive;
         break;
     case PrimitiveSurface:
-        difference( primitive, *pb.as< CGAL::Polygon_with_holes_2<Kernel> >(), out );
+        difference( primitive, *pb.as< PolygonWH_2 >(), out );
         break;
     }
     return out;
 }
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Point_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
+OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
-        if ( primitive != *pb.as< CGAL::Point_3<Kernel> >() ) *out++ = primitive; 
+        if ( primitive != *pb.as< Point_3 >() ) *out++ = primitive; 
         break;
     case PrimitiveSegment:
-        // CGAL::do_intersect( CGAL::Point_3<Kernel>, CGAL::Segment_3<Kernel> ) does not exist 
         BOOST_THROW_EXCEPTION( NotImplementedException("Point_3 - Segment_3 is not implemented") );
         break;
     case PrimitiveSurface:
@@ -271,17 +333,17 @@ OutputIteratorType difference( const CGAL::Point_3<Kernel> & primitive, const Pr
 }
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Segment_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
+OutputIteratorType difference( const Segment_3 & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
         *out++ = primitive;
         break;
     case PrimitiveSegment:
-        difference( primitive, *pb.as< CGAL::Segment_3<Kernel> >(), out);
+        difference( primitive, *pb.as< Segment_3 >(), out);
         break;
     case PrimitiveSurface:
-        difference( primitive, *pb.as< CGAL::Triangle_3<Kernel> >(), out);
+        difference( primitive, *pb.as< Triangle_3 >(), out);
         break;
     case PrimitiveVolume:
         BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
@@ -291,7 +353,7 @@ OutputIteratorType difference( const CGAL::Segment_3<Kernel> & primitive, const 
 }
 
 template < typename OutputIteratorType >
-OutputIteratorType difference( const CGAL::Triangle_3<Kernel> & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
+OutputIteratorType difference( const Triangle_3 & primitive, const PrimitiveHandle<3>& pb, OutputIteratorType out )
 {
     switch ( pb.handle.which() ){
     case PrimitivePoint:
@@ -373,22 +435,21 @@ void appendDifference( const PrimitiveHandle<2>& pa,
     switch ( pa.handle.which() ){
     case PrimitivePoint:
         {
-        std::vector< CGAL::Point_2<Kernel> > res = difference( 
-                *pa.as< CGAL::Point_2<Kernel> >(), begin, end );
+        std::vector< Point_2 > res = difference( 
+                *pa.as< Point_2 >(), begin, end );
         output.addPoints( res.begin(), res.end() );
         return;
         }
     case PrimitiveSegment:
         {
-        std::vector< CGAL::Segment_2<Kernel> > res = difference( 
-                *pa.as< CGAL::Segment_2<Kernel> >(), begin, end );
+        std::vector< Segment_2 > res = difference( 
+                *pa.as< Segment_2 >(), begin, end );
         output.addSegments( res.begin(), res.end() );
         return;
         }
     case PrimitiveSurface:
         {
-        std::vector< CGAL::Polygon_with_holes_2<Kernel> > res = difference( 
-                *pa.as< CGAL::Polygon_with_holes_2<Kernel> >(), begin, end );
+        std::vector< PolygonWH_2 > res = difference( *pa.as< PolygonWH_2 >(), begin, end );
         output.addSurfaces( res.begin(), res.end() );
         return;
         }
@@ -403,22 +464,19 @@ void appendDifference( const PrimitiveHandle<3>& pa,
     switch ( pa.handle.which() ){
     case PrimitivePoint:
         {
-        std::vector< CGAL::Point_3<Kernel> > res = difference( 
-                *pa.as< CGAL::Point_3<Kernel> >(), begin, end );
+        std::vector< Point_3 > res = difference( *pa.as< Point_3 >(), begin, end );
         output.addPoints( res.begin(), res.end() );
         return;
         }
     case PrimitiveSegment:
         {
-        std::vector< CGAL::Segment_3<Kernel> > res = difference( 
-                *pa.as< CGAL::Segment_3<Kernel> >(), begin, end );
+        std::vector< Segment_3 > res = difference( *pa.as< Segment_3 >(), begin, end );
         output.addSegments( res.begin(), res.end() );
         break;
         }
     case PrimitiveSurface:
         {
-        std::vector< CGAL::Triangle_3<Kernel> > res = difference( 
-                *pa.as< CGAL::Triangle_3<Kernel> >(), begin, end );
+        std::vector< Triangle_3 > res = difference( *pa.as< Triangle_3 >(), begin, end );
         output.addSurfaces( res.begin(), res.end() );
         break;
         }
@@ -442,8 +500,8 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
     for ( GeometrySet<2>::SurfaceCollection::const_iterator it = input.surfaces().begin();
             it != input.surfaces().end();
             ++it ) {
-        const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
-        CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
+        const PolygonWH_2& p = it->primitive();
+        Polygon_2 outer = p.outer_boundary();
 
         if ( outer.orientation() == CGAL::CLOCKWISE ) {
             outer.reverse_orientation();
@@ -461,7 +519,7 @@ void post_difference( const GeometrySet<2>& input, GeometrySet<2>& output )
             }
         }
 
-        output.surfaces().push_back( CGAL::Polygon_with_holes_2<Kernel>( outer, rings.begin(), rings.end() ) );
+        output.surfaces().push_back( PolygonWH_2( outer, rings.begin(), rings.end() ) );
     }
 
     output.points() = input.points();
