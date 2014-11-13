@@ -26,6 +26,11 @@
 #include <SFCGAL/detail/tools/Registry.h>
 #include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/isValid.h>
+//#include <SFCGAL/triangulate/triangulate2DZ.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/io/vtk.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -41,6 +46,8 @@ using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 
+namespace algorithm {
+
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
@@ -50,8 +57,8 @@ typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH_2;
 typedef CGAL::Point_3<Kernel> Point_3;
 typedef CGAL::Segment_3<Kernel> Segment_3;
 typedef CGAL::Triangle_3<Kernel> Triangle_3;
+typedef CGAL::Plane_3<Kernel> Plane_3;
 
-namespace algorithm {
 
 bool do_intersect( const Point_2& point, const PolygonWH_2 & polygon )
 {
@@ -223,13 +230,27 @@ OutputIteratorType difference( const Triangle_3 & p, const Triangle_3 & q, Outpu
         // project on plane
         // difference between polygons
         // triangulate the result
-        //
-        // nice but the projection is a pain (non isometry, or loss of exact coord)
-        //
-        // instead we could use the intersection between triangles
-        // this gives us a polygon...
-        // and we have to triangulate in 3D
-        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - Triangle_3 is not implemented") );
+
+        const Plane_3 plane = p.supporting_plane();
+        PolygonWH_2 pProj, qProj;
+        for (unsigned i=0; i<3; i++){
+            pProj.outer_boundary().push_back(plane.to_2d(p.vertex(i)));
+            qProj.outer_boundary().push_back(plane.to_2d(q.vertex(i)));
+        }
+        std::vector< PolygonWH_2 > res;
+        difference(pProj, qProj, std::back_inserter(res));
+
+
+        for ( std::vector< PolygonWH_2 >::const_iterator i = res.begin(); i != res.end(); ++i ){
+            const Polygon poly( *i );
+            TriangulatedSurface ts;
+            triangulate::triangulatePolygon3D( poly, ts );
+            for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
+                *out++ = Triangle_3( plane.to_3d( t->vertex(0).toPoint_2() ), 
+                                     plane.to_3d( t->vertex(1).toPoint_2() ),
+                                     plane.to_3d( t->vertex(2).toPoint_2() ) ) ;
+            }
+        }
     }
     return out;
 }
