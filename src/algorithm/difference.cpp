@@ -223,7 +223,8 @@ template < typename OutputIteratorType >
 OutputIteratorType difference( const Triangle_3 & p, const Triangle_3 & q, OutputIteratorType out )
 {
 
-    if ( p.supporting_plane() != q.supporting_plane() || !CGAL::do_intersect(p,q) ){
+    const Plane_3 plane = p.supporting_plane();
+    if ( plane != q.supporting_plane() || !CGAL::do_intersect(p,q) ){
         *out++ = p;
     } 
     else {
@@ -231,7 +232,6 @@ OutputIteratorType difference( const Triangle_3 & p, const Triangle_3 & q, Outpu
         // difference between polygons
         // triangulate the result
 
-        const Plane_3 plane = p.supporting_plane();
         PolygonWH_2 pProj, qProj;
         for (unsigned i=0; i<3; i++){
             pProj.outer_boundary().push_back(plane.to_2d(p.vertex(i)));
@@ -269,6 +269,91 @@ VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPol
 
     for ( ResultType::iterator it = result.begin(); it != result.end(); it++){
         *out++ = *it->first;
+        delete it->first;
+    }
+    return out;
+}
+
+template < typename SegmentOutputIteratorType>
+SegmentOutputIteratorType difference( const Segment_3 & , const MarkedPolyhedron & , SegmentOutputIteratorType out)
+{
+    // this is a bit of a pain
+    // the algo should follow the same lines as the Segment_2 - PolygonWH_2
+    // namely, remove the pieces of the segment were it touches facets, 
+    // then compute the intersections with facets to cut the segments and
+    // create segments for output were the middle point is inside
+    BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
+    return out;
+}
+
+template < typename TriangleOutputIteratorType>
+TriangleOutputIteratorType difference( const Triangle_3 & triangle, const MarkedPolyhedron & polyhedron, TriangleOutputIteratorType out)
+{
+    // we need a volume to use corefinement, so we build a tetrahedron
+    // we keep only facets that are in the initial plane
+    const Plane_3 plane = triangle.supporting_plane();
+    MarkedPolyhedron p;
+    p.make_tetrahedron( triangle.vertex(0),
+                        triangle.vertex(1),
+                        triangle.vertex(2),
+                        triangle.vertex(2) - plane.orthogonal_vector() );
+
+    PolyhedralSurface ps(p);
+    io::vtk(ps, "tetra.vtk");
+
+    MarkedPolyhedron& q = const_cast<MarkedPolyhedron&>( polyhedron );
+
+    typedef std::vector< std::pair<MarkedPolyhedron*, int> >  ResultType;
+    ResultType result;
+    typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
+    Corefinement coref;
+    CGAL::Emptyset_iterator no_polylines;
+    coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::P_minus_Q_tag );
+
+    for ( ResultType::iterator it = result.begin(); it != result.end(); it++){
+        for ( MarkedPolyhedron::Facet_const_iterator fit = it->first->facets_begin();
+                fit != it->first->facets_end();
+                ++fit ) {
+
+            // for a reason that I can not fathom this test crash
+            // under gcc 4.8.2
+            // so I have a workaround below
+            // TODO: retest and fix on other gcc versions
+            //if ( fit->plane() != plane ) continue;
+
+            MarkedPolyhedron::Halfedge_around_facet_const_circulator hit = fit->facet_begin();
+
+            LineString ring;
+            do {
+                ring.addPoint( hit->vertex()->point() );
+                ++hit;
+            }
+            while ( hit != fit->facet_begin() );
+
+            // see TODO above for the why we do this hugly thing here
+            if ( Plane_3(ring.pointN(0).toPoint_3(), ring.pointN(1).toPoint_3(), ring.pointN(2).toPoint_3()) != plane ) continue;
+
+            
+
+            if ( 3 == ring.numPoints() ){ 
+                *out++ = Triangle_3( ring.pointN(0).toPoint_3(), 
+                                     ring.pointN(1).toPoint_3(), 
+                                     ring.pointN(2).toPoint_3() );
+            }
+            else if ( ring.numPoints() > 3 ){
+                ring.addPoint( ring.pointN(0) ); // close the ring
+                // we must triangulate the polygon
+                const Polygon poly( ring );
+                TriangulatedSurface ts;
+                triangulate::triangulatePolygon3D( poly, ts );
+                for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
+                    *out++ = Triangle_3( t->vertex(0).toPoint_3(), 
+                                         t->vertex(1).toPoint_3(),
+                                         t->vertex(2).toPoint_3()) ;
+                }
+                io::vtk(ts, "ts.vtk");
+            }
+        }
         delete it->first;
     }
     return out;
@@ -391,12 +476,7 @@ OutputIteratorType difference( const Segment_3 & primitive, const PrimitiveHandl
         difference( primitive, *pb.as< Triangle_3 >(), out);
         break;
     case PrimitiveVolume:
-        // this is a bit of a pain
-        // the algo should follow the same lines as the Segment_2 - PolygonWH_2
-        // namely, remove the pieces of the segment were it touches facets, 
-        // then compute the intersections with facets to cute the segments and
-        // create segments for output were the middle point is inside
-        BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
+        difference( primitive, *pb.as< MarkedPolyhedron >(), out);
         break;
     }
     return out;
@@ -416,7 +496,7 @@ OutputIteratorType difference( const Triangle_3 & primitive, const PrimitiveHand
         difference( primitive, *pb.as< Triangle_3 >(), out );
         break;
     case PrimitiveVolume:
-        BOOST_THROW_EXCEPTION( NotImplementedException("Triangle_3 - MarkedPolyhedron is not implemented") );
+        difference( primitive, *pb.as< MarkedPolyhedron >(), out );
         break;
     }
     return out;
