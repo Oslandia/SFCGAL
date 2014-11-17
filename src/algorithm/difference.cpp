@@ -100,15 +100,16 @@ SegmentOutputIteratorType difference( const SegmentType & a, const SegmentOrSurf
     return out;
 }
 
+template<typename PointType>
 struct Nearer
 {
-    Nearer( const Point_2 & reference ) :_ref( reference ) {}
-    bool operator()( const Point_2 & lhs, const Point_2 & rhs ) const
+    Nearer( const PointType & reference ) :_ref( reference ) {}
+    bool operator()( const PointType & lhs, const PointType & rhs ) const
     {
         return CGAL::squared_distance(_ref, lhs) < CGAL::squared_distance(_ref, rhs);
     }
 private:
-    const Point_2 _ref;
+    const PointType _ref;
 };
 
 template < typename SegmentOutputIteratorType>
@@ -146,8 +147,7 @@ SegmentOutputIteratorType difference( const Segment_2 & segment, const PolygonWH
     }
 
     for ( std::vector< Segment_2 >::const_iterator s = result.begin(); s != result.end(); ++s ){
-        std::vector< Point_2 > points;
-        points.push_back( s->source() );
+        std::vector< Point_2 > points(1, s->source());
         for ( std::vector< Polygon_2 >::iterator ring = rings.begin(); ring != rings.end(); ++ring ){
             for ( Polygon_2::Vertex_const_iterator target = ring->vertices_begin(); 
                     target != ring->vertices_end(); ++target ){
@@ -163,7 +163,7 @@ SegmentOutputIteratorType difference( const Segment_2 & segment, const PolygonWH
         }
         points.push_back( s->target() );
         // order point according to the distance from source
-        const Nearer nearer( s->source() );
+        const Nearer<Point_2> nearer( s->source() );
         std::sort( points.begin()+1, points.end()-1, nearer );
 
         // append segments that has length and wich midpoint is outside polygon to result
@@ -274,15 +274,133 @@ VolumeOutputIteratorType difference( const MarkedPolyhedron & a, const MarkedPol
     return out;
 }
 
+typedef  CGAL::Box_intersection_d::Box_with_handle_d<double,3,MarkedPolyhedron::Halfedge_around_facet_const_circulator> FaceBboxBase;
+
+
+struct FaceBbox: FaceBboxBase 
+{
+    struct Bbox: CGAL::Bbox_3
+    {
+        Bbox( MarkedPolyhedron::Halfedge_around_facet_const_circulator handle)
+            : CGAL::Bbox_3( handle->vertex()->point().bbox() )
+        {
+            const MarkedPolyhedron::Halfedge_around_facet_const_circulator end = handle;
+            do { 
+                *this += (++handle)->vertex()->point().bbox();
+            } while ( handle != end );
+        }
+    };
+
+    FaceBbox( const MarkedPolyhedron::Facet & facet )
+         : FaceBboxBase( Bbox(facet.facet_begin()), facet.facet_begin() )
+    {}
+};
+
+struct FaceSegmentCollide 
+{
+    typedef std::vector< MarkedPolyhedron::Halfedge_around_facet_const_circulator > CollisionVector;
+    FaceSegmentCollide( CollisionVector & list ): _list(list){}
+    void operator()( const FaceBboxBase &, const FaceBboxBase & face) 
+    { 
+        _list.push_back( face.handle() ); 
+    }
+private:
+    CollisionVector & _list;
+};
+
 template < typename SegmentOutputIteratorType>
-SegmentOutputIteratorType difference( const Segment_3 & , const MarkedPolyhedron & , SegmentOutputIteratorType out)
+SegmentOutputIteratorType difference( const Segment_3 & segment, const MarkedPolyhedron & polyhedron, SegmentOutputIteratorType out)
 {
     // this is a bit of a pain
     // the algo should follow the same lines as the Segment_2 - PolygonWH_2
     // namely, remove the pieces of the segment were it touches facets, 
     // then compute the intersections with facets to cut the segments and
     // create segments for output were the middle point is inside
-    BOOST_THROW_EXCEPTION( NotImplementedException("Segment_3 - MarkedPolyhedron is not implemented") );
+    //
+    // to speed thing up we put facets in AABB-Tree
+
+    std::vector< FaceBbox > bboxes(polyhedron.facets_begin(), polyhedron.facets_end() );
+    std::vector< FaceBboxBase > bbox( 1, FaceBboxBase(segment.bbox(),polyhedron.facets_begin()->facet_begin()) ); // nevermind the facet handle, it's not used anyway
+    FaceSegmentCollide::CollisionVector collisions;
+    FaceSegmentCollide cb(collisions);
+    CGAL::box_intersection_d( bbox.begin(), bbox.end(),
+                              bboxes.begin(), bboxes.end(),
+                              cb );
+
+    if ( !collisions.size() ){
+        // completely in or out, we just test one point
+        CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
+        if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( segment.source() ) ) *out++ = segment;
+    }
+    else {
+        std::vector< Triangle_3 > triangles;
+        for (FaceSegmentCollide::CollisionVector::const_iterator cit = collisions.begin();
+                cit != collisions.end(); ++cit){
+            MarkedPolyhedron::Halfedge_around_facet_const_circulator it = *cit;
+            std::vector< Point > points( 1, it->vertex()->point() );
+            do { 
+                points.push_back( (++it)->vertex()->point() );
+            } while ( it != *cit );
+
+            if ( points.size() == 3 ){
+                triangles.push_back( Triangle_3(points[0].toPoint_3(), points[1].toPoint_3(), points[2].toPoint_3()) );
+            }
+            else {
+                const Polygon poly(points);
+                TriangulatedSurface ts;
+                triangulate::triangulatePolygon3D( poly, ts );
+                for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
+                    triangles.push_back( Triangle_3( t->vertex(0).toPoint_3(),
+                                                     t->vertex(1).toPoint_3(), 
+                                                     t->vertex(2).toPoint_3() ) ) ;
+                }
+            }
+        }
+
+        // first step, substract faces    
+        std::vector< Segment_3 > res1(1, segment);
+
+        for ( std::vector< Triangle_3 >::const_iterator tri=triangles.begin(); 
+                tri != triangles.end(); ++tri )
+        {
+            std::vector< Segment_3 > tmp;
+            for ( std::vector< Segment_3 >::const_iterator seg = res1.begin(); 
+                    seg != res1.end(); ++seg ){
+                difference( *seg, *tri, std::back_inserter(tmp) );
+            }
+            res1.swap(tmp);
+        }
+
+        // second step, for each segment, add intersection points and test each middle point 
+        // to know if it's in or out
+        for ( std::vector< Segment_3 >::const_iterator seg = res1.begin(); 
+                seg != res1.end(); ++seg ){
+            std::vector< Point_3 > points( 1, seg->source() );
+            for ( std::vector< Triangle_3 >::const_iterator tri=triangles.begin(); 
+                    tri != triangles.end(); ++tri )
+            {
+                CGAL::Object inter = CGAL::intersection( *seg, *tri );
+                const Point_3 * p = CGAL::object_cast< Point_3 >(&inter);
+                if (p){ 
+                    points.push_back( *p );
+                }
+            }
+            points.push_back( seg->target() );
+            // order point according to the distance from source
+
+            const Nearer<Point_3> nearer( seg->source() );
+            std::sort( points.begin()+1, points.end()-1, nearer );
+
+            CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
+            // append segments that has length and wich midpoint is outside polyhedron to result
+            for ( std::vector< Point_3 >::const_iterator p = points.begin(); p != points.end()-1; ++p ){
+                std::vector< Point_3 >::const_iterator q = p+1;
+                if ( *p != *q && CGAL::ON_UNBOUNDED_SIDE == is_in_poly( CGAL::midpoint(*p,*q) ) ){
+                    *out++ = Segment_3( *p, *q );
+                }
+            }
+        }
+    }
     return out;
 }
 
@@ -456,7 +574,7 @@ OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3
         break;
     case PrimitiveVolume:
         CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *pb.as< MarkedPolyhedron >() );
-        if ( ! is_in_poly( primitive ) ) *out++ = primitive;
+        if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( primitive ) ) *out++ = primitive;
         break;
     }
     return out;

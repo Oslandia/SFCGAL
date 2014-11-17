@@ -25,7 +25,7 @@
 #include <SFCGAL/detail/tools/Registry.h>
 
 #include <SFCGAL/io/wkt.h>
-//#include <SFCGAL/io/vtk.h>
+#include <SFCGAL/io/vtk.h>
 
 #include <boost/test/unit_test.hpp>
 
@@ -291,7 +291,6 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> ls1 = io::readWkt( "TRIANGLE((0 0 0,0 1 1,1 0 0,0 0 0))" );
         std::auto_ptr<Geometry> ls2 = io::readWkt( "TRIANGLE((.1 .1 .1,1.6 1.6 1.6,1.6 .6 .6,.1 .1 .1))" );
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
-		//std::cerr << diff->asText() << "\n";
         BOOST_CHECK( *diff == *io::readWkt( "TIN(((0 1 1,.5 .5 .5,.1 .1 .1,0 1 1)),((0 0 0,0 1 1,.1 .1 .1,0 0 0)),((.7 .3 .3,1 0 0,.1 .1 .1,.7 .3 .3)),((1 0 0,0 0 0,.1 .1 .1,1 0 0)))" ) );
     }
 
@@ -308,10 +307,24 @@ BOOST_AUTO_TEST_CASE( testDifferenceXLineString )
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
 		//io::vtk(*ls1, "ls1.vtk");
 		//io::vtk(*ls2, "ls2.vtk");
-		//std::cerr << diff->asText() << "\n";
 		//io::vtk(*diff, "diff.vtk");
         BOOST_CHECK( *diff == *io::readWkt("TIN(((1 1 .5,0 10 .5,.5 1 .5,1 1 .5)),((0 10 .5,0 1 .5,.5 1 .5,0 10 .5)),((1 1 .5,10 0 .5,0 10 .5,1 1 .5)),((1 .5 .5,10 0 .5,1 1 .5,1 .5 .5)),((1 .5 .5,1 0 .5,10 0 .5,1 .5 .5)))" ) );
     }
+
+	// segment - volume in 3D
+    {
+        std::auto_ptr<Geometry> ls1 = io::readWkt( "LINESTRING(-3 -3 .5,3 3 .5,1 1.1 .5,1 .1 .5,.1 .1 .5)" );
+        std::auto_ptr<Geometry> ls2 = io::readWkt( 
+                "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+                 ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+                 ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+                 ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+                 ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+                 ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+        std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
+        BOOST_CHECK( *diff == *io::readWkt("MULTILINESTRING((-3 -3 .5,0 0 .5),(1 1 .5,3 3 .5,1 1.1 .5,1 1 .5))" ) );
+    }
+
 
 
 }
