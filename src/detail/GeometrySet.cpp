@@ -42,6 +42,13 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
 
+#include <boost/shared_ptr.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/depth_first_search.hpp>
+#include <boost/graph/connected_components.hpp>
+
+#include <map>
+
 bool operator< ( const CGAL::Segment_2<SFCGAL::Kernel>& sega, const CGAL::Segment_2<SFCGAL::Kernel>& segb )
 {
     if ( sega.source() == segb.source() ) {
@@ -556,6 +563,19 @@ void recompose_points( const typename GeometrySet<Dim>::PointCollection& points,
     }
 }
 
+// compare less than
+struct ComparePoints
+{
+    bool operator()( const CGAL::Point_2<Kernel> & lhs, const CGAL::Point_2<Kernel> & rhs)
+    {
+        return lhs.x() < rhs.x() || lhs.y() < rhs.y();
+    }
+    bool operator()( const CGAL::Point_3<Kernel> & lhs, const CGAL::Point_3<Kernel> & rhs)
+    {
+        return lhs.x() < rhs.x() || lhs.y() < rhs.y() || lhs.z() < rhs.z();
+    }
+};
+
 
 template <int Dim>
 void recompose_segments( const typename GeometrySet<Dim>::SegmentCollection& segments,
@@ -567,30 +587,73 @@ void recompose_segments( const typename GeometrySet<Dim>::SegmentCollection& seg
         return;
     }
 
-    // convert segments to linestring / multi linestring
-    LineString* ls = new LineString;
-    bool first = true;
-    typename TypeForDimension<Dim>::Segment lastSeg;
-
-    for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
-            it != segments.end();
-            ++it ) {
-        if ( !first && lastSeg.target() != it->primitive().source() ) {
-            lines.push_back( ls );
-            ls = new LineString;
-            first = true;
+    // what we need is a graph, we do a depth first traversal and stop a linestring 
+    // when more than one segment is connected
+    // first we need to label vertices
+    // then build the graph and traverse depth first
+    std::vector<Point> points;
+    typedef std::pair<int,int> Edge;
+    std::vector<Edge> edges;
+    {
+        typedef typename std::map< typename TypeForDimension<Dim>::Point, int, ComparePoints > PointMap;
+        PointMap pointMap;
+        for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
+                it != segments.end();
+                ++it ) {
+            const typename PointMap::const_iterator foundSource = pointMap.find( it->primitive().source() );
+            const typename PointMap::const_iterator foundTarget = pointMap.find( it->primitive().target() );
+            const int sourceId = foundSource != pointMap.end() ? foundSource->second : points.size();
+            if (foundSource == pointMap.end()){
+                points.push_back( it->primitive().source() );
+                pointMap[ it->primitive().source() ] = sourceId;
+            }
+            const int targetId = foundTarget != pointMap.end() ? foundTarget->second : points.size();
+            if (foundTarget == pointMap.end()){
+                points.push_back( it->primitive().target() );
+                pointMap[ it->primitive().target() ] = targetId;
+            }
+            edges.push_back( Edge(sourceId, targetId) );
         }
-
-        if ( first ) {
-            ls->addPoint( new Point( it->primitive().source() ) );
-            first = false;
-        }
-
-        ls->addPoint( new Point( it->primitive().target() ) );
-        lastSeg = it->primitive();
     }
 
-    lines.push_back( ls );
+    typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::bidirectionalS, 
+                    boost::no_property, 
+                    boost::property<boost::edge_color_t, boost::default_color_type> > Graph;
+    Graph g( edges.begin(), edges.end(), edges.size() );
+
+    // now we find all branches without bifurcations,
+
+    boost::graph_traits<Graph>::edge_iterator ei, ei_end;
+    for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei){
+        if ( boost::get(boost::edge_color, g)[*ei] == boost::white_color ){
+            // not already marked, find the first ancestor with multiple connections, or no connections
+            // or self (in case of a loop)
+            boost::graph_traits<Graph>::edge_descriptor root = *ei;
+            {
+                boost::graph_traits<Graph>::in_edge_iterator ej, ek;
+                for ( boost::tie(ej, ek) = boost::in_edges( boost::source(root, g), g );
+                        ek - ej == 1 && *ej != *ei ;
+                        boost::tie(ej, ek) = boost::in_edges( boost::source(root, g), g ) ){
+                    root = *ej;
+                }
+            }
+
+            // now we go down
+            LineString * line = new LineString;
+            lines.push_back( line );
+            line->addPoint( points[ boost::source(root, g) ] );
+            line->addPoint( points[ boost::target(root, g) ] );
+            boost::get(boost::edge_color, g)[root] = boost::black_color;
+
+            boost::graph_traits<Graph>::out_edge_iterator ej, ek;
+            for ( boost::tie(ej, ek) = boost::out_edges( boost::target(root, g), g );
+                    ek - ej == 1 && *ej != root;
+                    boost::tie(ej, ek) = boost::out_edges( boost::target(*ej, g), g ) ){
+                line->addPoint( points[ boost::target(*ej, g) ] );
+                boost::get(boost::edge_color, g)[*ej] = boost::black_color;
+            }
+        }
+    }
 }
 
 void recompose_surfaces( const GeometrySet<2>::SurfaceCollection& surfaces, std::vector<Geometry*>& output, dim_t<2> )
