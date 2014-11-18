@@ -308,6 +308,35 @@ private:
     CollisionVector & _list;
 };
 
+template < typename TriangleOutputIteratorType>
+TriangleOutputIteratorType collidingTriangles( const FaceSegmentCollide::CollisionVector & collisions, TriangleOutputIteratorType out)
+{
+    for (FaceSegmentCollide::CollisionVector::const_iterator cit = collisions.begin();
+            cit != collisions.end(); ++cit){
+        MarkedPolyhedron::Halfedge_around_facet_const_circulator it = *cit;
+        std::vector< Point > points( 1, it->vertex()->point() );
+        do { 
+            points.push_back( (++it)->vertex()->point() );
+        } while ( it != *cit );
+
+        if ( points.size() == 3 ){
+            *out++ = Triangle_3(points[0].toPoint_3(), points[1].toPoint_3(), points[2].toPoint_3()) ;
+        }
+        else {
+            const Polygon poly(points);
+            TriangulatedSurface ts;
+            triangulate::triangulatePolygon3D( poly, ts );
+            for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
+                *out++ = Triangle_3( t->vertex(0).toPoint_3(),
+                                     t->vertex(1).toPoint_3(), 
+                                     t->vertex(2).toPoint_3() );
+            }
+        }
+    }
+    return out;
+}
+
+
 template < typename SegmentOutputIteratorType>
 SegmentOutputIteratorType difference( const Segment_3 & segment, const MarkedPolyhedron & polyhedron, SegmentOutputIteratorType out)
 {
@@ -334,28 +363,7 @@ SegmentOutputIteratorType difference( const Segment_3 & segment, const MarkedPol
     }
     else {
         std::vector< Triangle_3 > triangles;
-        for (FaceSegmentCollide::CollisionVector::const_iterator cit = collisions.begin();
-                cit != collisions.end(); ++cit){
-            MarkedPolyhedron::Halfedge_around_facet_const_circulator it = *cit;
-            std::vector< Point > points( 1, it->vertex()->point() );
-            do { 
-                points.push_back( (++it)->vertex()->point() );
-            } while ( it != *cit );
-
-            if ( points.size() == 3 ){
-                triangles.push_back( Triangle_3(points[0].toPoint_3(), points[1].toPoint_3(), points[2].toPoint_3()) );
-            }
-            else {
-                const Polygon poly(points);
-                TriangulatedSurface ts;
-                triangulate::triangulatePolygon3D( poly, ts );
-                for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
-                    triangles.push_back( Triangle_3( t->vertex(0).toPoint_3(),
-                                                     t->vertex(1).toPoint_3(), 
-                                                     t->vertex(2).toPoint_3() ) ) ;
-                }
-            }
-        }
+        collidingTriangles( collisions, std::back_inserter( triangles ) );
 
         // first step, substract faces    
         std::vector< Segment_3 > res1(1, segment);
@@ -404,77 +412,73 @@ SegmentOutputIteratorType difference( const Segment_3 & segment, const MarkedPol
     return out;
 }
 
+// @TODO put that in a proper header
+void _intersection_solid_triangle( const MarkedPolyhedron& pa, const Triangle_3 & tri, GeometrySet<3>& output );
+
+template < typename TriangleOutputIteratorType>
+TriangleOutputIteratorType intersection( const Triangle_3 & triangle, const MarkedPolyhedron & polyhedron, TriangleOutputIteratorType out)
+{
+    // call _intersection_solid_triangle
+    GeometrySet<3> res;
+    _intersection_solid_triangle( polyhedron, triangle, res );
+    for ( GeometrySet<3>::SurfaceCollection::const_iterator it = res.surfaces().begin();
+            it != res.surfaces().end(); ++it )
+        *out++ = it->primitive();
+
+    return out;
+}
+
 template < typename TriangleOutputIteratorType>
 TriangleOutputIteratorType difference( const Triangle_3 & triangle, const MarkedPolyhedron & polyhedron, TriangleOutputIteratorType out)
 {
-    // we need a volume to use corefinement, so we build a tetrahedron
-    // we keep only facets that are in the initial plane
-    const Plane_3 plane = triangle.supporting_plane();
-    MarkedPolyhedron p;
-    p.make_tetrahedron( triangle.vertex(0),
-                        triangle.vertex(1),
-                        triangle.vertex(2),
-                        triangle.vertex(2) - plane.orthogonal_vector() );
+    std::vector< Triangle_3 > inter;
+    intersection( triangle, polyhedron, std::back_inserter(inter) );
 
-    PolyhedralSurface ps(p);
-    io::vtk(ps, "tetra.vtk");
+    std::vector< Triangle_3 > res(1, triangle);
+    for (std::vector< Triangle_3 >::const_iterator it = inter.begin(); it != inter.end(); ++it){
+        std::vector< Triangle_3 > tmp;
+        for (std::vector< Triangle_3 >::const_iterator tri = res.begin(); tri != res.end(); ++tri )
+            difference(*tri, *it, std::back_inserter( tmp ) );
+        tmp.swap(res);
+    }
 
-    MarkedPolyhedron& q = const_cast<MarkedPolyhedron&>( polyhedron );
+    for (std::vector< Triangle_3 >::const_iterator tri = res.begin(); tri != res.end(); ++tri )
+        *out++ = *tri;
 
-    typedef std::vector< std::pair<MarkedPolyhedron*, int> >  ResultType;
-    ResultType result;
-    typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
-    Corefinement coref;
-    CGAL::Emptyset_iterator no_polylines;
-    coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::P_minus_Q_tag );
+    return out;
 
-    for ( ResultType::iterator it = result.begin(); it != result.end(); it++){
-        for ( MarkedPolyhedron::Facet_const_iterator fit = it->first->facets_begin();
-                fit != it->first->facets_end();
-                ++fit ) {
+/*
+    std::vector< FaceBbox > bboxes(polyhedron.facets_begin(), polyhedron.facets_end() );
+    std::vector< FaceBboxBase > bbox( 1, FaceBboxBase(triangle.bbox(),polyhedron.facets_begin()->facet_begin()) ); // nevermind the facet handle, it's not used anyway
+    FaceSegmentCollide::CollisionVector collisions;
+    FaceSegmentCollide cb(collisions);
+    CGAL::box_intersection_d( bbox.begin(), bbox.end(),
+                              bboxes.begin(), bboxes.end(),
+                              cb );
 
-            // for a reason that I can not fathom this test crash
-            // under gcc 4.8.2
-            // so I have a workaround below
-            // TODO: retest and fix on other gcc versions
-            //if ( fit->plane() != plane ) continue;
+    if ( !collisions.size() ){
+        // completely in or out, we just test one point
+        CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
+        if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( triangle.vertex(0) ) ) *out++ = triangle;
+    }
+    else {
+        // now we first transform bboxes colliding faces into triangles
+        // then we test for intersection and store resulting segments in a vector
+        // we also store resulting polygons as segments
+        //
+        // we need to convert the resulting segments to a multipolygon of sort
+        //
+        // finally we triangulate the result and substract those triangles
+        //
+        std::vector< Triangle_3 > interTriangles;
+        collidingTriangles( collisions, std::back_inserter( interTriangles ) );
 
-            MarkedPolyhedron::Halfedge_around_facet_const_circulator hit = fit->facet_begin();
+        std::vector< Segment_3 > intersectionCountours;
 
-            LineString ring;
-            do {
-                ring.addPoint( hit->vertex()->point() );
-                ++hit;
-            }
-            while ( hit != fit->facet_begin() );
-
-            // see TODO above for the why we do this hugly thing here
-            if ( Plane_3(ring.pointN(0).toPoint_3(), ring.pointN(1).toPoint_3(), ring.pointN(2).toPoint_3()) != plane ) continue;
-
-            
-
-            if ( 3 == ring.numPoints() ){ 
-                *out++ = Triangle_3( ring.pointN(0).toPoint_3(), 
-                                     ring.pointN(1).toPoint_3(), 
-                                     ring.pointN(2).toPoint_3() );
-            }
-            else if ( ring.numPoints() > 3 ){
-                ring.addPoint( ring.pointN(0) ); // close the ring
-                // we must triangulate the polygon
-                const Polygon poly( ring );
-                TriangulatedSurface ts;
-                triangulate::triangulatePolygon3D( poly, ts );
-                for (TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t){
-                    *out++ = Triangle_3( t->vertex(0).toPoint_3(), 
-                                         t->vertex(1).toPoint_3(),
-                                         t->vertex(2).toPoint_3()) ;
-                }
-                io::vtk(ts, "ts.vtk");
-            }
-        }
-        delete it->first;
+        BOOST_THROW_EXCEPTION(NotImplementedException("Triangle_3 - Volume is not implemented") );
     }
     return out;
+*/
 }
 
 template < typename PolygonOutputIteratorType>
