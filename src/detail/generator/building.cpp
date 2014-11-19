@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -183,8 +183,10 @@ std::auto_ptr< Geometry > building(
     switch ( g.geometryTypeId() ) {
     case TYPE_POLYGON:
         return building( g.as< Polygon >(), wallHeight, roofSlope ) ;
+
     case TYPE_MULTIPOLYGON:
         return building( g.as< MultiPolygon >(), wallHeight, roofSlope ) ;
+
     default:
         BOOST_THROW_EXCEPTION( Exception(
                                    ( boost::format( "bad geometry type (%s) in generator::building" ) % g.geometryType() ).str()

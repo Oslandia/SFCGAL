@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -49,13 +49,15 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         const TestGeometry& tg = testGeometry[t];
         //std::cerr << t << ":" << tg.wkt << "\n";
         std::auto_ptr< Geometry > g;
+
         try {
             g = io::readWkt( tg.wkt );
         }
         catch ( WktParseException ) {
-            BOOST_CHECK_MESSAGE( !tg.isValid, ( boost::format( "%d: parse error on valid geometry %s" ) % t % tg.wkt ));
+            BOOST_CHECK_MESSAGE( !tg.isValid, ( boost::format( "%d: parse error on valid geometry %s" ) % t % tg.wkt ) );
             continue;
         }
+
         Validity v = algorithm::isValid( *g );
         BOOST_CHECK_MESSAGE( v == tg.isValid, ( boost::format( "%d:%s should be %s (%s)%s%s : %s" ) % t % g->geometryType() % ( tg.isValid?"valid":"invalid" ) % tg.comment % ( v?".":", reason: " ) % v.reason() % tg.wkt ) );
     }

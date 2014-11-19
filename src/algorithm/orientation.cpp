@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -34,7 +34,7 @@ namespace algorithm {
 ///
 ///
 ///
-void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon )
+void makeValidOrientation( CGAL::Polygon_2< Kernel >& polygon )
 {
     if ( polygon.orientation() != CGAL::COUNTERCLOCKWISE ) {
         polygon.reverse_orientation() ;
@@ -44,7 +44,7 @@ void makeValidOrientation( CGAL::Polygon_2< Kernel > & polygon )
 ///
 ///
 ///
-void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel > & polygon )
+void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel >& polygon )
 {
     typedef CGAL::Polygon_with_holes_2< Kernel > Polygon_with_holes_2 ;
 

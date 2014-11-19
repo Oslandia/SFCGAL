@@ -34,7 +34,9 @@ for dir in "$base/src" "$base/test" "$base/viewer"; do
             if [ $fix ]; then
                 cp astyle.tmp.out $src
             else
+
                 err="$err $src"
+                echo "$dif" > test-style-diff-$(basename $src)
             fi
         fi
     done

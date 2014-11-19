@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -45,7 +45,7 @@ typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 
 template<class K>
 void straightSkeletonToMultiLineString(
-    const CGAL::Straight_skeleton_2<K> & ss,
+    const CGAL::Straight_skeleton_2<K>& ss,
     MultiLineString& result
 )
 {
@@ -86,10 +86,13 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
     switch ( g.geometryTypeId() ) {
     case TYPE_TRIANGLE:
         return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
+
     case TYPE_POLYGON:
         return straightSkeleton( g.as< Polygon >(), autoOrientation ) ;
+
     case TYPE_MULTIPOLYGON:
         return straightSkeleton( g.as< MultiPolygon >(), autoOrientation ) ;
+
     default:
         return std::auto_ptr< MultiLineString >( new MultiLineString );
     }

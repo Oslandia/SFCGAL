@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -117,15 +117,19 @@ void triangulate2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangu
     case TYPE_POINT:
         triangulate2DZ( g.as< Point >(), triangulation );
         return ;
+
     case TYPE_LINESTRING:
         triangulate2DZ( g.as< LineString >(), triangulation );
         return ;
+
     case TYPE_POLYGON:
         triangulate2DZ( g.as< Polygon >(), triangulation );
         return ;
+
     case TYPE_TRIANGLE:
         triangulate2DZ( g.as< Triangle >(), triangulation );
         return ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:
@@ -134,6 +138,7 @@ void triangulate2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangu
     case TYPE_GEOMETRYCOLLECTION:
         triangulateCollection2DZ( g, triangulation );
         return ;
+
     case TYPE_SOLID:
     case TYPE_MULTISOLID:
         // note: we can't have à valid geom in 2D that comes from à solid

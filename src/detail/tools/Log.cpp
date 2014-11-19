@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -86,15 +86,19 @@ void Logger::log(
     case Debug:
         _out << " debug: ";
         break;
+
     case Info:
         _out << " info: ";
         break;
+
     case Warning:
         _out << " warning: ";
         break;
+
     case Error:
         _out << " error: ";
         break;
+
     case Critical:
         _out << " critical: ";
         break;

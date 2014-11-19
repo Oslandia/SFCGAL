@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -51,8 +51,8 @@ ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::
     }
 
     Vertex_handle vertex = _projectionPlane
-        ? _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) )
-        : _cdt.insert( position.toPoint_2() );
+                           ? _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) )
+                           : _cdt.insert( position.toPoint_2() );
     vertex->info().original = position ;
     return vertex ;
 }

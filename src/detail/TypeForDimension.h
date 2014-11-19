@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -60,8 +60,8 @@ struct TypeForDimension {
 template <class Refs>
 struct Halfedge_with_mark : public CGAL::HalfedgeDS_halfedge_base<Refs> {
     Halfedge_with_mark()
-        : CGAL::HalfedgeDS_halfedge_base<Refs>(), mark( false )
-    {}
+        : CGAL::HalfedgeDS_halfedge_base<Refs>(), mark( false ) {
+    }
 
     bool mark;   // A boundary marker for faces with different status
     void set_mark() { // this will be called by Intersection_of_Polyhedra_3

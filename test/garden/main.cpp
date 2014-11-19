@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -109,13 +109,11 @@ int main( int argc, char* argv[] )
 
         for ( std::vector< TestGeometry >::const_iterator tg=testGeom.begin();
                 tg!=testGeom.end(); ++tg ) {
-            try
-            {
+            try {
                 std::auto_ptr< Geometry > g( io::readWkt( tg->wkt ) );
                 testCollection.addGeometry( g.release() );
             }
-            catch (WktParseException)
-            {
+            catch ( WktParseException ) {
                 BOOST_ASSERT( !tg->isValid );
             }
         }
@@ -178,6 +176,7 @@ int main( int argc, char* argv[] )
             }
         }
         break;
+
         case TYPE_LINESTRING : {
             LineString l( geom.as<LineString>() );
             const size_t numPoints = l.numPoints();
@@ -212,6 +211,7 @@ int main( int argc, char* argv[] )
 #               endif
         }
         break;
+
         case TYPE_POLYGON : {
             Polygon p( geom.as<Polygon>() ) ;
 
@@ -244,18 +244,23 @@ int main( int argc, char* argv[] )
 #               endif
         }
         break;
+
         case TYPE_MULTIPOINT :
             geom.as<MultiPoint>() ;
             break;
+
         case TYPE_MULTILINESTRING :
             geom.as<MultiLineString>() ;
             break;
+
         case TYPE_MULTIPOLYGON :
             geom.as<MultiPolygon>() ;
             break;
+
         case TYPE_GEOMETRYCOLLECTION :
             geom.as<GeometryCollection>() ;
             break;
+
         case TYPE_POLYHEDRALSURFACE : {
             PolyhedralSurface s( geom.as<PolyhedralSurface>() ) ;
 
@@ -284,6 +289,7 @@ int main( int argc, char* argv[] )
 #               endif
         }
         break;
+
         case TYPE_TRIANGULATEDSURFACE : {
             TriangulatedSurface s( geom.as<TriangulatedSurface>() ) ;
 
@@ -312,6 +318,7 @@ int main( int argc, char* argv[] )
 #               endif
         }
         break;
+
         case TYPE_TRIANGLE : {
             Triangle t( geom.as<Triangle>() ) ;
 
@@ -327,6 +334,7 @@ int main( int argc, char* argv[] )
             }
         }
         break;
+
         case TYPE_SOLID : {
             Solid s( geom.as<Solid>() ) ;
 
@@ -354,6 +362,7 @@ int main( int argc, char* argv[] )
 #               endif
         }
         break;
+
         case TYPE_MULTISOLID :
             geom.as<MultiSolid>() ;
             break;
@@ -434,6 +443,7 @@ int main( int argc, char* argv[] )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::difference3D( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::difference( *geom1, *geom2 ) ; )
+
             if ( geom2->is<Polygon>() ) {
                 CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::minkowskiSum( *geom1, geom2->as<Polygon>() ) ; )
             }

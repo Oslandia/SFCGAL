@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -69,15 +69,19 @@ double length( const Geometry& g )
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
         return 0.0 ;
+
     case TYPE_LINESTRING:
         return length( g.as< LineString >() ) ;
+
     case TYPE_POLYGON:
         return 0.0 ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:
     case TYPE_GEOMETRYCOLLECTION:
         return length( g.as< GeometryCollection >() );
+
     case TYPE_POLYHEDRALSURFACE:
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_TRIANGLE:
@@ -138,15 +142,19 @@ double length3D( const Geometry& g )
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
         return 0.0 ;
+
     case TYPE_LINESTRING:
         return length3D( g.as< LineString >() ) ;
+
     case TYPE_POLYGON:
         return 0.0 ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:
     case TYPE_GEOMETRYCOLLECTION:
         return length3D( g.as< GeometryCollection >() );
+
     case TYPE_POLYHEDRALSURFACE:
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_TRIANGLE:

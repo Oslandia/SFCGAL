@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -169,21 +169,27 @@ void vtk( const Geometry& g, const std::string& file )
     case TYPE_POLYGON:
         vtk( g.as<Polygon>(), file ) ;
         return ;
+
     case TYPE_MULTIPOLYGON:
         vtk( g.as<MultiPolygon>(), file ) ;
         return ;
+
     case TYPE_TRIANGLE:
         vtk( g.as<Triangle>(), file ) ;
         return ;
+
     case TYPE_TRIANGULATEDSURFACE:
         vtk( g.as<TriangulatedSurface>(), file ) ;
         return ;
+
     case TYPE_POLYHEDRALSURFACE:
         vtk( g.as<PolyhedralSurface>(), file ) ;
         return ;
+
     case TYPE_SOLID:
         vtk( g.as<Solid>().exteriorShell(), file ) ;
         return ;
+
     case TYPE_POINT:
     case TYPE_LINESTRING:
     case TYPE_MULTIPOINT:

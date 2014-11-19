@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -47,6 +47,7 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
         triangulate::triangulatePolygon3D( g, *triSurf );
         return std::auto_ptr<Geometry>( triSurf );
     }
+
     case TYPE_SOLID: {
         std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
 
@@ -60,6 +61,7 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
 
         return std::auto_ptr<Geometry>( ret.release() );
     }
+
     // multipolygon and multisolid return a geometrycollection
     case TYPE_MULTIPOLYGON:
     case TYPE_MULTISOLID:
@@ -72,6 +74,7 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
 
         return std::auto_ptr<Geometry>( ret.release() );
     }
+
     default:
         break;
     }

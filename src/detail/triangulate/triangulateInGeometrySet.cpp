@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -40,7 +40,7 @@ struct VertexInfo2 {
         original( NULL ) {
     }
 
-    const CGAL::Point_3<Kernel> * original ;
+    const CGAL::Point_3<Kernel>* original ;
 };
 
 
@@ -104,9 +104,9 @@ void triangulate( const MarkedPolyhedron& polyhedron, GeometrySet<3>& geometry )
         for ( Triangulation::Finite_faces_iterator tit = triangulation.finite_faces_begin();
                 tit != triangulation.finite_faces_end();
                 ++tit ) {
-            const CGAL::Point_3<Kernel> * a = tit->vertex( 0 )->info().original ;
-            const CGAL::Point_3<Kernel> * b = tit->vertex( 1 )->info().original ;
-            const CGAL::Point_3<Kernel> * c = tit->vertex( 2 )->info().original ;
+            const CGAL::Point_3<Kernel>* a = tit->vertex( 0 )->info().original ;
+            const CGAL::Point_3<Kernel>* b = tit->vertex( 1 )->info().original ;
+            const CGAL::Point_3<Kernel>* c = tit->vertex( 2 )->info().original ;
 
             CGAL::Triangle_3<Kernel> tri( *a, *b, *c );
             geometry.addPrimitive( tri );

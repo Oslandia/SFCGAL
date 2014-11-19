@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -83,56 +83,67 @@ Geometry*    WktReader::readGeometry()
         readInnerPoint( *g );
         return g.release() ;
     }
+
     case TYPE_LINESTRING: {
         std::auto_ptr< LineString > g( new LineString() );
         readInnerLineString( *g );
         return g.release() ;
     }
+
     case TYPE_TRIANGLE: {
         std::auto_ptr< Triangle > g( new Triangle() );
         readInnerTriangle( *g );
         return g.release() ;
     }
+
     case TYPE_POLYGON: {
         std::auto_ptr< Polygon > g( new Polygon() );
         readInnerPolygon( *g );
         return g.release() ;
     }
+
     case TYPE_MULTIPOINT : {
         std::auto_ptr< MultiPoint > g( new MultiPoint() );
         readInnerMultiPoint( *g );
         return g.release() ;
     }
+
     case TYPE_MULTILINESTRING : {
         std::auto_ptr< MultiLineString > g( new MultiLineString() );
         readInnerMultiLineString( *g );
         return g.release() ;
     }
+
     case TYPE_MULTIPOLYGON : {
         std::auto_ptr< MultiPolygon > g( new MultiPolygon() );
         readInnerMultiPolygon( *g );
         return g.release() ;
     }
+
     case TYPE_GEOMETRYCOLLECTION : {
         std::auto_ptr< GeometryCollection > g( new GeometryCollection() );
         readInnerGeometryCollection( *g );
         return g.release() ;
     }
+
     case TYPE_TRIANGULATEDSURFACE : {
         std::auto_ptr< TriangulatedSurface > g( new TriangulatedSurface() );
         readInnerTriangulatedSurface( *g );
         return g.release() ;
     }
+
     case TYPE_POLYHEDRALSURFACE : {
         std::auto_ptr< PolyhedralSurface > g( new PolyhedralSurface() );
         readInnerPolyhedralSurface( *g );
         return g.release() ;
     }
+
     case TYPE_SOLID : {
         std::auto_ptr< Solid > g( new Solid() );
         readInnerSolid( *g );
         return g.release() ;
     }
+
     case TYPE_MULTISOLID : {
         std::auto_ptr< MultiSolid > g( new MultiSolid() );
         readInnerMultiSolid( *g );
@@ -333,6 +344,7 @@ void   WktReader::readInnerTriangle( Triangle& g )
     if ( ! _reader.match( ')' ) ) {
         BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
+
     if ( ! _reader.match( ')' ) ) {
         BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
     }
@@ -368,6 +380,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint& g )
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
         }
+
         g.addGeometry( p.release() );
 
         //break if not followed by another points

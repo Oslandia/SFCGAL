@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -312,14 +312,19 @@ void offset( const Geometry& g, const double& radius, Offset_polygon_set_2& poly
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
         return offset( g.as< Point >(), radius, polygonSet ) ;
+
     case TYPE_LINESTRING:
         return offset( g.as< LineString >(), radius, polygonSet ) ;
+
     case TYPE_POLYGON:
         return offset( g.as< Polygon >(), radius, polygonSet ) ;
+
     case TYPE_TRIANGLE:
         return offset( g.as< Triangle >().toPolygon(), radius, polygonSet ) ;
+
     case TYPE_SOLID:
         return offset( g.as< Solid >().exteriorShell(), radius, polygonSet ) ;
+
     case TYPE_MULTISOLID:
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:

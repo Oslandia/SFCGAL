@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -39,9 +39,9 @@ namespace algorithm {
  */
 template < typename Kernel >
 bool hasPlane3D( const Polygon& polygon,
-                 CGAL::Point_3< Kernel > & a,
-                 CGAL::Point_3< Kernel > & b,
-                 CGAL::Point_3< Kernel > & c )
+                 CGAL::Point_3< Kernel >& a,
+                 CGAL::Point_3< Kernel >& b,
+                 CGAL::Point_3< Kernel >& c )
 {
     typedef CGAL::Point_3< Kernel > Point_3 ;
 
@@ -91,9 +91,9 @@ bool hasPlane3D( const Polygon& polygon )
 template < typename Kernel >
 void plane3D(
     const Polygon& polygon,
-    CGAL::Point_3< Kernel > & a,
-    CGAL::Point_3< Kernel > & b,
-    CGAL::Point_3< Kernel > & c
+    CGAL::Point_3< Kernel >& a,
+    CGAL::Point_3< Kernel >& b,
+    CGAL::Point_3< Kernel >& c
 )
 {
     if ( ! hasPlane3D( polygon, a, b, c ) ) {
@@ -113,11 +113,12 @@ template < typename Kernel >
 CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact = true )
 {
     CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, exact );
-    if ( !exact )
-    {
+
+    if ( !exact ) {
         const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
         nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
     }
+
     return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
 }
 

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -61,8 +61,8 @@ protected:
 class SFCGAL_API GeometryInvalidityException : public Exception {
 public:
     GeometryInvalidityException( std::string const& message ):
-        Exception( message )
-    {}
+        Exception( message ) {
+    }
 
 };
 
@@ -72,8 +72,8 @@ public:
 class SFCGAL_API NotImplementedException : public Exception {
 public:
     NotImplementedException( std::string const& message ):
-        Exception( message )
-    {}
+        Exception( message ) {
+    }
 
 };
 
@@ -83,8 +83,8 @@ public:
 class SFCGAL_API InappropriateGeometryException : public Exception {
 public:
     InappropriateGeometryException( std::string const& message ):
-        Exception( message )
-    {}
+        Exception( message ) {
+    }
 
 };
 
@@ -94,8 +94,8 @@ public:
 class SFCGAL_API NonFiniteValueException : public Exception {
 public:
     NonFiniteValueException( std::string const& message ):
-        Exception( message )
-    {}
+        Exception( message ) {
+    }
 
 };
 
@@ -105,8 +105,8 @@ public:
 class SFCGAL_API WktParseException : public Exception {
 public:
     WktParseException( std::string const& message ):
-        Exception( message )
-    {}
+        Exception( message ) {
+    }
 
 };
 

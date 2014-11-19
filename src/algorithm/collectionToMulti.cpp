@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -89,18 +89,21 @@ std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> g )
         case TYPE_TRIANGLE:
             ret_geo->addGeometry( Polygon( gi->as<Triangle>() ) );
             break;
+
         case TYPE_TRIANGULATEDSURFACE: {
             for ( size_t j = 0; j < gi->numGeometries(); ++j ) {
                 ret_geo->addGeometry( Polygon( gi->geometryN( j ).as<Triangle>() ) );
             }
         }
         break;
+
         case TYPE_POLYHEDRALSURFACE: {
             for ( size_t j = 0; j < gi->numGeometries(); ++j ) {
                 ret_geo->addGeometry( gi->geometryN( j ) );
             }
         }
         break;
+
         case TYPE_GEOMETRYCOLLECTION:
 
             // do not include empty geometrycollection

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -63,14 +63,18 @@ double distance3D( const Geometry& gA, const Geometry& gB, NoValidityCheck )
     switch ( gA.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointGeometry3D( gA.as< Point >(), gB );
+
     case TYPE_LINESTRING:
         return distanceLineStringGeometry3D( gA.as< LineString >(), gB );
+
     case TYPE_POLYGON:
         //SFCGAL_DEBUG( boost::format("gA is a Polygon (%s)") % gA.geometryTypeId() );
         return distancePolygonGeometry3D( gA.as< Polygon >(), gB );
+
     case TYPE_TRIANGLE:
         //SFCGAL_DEBUG( boost::format("gA is a Triangle (%s)") % gA.geometryTypeId() );
         return distanceTriangleGeometry3D( gA.as< Triangle >(), gB );
+
     case TYPE_SOLID:
         return distanceSolidGeometry3D( gA.as< Solid >(), gB );
 
@@ -107,12 +111,16 @@ double distancePointGeometry3D( const Point& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointPoint3D( gA, gB.as< Point >() );
+
     case TYPE_LINESTRING:
         return distancePointLineString3D( gA, gB.as< LineString >() );
+
     case TYPE_TRIANGLE:
         return distancePointTriangle3D( gA, gB.as< Triangle >() );
+
     case TYPE_POLYGON:
         return distancePointPolygon3D( gA, gB.as< Polygon >() );
+
     case TYPE_SOLID:
         return distancePointSolid3D( gA, gB.as< Solid >() );
 
@@ -231,12 +239,16 @@ double distanceLineStringGeometry3D( const LineString& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointLineString3D( gB.as< Point >(), gA ); //symetric
+
     case TYPE_LINESTRING:
         return distanceLineStringLineString3D( gA, gB.as< LineString >() );
+
     case TYPE_TRIANGLE:
         return distanceLineStringTriangle3D( gA, gB.as< Triangle >() );
+
     case TYPE_POLYGON:
         return distanceLineStringPolygon3D( gA, gB.as< Polygon >() );
+
     case TYPE_SOLID:
         return distanceLineStringSolid3D( gA, gB.as< Solid >() );
 
@@ -353,12 +365,16 @@ double distanceTriangleGeometry3D( const Triangle& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointTriangle3D( gB.as< Point >(), gA ); //symetric
+
     case TYPE_LINESTRING:
         return distanceLineStringTriangle3D( gB.as< LineString >(), gA ); //symetric
+
     case TYPE_TRIANGLE:
         return distanceTriangleTriangle3D( gA, gB.as< Triangle >() );
+
     case TYPE_POLYGON:
         return distancePolygonGeometry3D( gB.as< Polygon >(), gA );
+
     case TYPE_SOLID:
         return distanceTriangleSolid3D( gA, gB.as< Solid >() );
 
@@ -428,12 +444,16 @@ double distanceSolidGeometry3D( const Solid& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointSolid3D( gB.as< Point >(), gA ); //symetric
+
     case TYPE_LINESTRING:
         return distanceLineStringSolid3D( gB.as< LineString >(), gA ); //symetric
+
     case TYPE_TRIANGLE:
         return distanceTriangleSolid3D( gB.as< Triangle >(), gA ); //symetric
+
     case TYPE_POLYGON:
         return distancePolygonGeometry3D( gB.as< Polygon >(), gA ); //symetric
+
     case TYPE_SOLID:
         return distanceSolidSolid3D( gA, gB.as< Solid >() );
 
@@ -479,17 +499,25 @@ double distanceSolidSolid3D( const Solid& gA, const Solid& gB )
 }
 
 struct Sphere {
-    Sphere( const double & r, CGAL::Vector_3<Kernel> & c )
-        : _radius(r)
-        , _center(c)
-        , _empty(false)
-    {}
+    Sphere( const double& r, CGAL::Vector_3<Kernel>& c )
+        : _radius( r )
+        , _center( c )
+        , _empty( false ) {
+    }
     Sphere()
-        : _empty(true)
-    {}
-    bool isEmpty() const {return _empty;}
-    double radius() const {BOOST_ASSERT(!_empty); return _radius;}
-    const CGAL::Vector_3<Kernel> & center() const {BOOST_ASSERT(!_empty); return _center;}
+        : _empty( true ) {
+    }
+    bool isEmpty() const {
+        return _empty;
+    }
+    double radius() const {
+        BOOST_ASSERT( !_empty );
+        return _radius;
+    }
+    const CGAL::Vector_3<Kernel>& center() const {
+        BOOST_ASSERT( !_empty );
+        return _center;
+    }
 private:
     double _radius;
     CGAL::Vector_3<Kernel> _center;
@@ -498,12 +526,17 @@ private:
 
 const Sphere boundingSphere( const Geometry& geom )
 {
-    if ( geom.isEmpty() ) return Sphere();
+    if ( geom.isEmpty() ) {
+        return Sphere();
+    }
+
     using namespace SFCGAL::detail;
     GetPointsVisitor v;
     const_cast< Geometry& >( geom ).accept( v );
 
-    if( !v.points.size() ) return Sphere();
+    if( !v.points.size() ) {
+        return Sphere();
+    }
 
     typedef CGAL::Vector_3< Kernel > Vector_3 ;
 
@@ -567,13 +600,20 @@ double distanceGeometryCollectionToGeometry3D( const Geometry& gA, const Geometr
         }
 
         Sphere bsB( boundingSphere( gB ) );
-        if ( bsB.isEmpty() ) return  std::numeric_limits< double >::infinity() ;
+
+        if ( bsB.isEmpty() ) {
+            return  std::numeric_limits< double >::infinity() ;
+        }
 
         std::vector<size_t> noIntersect;
 
         for ( size_t i = 0; i < gA.numGeometries(); i++ ) {
-            if ( bsA[i].isEmpty() ) continue;
+            if ( bsA[i].isEmpty() ) {
+                continue;
+            }
+
             const double l2 = CGAL::to_double( ( bsB.center() - bsA[i].center() ).squared_length() );
+
             if ( std::pow( bsB.radius() + bsA[i].radius(), 2 ) < l2 ) {
                 noIntersect.push_back( i );
             }

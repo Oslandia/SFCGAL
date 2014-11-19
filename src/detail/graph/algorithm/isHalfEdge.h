@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -40,7 +40,7 @@ namespace algorithm {
  * @brief [private]Test if a bidirectional graph is an half-edge (in order to validate orientation)
  */
 template < typename V, typename E >
-bool isHalfEdge( const GeometryGraphT<V,E> & graph )
+bool isHalfEdge( const GeometryGraphT<V,E>& graph )
 {
     typedef typename GeometryGraphT<V,E>::vertex_descriptor vertex_descriptor ;
     //typedef typename GeometryGraphT<V,E>::edge_descriptor   edge_descriptor ;

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -33,9 +33,9 @@ namespace algorithm {
  */
 template < typename Kernel >
 CGAL::Vector_3< Kernel > normal3D(
-    const CGAL::Point_3< Kernel > & a,
-    const CGAL::Point_3< Kernel > & b,
-    const CGAL::Point_3< Kernel > & c
+    const CGAL::Point_3< Kernel >& a,
+    const CGAL::Point_3< Kernel >& b,
+    const CGAL::Point_3< Kernel >& c
 )
 {
     // bc ^ ba

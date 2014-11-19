@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -129,14 +129,14 @@ void intersection( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
                             std::back_inserter( output.surfaces() ) );
     }
     else if ( pa.handle.which() == PrimitiveSegment && pb.handle.which() == PrimitiveSegment ) {
-        const CGAL::Segment_2<Kernel> *seg1 = pa.as<CGAL::Segment_2<Kernel> >();
-        const CGAL::Segment_2<Kernel> *seg2 = pb.as<CGAL::Segment_2<Kernel> >();
+        const CGAL::Segment_2<Kernel>* seg1 = pa.as<CGAL::Segment_2<Kernel> >();
+        const CGAL::Segment_2<Kernel>* seg2 = pb.as<CGAL::Segment_2<Kernel> >();
         CGAL::Object interObj = CGAL::intersection( *seg1, *seg2 );
         output.addPrimitive( interObj );
     }
     else if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSegment ) {
-        const CGAL::Polygon_with_holes_2<Kernel> *poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
-        const CGAL::Segment_2<Kernel> *seg = pb.as<CGAL::Segment_2<Kernel> >();
+        const CGAL::Polygon_with_holes_2<Kernel>* poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
+        const CGAL::Segment_2<Kernel>* seg = pb.as<CGAL::Segment_2<Kernel> >();
 
         // shortcut for triangle
         if ( poly->holes_begin() == poly->holes_end() && poly->outer_boundary().size() == 3 ) {

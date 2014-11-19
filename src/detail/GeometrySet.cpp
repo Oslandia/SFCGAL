@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -187,12 +187,15 @@ void GeometrySet<2>::addPrimitive( const PrimitiveHandle<2>& p )
     case PrimitivePoint:
         _points.insert( *boost::get<const TypeForDimension<2>::Point*>( p.handle ) );
         break;
+
     case PrimitiveSegment:
         _segments.insert( *boost::get<const TypeForDimension<2>::Segment*>( p.handle ) );
         break;
+
     case PrimitiveSurface:
         _surfaces.push_back( *boost::get<const TypeForDimension<2>::Surface*>( p.handle ) );
         break;
+
     default:
         break;
     }
@@ -205,12 +208,15 @@ void GeometrySet<3>::addPrimitive( const PrimitiveHandle<3>& p )
     case PrimitivePoint:
         _points.insert( *boost::get<const TypeForDimension<3>::Point*>( p.handle ) );
         break;
+
     case PrimitiveSegment:
         _segments.insert( *boost::get<const TypeForDimension<3>::Segment*>( p.handle ) );
         break;
+
     case PrimitiveSurface:
         _surfaces.push_back( *boost::get<const TypeForDimension<3>::Surface*>( p.handle ) );
         break;
+
     case PrimitiveVolume: {
         const TypeForDimension<3>::Volume& vol = *boost::get<const TypeForDimension<3>::Volume*>( p.handle );
         BOOST_ASSERT( !vol.empty() );
@@ -231,7 +237,7 @@ void GeometrySet<3>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
     if ( const TPoint* p = CGAL::object_cast<TPoint>( &o ) ) {
         _points.insert( TPoint( *p ) );
     }
-    else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
+    else if ( const std::vector<TPoint>* pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
         if ( pointsAsRing ) {
             // if pointsAsRing is true, build a polygon out of points
             // FIXME : we use triangulation here, which is not needed
@@ -274,7 +280,7 @@ void GeometrySet<2>::addPrimitive( const CGAL::Object& o, bool pointsAsRing )
     if ( const TPoint* p = CGAL::object_cast<TPoint>( &o ) ) {
         _points.insert( TPoint( *p ) );
     }
-    else if ( const std::vector<TPoint> * pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
+    else if ( const std::vector<TPoint>* pts = CGAL::object_cast<std::vector<TPoint> >( &o ) ) {
         if ( pointsAsRing ) {
             // if pointsAsRing is true, build a polygon out of points
             CGAL::Polygon_2<Kernel> poly;
@@ -448,6 +454,7 @@ void GeometrySet<Dim>::_decompose( const Geometry& g )
     case TYPE_POINT:
         _points.insert( g.as<Point>().toPoint_d<Dim>() );
         break;
+
     case TYPE_LINESTRING: {
         const LineString& ls = g.as<LineString>();
 
@@ -459,14 +466,17 @@ void GeometrySet<Dim>::_decompose( const Geometry& g )
 
         break;
     }
+
     case TYPE_TRIANGLE: {
         _decompose_triangle( g.as<Triangle>(), _surfaces, dim_t<Dim>() );
         break;
     }
+
     case TYPE_POLYGON: {
         _decompose_polygon( g.as<Polygon>(), _surfaces, dim_t<Dim>() );
         break;
     }
+
     case TYPE_TRIANGULATEDSURFACE: {
         const TriangulatedSurface& tri = g.as<TriangulatedSurface>();
 
@@ -476,6 +486,7 @@ void GeometrySet<Dim>::_decompose( const Geometry& g )
 
         break;
     }
+
     case TYPE_POLYHEDRALSURFACE: {
         const PolyhedralSurface& tri = g.as<PolyhedralSurface>();
 
@@ -485,11 +496,13 @@ void GeometrySet<Dim>::_decompose( const Geometry& g )
 
         break;
     }
+
     case TYPE_SOLID: {
         const Solid& solid = g.as<Solid>();
         _decompose_solid( solid, _volumes, dim_t<Dim>() );
         break;
     }
+
     default:
         break;
     }
@@ -564,14 +577,11 @@ void recompose_points( const typename GeometrySet<Dim>::PointCollection& points,
 }
 
 // compare less than
-struct ComparePoints
-{
-    bool operator()( const CGAL::Point_2<Kernel> & lhs, const CGAL::Point_2<Kernel> & rhs)
-    {
+struct ComparePoints {
+    bool operator()( const CGAL::Point_2<Kernel>& lhs, const CGAL::Point_2<Kernel>& rhs ) {
         return lhs.x() < rhs.x() || lhs.y() < rhs.y();
     }
-    bool operator()( const CGAL::Point_3<Kernel> & lhs, const CGAL::Point_3<Kernel> & rhs)
-    {
+    bool operator()( const CGAL::Point_3<Kernel>& lhs, const CGAL::Point_3<Kernel>& rhs ) {
         return lhs.x() < rhs.x() || lhs.y() < rhs.y() || lhs.z() < rhs.z();
     }
 };
@@ -587,7 +597,7 @@ void recompose_segments( const typename GeometrySet<Dim>::SegmentCollection& seg
         return;
     }
 
-    // what we need is a graph, we do a depth first traversal and stop a linestring 
+    // what we need is a graph, we do a depth first traversal and stop a linestring
     // when more than one segment is connected
     // first we need to label vertices
     // then build the graph and traverse depth first
@@ -597,60 +607,68 @@ void recompose_segments( const typename GeometrySet<Dim>::SegmentCollection& seg
     {
         typedef typename std::map< typename TypeForDimension<Dim>::Point, int, ComparePoints > PointMap;
         PointMap pointMap;
+
         for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = segments.begin();
                 it != segments.end();
                 ++it ) {
             const typename PointMap::const_iterator foundSource = pointMap.find( it->primitive().source() );
             const typename PointMap::const_iterator foundTarget = pointMap.find( it->primitive().target() );
             const int sourceId = foundSource != pointMap.end() ? foundSource->second : points.size();
-            if (foundSource == pointMap.end()){
+
+            if ( foundSource == pointMap.end() ) {
                 points.push_back( it->primitive().source() );
                 pointMap[ it->primitive().source() ] = sourceId;
             }
+
             const int targetId = foundTarget != pointMap.end() ? foundTarget->second : points.size();
-            if (foundTarget == pointMap.end()){
+
+            if ( foundTarget == pointMap.end() ) {
                 points.push_back( it->primitive().target() );
                 pointMap[ it->primitive().target() ] = targetId;
             }
-            edges.push_back( Edge(sourceId, targetId) );
+
+            edges.push_back( Edge( sourceId, targetId ) );
         }
     }
 
-    typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::bidirectionalS, 
-                    boost::no_property, 
-                    boost::property<boost::edge_color_t, boost::default_color_type> > Graph;
+    typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::bidirectionalS,
+            boost::no_property,
+            boost::property<boost::edge_color_t, boost::default_color_type> > Graph;
     Graph g( edges.begin(), edges.end(), edges.size() );
 
     // now we find all branches without bifurcations,
 
     boost::graph_traits<Graph>::edge_iterator ei, ei_end;
-    for (boost::tie(ei, ei_end) = boost::edges(g); ei != ei_end; ++ei){
-        if ( boost::get(boost::edge_color, g)[*ei] == boost::white_color ){
+
+    for ( boost::tie( ei, ei_end ) = boost::edges( g ); ei != ei_end; ++ei ) {
+        if ( boost::get( boost::edge_color, g )[*ei] == boost::white_color ) {
             // not already marked, find the first ancestor with multiple connections, or no connections
             // or self (in case of a loop)
             boost::graph_traits<Graph>::edge_descriptor root = *ei;
             {
                 boost::graph_traits<Graph>::in_edge_iterator ej, ek;
-                for ( boost::tie(ej, ek) = boost::in_edges( boost::source(root, g), g );
+
+                for ( boost::tie( ej, ek ) = boost::in_edges( boost::source( root, g ), g );
                         ek - ej == 1 && *ej != *ei ;
-                        boost::tie(ej, ek) = boost::in_edges( boost::source(root, g), g ) ){
+                        boost::tie( ej, ek ) = boost::in_edges( boost::source( root, g ), g ) ) {
                     root = *ej;
                 }
             }
 
             // now we go down
-            LineString * line = new LineString;
+            LineString* line = new LineString;
             lines.push_back( line );
-            line->addPoint( points[ boost::source(root, g) ] );
-            line->addPoint( points[ boost::target(root, g) ] );
-            boost::get(boost::edge_color, g)[root] = boost::black_color;
+            line->addPoint( points[ boost::source( root, g ) ] );
+            line->addPoint( points[ boost::target( root, g ) ] );
+            boost::get( boost::edge_color, g )[root] = boost::black_color;
 
             boost::graph_traits<Graph>::out_edge_iterator ej, ek;
-            for ( boost::tie(ej, ek) = boost::out_edges( boost::target(root, g), g );
+
+            for ( boost::tie( ej, ek ) = boost::out_edges( boost::target( root, g ), g );
                     ek - ej == 1 && *ej != root;
-                    boost::tie(ej, ek) = boost::out_edges( boost::target(*ej, g), g ) ){
-                line->addPoint( points[ boost::target(*ej, g) ] );
-                boost::get(boost::edge_color, g)[*ej] = boost::black_color;
+                    boost::tie( ej, ek ) = boost::out_edges( boost::target( *ej, g ), g ) ) {
+                line->addPoint( points[ boost::target( *ej, g ) ] );
+                boost::get( boost::edge_color, g )[*ej] = boost::black_color;
             }
         }
     }
@@ -882,16 +900,19 @@ void GeometrySet<Dim>::collectPoints( const PrimitiveHandle<Dim>& pa )
         _points.insert( *pt );
         break;
     }
+
     case PrimitiveSegment: {
         const TSegment* seg = boost::get<const TSegment*>( pa.handle );
         _points.insert( seg->source() );
         _points.insert( seg->target() );
         break;
     }
+
     case PrimitiveSurface: {
         _collect_points( *boost::get<const TSurface*>( pa.handle ), _points );
         break;
     }
+
     case PrimitiveVolume: {
         _collect_points( *boost::get<const TVolume*>( pa.handle ), _points );
         break;

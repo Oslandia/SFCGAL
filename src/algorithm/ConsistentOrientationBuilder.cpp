@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -115,7 +115,7 @@ void ConsistentOrientationBuilder::_makeOrientationConsistent()
         _visited[ currentTriangle ] = true ;
 
         //orient neighbors
-        const std::set< size_t > & neighbors = _neighbors[ currentTriangle ] ;
+        const std::set< size_t >& neighbors = _neighbors[ currentTriangle ] ;
 
         for ( std::set< size_t >::const_iterator it = neighbors.begin(); it != neighbors.end(); ++it ) {
             bool hasOppositeEdge, hasParallelEdge ;
@@ -163,7 +163,7 @@ void ConsistentOrientationBuilder::_computeNeighbors()
     _neighbors.resize( numTriangles() );
 
     for ( size_t i = 0; i < _triangles.size(); i++ ) {
-        const std::vector< edge_descriptor > & triangle = _triangles[i] ;
+        const std::vector< edge_descriptor >& triangle = _triangles[i] ;
 
         for ( size_t j = 0; j < triangle.size(); j++ ) {
             vertex_descriptor source = _graph.source( triangle[j] ) ;

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -56,36 +56,47 @@ void WktWriter::writeRec( const Geometry& g )
     case TYPE_POINT:
         write( g.as< Point >() );
         return ;
+
     case TYPE_LINESTRING:
         write( g.as< LineString >() );
         return ;
+
     case TYPE_POLYGON:
         write( g.as< Polygon >() );
         return ;
+
     case TYPE_GEOMETRYCOLLECTION:
         write( g.as< GeometryCollection >() );
         return ;
+
     case TYPE_MULTIPOINT:
         write( g.as< MultiPoint >() );
         return ;
+
     case TYPE_MULTILINESTRING:
         write( g.as< MultiLineString >() );
         return ;
+
     case TYPE_MULTIPOLYGON:
         write( g.as< MultiPolygon >() );
         return ;
+
     case TYPE_TRIANGLE:
         write( g.as< Triangle >() );
         return ;
+
     case TYPE_TRIANGULATEDSURFACE:
         write( g.as< TriangulatedSurface >() );
         return ;
+
     case TYPE_POLYHEDRALSURFACE:
         write( g.as< PolyhedralSurface >() );
         return ;
+
     case TYPE_SOLID:
         write( g.as< Solid >() );
         return ;
+
     case TYPE_MULTISOLID:
         write( g.as< MultiSolid >() );
         return ;

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -61,12 +61,16 @@ double distance( const Geometry& gA, const Geometry& gB, NoValidityCheck )
     switch ( gA.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointGeometry( gA.as< Point >(), gB ) ;
+
     case TYPE_LINESTRING:
         return distanceLineStringGeometry( gA.as< LineString >(), gB ) ;
+
     case TYPE_POLYGON:
         return distancePolygonGeometry( gA.as< Polygon >(), gB ) ;
+
     case TYPE_TRIANGLE:
         return distanceTriangleGeometry( gA.as< Triangle >(), gB ) ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:
@@ -75,6 +79,7 @@ double distance( const Geometry& gA, const Geometry& gB, NoValidityCheck )
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_POLYHEDRALSURFACE:
         return distanceGeometryCollectionToGeometry( gA, gB );
+
     case TYPE_SOLID:
         BOOST_THROW_EXCEPTION( NotImplementedException(
                                    ( boost::format( "distance(%s,%s) is not implemented" ) % gA.geometryType() % gB.geometryType() ).str()
@@ -100,10 +105,13 @@ double distancePointGeometry( const Point& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointPoint( gA, gB.as< Point >() );
+
     case TYPE_LINESTRING:
         return distancePointLineString( gA, gB.as< LineString >() );
+
     case TYPE_POLYGON:
         return distancePointPolygon( gA, gB.as< Polygon >() );
+
     case TYPE_TRIANGLE:
         return distancePointTriangle( gA, gB.as< Triangle >() );
 
@@ -116,6 +124,7 @@ double distancePointGeometry( const Point& gA, const Geometry& gB )
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_POLYHEDRALSURFACE:
         return distanceGeometryCollectionToGeometry( gB, gA );
+
     case TYPE_SOLID:
         BOOST_THROW_EXCEPTION( NotImplementedException(
                                    ( boost::format( "distance(%s,%s) is not implemented" ) % gA.geometryType() % gB.geometryType() ).str()
@@ -215,10 +224,13 @@ double distanceLineStringGeometry( const LineString& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointLineString( gB.as< Point >(), gA ); //symetric
+
     case TYPE_LINESTRING:
         return distanceLineStringLineString( gA, gB.as< LineString >() );
+
     case TYPE_POLYGON:
         return distanceLineStringPolygon( gA, gB.as< Polygon >() );
+
     case TYPE_TRIANGLE:
         return distanceLineStringTriangle( gA, gB.as< Triangle >() );
 
@@ -231,6 +243,7 @@ double distanceLineStringGeometry( const LineString& gA, const Geometry& gB )
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_POLYHEDRALSURFACE:
         return distanceGeometryCollectionToGeometry( gB, gA );
+
     case TYPE_SOLID:
         BOOST_THROW_EXCEPTION( NotImplementedException(
                                    ( boost::format( "distance(%s,%s) is not implemented" ) % gA.geometryType() % gB.geometryType() ).str()
@@ -322,10 +335,13 @@ double distancePolygonGeometry( const Polygon& gA, const Geometry& gB )
     switch ( gB.geometryTypeId() ) {
     case TYPE_POINT:
         return distancePointPolygon( gB.as< Point >(), gA );           //symetric
+
     case TYPE_LINESTRING:
         return distanceLineStringPolygon( gB.as< LineString >(), gA ); //symetric
+
     case TYPE_POLYGON:
         return distancePolygonPolygon( gA, gB.as< Polygon >() );
+
     case TYPE_TRIANGLE:
         return distancePolygonTriangle( gA, gB.as< Triangle >() );
 
@@ -338,6 +354,7 @@ double distancePolygonGeometry( const Polygon& gA, const Geometry& gB )
     case TYPE_TRIANGULATEDSURFACE:
     case TYPE_POLYHEDRALSURFACE:
         return distanceGeometryCollectionToGeometry( gB, gA );
+
     case TYPE_SOLID:
         BOOST_THROW_EXCEPTION( NotImplementedException(
                                    ( boost::format( "distance(%s,%s) is not implemented" ) % gA.geometryType() % gB.geometryType() ).str()
@@ -393,17 +410,25 @@ double distanceTriangleGeometry( const Triangle& gA, const Geometry& gB )
 }
 
 struct Circle {
-    Circle( const double & r, CGAL::Vector_2<Kernel> & c )
-        : _radius(r)
-        , _center(c)
-        , _empty(false)
-    {}
+    Circle( const double& r, CGAL::Vector_2<Kernel>& c )
+        : _radius( r )
+        , _center( c )
+        , _empty( false ) {
+    }
     Circle()
-        : _empty(true)
-    {}
-    bool isEmpty() const {return _empty;}
-    double radius() const {BOOST_ASSERT(!_empty); return _radius;}
-    const CGAL::Vector_2<Kernel> & center() const {BOOST_ASSERT(!_empty); return _center;}
+        : _empty( true ) {
+    }
+    bool isEmpty() const {
+        return _empty;
+    }
+    double radius() const {
+        BOOST_ASSERT( !_empty );
+        return _radius;
+    }
+    const CGAL::Vector_2<Kernel>& center() const {
+        BOOST_ASSERT( !_empty );
+        return _center;
+    }
 private:
     double _radius;
     CGAL::Vector_2<Kernel> _center;
@@ -412,12 +437,17 @@ private:
 
 const Circle boundingCircle( const Geometry& geom )
 {
-    if ( geom.isEmpty() ) return Circle();
+    if ( geom.isEmpty() ) {
+        return Circle();
+    }
+
     using namespace SFCGAL::detail;
     GetPointsVisitor v;
     const_cast< Geometry& >( geom ).accept( v );
 
-    if( !v.points.size() ) return Circle();
+    if( !v.points.size() ) {
+        return Circle();
+    }
 
     typedef CGAL::Vector_2< Kernel > Vector_2 ;
 
@@ -478,11 +508,18 @@ double distanceGeometryCollectionToGeometry( const Geometry& gA, const Geometry&
         }
 
         Circle bcB( boundingCircle( gB ) );
-        if ( bcB.isEmpty() ) return  std::numeric_limits< double >::infinity() ;
+
+        if ( bcB.isEmpty() ) {
+            return  std::numeric_limits< double >::infinity() ;
+        }
+
         std::vector<size_t> noIntersect;
 
         for ( size_t i = 0; i < gA.numGeometries(); i++ ) {
-            if ( bcA[i].isEmpty() ) continue;
+            if ( bcA[i].isEmpty() ) {
+                continue;
+            }
+
             const double l2 = CGAL::to_double( ( bcB.center() - bcA[i].center() ).squared_length() );
 
             if ( std::pow( bcB.radius() + bcA[i].radius(), 2 ) < l2 ) {

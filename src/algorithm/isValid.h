@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -57,7 +57,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
     }
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) \
         SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"")
-        
+
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
     {\
         using namespace SFCGAL;\

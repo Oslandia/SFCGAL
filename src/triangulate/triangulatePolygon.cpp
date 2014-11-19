@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -56,14 +56,19 @@ void triangulatePolygon3D(
     switch ( g.geometryTypeId() ) {
     case TYPE_TRIANGLE:
         return triangulatePolygon3D( g.as< Triangle >(), triangulatedSurface );
+
     case TYPE_POLYGON:
         return triangulatePolygon3D( g.as< Polygon >(), triangulatedSurface );
+
     case TYPE_TRIANGULATEDSURFACE:
         return triangulatePolygon3D( g.as< TriangulatedSurface >(), triangulatedSurface );
+
     case TYPE_POLYHEDRALSURFACE:
         return triangulatePolygon3D( g.as< PolyhedralSurface >(), triangulatedSurface );
+
     case TYPE_SOLID:
         return triangulatePolygon3D( g.as< Solid >(), triangulatedSurface );
+
     case TYPE_MULTIPOLYGON:
     case TYPE_MULTISOLID:
     case TYPE_GEOMETRYCOLLECTION: {
@@ -73,6 +78,7 @@ void triangulatePolygon3D(
 
         return ;
     }
+
     default:
         BOOST_THROW_EXCEPTION(
             InappropriateGeometryException(
@@ -166,14 +172,19 @@ void triangulatePolygon3D(
         /*
          * note, we do not include the last point, since it's equal to the last and that
          */
-        if (!ring.numPoints()) continue;
+        if ( !ring.numPoints() ) {
+            continue;
+        }
+
         Vertex_handle v_prev = cdt.addVertex( ring.pointN( 0 ).coordinate() );
         Vertex_handle v_0 = v_prev;
+
         for ( size_t j = 1; j < ring.numPoints()-1; j++ ) {
             Vertex_handle vh = cdt.addVertex( ring.pointN( j ).coordinate() );
             cdt.addConstraint( v_prev, vh );
             v_prev = vh;
         }
+
         cdt.addConstraint( v_prev, v_0 );
     }
 

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -64,19 +64,25 @@ double area( const Geometry& g, NoValidityCheck )
     case TYPE_POINT:
     case TYPE_LINESTRING:
         return 0 ;
+
     case TYPE_POLYGON:
         return area( g.as< Polygon >() ) ;
+
     case TYPE_TRIANGLE:
         return area( g.as< Triangle >() ) ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:
     case TYPE_GEOMETRYCOLLECTION:
         return area( g.as< GeometryCollection >() ) ;
+
     case TYPE_TRIANGULATEDSURFACE:
         return area( g.as< TriangulatedSurface >() ) ;
+
     case TYPE_POLYHEDRALSURFACE:
         return area( g.as< PolyhedralSurface >() ) ;
+
     case TYPE_SOLID:
     case TYPE_MULTISOLID:
         return 0 ;
@@ -199,8 +205,10 @@ double area3D( const Geometry& g, NoValidityCheck )
     case TYPE_POINT:
     case TYPE_LINESTRING:
         return 0 ;
+
     case TYPE_POLYGON:
         return area3D( g.as< Polygon >() );
+
     case TYPE_TRIANGLE:
         return area3D( g.as< Triangle >() );
 
@@ -209,10 +217,13 @@ double area3D( const Geometry& g, NoValidityCheck )
     case TYPE_MULTIPOLYGON:
     case TYPE_GEOMETRYCOLLECTION:
         return area3D( g.as< GeometryCollection >() );
+
     case TYPE_TRIANGULATEDSURFACE:
         return area3D( g.as< TriangulatedSurface >() );
+
     case TYPE_POLYHEDRALSURFACE:
         return area3D( g.as< PolyhedralSurface >() );
+
     case TYPE_SOLID:
     case TYPE_MULTISOLID:
         return 0 ;

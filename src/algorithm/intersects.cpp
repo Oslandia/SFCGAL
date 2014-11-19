@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -82,8 +82,8 @@ bool _intersects( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb )
 
     else if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitivePoint ) {
         // Polygon versus Point
-        const CGAL::Polygon_with_holes_2<Kernel> *poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
-        const CGAL::Point_2<Kernel> *pt = pb.as<CGAL::Point_2<Kernel> >();
+        const CGAL::Polygon_with_holes_2<Kernel>* poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
+        const CGAL::Point_2<Kernel>* pt = pb.as<CGAL::Point_2<Kernel> >();
 
         int b1 = poly->outer_boundary().bounded_side( *pt );
 
@@ -114,8 +114,8 @@ bool _intersects( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb )
     //
 
     else if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSegment ) {
-        const CGAL::Polygon_with_holes_2<Kernel> *poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
-        const CGAL::Segment_2<Kernel> *seg = pb.as<CGAL::Segment_2<Kernel> >();
+        const CGAL::Polygon_with_holes_2<Kernel>* poly = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
+        const CGAL::Segment_2<Kernel>* seg = pb.as<CGAL::Segment_2<Kernel> >();
 
         // 1. if the segment intersects a boundary of the polygon, returns true
         // 2. else, if one of the point of the segment intersects the polygon, returns true
@@ -157,8 +157,8 @@ bool _intersects( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb )
     //
 
     else if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSurface ) {
-        const CGAL::Polygon_with_holes_2<Kernel> *poly1 = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
-        const CGAL::Polygon_with_holes_2<Kernel> *poly2 = pb.as<CGAL::Polygon_with_holes_2<Kernel> >();
+        const CGAL::Polygon_with_holes_2<Kernel>* poly1 = pa.as<CGAL::Polygon_with_holes_2<Kernel> >();
+        const CGAL::Polygon_with_holes_2<Kernel>* poly2 = pb.as<CGAL::Polygon_with_holes_2<Kernel> >();
 
         // 1. if rings intersects, returns true
         // 2. else, if poly1 is inside poly2 or poly1 inside poly2 (but not in holes), returns true
@@ -307,20 +307,20 @@ bool _intersects( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb )
     }
 
     if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitivePoint ) {
-        const CGAL::Triangle_3<Kernel> *tri = pa.as<CGAL::Triangle_3<Kernel> >();
-        const CGAL::Point_3<Kernel> *pt = pb.as<CGAL::Point_3<Kernel> >();
+        const CGAL::Triangle_3<Kernel>* tri = pa.as<CGAL::Triangle_3<Kernel> >();
+        const CGAL::Point_3<Kernel>* pt = pb.as<CGAL::Point_3<Kernel> >();
         return tri->has_on( *pt );
     }
 
     if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSegment ) {
-        const CGAL::Triangle_3<Kernel> *tri = pa.as<CGAL::Triangle_3<Kernel> >();
-        const CGAL::Segment_3<Kernel> *seg = pb.as<CGAL::Segment_3<Kernel> >();
+        const CGAL::Triangle_3<Kernel>* tri = pa.as<CGAL::Triangle_3<Kernel> >();
+        const CGAL::Segment_3<Kernel>* seg = pb.as<CGAL::Segment_3<Kernel> >();
         return CGAL::do_intersect( *tri, *seg );
     }
 
     if ( pa.handle.which() == PrimitiveSurface && pb.handle.which() == PrimitiveSurface ) {
-        const CGAL::Triangle_3<Kernel> *tri1 = pa.as<CGAL::Triangle_3<Kernel> >();
-        const CGAL::Triangle_3<Kernel> *tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
+        const CGAL::Triangle_3<Kernel>* tri1 = pa.as<CGAL::Triangle_3<Kernel> >();
+        const CGAL::Triangle_3<Kernel>* tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
         return CGAL::do_intersect( *tri1, *tri2 );
     }
 

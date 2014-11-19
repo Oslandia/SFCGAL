@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,8 +35,8 @@ namespace algorithm {
 template < typename Graph >
 void studyOrientation(
     Graph& graph,
-    std::vector< typename Graph::edge_descriptor > & reference,
-    std::vector< typename Graph::edge_descriptor > & target,
+    std::vector< typename Graph::edge_descriptor >& reference,
+    std::vector< typename Graph::edge_descriptor >& target,
     bool& hasOppositeEdge,
     bool& hasParallelEdge
 )
@@ -68,8 +68,8 @@ void studyOrientation(
 template < typename Graph >
 bool makeConsistentOrientation(
     Graph& graph,
-    std::vector< typename Graph::edge_descriptor > & reference,
-    std::vector< typename Graph::edge_descriptor > & target
+    std::vector< typename Graph::edge_descriptor >& reference,
+    std::vector< typename Graph::edge_descriptor >& target
 )
 {
     /*

@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -114,14 +114,18 @@ typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron, Kernel, CGAL::Tag_
 #else
 // Starting with 4.3, we must now pass a property_map
 template<class Polyhedron>
-struct Edge_mark_property_map{
-  typedef bool value_type;
-  typedef value_type reference;
-  typedef std::pair<typename Polyhedron::Halfedge_handle,Polyhedron*> key_type;
-  typedef boost::read_write_property_map_tag category;
+struct Edge_mark_property_map {
+    typedef bool value_type;
+    typedef value_type reference;
+    typedef std::pair<typename Polyhedron::Halfedge_handle,Polyhedron*> key_type;
+    typedef boost::read_write_property_map_tag category;
 
-  friend reference get(Edge_mark_property_map,const key_type& key) {return key.first->mark;}
-  friend void put(Edge_mark_property_map,key_type key,value_type v) {key.first->mark=v;}
+    friend reference get( Edge_mark_property_map,const key_type& key ) {
+        return key.first->mark;
+    }
+    friend void put( Edge_mark_property_map,key_type key,value_type v ) {
+        key.first->mark=v;
+    }
 };
 typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron,Kernel,Edge_mark_property_map<MarkedPolyhedron> > Split_visitor;
 #endif
@@ -304,21 +308,21 @@ void intersection( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
         }
     }
     else if ( pa.handle.which() == PrimitiveSegment && pb.handle.which() == PrimitiveSegment ) {
-        const CGAL::Segment_3<Kernel> *seg1 = pa.as<CGAL::Segment_3<Kernel> >();
-        const CGAL::Segment_3<Kernel> *seg2 = pb.as<CGAL::Segment_3<Kernel> >();
+        const CGAL::Segment_3<Kernel>* seg1 = pa.as<CGAL::Segment_3<Kernel> >();
+        const CGAL::Segment_3<Kernel>* seg2 = pb.as<CGAL::Segment_3<Kernel> >();
         CGAL::Object interObj = CGAL::intersection( *seg1, *seg2 );
         output.addPrimitive( interObj );
     }
     else if ( pa.handle.which() == PrimitiveSurface ) {
-        const CGAL::Triangle_3<Kernel> *tri1 = pa.as<CGAL::Triangle_3<Kernel> >();
+        const CGAL::Triangle_3<Kernel>* tri1 = pa.as<CGAL::Triangle_3<Kernel> >();
 
         if ( pb.handle.which() == PrimitiveSegment ) {
-            const CGAL::Segment_3<Kernel> *seg2 = pb.as<CGAL::Segment_3<Kernel> >();
+            const CGAL::Segment_3<Kernel>* seg2 = pb.as<CGAL::Segment_3<Kernel> >();
             CGAL::Object interObj = CGAL::intersection( *tri1, *seg2 );
             output.addPrimitive( interObj );
         }
         else if ( pb.handle.which() == PrimitiveSurface ) {
-            const CGAL::Triangle_3<Kernel> *tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
+            const CGAL::Triangle_3<Kernel>* tri2 = pb.as<CGAL::Triangle_3<Kernel> >();
             CGAL::Object interObj = CGAL::intersection( *tri1, *tri2 );
             output.addPrimitive( interObj, /* pointsAsRing */ true );
         }

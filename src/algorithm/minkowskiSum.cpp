@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -53,7 +53,7 @@ namespace algorithm {
 /**
  * dispatch gA+gB sum
  */
-void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel > & polygonSet ) ;
+void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel >& polygonSet ) ;
 /*
  * append gA+gB into the polygonSet
  */
@@ -80,7 +80,7 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2& gB, Polygon_se
 ///
 ///
 ///
-void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel > & polygonSet )
+void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2< Kernel >& polygonSet )
 {
     if ( gA.isEmpty() ) {
         return ;
@@ -89,14 +89,19 @@ void minkowskiSum( const Geometry& gA, const Polygon_2& gB, CGAL::Polygon_set_2<
     switch ( gA.geometryTypeId() ) {
     case TYPE_POINT:
         return minkowskiSum( gA.as< Point >(), gB, polygonSet ) ;
+
     case TYPE_LINESTRING:
         return minkowskiSum( gA.as< LineString >(), gB, polygonSet ) ;
+
     case TYPE_POLYGON:
         return minkowskiSum( gA.as< Polygon >(), gB, polygonSet ) ;
+
     case TYPE_TRIANGLE:
         return minkowskiSum( gA.as< Triangle >().toPolygon(), gB, polygonSet ) ;
+
     case TYPE_SOLID:
         return minkowskiSum( gA.as< Solid >(), gB, polygonSet ) ;
+
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
     case TYPE_MULTIPOLYGON:

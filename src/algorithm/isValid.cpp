@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -87,6 +87,7 @@ const Validity isValid( const Point& p )
     if ( p.isEmpty() ) {
         return Validity::valid();
     }
+
     ( void )p;
     //return( isValid(p.coordinate() ) );
     return Validity::valid();
@@ -97,6 +98,7 @@ const Validity isValid( const LineString& l, const double& toleranceAbs )
     if ( l.isEmpty() ) {
         return Validity::valid();
     }
+
 //    const size_t numPoints = l.numPoints();
 //    for ( size_t p=0; p!=numPoints; ++p) {
 //        const Validity v = isValid(l.pointN(p));
@@ -245,6 +247,7 @@ const Validity isValid( const MultiLineString& ml, const double& toleranceAbs )
     if ( ml.isEmpty() ) {
         return Validity::valid();
     }
+
     const size_t numLineString = ml.numGeometries();
 
     for ( size_t l = 0; l != numLineString; ++l ) {
@@ -263,6 +266,7 @@ const Validity isValid( const MultiPolygon& mp, const double& toleranceAbs )
     if ( mp.isEmpty() ) {
         return Validity::valid();
     }
+
     const size_t numPolygons = mp.numGeometries();
 
     for ( size_t p = 0; p != numPolygons; ++p ) {
@@ -296,6 +300,7 @@ const Validity isValid( const GeometryCollection& gc, const double& toleranceAbs
     if ( gc.isEmpty() ) {
         return Validity::valid();
     }
+
     const size_t numGeom = gc.numGeometries();
 
     for ( size_t g = 0; g != numGeom; ++g ) {
@@ -314,6 +319,7 @@ const Validity isValid( const TriangulatedSurface& tin, const SurfaceGraph& grap
     if ( tin.isEmpty() ) {
         return Validity::valid();
     }
+
     size_t numTriangles = tin.numTriangles();
 
     for ( size_t t=0; t != numTriangles; ++t ) {
@@ -340,6 +346,7 @@ const Validity isValid( const TriangulatedSurface& tin, const double& toleranceA
     if ( tin.isEmpty() ) {
         return Validity::valid();
     }
+
     const SurfaceGraph graph( tin );
     return graph.isValid() ? isValid( tin, graph, toleranceAbs ) : graph.isValid() ;
 }
@@ -349,6 +356,7 @@ const Validity isValid( const PolyhedralSurface& s, const SurfaceGraph& graph, c
     if ( s.isEmpty() ) {
         return Validity::valid();
     }
+
     size_t numPolygons = s.numPolygons();
 
     for ( size_t p=0; p != numPolygons; ++p ) {
@@ -375,6 +383,7 @@ const Validity isValid( const PolyhedralSurface& s, const double& toleranceAbs )
     if ( s.isEmpty() ) {
         return Validity::valid();
     }
+
     const SurfaceGraph graph( s );
     return graph.isValid() ? isValid( s, graph, toleranceAbs ) : graph.isValid() ;
 }
@@ -384,6 +393,7 @@ const Validity isValid( const Solid& solid, const double& toleranceAbs )
     if ( solid.isEmpty() ) {
         return Validity::valid();
     }
+
     const size_t numShells = solid.numShells();
 
     for ( size_t s = 0; s != numShells; ++s ) {
@@ -411,6 +421,7 @@ const Validity isValid( const MultiSolid& ms, const double& toleranceAbs )
     if ( ms.isEmpty() ) {
         return Validity::valid();
     }
+
     const size_t numMultiSolid = ms.numGeometries();
 
     for ( size_t s = 0; s != numMultiSolid; ++s ) {
@@ -430,26 +441,37 @@ const Validity isValid( const Geometry& g, const double& toleranceAbs )
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
         return isValid( g.as< Point >() );
+
     case TYPE_LINESTRING:
         return isValid( g.as< LineString >(),          toleranceAbs ) ;
+
     case TYPE_POLYGON:
         return isValid( g.as< Polygon >(),             toleranceAbs ) ;
+
     case TYPE_TRIANGLE:
         return isValid( g.as< Triangle >(),            toleranceAbs ) ;
+
     case TYPE_SOLID:
         return isValid( g.as< Solid >(),               toleranceAbs ) ;
+
     case TYPE_MULTIPOINT:
         return Validity::valid();
+
     case TYPE_MULTILINESTRING:
         return isValid( g.as< MultiLineString >(),     toleranceAbs ) ;
+
     case TYPE_MULTIPOLYGON:
         return isValid( g.as< MultiPolygon >(),        toleranceAbs ) ;
+
     case TYPE_MULTISOLID:
         return isValid( g.as< MultiSolid >(),          toleranceAbs ) ;
+
     case TYPE_GEOMETRYCOLLECTION:
         return isValid( g.as< GeometryCollection >(),  toleranceAbs ) ;
+
     case TYPE_TRIANGULATEDSURFACE:
         return isValid( g.as< TriangulatedSurface >(), toleranceAbs ) ;
+
     case TYPE_POLYHEDRALSURFACE:
         return isValid( g.as< PolyhedralSurface >(),   toleranceAbs ) ;
     }

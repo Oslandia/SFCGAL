@@ -8,7 +8,7 @@
  *   modify it under the terms of the GNU Library General Public
  *   License as published by the Free Software Foundation; either
  *   version 2 of the License, or (at your option) any later version.
- *   
+ *
  *   This library is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -51,24 +51,31 @@ void OsgFactory::addToGeometry( osg::Geometry* geometry, const Geometry& g )
     case TYPE_POINT:
         addToGeometry( geometry, g.as<Point>() );
         break;
+
     case TYPE_LINESTRING:
         addToGeometry( geometry, g.as<LineString>() );
         break;
+
     case TYPE_POLYGON:
         addToGeometry( geometry, g.as<Polygon>() );
         break;
+
     case TYPE_TRIANGLE:
         addToGeometry( geometry, g.as<Triangle>() );
         break;
+
     case TYPE_TRIANGULATEDSURFACE:
         addToGeometry( geometry, g.as<TriangulatedSurface>() );
         break;
+
     case TYPE_POLYHEDRALSURFACE:
         addToGeometry( geometry, g.as<PolyhedralSurface>() );
         break;
+
     case TYPE_SOLID:
         addToGeometry( geometry, g.as<Solid>() );
         break;
+
     default:
         BOOST_THROW_EXCEPTION( Exception(
                                    ( boost::format( "can't convert %1% to osg::Geometry" ) % g.geometryType() ).str()
