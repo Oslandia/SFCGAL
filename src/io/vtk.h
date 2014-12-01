@@ -21,7 +21,6 @@
 #ifndef _SFCGAL_IO_VTK_H_
 #define _SFCGAL_IO_VTK_H_
 
-#include <boost/test/unit_test.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -39,7 +38,6 @@
 #include <SFCGAL/MultiPolygon.h>
 #include <SFCGAL/MultiSolid.h>
 
-using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 namespace SFCGAL {
