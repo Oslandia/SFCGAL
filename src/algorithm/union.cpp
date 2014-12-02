@@ -30,8 +30,10 @@
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/intersections.h>
+#include <CGAL/box_intersection_d.h>
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/connected_components.hpp>
 //
 // Union kernel
 
@@ -44,35 +46,15 @@ typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
 
 namespace algorithm {
-void union_( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
-                   GeometrySet<3>& output, dim_t<3> ){BOOST_ASSERT(false);}
-// see Intersection2D.cpp
-void union_( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
-                   GeometrySet<2>& output, dim_t<2> ){BOOST_ASSERT(false);}
+//void union_( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
+//                   GeometrySet<3>& output, dim_t<3> ){BOOST_ASSERT(false);}
+//void union_( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
+//                   GeometrySet<2>& output, dim_t<2> ){BOOST_ASSERT(false);}
 //
-// We deal here with symmetric call
-template <int Dim>
-void dispatch_union_sym( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb,
-                                GeometrySet<Dim>& output )
-{
-    // assume types are ordered by dimension within the boost::variant
-    if ( pa.handle.which() >= pb.handle.which() ) {
-        union_( pa, pb, output, dim_t<Dim>() );
-    }
-    else {
-        union_( pb, pa, output, dim_t<Dim>() );
-    }
-}
 
-template <int Dim>
-void union_( const PrimitiveHandle<Dim>& pa, const PrimitiveHandle<Dim>& pb, GeometrySet<Dim>& output )
-{
-    dispatch_union_sym( pa, pb, output );
-}
-
-template void union_<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b, GeometrySet<2>& );
-template void union_<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
-
+//template void union_<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b, GeometrySet<2>& );
+//template void union_<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
+//
 /**
  * union post processing
  */
@@ -116,6 +98,79 @@ void post_union( const GeometrySet<3>& input, GeometrySet<3>& output )
     output = input;
 }
 
+// class called by  box_intersection_d
+// the intersecting boxes create edges in the graph
+// the primitives are stored as graph node so that we have a cluster
+// even for primitives that are completely disjoint from the rest
+template <int Dim> 
+struct Cluster
+{
+    typedef std::vector< PrimitiveHandle<Dim> > PrimitiveHandleSet;
+    typedef typename SFCGAL::detail::BoxCollection<Dim>::Type BoxCollection;
+    typedef boost::adjacency_list<
+        boost::listS, 
+        boost::vecS, 
+        boost::undirectedS, 
+        boost::no_property, 
+        boost::no_property,
+        boost::no_property, 
+        boost::vecS> Graph;
+    typedef std::map< PrimitiveHandle<Dim>*, int > PrimitiveMap;
+
+    Cluster( const BoxCollection & aboxes,  const BoxCollection & bboxes)
+        : _map( new PrimitiveMap() )
+        , _graph( new Graph ) 
+    {
+        addHandles( aboxes.begin(), aboxes.end() );
+        addHandles( bboxes.begin(), bboxes.end() );
+    }
+
+    void operator()( const typename PrimitiveBox<Dim>::Type& a,
+                     const typename PrimitiveBox<Dim>::Type& b )
+    {
+        BOOST_ASSERT( _map->find(a.handle()) != _map->end()  && _map->find(b.handle()) != _map->end() );
+        boost::add_edge( (*_map)[a.handle()], (*_map)[b.handle()], *_graph);
+    }
+
+    std::vector< PrimitiveHandleSet > get() 
+    {
+        std::vector<int> components( boost::num_vertices(*_graph) );
+        const int num = boost::connected_components(*_graph, &components[0]);
+        std::vector< PrimitiveHandleSet > out(num);
+        for (typename PrimitiveMap::const_iterator it = _map->begin(); it != _map->end(); ++it){
+            out[ components[ it->second ] ].push_back( *it->first );
+        }
+        return out;
+    }
+
+private:
+    // we use shared ptr in order to have a correct default cpy when passing an instance as a functor
+    // by value
+    // @note we could have used a boost::ref wrapper instead but it doesn't play nice with box_intersection_d
+    boost::shared_ptr<PrimitiveMap> _map;
+    boost::shared_ptr<Graph> _graph;
+
+    template <typename BoxIterator>
+    void addHandles( BoxIterator begin, BoxIterator end)
+    {
+        for (BoxIterator it = begin; it != end; it++ ) 
+            (*_map)[it->handle()] = boost::add_vertex(*_graph);
+    }
+
+};
+
+// append to result the union of all primitives in cluster, one at a time
+// we just append union to the result
+template <int Dim>
+void union_( const typename Cluster<Dim>::PrimitiveHandleSet & cluster, GeometrySet<Dim> & /*result*/){
+    BOOST_THROW_EXCEPTION( NotImplementedException( std::string(__FUNCTION__)+" is not implemented" ) );
+    if ( cluster.size() ) return; // easy one :)
+
+
+
+}
+
+
 template <int Dim>
 void union_( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output )
 {
@@ -126,69 +181,43 @@ void union_( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<D
     a.computeBoundingBoxes( ahandles, aboxes );
     b.computeBoundingBoxes( bhandles, bboxes );
 
-    // if a is valid, then there shoudn't be any self intersection
-   
-    // note: it may be more efficient to union geometries that are disjoined first
-    // 
-    // now things are a bit tricky because several elements from a
-    // can combine with an element from b and yield one element
-    // what we need to do is 
-    // foreach b_elem in b
-    //          collect all element from b that intersect b_elem (bbox)
-    //          remove them from a
-    //          remove b_elem from b
-    //          peform the union of b_elem and all those elements
-    //          add the result to a 
-    // 
+    // GLOBAL
+    // first step is clustering of primitives
+    // for each cluster union the primitives
+    // union the clusters (easy, they are disjoint, so the function union_(cluster, geomset) just appends to geomset)
     //
-    // add all remaining elements in b to a
+    // DETAIL
+    // to cluster the primitives we need to build a graph
+    // and extract all disjoint subgraphs
+    // that's what Cluster class does in conjunction with box_intersection_d
+    //
+    // to union cluster primitives
+    // store the first primitive
+    // order the other according to their distance to the first primitive
+    // union them one at a time
+    //
+    // to union one single primitive to a set
+    // subtract all set primitives to the primitive to union
+    // add the result
     
-    typename BoxCollection::iterator b_elem = bboxes.begin();
-    while ( b_elem != bboxes.end() ){
-        BoxCollection aboxes_intersecting_bboxes;
-        typename BoxCollection::iterator a_elem = aboxes.begin();
-        while ( a_elem != aboxes.end() ){
-            if ( CGAL::do_overlap(a_elem->bbox() , b_elem->bbox()) ){
-                aboxes_intersecting_bboxes.push_back( *a_elem );
-                a_elem = aboxes.erase( a_elem );
-            }
-            else {
-                ++a_elem;
-            }
-        }
+    Cluster<Dim> cluster( aboxes, bboxes );
+    CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+                              bboxes.begin(), bboxes.end(),
+                              cluster );
+    
+    typedef typename std::vector< typename Cluster<Dim>::PrimitiveHandleSet > ClusterVector;
+    ClusterVector clusters( cluster.get() );
 
-        if ( !aboxes_intersecting_bboxes.empty() ){
-            GeometrySet<Dim> result;
-
-            // TODO compute result
-
-            HandleCollection result_handles;
-            BoxCollection result_boxes;
-            result.computeBoundingBoxes( result_handles, result_boxes);
-            aboxes.insert( aboxes.end(), result_boxes.begin(), result_boxes.end());
-            b_elem = bboxes.erase( b_elem );
-        }
-        else {
-            ++b_elem;
-        }
+    GeometrySet<Dim> result;
+    for ( typename ClusterVector::iterator cluster = clusters.begin(); cluster != clusters.end(); ++cluster ){
+        // @TODO reorder primitives occording to their distance to the fist one
+        // or use a r-tree for cascaded union on the cluster but it it way more complicated
+        union_(*cluster, result);
     }
 
-    aboxes.insert( aboxes.end(), bboxes.begin(), bboxes.end());
-
-    GeometrySet<Dim> temp, temp2;
-    typename BoxCollection::iterator a_elem = aboxes.begin();
-    const typename BoxCollection::iterator end = aboxes.end();
-    for (; a_elem != end; ++a_elem) temp.addPrimitive( *a_elem->handle() );
-
-    
-
-    // for intersecting primitive pairs (a_i, b_j), perform the union, repl
-    //{
-    //    dispatch_union_sym<Dim>( *a.handle(), *b.handle(), temp );
-    //}
-
-    post_union( temp, temp2 );
-    output.merge( temp2 );
+    GeometrySet<Dim> temp;
+    post_union( result, temp );
+    output.merge( temp );
 }
 
 template void union_<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );

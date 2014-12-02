@@ -42,10 +42,7 @@
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
 
-#include <boost/shared_ptr.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/depth_first_search.hpp>
-#include <boost/graph/connected_components.hpp>
 
 #include <map>
 
