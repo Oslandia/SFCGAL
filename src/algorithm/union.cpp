@@ -92,6 +92,7 @@ struct HandledBox{
 //template void union_<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b, GeometrySet<2>& );
 //template void union_<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
 //
+
 /**
  * union post processing
  */
