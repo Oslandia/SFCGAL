@@ -34,7 +34,7 @@
 //
 // Union kernel
 
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << "debug: " 
+#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: " 
 
 using namespace SFCGAL::detail;
 
@@ -42,45 +42,45 @@ namespace SFCGAL {
 
 namespace algorithm {
 
+
 template <int Dim>
-struct PrimitivePtr: boost::variant< 
-        typename boost::shared_ptr<typename Point_d<Dim>::Type>,
-        typename boost::shared_ptr<typename Segment_d<Dim>::Type>,
-        typename boost::shared_ptr<typename Surface_d<Dim>::Type>,
-        typename boost::shared_ptr<typename Volume_d<Dim>::Type> >
+struct PrimitiveVec: boost::variant< 
+        typename std::vector<typename boost::shared_ptr<typename Point_d<Dim>::Type> >,
+        typename std::vector<typename boost::shared_ptr<typename Segment_d<Dim>::Type> >,
+        typename std::vector<typename boost::shared_ptr<typename Surface_d<Dim>::Type> >,
+        typename std::vector<typename boost::shared_ptr<typename Volume_d<Dim>::Type> > >
 {
+    typedef boost::shared_ptr< typename Point_d<Dim>::Type > PointPtr;
+    typedef boost::shared_ptr< typename Segment_d<Dim>::Type> SegmentPtr;
+    typedef boost::shared_ptr< typename Surface_d<Dim>::Type> SurfacePtr;
+    typedef boost::shared_ptr< typename Volume_d<Dim>::Type > VolumePtr;
+    typedef std::vector< PointPtr   > PointPtrVec;
+    typedef std::vector< SegmentPtr > SegmentPtrVec;
+    typedef std::vector< SurfacePtr > SurfacePtrVec;
+    typedef std::vector< VolumePtr  > VolumePtrVec;
 
     template <class T>
-    PrimitivePtr( T* p )
-        : boost::variant< 
-            typename boost::shared_ptr<typename Point_d<Dim>::Type>,
-            typename boost::shared_ptr<typename Segment_d<Dim>::Type>,
-            typename boost::shared_ptr<typename Surface_d<Dim>::Type>,
-            typename boost::shared_ptr<typename Volume_d<Dim>::Type> 
-            >( boost::shared_ptr<T>(p) )
+    PrimitiveVec( const T & v )
+        : boost::variant< PointPtrVec, SegmentPtrVec, SurfacePtrVec, VolumePtrVec >( v )
     {}
 
     template <typename T>
-    const T& as() const {
-        return *(boost::get< boost::shared_ptr<T> >( *this ) );
+    T& as() {
+        return boost::get< T >( *this );
     }
-};
 
-template <class T, int Dim>
-inline const T& to( )
-{
-}
-
-template <int Dim>
-struct PrimitivePtrVec{
-    typedef std::vector< PrimitivePtr<Dim> > Type;
+    template <typename T>
+    const T& as() const {
+        return boost::get< T >( *this );
+    }
 };
 
 // this one is a tad complicated because we want bboxes with handle to be responsible for the
 // primitives, hence the use of shared ptr instead of a dumb ptr
 template <int Dim>
 struct HandledBox{
-    typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, boost::shared_ptr< typename PrimitivePtrVec<Dim>::Type > > Type;
+    typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, boost::shared_ptr< PrimitiveVec<Dim> > > Type;
+    typedef std::vector< Type > Vector;
 };
 
 //void union_( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
@@ -138,52 +138,200 @@ void post_union( const GeometrySet<3>& input, GeometrySet<3>& output )
 template <int Dim>
 std::vector< typename HandledBox<Dim>::Type > compute_bboxes( const GeometrySet<Dim>& gs )
 {
+    typedef typename PrimitiveVec<Dim>::PointPtr PointPtr;
+    typedef typename PrimitiveVec<Dim>::SegmentPtr SegmentPtr;
+    typedef typename PrimitiveVec<Dim>::SurfacePtr SurfacePtr;
+    typedef typename PrimitiveVec<Dim>::VolumePtr VolumePtr;
+    typedef typename std::vector< PointPtr > PointPtrVec;
+    typedef typename std::vector< SegmentPtr > SegmentPtrVec;
+    typedef typename std::vector< SurfacePtr > SurfacePtrVec;
+    typedef typename std::vector< VolumePtr > VolumePtrVec;
 
     typedef typename HandledBox<Dim>::Type HandledB;
-    typedef typename PrimitivePtrVec<Dim>::Type PrimPtrV;
-    typedef boost::shared_ptr< PrimPtrV > PrimPtrVPtr;
+    //typedef typename boost::shared_ptr< PrimitiveVec<Dim> > PrimVPtr;
     std::vector< HandledB > bboxes;
 
     for ( typename GeometrySet<Dim>::PointCollection::const_iterator it = gs.points().begin(); 
             it != gs.points().end(); ++it ) {
-        bboxes.push_back( HandledB( it->primitive().bbox(), 
-             PrimPtrVPtr(new PrimPtrV(1, new typename TypeForDimension<Dim>::Point( it->primitive() ) ) ) ) );
+        PointPtr p( new typename TypeForDimension<Dim>::Point( it->primitive() ) );
+        boost::shared_ptr< PrimitiveVec<Dim> > pp( new PrimitiveVec<Dim>( PointPtrVec(1, p) ) );
+        bboxes.push_back( HandledB( it->primitive().bbox(), pp ) );
     }
     for ( typename GeometrySet<Dim>::SegmentCollection::const_iterator it = gs.segments().begin(); 
             it != gs.segments().end(); ++it ) {
-        bboxes.push_back( HandledB( it->primitive().bbox(), 
-            PrimPtrVPtr(new PrimPtrV(1, new typename TypeForDimension<Dim>::Segment( it->primitive() ) ) ) ) );
+        SegmentPtr p( new typename TypeForDimension<Dim>::Segment( it->primitive() ) );
+        boost::shared_ptr< PrimitiveVec<Dim> > pp( new PrimitiveVec<Dim>( SegmentPtrVec(1, p) ) );
+        bboxes.push_back( HandledB( it->primitive().bbox(), pp ) );
     }
     for ( typename GeometrySet<Dim>::SurfaceCollection::const_iterator it = gs.surfaces().begin(); 
             it != gs.surfaces().end(); ++it ) {
-        bboxes.push_back( HandledB( it->primitive().bbox(), 
-            PrimPtrVPtr(new PrimPtrV(1, new typename TypeForDimension<Dim>::Surface( it->primitive() ) ) ) ) );
+        SurfacePtr p( new typename TypeForDimension<Dim>::Surface( it->primitive() ) );
+        boost::shared_ptr< PrimitiveVec<Dim> > pp( new PrimitiveVec<Dim>( SurfacePtrVec(1, p) ) );
+        bboxes.push_back( HandledB( it->primitive().bbox(), pp ) );
     }
     for ( typename GeometrySet<Dim>::VolumeCollection::const_iterator it = gs.volumes().begin(); 
             it != gs.volumes().end(); ++it ) {
-        bboxes.push_back( HandledB( compute_solid_bbox( it->primitive(), dim_t<Dim>() ), 
-            PrimPtrVPtr(new PrimPtrV(1, new typename TypeForDimension<Dim>::Volume( it->primitive() ) ) ) ) );
+        VolumePtr p( new typename TypeForDimension<Dim>::Volume( it->primitive() ) );
+        boost::shared_ptr< PrimitiveVec<Dim> > pp( new PrimitiveVec<Dim>( VolumePtrVec(1, p) ) );
+        bboxes.push_back( HandledB( compute_solid_bbox( it->primitive(), dim_t<Dim>() ), pp ) );
     }
 
     return bboxes;
 }
 
+template <class VectorPrimitiveTypeA, class VectorPrimitiveTypeB>
+void differenceInplace_(VectorPrimitiveTypeA & a, VectorPrimitiveTypeB & b)
+{
+    typedef typename VectorPrimitiveTypeA::value_type PrimPrt;
+    typedef typename PrimPrt::element_type PrimitiveType;
+
+    VectorPrimitiveTypeA result;
+
+    for ( typename VectorPrimitiveTypeA::iterator ait=a.begin(); ait!=a.end(); ++ait ){
+        std::vector<PrimitiveType> primitives( 1, *(*ait) );
+        for ( typename VectorPrimitiveTypeB::const_iterator bit=b.begin(); bit!=b.end(); ++bit ){
+            std::vector<PrimitiveType> new_primitives;
+            for ( typename std::vector<PrimitiveType>::const_iterator pit = primitives.begin();
+                    pit != primitives.end(); ++pit ) {
+                difference( *pit, *(*bit), std::back_inserter( new_primitives ) );
+            }
+            primitives.swap( new_primitives );
+        }
+
+        for ( typename std::vector<PrimitiveType>::const_iterator pit = primitives.begin();
+                pit != primitives.end(); ++pit ) {
+            result.push_back( PrimPrt( new PrimitiveType( *pit ) ) );
+        }
+    }
+
+    a.swap( result );
+}
+
+template <int Dim>
+void differenceInplace( PrimitiveVec<Dim> & a, const PrimitiveVec<Dim> & b)
+{
+    DEBUG_OUT << "\n";
+    switch (a.which()){
+        case PrimitivePoint:
+            switch(b.which()){
+                case PrimitiveSegment:
+                    differenceInplace_( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(), 
+                            b.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >());
+                    break;
+                case PrimitiveSurface:
+                    differenceInplace_( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(), 
+                            b.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >());
+                    break;
+                case PrimitiveVolume:
+                    differenceInplace_( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(), 
+                            b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >());
+                    break;
+            }
+            break;
+        case PrimitiveSegment:
+            switch(b.which()){
+                case PrimitiveSurface:
+                    differenceInplace_( a.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(), 
+                            b.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >());
+                    break;
+                case PrimitiveVolume:
+                    differenceInplace_( a.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(), 
+                            b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >());
+                    break;
+            }
+            break;
+        case PrimitiveSurface:
+            BOOST_ASSERT( b.which() == PrimitiveVolume );
+            differenceInplace_( a.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >(), 
+                    b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >());
+            break;
+        case PrimitiveVolume: BOOST_ASSERT(false); // bug here, dim(a) < dim(b) means no Volume
+    }
+}
+
+template <int Dim>
+void union_( PrimitiveVec<Dim> & a, const PrimitiveVec<Dim> & )
+{
+    DEBUG_OUT << "\n";
+    switch (a.which()){
+        case PrimitivePoint:
+            DEBUG_OUT << "Points U Points\n";
+            break;
+        case PrimitiveSegment:
+            DEBUG_OUT << "Segments U Segments\n";
+            break;
+        case PrimitiveSurface:
+            DEBUG_OUT << "Surfaces U Surfaces\n";
+            break;
+        case PrimitiveVolume:
+            DEBUG_OUT << "Volumes U Volumes\n";
+            break;
+    }
+}
+
 template <int Dim>
 struct UnionOnBoxCollision
 {
-    void operator()( const typename HandledBox<Dim>::Type& a,
-                     const typename HandledBox<Dim>::Type& b ) 
+    void operator()( typename HandledBox<Dim>::Type& a,
+                     typename HandledBox<Dim>::Type& b ) 
     {
-        if ( !a.handle()->size() || !b.handle()->size() ) return; // nothing to do
         // note that all primitives in a have the same type, same holds for primitives in b
-        if ( (*a.handle())[0].which() == (*a.handle())[0].which() ){
-            DEBUG_OUT << "same dimension";
+        if (  b.handle()->which() < a.handle()->which() ){
+            DEBUG_OUT << "dim(b) < dim(a)\n";
+            differenceInplace( *b.handle(), *a.handle() ); 
         }
-        else {
-            DEBUG_OUT << "different dimension";
+        else if ( a.handle()->which() < b.handle()->which() ) {
+            DEBUG_OUT << "dim(a) < dim(b)\n";
+            differenceInplace( *a.handle(), *b.handle() ); 
+        }
+        else{
+            DEBUG_OUT << "same dimension\n";
+            union_( *a.handle(), *b.handle() ); 
         }
     }
 };
+
+template <int Dim>
+void collectPrimitives( const typename HandledBox<Dim>::Vector & boxes, GeometrySet<Dim> & output )
+{
+    typedef typename PrimitiveVec<Dim>::PointPtrVec PointPtrVec;
+    typedef typename PrimitiveVec<Dim>::SegmentPtrVec SegmentPtrVec;
+    typedef typename PrimitiveVec<Dim>::SurfacePtrVec SurfacePtrVec;
+    typedef typename PrimitiveVec<Dim>::VolumePtrVec VolumePtrVec;
+    for (typename  HandledBox<Dim>::Vector::const_iterator bit = boxes.begin(); 
+            bit != boxes.end(); ++bit){
+        switch ( bit->handle()->which() ){
+        case PrimitivePoint : 
+            {
+            const PointPtrVec & v = bit->handle()->template as< PointPtrVec >();
+            for (typename PointPtrVec::const_iterator it=v.begin(); it!= v.end(); ++it)
+                output.addPrimitive( *(*it) );
+            }
+            break;
+        case PrimitiveSegment :
+            {
+            const SegmentPtrVec & v = bit->handle()->template as< SegmentPtrVec >();
+            for (typename SegmentPtrVec::const_iterator it=v.begin(); it!= v.end(); ++it)
+                output.addPrimitive( *(*it) );
+            }
+            break;
+        case PrimitiveSurface :
+            { 
+            const SurfacePtrVec & v = bit->handle()->template as< SurfacePtrVec >();
+            for (typename SurfacePtrVec::const_iterator it=v.begin(); it!= v.end(); ++it)
+                output.addPrimitive( *(*it) );
+            }
+            break;
+        case PrimitiveVolume : 
+            {
+            const VolumePtrVec & v = bit->handle()->template as< VolumePtrVec >();
+            for (typename VolumePtrVec::const_iterator it=v.begin(); it!= v.end(); ++it)
+                output.addPrimitive( *(*it) );
+            }
+            break;
+        }
+    }
+}
 
 template <int Dim>
 void union_( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<Dim>& output)
@@ -192,37 +340,17 @@ void union_( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<D
     // be eddited and which pointer can be moved to point toward anoter primitive
     // we must be able to remove a primitive through the bbox
 
-    typedef std::vector< typename HandledBox<Dim>::Type > BoxVector;
-    BoxVector boxes[2] = { compute_bboxes( a ), compute_bboxes( b ) };
+    typename HandledBox<Dim>::Vector aboxes = compute_bboxes( a );
+    typename HandledBox<Dim>::Vector bboxes = compute_bboxes( b );
 
-    CGAL::box_intersection_d( boxes[0].begin(), boxes[0].end(),
-                              boxes[1].begin(), boxes[1].end(),
+    CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
+                              bboxes.begin(), bboxes.end(),
                               UnionOnBoxCollision<Dim>() );
 
     // now collect primitives in all bboxes and we are done
     GeometrySet<Dim> temp, temp2;
-    for (unsigned i=0; i<2; i++){
-        for (typename BoxVector::const_iterator bit = boxes[i].begin(); 
-                bit != boxes[i].end(); ++bit){
-            for ( typename PrimitivePtrVec<Dim>::Type::const_iterator pit = bit->handle()->begin();
-                    pit != bit->handle()->end(); ++pit ){
-                switch ( pit->which() ){
-                    case PrimitivePoint : 
-                        temp.addPrimitive( pit->template as< typename TypeForDimension<Dim>::Point >() );
-                        break;
-                    case PrimitiveSegment : 
-                        temp.addPrimitive( pit->template as< typename TypeForDimension<Dim>::Segment >() );
-                        break;
-                    case PrimitiveSurface : 
-                        temp.addPrimitive( pit->template as< typename TypeForDimension<Dim>::Surface >() );
-                        break;
-                    case PrimitiveVolume : 
-                        temp.addPrimitive( pit->template as< typename TypeForDimension<Dim>::Volume >() );
-                        break;
-                }
-            }
-        }
-    }
+    collectPrimitives<Dim>( aboxes, temp );
+    collectPrimitives<Dim>( bboxes, temp );
 
     post_union( temp, temp2 );
     output.merge( temp2 );

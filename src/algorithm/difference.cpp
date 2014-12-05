@@ -48,27 +48,15 @@ OutputIteratorType difference( const Point_2& primitive, const PrimitiveHandle<2
 {
     switch ( pb.handle.which() ) {
     case PrimitivePoint:
-        if ( primitive != *pb.as< Point_2 >() ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< Point_2 >(), out);
         break;
-
     case PrimitiveSegment:
-        if ( ! CGAL::do_intersect( primitive, *pb.as< Segment_2 >() ) ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< Segment_2 >(), out);
         break;
-
     case PrimitiveSurface:
-        if ( ! do_intersect( primitive, *pb.as< PolygonWH_2 >()  ) ) {
-            *out++=primitive;
-        }
-
+        difference( primitive, *pb.as< PolygonWH_2 >(), out);
         break;
     }
-
     return out;
 }
 
@@ -118,33 +106,19 @@ OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3
 {
     switch ( pb.handle.which() ) {
     case PrimitivePoint:
-        if ( primitive != *pb.as< Point_3 >() ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< Point_3 >(), out);
         break;
 
     case PrimitiveSegment:
-        if ( ! pb.as< Segment_3 >()->has_on( primitive ) ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< Segment_3 >(), out);
         break;
 
     case PrimitiveSurface:
-        if ( ! pb.as< Triangle_3 >()->has_on( primitive ) ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< Triangle_3 >(), out);
         break;
 
     case PrimitiveVolume:
-        CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *pb.as< MarkedPolyhedron >() );
-
-        if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( primitive ) ) {
-            *out++ = primitive;
-        }
-
+        difference( primitive, *pb.as< MarkedPolyhedron >(), out);
         break;
     }
 

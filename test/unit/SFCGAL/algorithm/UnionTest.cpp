@@ -28,7 +28,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << "debug: " 
+#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: " 
 
 using namespace SFCGAL;
 using namespace boost::unit_test ;
@@ -46,6 +46,27 @@ BOOST_AUTO_TEST_CASE( PointPoint )
     }
 }
 
+BOOST_AUTO_TEST_CASE( TrianglePoint )
+{
+    {
+        std::auto_ptr<Geometry> a = io::readWkt( "TRIANGLE((0 0,0 1,1 0,0 0))" );
+        std::auto_ptr<Geometry> b = io::readWkt( "POINT(.1 .1)" );
+        std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( *u == *io::readWkt( "TRIANGLE((0 0,0 1,1 0,0 0))" ) );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( TriangleTriangle )
+{
+    {
+        std::auto_ptr<Geometry> a = io::readWkt( "TRIANGLE((0 0,0 1,1 0,0 0))" );
+        std::auto_ptr<Geometry> b = io::readWkt( "TRIANGLE((0 0,0 1,1 0,0 0))" );
+        std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( *u == *io::readWkt( "TRIANGLE((0 0,0 1,1 0,0 0))" ) );
+    }
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
