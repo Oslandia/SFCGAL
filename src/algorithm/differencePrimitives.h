@@ -23,6 +23,7 @@ typedef CGAL::Triangle_2<Kernel> Triangle_2;
 typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH_2;
 
+typedef CGAL::Vector_3<Kernel> Vector_3;
 typedef CGAL::Point_3<Kernel> Point_3;
 typedef CGAL::Segment_3<Kernel> Segment_3;
 typedef CGAL::Triangle_3<Kernel> Triangle_3;

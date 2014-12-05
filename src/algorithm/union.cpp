@@ -20,14 +20,7 @@
 
 #include <SFCGAL/algorithm/differencePrimitives.h>
 #include <SFCGAL/algorithm/union.h>
-#include <SFCGAL/Exception.h>
-#include <SFCGAL/detail/GeometrySet.h>
 #include <SFCGAL/algorithm/isValid.h>
-
-#include <CGAL/Boolean_set_operations_2.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
-#include <CGAL/box_intersection_d.h>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/connected_components.hpp>
@@ -295,7 +288,8 @@ SegmentOutputIteratorType union_( const typename TypeForDimension<Dim>::Segment 
         // that is a join, we must find the points that are the further appart
         PointType points[4] = {a.source(), b.source(), a.target(),  b.target() };
         Kernel::FT dist = 0;
-        unsigned imax, jmax;
+        unsigned imax=unsigned(-1);
+        unsigned jmax=unsigned(-1);
         for (unsigned i=0; i<4; i++){
             for (unsigned j=i; j<4; j++){
                 const Kernel::FT d = CGAL::squared_distance( points[i], points[j] );
@@ -352,18 +346,47 @@ PolygonOutputIteratorType union_( const Triangle_3 & a, const Triangle_3 & b, Po
         // union polygons
         // triangulate the result
 
-        PolygonWH_2 aProj, bProj;
+        // @gotcha do not union if triangles are just sharing an edge, they may be the result 
+        // of a previous triangulation
+        for ( unsigned i=0; i<3; i++ ){
+            for ( unsigned j=0; j<3; j++){
+                if ( a.vertex( i ) == b.vertex( (j+1)%3 ) && 
+                     a.vertex( (i+1)%3 ) == b.vertex( j )){
+                    // now check that the last points are on opposite side (dot product of cross products is negative or null)
+                    Vector_3 a0a1( a.vertex( i ), a.vertex( (i+1)%3 ) );
+                    Vector_3 a0a2( a.vertex( i ), a.vertex( (i+2)%3 ) );
+                    Vector_3 a0b2( a.vertex( i ), b.vertex( (i+2)%3 ) );
+                    Vector_3 n1 = CGAL::cross_product( a0a1, a0a2 );
+                    Vector_3 n2 = CGAL::cross_product( a0a1, a0b2 );
+                    if ( n1*n2 <= 0 ){
+                        return out;
+                    }
+                }
+            }
+        }
+
+        // the latter cannot be used because of ambiguous resolution of CGAL::intersection
+        // its internal to CGAL, and cause by the Boolean_set_operations_2 include
+        // so instead we have to check that the triangles are not just touching on a point
+        //
+        //CGAL::Object inter = CGAL::intersection( a, b );
+        //if ( CGAL::object_cast< Point_3>( &inter ) ) return out; // just touching on a point
+
+        Polygon_2 aProj, bProj;
 
         for ( unsigned i=0; i<3; i++ ) {
-            aProj.outer_boundary().push_back( plane.to_2d( a.vertex( i ) ) );
-            bProj.outer_boundary().push_back( plane.to_2d( b.vertex( i ) ) );
+            aProj.push_back( plane.to_2d( a.vertex( i ) ) );
+            bProj.push_back( plane.to_2d( b.vertex( i ) ) );
         }
 
         PolygonWH_2 res;
         if ( CGAL::join( aProj, bProj, res ) ){
+            if (!res.outer_boundary().is_simple()) return out; // ring self intersects, triangles just touching on point
+
             const Polygon poly( res );
             TriangulatedSurface ts;
             triangulate::triangulatePolygon3D( poly, ts );
+
 
             for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
                 *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
@@ -574,6 +597,8 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
+    DEBUG_OUT << "union_ " << ga.asText() << " and " << gb.asText() << "\n";
+
     return union_( ga, gb, NoValidityCheck() );
 }
 
@@ -592,6 +617,8 @@ std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
+
+    DEBUG_OUT << "union3D " << ga.asText() << " and " << gb.asText() << "\n";
 
     return union3D( ga, gb, NoValidityCheck() );
 }
