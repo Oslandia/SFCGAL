@@ -250,22 +250,221 @@ void differenceInplace( PrimitiveVec<Dim> & a, const PrimitiveVec<Dim> & b)
     }
 }
 
-template <int Dim>
-void union_( PrimitiveVec<Dim> & a, const PrimitiveVec<Dim> & )
+template <typename PointOutputIteratorType>
+PointOutputIteratorType union_( const Point_2 & a, const Point_2 & b, PointOutputIteratorType out )
 {
+    if ( a == b ) *out++ = a;
+    return out;
+}
+
+template <typename PointOutputIteratorType>
+PointOutputIteratorType union_( const Point_3 & a, const Point_3 & b, PointOutputIteratorType out )
+{
+    if ( a == b ) *out++ = a;
+    return out;
+}
+
+template <int Dim, typename SegmentOutputIteratorType>
+SegmentOutputIteratorType union_( const typename TypeForDimension<Dim>::Segment & a, const typename TypeForDimension<Dim>::Segment & b, SegmentOutputIteratorType out )
+{
+    typedef typename TypeForDimension<Dim>::Segment SegmentType;
+    typedef typename TypeForDimension<Dim>::Point PointType;
+
+    // we only do something if the segments actually overlap or cross, not just touch at end points
+    // othrewise we could mess-up things that are already takend care of in the segment sewing
+    // of GeometrySet
+    CGAL::Object inter = CGAL::intersection( a, b );
+
+    const PointType* p = CGAL::object_cast< PointType >( &inter );
+    const SegmentType* s = CGAL::object_cast< SegmentType >( &inter );
+    if ( p ){
+        // create 4 segments:
+        SegmentType res[4] = { SegmentType(a.source(), *p),
+                               SegmentType(b.source(), *p),
+                               SegmentType(*p, a.target()),
+                               SegmentType(*p, b.target()) };
+        unsigned nbSegmentsWithLength = 0;
+        for (unsigned i=0; i<4; i++ ) 
+            nbSegmentsWithLength += (res[i].target() != res[i].source()) ? 1 : 0;
+        if (nbSegmentsWithLength >= 3) { // end-to end otherwise
+            for (unsigned i=0; i<4; i++ ){ 
+                if (res[i].target() != res[i].source()) *out++ = res[i];
+            }
+        }
+    }
+    else if ( s ){
+        // that is a join, we must find the points that are the further appart
+        PointType points[4] = {a.source(), b.source(), a.target(),  b.target() };
+        Kernel::FT dist = 0;
+        unsigned imax, jmax;
+        for (unsigned i=0; i<4; i++){
+            for (unsigned j=i; j<4; j++){
+                const Kernel::FT d = CGAL::squared_distance( points[i], points[j] );
+                if ( d > dist ){
+                    dist = d;
+                    imax = i;
+                    jmax = j;
+                }
+            }
+        }
+        *out++ =  SegmentType( points[imax], points[jmax] );
+    }
+
+    return out;
+}
+template <typename SegmentOutputIteratorType>
+SegmentOutputIteratorType union_( const Segment_2 & a, const Segment_2 & b, SegmentOutputIteratorType out )
+{
+    return union_<2,SegmentOutputIteratorType>(a, b, out);
+}
+
+template <typename SegmentOutputIteratorType>
+SegmentOutputIteratorType union_( const Segment_3 & a, const Segment_3 & b, SegmentOutputIteratorType out )
+{
+    return union_<3,SegmentOutputIteratorType>(a, b, out);
+}
+
+template <typename PolygonOutputIteratorType>
+PolygonOutputIteratorType union_( const PolygonWH_2 & a, const PolygonWH_2 & b, PolygonOutputIteratorType out )
+{
+    CGAL::Gps_segment_traits_2<Kernel> traits;
+    PolygonWH_2 res;
+    if ( CGAL::join(
+        are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ),
+        are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
+        res) ) *out++ = res;
+    return out;
+}
+
+template <typename VolumeOutputIteratorType>
+VolumeOutputIteratorType union_( const NoVolume & , const NoVolume & , VolumeOutputIteratorType out )
+{
+    BOOST_ASSERT(false); // should not be called, just here because template functions generates that
+    return out;
+}
+
+template <typename PolygonOutputIteratorType>
+PolygonOutputIteratorType union_( const Triangle_3 & a, const Triangle_3 & b, PolygonOutputIteratorType out )
+{
+    const Plane_3 plane = a.supporting_plane();
+
+    if ( plane == b.supporting_plane() && CGAL::do_intersect( a, b ) ) {
+        // project on plane
+        // union polygons
+        // triangulate the result
+
+        PolygonWH_2 aProj, bProj;
+
+        for ( unsigned i=0; i<3; i++ ) {
+            aProj.outer_boundary().push_back( plane.to_2d( a.vertex( i ) ) );
+            bProj.outer_boundary().push_back( plane.to_2d( b.vertex( i ) ) );
+        }
+
+        PolygonWH_2 res;
+        if ( CGAL::join( aProj, bProj, res ) ){
+            const Polygon poly( res );
+            TriangulatedSurface ts;
+            triangulate::triangulatePolygon3D( poly, ts );
+
+            for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
+                *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
+                                     plane.to_3d( t->vertex( 1 ).toPoint_2() ),
+                                     plane.to_3d( t->vertex( 2 ).toPoint_2() ) ) ;
+            }
+        }
+    }
+    return out;
+}
+
+
+template <typename VolumeOutputIteratorType>
+VolumeOutputIteratorType union_( const MarkedPolyhedron & a, const MarkedPolyhedron & b, VolumeOutputIteratorType out )
+{
+    MarkedPolyhedron& p = const_cast<MarkedPolyhedron&>( a );
+    MarkedPolyhedron& q = const_cast<MarkedPolyhedron&>( b );
+    typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
+    Corefinement coref;
+    CGAL::Emptyset_iterator no_polylines;
+    typedef std::vector<std::pair<MarkedPolyhedron*, int> >  ResultType;
+    ResultType result;
+    coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::Join_tag );
+
+    if (result.size() > 1){ //otherwise, they are left as they are
+        for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
+            *out++ = *it->first;
+            delete it->first;
+        }
+    }
+    return out;
+}
+
+template <class VectorPrimitiveType>
+void union_( VectorPrimitiveType & a, VectorPrimitiveType & b )
+{
+    // we can do it the dumb o(n^2) way because n is small
+    // for points it's quite simple, we juste have to merge duplicate points
+    // for volumes, either not touching, and primitives are unchanged, or merge
+    // for polygons it's the same as for volumes
+    // for segments and surfaces it's different since we can increase the number of primitives
+    //
     DEBUG_OUT << "\n";
+
+    typedef typename VectorPrimitiveType::value_type PrimPrt;
+    typedef typename PrimPrt::element_type PrimitiveType;
+
+    for ( typename VectorPrimitiveType::iterator ait=a.begin(); ait!=a.end(); ++ait ){
+        for ( typename VectorPrimitiveType::iterator bit=b.begin(); bit!=b.end(); ++bit ){
+            if ( ait->get() == bit->get() ) continue; // they are already the same, 
+                                                      // because they have been merged previously
+            std::vector<PrimitiveType> out;
+            union_( *(*ait), *(*bit), std::back_inserter(out) );
+            if ( out.size() == 1 ){ // they have been merged into one, so we replace both with it
+                ait->reset( new PrimitiveType(out[0]) );
+                *bit = *ait;
+            }
+            else if ( out.size() > 1 ){ // they have been merged into several, 
+                                        // so we put them at the end and set the ptr to NULL;
+                ait->reset();
+                bit->reset();
+                for (typename std::vector<PrimitiveType>::const_iterator it=out.begin(); 
+                        it!=out.end(); ++it ){
+                    a.push_back( PrimPrt( new PrimitiveType( *it ) ) );
+                    b.push_back( a.back() );
+                }
+            }
+            // else no merge occured, so we do nothing
+        }
+    }
+
+    // now we remove NULL from a and b
+    for ( typename VectorPrimitiveType::iterator ait=a.begin(); ait!=a.end(); ++ait ){
+        while ( ait!=a.end() && !ait->get() ) ait = a.erase( ait );
+    }
+    for ( typename VectorPrimitiveType::iterator bit=b.begin(); bit!=b.end(); ++bit ){
+        while ( bit!=b.end() && !bit->get() ) bit = b.erase( bit );
+    }
+}
+
+
+template <int Dim>
+void union_( PrimitiveVec<Dim> & a, PrimitiveVec<Dim> & b)
+{
     switch (a.which()){
         case PrimitivePoint:
-            DEBUG_OUT << "Points U Points\n";
+            union_( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(), 
+                    b.template as< typename PrimitiveVec<Dim>::PointPtrVec >());
             break;
         case PrimitiveSegment:
-            DEBUG_OUT << "Segments U Segments\n";
+            union_( a.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(), 
+                    b.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >());
             break;
         case PrimitiveSurface:
-            DEBUG_OUT << "Surfaces U Surfaces\n";
+            union_( a.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >(), 
+                    b.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >());
             break;
         case PrimitiveVolume:
-            DEBUG_OUT << "Volumes U Volumes\n";
+            union_( a.template as< typename PrimitiveVec<Dim>::VolumePtrVec >(), 
+                    b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >());
             break;
     }
 }

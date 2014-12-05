@@ -38,11 +38,32 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_UnionTest )
 BOOST_AUTO_TEST_CASE( PointPoint )
 {
     {
+        std::auto_ptr<Geometry> a = io::readWkt( "POINT(0 1)" );
+        std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1)" );
+        std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( *u == *io::readWkt( "POINT(0 1)" ) );
+    }
+    {
         std::auto_ptr<Geometry> a = io::readWkt( "POINT(0 0)" );
         std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1)" );
         std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
         BOOST_CHECK( *u == *io::readWkt( "MULTIPOINT(0 0,0 1)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> a = io::readWkt( "POINT(0 1 1)" );
+        std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1 1)" );
+        std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( *u == *io::readWkt( "POINT(0 1 1)" ) );
+    }
+    {
+        std::auto_ptr<Geometry> a = io::readWkt( "POINT(0 0 1)" );
+        std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1 1)" );
+        std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( *u == *io::readWkt( "MULTIPOINT(0 0 1,0 1 1)" ) );
     }
 }
 
