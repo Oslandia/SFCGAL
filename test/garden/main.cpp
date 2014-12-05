@@ -46,6 +46,7 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/difference.h>
+#include <SFCGAL/algorithm/union.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/minkowskiSum.h>
 #include <SFCGAL/algorithm/tesselate.h>
@@ -443,6 +444,8 @@ int main( int argc, char* argv[] )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::intersects( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::difference3D( *geom1, *geom2 ) ; )
             CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::difference( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::union_( *geom1, *geom2 ) ; )
+            CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::union3D( *geom1, *geom2 ) ; )
 
             if ( geom2->is<Polygon>() ) {
                 CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::minkowskiSum( *geom1, geom2->as<Polygon>() ) ; )

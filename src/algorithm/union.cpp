@@ -211,7 +211,6 @@ void differenceInplace_(VectorPrimitiveTypeA & a, VectorPrimitiveTypeB & b)
 template <int Dim>
 void differenceInplace( PrimitiveVec<Dim> & a, const PrimitiveVec<Dim> & b)
 {
-    DEBUG_OUT << "\n";
     switch (a.which()){
         case PrimitivePoint:
             switch(b.which()){
@@ -407,14 +406,14 @@ void union_( VectorPrimitiveType & a, VectorPrimitiveType & b )
     // for polygons it's the same as for volumes
     // for segments and surfaces it's different since we can increase the number of primitives
     //
-    DEBUG_OUT << "\n";
 
     typedef typename VectorPrimitiveType::value_type PrimPrt;
     typedef typename PrimPrt::element_type PrimitiveType;
 
     for ( typename VectorPrimitiveType::iterator ait=a.begin(); ait!=a.end(); ++ait ){
         for ( typename VectorPrimitiveType::iterator bit=b.begin(); bit!=b.end(); ++bit ){
-            if ( ait->get() == bit->get() ) continue; // they are already the same, 
+            if ( !ait->get()  || !bit->get() || // removed in the loop
+                    ait->get() == bit->get() ) continue; // they are already the same, 
                                                       // because they have been merged previously
             std::vector<PrimitiveType> out;
             union_( *(*ait), *(*bit), std::back_inserter(out) );
@@ -428,8 +427,12 @@ void union_( VectorPrimitiveType & a, VectorPrimitiveType & b )
                 bit->reset();
                 for (typename std::vector<PrimitiveType>::const_iterator it=out.begin(); 
                         it!=out.end(); ++it ){
+                    const unsigned i =  a.begin() - ait;
+                    const unsigned j =  b.begin() - bit;
                     a.push_back( PrimPrt( new PrimitiveType( *it ) ) );
                     b.push_back( a.back() );
+                    ait = a.begin() + i; // push_back can invalidate iterators
+                    bit = b.begin() + j;
                 }
             }
             // else no merge occured, so we do nothing
@@ -477,15 +480,12 @@ struct UnionOnBoxCollision
     {
         // note that all primitives in a have the same type, same holds for primitives in b
         if (  b.handle()->which() < a.handle()->which() ){
-            DEBUG_OUT << "dim(b) < dim(a)\n";
             differenceInplace( *b.handle(), *a.handle() ); 
         }
         else if ( a.handle()->which() < b.handle()->which() ) {
-            DEBUG_OUT << "dim(a) < dim(b)\n";
             differenceInplace( *a.handle(), *b.handle() ); 
         }
         else{
-            DEBUG_OUT << "same dimension\n";
             union_( *a.handle(), *b.handle() ); 
         }
     }

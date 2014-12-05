@@ -89,5 +89,15 @@ BOOST_AUTO_TEST_CASE( TriangleTriangle )
     }
 }
 
+BOOST_AUTO_TEST_CASE( GardenFailures )
+{
+    {
+        std::auto_ptr<Geometry> a = io::readWkt( "LINESTRING(-1 -1,1 1)" );
+        std::auto_ptr<Geometry> b = io::readWkt( "MULTILINESTRING((1/1 -1/1 -1/1,1/1 1/1 1/1),(1/1 1/1 1/1,1/1 1/1 -1/1))" );
+        std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
+        DEBUG_OUT << u->asText() <<"\n";
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
