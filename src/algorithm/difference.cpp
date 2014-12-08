@@ -48,15 +48,18 @@ OutputIteratorType difference( const Point_2& primitive, const PrimitiveHandle<2
 {
     switch ( pb.handle.which() ) {
     case PrimitivePoint:
-        difference( primitive, *pb.as< Point_2 >(), out);
+        difference( primitive, *pb.as< Point_2 >(), out );
         break;
+
     case PrimitiveSegment:
-        difference( primitive, *pb.as< Segment_2 >(), out);
+        difference( primitive, *pb.as< Segment_2 >(), out );
         break;
+
     case PrimitiveSurface:
-        difference( primitive, *pb.as< PolygonWH_2 >(), out);
+        difference( primitive, *pb.as< PolygonWH_2 >(), out );
         break;
     }
+
     return out;
 }
 
@@ -106,19 +109,19 @@ OutputIteratorType difference( const Point_3& primitive, const PrimitiveHandle<3
 {
     switch ( pb.handle.which() ) {
     case PrimitivePoint:
-        difference( primitive, *pb.as< Point_3 >(), out);
+        difference( primitive, *pb.as< Point_3 >(), out );
         break;
 
     case PrimitiveSegment:
-        difference( primitive, *pb.as< Segment_3 >(), out);
+        difference( primitive, *pb.as< Segment_3 >(), out );
         break;
 
     case PrimitiveSurface:
-        difference( primitive, *pb.as< Triangle_3 >(), out);
+        difference( primitive, *pb.as< Triangle_3 >(), out );
         break;
 
     case PrimitiveVolume:
-        difference( primitive, *pb.as< MarkedPolyhedron >(), out);
+        difference( primitive, *pb.as< MarkedPolyhedron >(), out );
         break;
     }
 

@@ -28,7 +28,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: " 
+#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 using namespace SFCGAL;
 using namespace boost::unit_test ;
@@ -91,10 +91,10 @@ BOOST_AUTO_TEST_CASE( TriangleTriangle )
 
 BOOST_AUTO_TEST_CASE( PolygonPolygon )
 {
-        std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
-        std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,0.5 -0.5,-0.5 -0.5))" );
-        std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
-        BOOST_CHECK( *u == *io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" ) );
+    std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
+    std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,0.5 -0.5,-0.5 -0.5))" );
+    std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
+    BOOST_CHECK( *u == *io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" ) );
 }
 
 BOOST_AUTO_TEST_CASE( GardenFailures )
@@ -111,8 +111,8 @@ BOOST_AUTO_TEST_CASE( GardenFailures )
     {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))" );
         std::auto_ptr<Geometry> b = io::readWkt( "TRIANGLE((-1 -1,1 -1,-1 1,-1 -1))" );
-        io::vtk( *a, "a.vtk");
-        io::vtk( *b, "b.vtk");
+        io::vtk( *a, "a.vtk" );
+        io::vtk( *b, "b.vtk" );
         std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
     }
@@ -131,10 +131,10 @@ BOOST_AUTO_TEST_CASE( GardenFailures )
     {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
         std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0.5 0.5,0.5 -0.5,-0.5 -0.5))" );
-        io::vtk( *a, "a.vtk");
-        io::vtk( *b, "b.vtk");
+        io::vtk( *a, "a.vtk" );
+        io::vtk( *b, "b.vtk" );
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
-        io::vtk( *u, "u.vtk");
+        io::vtk( *u, "u.vtk" );
         DEBUG_OUT << u->asText() <<"\n";
     }
 

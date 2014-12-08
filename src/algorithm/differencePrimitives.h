@@ -56,74 +56,96 @@ bool do_intersect( const Point_2& point, const PolygonWH_2& polygon )
 
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_2 & a, const Point_2 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_2& a, const Point_2& b, PointOutputIteratorType out )
 {
-    if ( a != b ) *out++ = a; 
+    if ( a != b ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_2 & a, const Segment_2 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_2& a, const Segment_2& b, PointOutputIteratorType out )
 {
-    if ( ! CGAL::do_intersect( a, b ) ) *out++ = a; 
+    if ( ! CGAL::do_intersect( a, b ) ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_2 & a, const PolygonWH_2 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_2& a, const PolygonWH_2& b, PointOutputIteratorType out )
 {
-    if ( ! do_intersect( a, b ) ) *out++ = a; 
+    if ( ! do_intersect( a, b ) ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_2 &, const NoVolume & , PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_2&, const NoVolume& , PointOutputIteratorType out )
 {
-    BOOST_ASSERT(false);
+    BOOST_ASSERT( false );
     return out;
 }
 
 template < typename SegmentOutputIteratorType>
-SegmentOutputIteratorType difference( const Segment_2 &, const NoVolume & , SegmentOutputIteratorType out )
+SegmentOutputIteratorType difference( const Segment_2&, const NoVolume& , SegmentOutputIteratorType out )
 {
-    BOOST_ASSERT(false);
+    BOOST_ASSERT( false );
     return out;
 }
 
 template < typename SurfaceOutputIteratorType>
-SurfaceOutputIteratorType difference( const PolygonWH_2 &, const NoVolume & , SurfaceOutputIteratorType out )
+SurfaceOutputIteratorType difference( const PolygonWH_2&, const NoVolume& , SurfaceOutputIteratorType out )
 {
-    BOOST_ASSERT(false);
+    BOOST_ASSERT( false );
     return out;
 }
 
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_3 & a, const Point_3 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_3& a, const Point_3& b, PointOutputIteratorType out )
 {
-    if ( a != b ) *out++ = a; 
+    if ( a != b ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_3 & a, const Segment_3 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_3& a, const Segment_3& b, PointOutputIteratorType out )
 {
-    if ( ! b.has_on( a ) ) *out++ = a; 
+    if ( ! b.has_on( a ) ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_3 & a, const Triangle_3 & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_3& a, const Triangle_3& b, PointOutputIteratorType out )
 {
-    if ( ! b.has_on( a ) ) *out++ = a; 
+    if ( ! b.has_on( a ) ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
 template < typename PointOutputIteratorType>
-PointOutputIteratorType difference( const Point_3 & a, const MarkedPolyhedron & b, PointOutputIteratorType out )
+PointOutputIteratorType difference( const Point_3& a, const MarkedPolyhedron& b, PointOutputIteratorType out )
 {
     CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( b );
-    if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( a ) ) *out++ = a;
+
+    if ( CGAL::ON_UNBOUNDED_SIDE == is_in_poly( a ) ) {
+        *out++ = a;
+    }
+
     return out;
 }
 
@@ -250,6 +272,7 @@ PolygonWH_2
 fix_cgal_valid_polygon( const PolygonWH_2& p )
 {
     const Polygon_2& outer = p.outer_boundary();
+
     for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin();
             v != outer.vertices_end(); ++v ) {
         for ( Polygon_2::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ) {
@@ -257,7 +280,8 @@ fix_cgal_valid_polygon( const PolygonWH_2& p )
                 BOOST_THROW_EXCEPTION( NotImplementedException( "Fixing a polygon which exterior ring self intersects is not implemented" ) );
             }
         }
-    } 
+    }
+
     return p;
 }
 
