@@ -21,6 +21,7 @@
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/difference.h>
 #include <SFCGAL/algorithm/volume.h>
+#include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/Point.h>
 #include <SFCGAL/detail/tools/Registry.h>
 
@@ -339,7 +340,7 @@ BOOST_AUTO_TEST_CASE( testDifferenceTriangleVolume )
                  ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
         std::auto_ptr<Geometry> diff = algorithm::difference3D( *ls1, *ls2 );
         std::auto_ptr<Geometry> ref = io::readWkt( "TIN(((0/1 10/1 1/2,9/20 1/1 1/2,1/2 1/1 1/2,0/1 10/1 1/2)),((0/1 10/1 1/2,1/2 1/1 1/2,18/19 1/1 1/2,0/1 10/1 1/2)),((0/1 10/1 1/2,0/1 1/1 1/2,9/20 1/1 1/2,0/1 10/1 1/2)),((1/1 0/1 1/2,10/1 0/1 1/2,1/1 1/2 1/2,1/1 0/1 1/2)),((1/1 1/1 1/2,0/1 10/1 1/2,18/19 1/1 1/2,1/1 1/1 1/2)),((10/1 0/1 1/2,0/1 10/1 1/2,1/1 1/1 1/2,10/1 0/1 1/2)),((1/1 1/2 1/2,10/1 0/1 1/2,1/1 1/1 1/2,1/1 1/2 1/2)))" );
-        BOOST_CHECK( *diff == *ref );
+        BOOST_CHECK( algorithm::covers( *diff, *ref ) && algorithm::covers( *ref, *diff ) );
     }
 }
 
