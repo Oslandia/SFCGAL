@@ -43,10 +43,12 @@
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/difference.h>
+#include <SFCGAL/algorithm/union.h>
 #include <SFCGAL/algorithm/convexHull.h>
 #include <SFCGAL/algorithm/distance.h>
 #include <SFCGAL/algorithm/distance3d.h>
 #include <SFCGAL/algorithm/plane.h>
+#include <SFCGAL/algorithm/volume.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/algorithm/extrude.h>
 #include <SFCGAL/algorithm/tesselate.h>
@@ -682,6 +684,8 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( intersection, SFCGAL::algorithm::i
 SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( intersection_3d, SFCGAL::algorithm::intersection3D )
 SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( difference, SFCGAL::algorithm::difference )
 SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( difference_3d, SFCGAL::algorithm::difference3D )
+SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union, SFCGAL::algorithm::union_ )
+SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union_3d, SFCGAL::algorithm::union3D )
 
 #define SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( name, sfcgal_function ) \
 	extern "C" sfcgal_geometry_t* sfcgal_geometry_##name( const sfcgal_geometry_t* ga ) \
@@ -716,13 +720,30 @@ SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesse
 		}							\
 		catch ( std::exception& e )				\
 		{							\
-			SFCGAL_WARNING( "During " #name "(A,B) :" ); \
+			SFCGAL_WARNING( "During " #name "(A) :" ); \
 			SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() ); \
 			SFCGAL_ERROR( "%s", e.what() );	\
 			return -1.0;					\
 		}							\
 		return r;						\
 	}
+
+extern "C" double sfcgal_geometry_volume( const sfcgal_geometry_t* ga )
+{
+    double r;
+    try
+    {
+            r = CGAL::to_double( SFCGAL::algorithm::volume( *(const SFCGAL::Geometry*)(ga) ) );
+    }
+    catch ( std::exception& e )
+    {
+            SFCGAL_WARNING( "During volume(A) :" );
+            SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
+            SFCGAL_ERROR( "%s", e.what() );
+            return -1.0;
+    }
+    return r;
+}
 
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area, SFCGAL::algorithm::area )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( area_3d, SFCGAL::algorithm::area3D )

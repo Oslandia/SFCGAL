@@ -592,6 +592,24 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference( const sfcgal_
 SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
+ * Returns the union of geom1 and geom2
+ * @pre isValid(geom1) == true
+ * @pre isValid(geom2) == true
+ * @post isValid(return) == true
+ * @ingroup capi
+ */
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+
+/**
+ * Returns the 3D union of geom1 and geom2
+ * @pre isValid(geom1) == true
+ * @pre isValid(geom2) == true
+ * @post isValid(return) == true
+ * @ingroup capi
+ */
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+
+/**
  * Returns the convex hull of geom
  * @pre isValid(geom) == true
  * @post isValid(return) == true
@@ -606,6 +624,13 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_
  * @ingroup capi
  */
 SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* geom );
+
+/**
+ * Returns the volume of geom (must be a volume)
+ * @pre isValid(geom) == true
+ * @ingroup capi
+ */
+SFCGAL_API double                      sfcgal_geometry_volume( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the area of geom
