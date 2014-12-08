@@ -27,7 +27,7 @@
 //
 // Union kernel
 
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: " 
+#define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: " 
 
 using namespace SFCGAL::detail;
 
@@ -325,7 +325,9 @@ PolygonOutputIteratorType union_( const PolygonWH_2 & a, const PolygonWH_2 & b, 
     if ( CGAL::join(
         are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ),
         are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
-        res) ) *out++ = res;
+        res) ){
+        *out++ = fix_cgal_valid_polygon( res );
+    }
     return out;
 }
 
@@ -345,6 +347,20 @@ PolygonOutputIteratorType union_( const Triangle_3 & a, const Triangle_3 & b, Po
         // project on plane
         // union polygons
         // triangulate the result
+
+        // case where one covers the other
+        if ( CGAL::do_intersect( a.vertex(0) , b ) 
+          && CGAL::do_intersect( a.vertex(1) , b )
+          && CGAL::do_intersect( a.vertex(2) , b ) ){
+            *out++ = b;
+            return out;  
+        }
+        if ( CGAL::do_intersect( b.vertex(0) , a ) 
+          && CGAL::do_intersect( b.vertex(1) , a )
+          && CGAL::do_intersect( b.vertex(2) , a ) ){
+            *out++ = a;
+            return out;  
+        }
 
         // @gotcha do not union if triangles are just sharing an edge, they may be the result 
         // of a previous triangulation
@@ -421,41 +437,72 @@ VolumeOutputIteratorType union_( const MarkedPolyhedron & a, const MarkedPolyhed
 }
 
 template <class VectorPrimitiveType>
+void gnuplot( const char * , VectorPrimitiveType )
+{
+}
+
+void gnuplot( const char * fileName, std::vector<typename boost::shared_ptr<Triangle_3> > &  a)
+{
+    std::ofstream out( fileName );
+    for (unsigned i=0; i<a.size(); i++){
+        for (unsigned j=0; j<4; j++){
+            out << a[i]->vertex(j%3).x() << " " <<   a[i]->vertex(j%3).y() << "\n";
+        }
+        out << "\n";
+    }
+
+}
+
+void union_( std::vector<typename boost::shared_ptr<Triangle_3> > , std::vector<typename boost::shared_ptr<Triangle_3> > )
+{
+    BOOST_THROW_EXCEPTION( NotImplementedException("Union of triangles is not implemented") );
+}
+
+template <class VectorPrimitiveType>
 void union_( VectorPrimitiveType & a, VectorPrimitiveType & b )
 {
+
     // we can do it the dumb o(n^2) way because n is small
     // for points it's quite simple, we juste have to merge duplicate points
     // for volumes, either not touching, and primitives are unchanged, or merge
     // for polygons it's the same as for volumes
     // for segments and surfaces it's different since we can increase the number of primitives
     //
+    // because we are only dealing with triangles for 3D surface, we cannot rely only
+    // the fact that the two primitives ptr are pointing to the same primitive
+    // to avoid join of already joinde primitives, the join of two triangles yields a TIN
+    // and we must have a way to identify wich triangle pairs belong to the same TIN
+    // we need a specific triangle U triangle
 
     typedef typename VectorPrimitiveType::value_type PrimPrt;
     typedef typename PrimPrt::element_type PrimitiveType;
 
-    for ( typename VectorPrimitiveType::iterator ait=a.begin(); ait!=a.end(); ++ait ){
-        for ( typename VectorPrimitiveType::iterator bit=b.begin(); bit!=b.end(); ++bit ){
-            if ( !ait->get()  || !bit->get() || // removed in the loop
-                    ait->get() == bit->get() ) continue; // they are already the same, 
+    std::vector< std::vector< unsigned > > alreadyJoined(a.size());
+
+    for ( unsigned i=0; i<a.size(); i++ ){
+        for ( unsigned j=0; j<b.size(); j++ ){
+            if ( !a[i].get()  || !b[j].get() || // removed in the loop
+                    a[i].get() == b[j].get() ||
+                    alreadyJoined[i].end() != std::find(alreadyJoined[i].begin(), alreadyJoined[i].end(),j)
+                    ) continue; // they are already the same, 
                                                       // because they have been merged previously
             std::vector<PrimitiveType> out;
-            union_( *(*ait), *(*bit), std::back_inserter(out) );
+            union_( *a[i], *b[j], std::back_inserter(out) );
             if ( out.size() == 1 ){ // they have been merged into one, so we replace both with it
-                ait->reset( new PrimitiveType(out[0]) );
-                *bit = *ait;
+                a[i].reset( new PrimitiveType(out[0]) );
+                b[j] = a[i];
             }
             else if ( out.size() > 1 ){ // they have been merged into several, 
                                         // so we put them at the end and set the ptr to NULL;
-                ait->reset();
-                bit->reset();
+                a[i].reset();
+                b[j].reset();
+                std::vector< unsigned > newB;
+                for (unsigned k=0; k<out.size(); k++) newB.push_back( b.size() + k );
+                for (unsigned k=0; k<out.size(); k++) alreadyJoined.push_back(newB);
                 for (typename std::vector<PrimitiveType>::const_iterator it=out.begin(); 
                         it!=out.end(); ++it ){
-                    const unsigned i =  a.begin() - ait;
-                    const unsigned j =  b.begin() - bit;
                     a.push_back( PrimPrt( new PrimitiveType( *it ) ) );
                     b.push_back( a.back() );
-                    ait = a.begin() + i; // push_back can invalidate iterators
-                    bit = b.begin() + j;
                 }
             }
             // else no merge occured, so we do nothing

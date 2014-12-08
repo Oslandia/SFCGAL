@@ -247,6 +247,22 @@ SegmentOutputIteratorType difference( const Segment_2& segment, const PolygonWH_
 
 inline
 PolygonWH_2
+fix_cgal_valid_polygon( const PolygonWH_2& p )
+{
+    const Polygon_2& outer = p.outer_boundary();
+    for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin();
+            v != outer.vertices_end(); ++v ) {
+        for ( Polygon_2::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ) {
+            if ( *o == *v ) {
+                BOOST_THROW_EXCEPTION( NotImplementedException( "Fixing a polygon which exterior ring self intersects is not implemented" ) );
+            }
+        }
+    } 
+    return p;
+}
+
+inline
+PolygonWH_2
 fix_sfs_valid_polygon( const PolygonWH_2& p )
 {
     // a polygon is valid for sfs and invalid for CGAL when two rings intersect
@@ -595,18 +611,7 @@ PolygonOutputIteratorType difference( const PolygonWH_2& a, const PolygonWH_2& b
     // polygon outer rings from difference can self intersect at points
     // therefore we need to split the generated polygons so that they are valid for SFS
     for ( std::vector< PolygonWH_2 >::const_iterator poly=temp.begin(); poly!=temp.end(); ++poly  ) {
-        const Polygon_2& outer = poly->outer_boundary();
-
-        for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin();
-                v != outer.vertices_end(); ++v ) {
-            for ( Polygon_2::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ) {
-                if ( *o == *v ) {
-                    BOOST_THROW_EXCEPTION( NotImplementedException( "Difference yelding a polygon which exterior ring self intersect is not implemented" ) );
-                }
-            }
-        }
-
-        *out++ = *poly;
+        *out++ = fix_cgal_valid_polygon( *poly );
     }
 
     return out;
