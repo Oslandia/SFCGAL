@@ -731,17 +731,17 @@ SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesse
 extern "C" double sfcgal_geometry_volume( const sfcgal_geometry_t* ga )
 {
     double r;
-    try
-    {
-            r = CGAL::to_double( SFCGAL::algorithm::volume( *(const SFCGAL::Geometry*)(ga) ) );
+
+    try {
+        r = CGAL::to_double( SFCGAL::algorithm::volume( *( const SFCGAL::Geometry* )( ga ) ) );
     }
-    catch ( std::exception& e )
-    {
-            SFCGAL_WARNING( "During volume(A) :" );
-            SFCGAL_WARNING( "  with A: %s", ((const SFCGAL::Geometry*)(ga))->asText().c_str() );
-            SFCGAL_ERROR( "%s", e.what() );
-            return -1.0;
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During volume(A) :" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( ga ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return -1.0;
     }
+
     return r;
 }
 
