@@ -40,7 +40,7 @@ void SurfaceGraph::addRing( const LineString& ring, FaceIndex faceIndex )
         const Coordinate endCoord = ring.pointN( ( s + 1 ) % numSegments ).coordinate() ; // possible optimization: store the index of ring start point instead of finding it
         const CoordinateMap::const_iterator startFound = _coordinateMap.find( startCoord ) ;
         const CoordinateMap::const_iterator endFound = _coordinateMap.find( endCoord ) ;
-        BOOST_ASSERT_MSG( s + 1 != numSegments || endFound != _coordinateMap.end(), "ring not closed" );
+        BOOST_ASSERT( s + 1 != numSegments || endFound != _coordinateMap.end() ); // ring not closed
 
         if ( startFound != _coordinateMap.end() && endFound != _coordinateMap.end() ) {
             // found both end, we look for the edge
