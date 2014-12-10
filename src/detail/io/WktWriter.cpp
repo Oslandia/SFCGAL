@@ -176,6 +176,10 @@ void WktWriter::write( const Point& g )
 ///
 void WktWriter::writeInner( const Point& g )
 {
+    if ( g.isEmpty() ) {
+        _s << "EMPTY" ;
+        return ;
+    }
     _s << "(";
     writeCoordinate( g );
     _s << ")";
