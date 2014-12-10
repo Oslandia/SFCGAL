@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE( multiPointEmpty3 )
     std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT(EMPTY,EMPTY)" ) );
     std::cerr << g->asText() << "\n";
     BOOST_CHECK( g->is< MultiPoint >() );
-    BOOST_CHECK( g->numGeometries() == 3 );
+    BOOST_CHECK( g->numGeometries() == 2 );
 }
 
 //-- WKT MULTILINESTRING
