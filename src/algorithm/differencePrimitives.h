@@ -1,8 +1,32 @@
+/**
+ *   SFCGAL
+ *
+ *   Copyright (C) 2012-2013 Oslandia <infos@oslandia.com>
+ *   Copyright (C) 2012-2013 IGN (http://www.ign.fr)
+ *
+ *   This library is free software; you can redistribute it and/or
+ *   modify it under the terms of the GNU Library General Public
+ *   License as published by the Free Software Foundation; either
+ *   version 2 of the License, or (at your option) any later version.
+ *
+ *   This library is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *   Library General Public License for more details.
+
+ *   You should have received a copy of the GNU Library General Public
+ *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef _SFCGAL_ALGORITHM_DIFFERENCEPRIMITIVES_H_
+#define _SFCGAL_ALGORITHM_DIFFERENCEPRIMITIVES_H_
+
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/detail/GeometrySet.h>
+#include <SFCGAL/detail/algorithm/needsUnion.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -267,22 +291,75 @@ SegmentOutputIteratorType difference( const Segment_2& segment, const PolygonWH_
     return out;
 }
 
-inline
-PolygonWH_2
-fix_cgal_valid_polygon( const PolygonWH_2& p )
+template < typename PolygonOutputIteratorType>
+PolygonOutputIteratorType fix_cgal_valid_polygon( const PolygonWH_2& p, PolygonOutputIteratorType out )
 {
     const Polygon_2& outer = p.outer_boundary();
+    if ( !outer.is_simple() ){
+        // the holes are simple, so we need to find the intersection points, then split 
+        // the outer ring into simple components and put holes in the right one
+        // note that the hole may touch the outer boundary at a point,
+        // so if the tested hole point falls on the boundary, we test the next
 
-    for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin();
-            v != outer.vertices_end(); ++v ) {
-        for ( Polygon_2::Vertex_const_iterator o = v+1; o != outer.vertices_end(); ++o ) {
-            if ( *o == *v ) {
-                BOOST_THROW_EXCEPTION( NotImplementedException( "Fixing a polygon which exterior ring self intersects is not implemented" ) );
+
+        std::vector< Polygon_2 > boundaries;
+        std::vector< std::vector<Point_2> > stack(1);
+        for ( Polygon_2::Vertex_const_iterator v = outer.vertices_begin();
+                v != outer.vertices_end(); ++v ) {
+            if ( stack.back().size() && stack.back()[0] == *v ) { // closing ring
+                boundaries.push_back( Polygon_2( stack.back().begin(), stack.back().end() ) );
+                stack.pop_back();
+            }
+            else if ( std::find( v+1, outer.vertices_end(), *v) != outer.vertices_end() ){ //split point
+                stack.back().push_back(*v); 
+                stack.resize( stack.size() + 1 );
+                stack.back().push_back(*v);
+            }
+            else{
+                stack.back().push_back(*v); 
             }
         }
+        if ( stack.size() ) boundaries.push_back( Polygon_2( stack.back().begin(), stack.back().end() ) );
+
+        // @todo check that exterior rings are all oriented in the same
+        // direction, otherwize they should be added to holes
+        const CGAL::Orientation ori = boundaries[0].orientation();
+        for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin()+1; 
+                    b != boundaries.end(); ++b ){
+            if ( b->orientation() != ori ){
+                BOOST_THROW_EXCEPTION( NotImplementedException("This particular case of polygon fixing not implemented"));
+            }
+        }
+
+
+        std::vector< std::vector< Polygon_2 > > holes(boundaries.size()); // 1/1 with boudaries
+
+        unsigned nbHoles = 0;
+        for ( PolygonWH_2::Hole_const_iterator h = p.holes_begin(); h != p.holes_end(); ++h ){
+            ++nbHoles;
+            for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin(); 
+                    b != boundaries.end(); ++b ){
+                if ( CGAL::bounded_side_2( b->vertices_begin(), 
+                                           b->vertices_end(), *h->vertices_begin(), Kernel() ) 
+                    == CGAL::ON_BOUNDED_SIDE || 
+                     CGAL::bounded_side_2( b->vertices_begin(), 
+                                           b->vertices_end(), *(h->vertices_begin()+1), Kernel() ) 
+                    == CGAL::ON_BOUNDED_SIDE 
+                    ) { 
+                    holes[ b -  boundaries.begin() ].push_back( *h );
+                }
+            }
+        }
+        for ( unsigned i = 0; i < boundaries.size(); i++ ){
+            *out++ = PolygonWH_2( boundaries[i], holes[i].begin(), holes[i].end() );
+        }
+        std::cerr << "extracted " << boundaries.size() << " boundaries, dispatched " << nbHoles << " holes \n";
+    }
+    else {
+        *out++ = p;
     }
 
-    return p;
+    return out;
 }
 
 inline
@@ -635,7 +712,7 @@ PolygonOutputIteratorType difference( const PolygonWH_2& a, const PolygonWH_2& b
     // polygon outer rings from difference can self intersect at points
     // therefore we need to split the generated polygons so that they are valid for SFS
     for ( std::vector< PolygonWH_2 >::const_iterator poly=temp.begin(); poly!=temp.end(); ++poly  ) {
-        *out++ = fix_cgal_valid_polygon( *poly );
+        out = fix_cgal_valid_polygon( *poly, out );
     }
 
     return out;
@@ -657,4 +734,4 @@ private:
 
 }
 }
-
+#endif

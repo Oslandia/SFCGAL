@@ -20,20 +20,48 @@
 
 #include <SFCGAL/algorithm/differencePrimitives.h>
 #include <SFCGAL/algorithm/union.h>
+#include <SFCGAL/detail/algorithm/needsUnion.h>
 #include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/triangulate/triangulate2DZ.h>
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/connected_components.hpp>
+#include <cstdio>
+
 //
 // Union kernel
 
-#define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
+#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 using namespace SFCGAL::detail;
 
 namespace SFCGAL {
 
 namespace algorithm {
+// we don't want to merge triangles an retriangulate because it's conceptually
+// a pain to have a union of two yielding more than one primitive
+// either two primitives merge into one, or they don't merge
+struct PolygonWH_3
+{
+    PolygonWH_3( const Triangle_3 & t)
+        : _plane(t.supporting_plane())
+    {
+        Polygon_2 p;
+        for (unsigned i=0; i<3; i++) p.push_back( _plane.to_2d( t.vertex(i) ) );
+        _poly = PolygonWH_2(p);
+    }
+
+    const Plane_3 _plane;
+    PolygonWH_2 _poly;
+};
+
+PrimitiveType typeFor( const Point_2& ){return PrimitivePoint;}
+PrimitiveType typeFor( const Point_3& ){return PrimitivePoint;}
+PrimitiveType typeFor( const Segment_2& ){return PrimitiveSegment;}
+PrimitiveType typeFor( const Segment_3& ){return PrimitiveSegment;}
+PrimitiveType typeFor( const PolygonWH_2& ){return PrimitiveSurface;}
+PrimitiveType typeFor( const Triangle_3& ){return PrimitiveSurface;}
+PrimitiveType typeFor( const NoVolume& ){return PrimitiveVolume;}
+PrimitiveType typeFor( const MarkedPolyhedron& ){return PrimitiveVolume;}
+
 
 
 template <int Dim>
@@ -65,25 +93,34 @@ struct PrimitiveVec: boost::variant<
     const T& as() const {
         return boost::get< T >( *this );
     }
+
+    template <typename SharedPrimPtr>
+    void changeAdress(SharedPrimPtr & oldAdress, SharedPrimPtr & newAdress) {
+        if ( this->which() != typeFor(*oldAdress) ) return;
+        typedef typename std::vector< SharedPrimPtr > VecType;
+        VecType & v = boost::get< VecType >( *this );
+        for (typename VecType::iterator i = v.begin(); i != v.end(); ++i){
+            if ( i->get() == oldAdress.get() ) *i = newAdress;
+        }
+    }
 };
 
 // this one is a tad complicated because we want bboxes with handle to be responsible for the
 // primitives, hence the use of shared ptr instead of a dumb ptr
 template <int Dim>
 struct HandledBox {
-    typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, boost::shared_ptr< PrimitiveVec<Dim> > > Type;
-    typedef std::vector< Type > Vector;
+    typedef typename CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, boost::shared_ptr< PrimitiveVec<Dim> > > Type;
+    typedef typename std::vector< Type > Vector;
 };
 
-//void union_( const PrimitiveHandle<3>& pa, const PrimitiveHandle<3>& pb,
-//                   GeometrySet<3>& output, dim_t<3> ){BOOST_ASSERT(false);}
-//void union_( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb,
-//                   GeometrySet<2>& output, dim_t<2> ){BOOST_ASSERT(false);}
-//
+template < typename SharedPrimPtr, class HandleBoxVectorType >
+void changeAdress( SharedPrimPtr & oldAdress, SharedPrimPtr & newAdress, HandleBoxVectorType & boxes )
+{
+    for (typename HandleBoxVectorType::iterator it=boxes.begin(); it!=boxes.end(); ++it){
+        it->handle()->changeAdress( oldAdress, newAdress );
+    }
+}
 
-//template void union_<2>( const PrimitiveHandle<2>& a, const PrimitiveHandle<2>& b, GeometrySet<2>& );
-//template void union_<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
-//
 /**
  * union post processing
  */
@@ -94,26 +131,32 @@ void post_union( const GeometrySet<2>& input, GeometrySet<2>& output )
     for ( GeometrySet<2>::SurfaceCollection::const_iterator it = input.surfaces().begin();
             it != input.surfaces().end();
             ++it ) {
-        const CGAL::Polygon_with_holes_2<Kernel>& p = it->primitive();
-        CGAL::Polygon_2<Kernel> outer = p.outer_boundary();
+        const PolygonWH_2& poly = it->primitive();
 
-        if ( outer.orientation() == CGAL::CLOCKWISE ) {
-            outer.reverse_orientation();
-        }
+        std::vector< PolygonWH_2 > fixed;
+        fix_cgal_valid_polygon( poly, std::back_inserter(fixed) );
+        for (std::vector< PolygonWH_2 >::const_iterator p=fixed.begin(); p!=fixed.end(); ++p){
 
-        std::list<CGAL::Polygon_2<Kernel> > rings;
+            CGAL::Polygon_2<Kernel> outer = p->outer_boundary();
 
-        for ( CGAL::Polygon_with_holes_2<Kernel>::Hole_const_iterator hit = p.holes_begin();
-                hit != p.holes_end();
-                ++hit ) {
-            rings.push_back( *hit );
-
-            if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
-                rings.back().reverse_orientation();
+            if ( outer.orientation() == CGAL::CLOCKWISE ) {
+                outer.reverse_orientation();
             }
-        }
 
-        output.surfaces().push_back( CGAL::Polygon_with_holes_2<Kernel>( outer, rings.begin(), rings.end() ) );
+            std::list<CGAL::Polygon_2<Kernel> > rings;
+
+            for ( PolygonWH_2::Hole_const_iterator hit = p->holes_begin();
+                    hit != p->holes_end();
+                    ++hit ) {
+                rings.push_back( *hit );
+
+                if ( hit->orientation() == CGAL::COUNTERCLOCKWISE ) {
+                    rings.back().reverse_orientation();
+                }
+            }
+
+            output.surfaces().push_back( PolygonWH_2( outer, rings.begin(), rings.end() ) );
+        }
     }
 
     output.points() = input.points();
@@ -123,8 +166,19 @@ void post_union( const GeometrySet<2>& input, GeometrySet<2>& output )
 
 void post_union( const GeometrySet<3>& input, GeometrySet<3>& output )
 {
-    // nothing special to do
-    output = input;
+    // @todo we need to split polyhedron that have disjoined exterior shells or just share a point
+
+    //for ( GeometrySet<2>::VolumeCollection::const_iterator it = input.volumes().begin();
+    //        it != input.volumes().end();
+    //        ++it ) {
+    //    
+    //
+    //}
+    output.volumes() = input.volumes();
+
+    output.points() = input.points();
+    output.segments() = input.segments();
+    output.surfaces() = input.surfaces();
 }
 
 template <int Dim>
@@ -258,20 +312,14 @@ void differenceInplace( PrimitiveVec<Dim>& a, const PrimitiveVec<Dim>& b )
 template <typename PointOutputIteratorType>
 PointOutputIteratorType union_( const Point_2& a, const Point_2& b, PointOutputIteratorType out )
 {
-    if ( a == b ) {
-        *out++ = a;
-    }
-
+    if ( a == b ) *out++ = a;
     return out;
 }
 
 template <typename PointOutputIteratorType>
 PointOutputIteratorType union_( const Point_3& a, const Point_3& b, PointOutputIteratorType out )
 {
-    if ( a == b ) {
-        *out++ = a;
-    }
-
+    if ( a == b ) *out++ = a;
     return out;
 }
 
@@ -356,7 +404,8 @@ PolygonOutputIteratorType union_( const PolygonWH_2& a, const PolygonWH_2& b, Po
                 are_holes_and_boundary_pairwise_disjoint( a, traits ) ? a : fix_sfs_valid_polygon( a ),
                 are_holes_and_boundary_pairwise_disjoint( b, traits ) ? b : fix_sfs_valid_polygon( b ),
                 res ) ) {
-        *out++ = fix_cgal_valid_polygon( res );
+        //out = fix_cgal_valid_polygon( res, out );
+        *out++ = res;
     }
 
     return out;
@@ -369,8 +418,8 @@ VolumeOutputIteratorType union_( const NoVolume& , const NoVolume& , VolumeOutpu
     return out;
 }
 
-template <typename PolygonOutputIteratorType>
-PolygonOutputIteratorType union_( const Triangle_3& a, const Triangle_3& b, PolygonOutputIteratorType out )
+template <typename TriangleOutputIteratorType>
+TriangleOutputIteratorType union_( const Triangle_3& a, const Triangle_3& b, TriangleOutputIteratorType out )
 {
     const Plane_3 plane = a.supporting_plane();
 
@@ -378,6 +427,9 @@ PolygonOutputIteratorType union_( const Triangle_3& a, const Triangle_3& b, Poly
         // project on plane
         // union polygons
         // triangulate the result
+        //
+        // we should not merge neither triangles sharing an edge in opposite direction
+        // nor triangles sharing only a vertex
 
         // case where one covers the other
         if ( CGAL::do_intersect( a.vertex( 0 ) , b )
@@ -394,32 +446,11 @@ PolygonOutputIteratorType union_( const Triangle_3& a, const Triangle_3& b, Poly
             return out;
         }
 
+        if ( !detail::algorithm::needsUnion( a, b ) ) return out;
+
         // @gotcha do not union if triangles are just sharing an edge, they may be the result
         // of a previous triangulation
-        for ( unsigned i=0; i<3; i++ ) {
-            for ( unsigned j=0; j<3; j++ ) {
-                if ( a.vertex( i ) == b.vertex( ( j+1 )%3 ) &&
-                        a.vertex( ( i+1 )%3 ) == b.vertex( j ) ) {
-                    // now check that the last points are on opposite side (dot product of cross products is negative or null)
-                    Vector_3 a0a1( a.vertex( i ), a.vertex( ( i+1 )%3 ) );
-                    Vector_3 a0a2( a.vertex( i ), a.vertex( ( i+2 )%3 ) );
-                    Vector_3 a0b2( a.vertex( i ), b.vertex( ( i+2 )%3 ) );
-                    Vector_3 n1 = CGAL::cross_product( a0a1, a0a2 );
-                    Vector_3 n2 = CGAL::cross_product( a0a1, a0b2 );
 
-                    if ( n1*n2 <= 0 ) {
-                        return out;
-                    }
-                }
-            }
-        }
-
-        // the latter cannot be used because of ambiguous resolution of CGAL::intersection
-        // its internal to CGAL, and cause by the Boolean_set_operations_2 include
-        // so instead we have to check that the triangles are not just touching on a point
-        //
-        //CGAL::Object inter = CGAL::intersection( a, b );
-        //if ( CGAL::object_cast< Point_3>( &inter ) ) return out; // just touching on a point
 
         Polygon_2 aProj, bProj;
 
@@ -434,16 +465,23 @@ PolygonOutputIteratorType union_( const Triangle_3& a, const Triangle_3& b, Poly
             if ( !res.outer_boundary().is_simple() ) {
                 return out;    // ring self intersects, triangles just touching on point
             }
+            std::vector< PolygonWH_2 > result;
+            fix_cgal_valid_polygon(res, std::back_inserter(result));
 
-            const Polygon poly( res );
-            TriangulatedSurface ts;
-            triangulate::triangulatePolygon3D( poly, ts );
+            for (  std::vector< PolygonWH_2 >::const_iterator pit = result.begin();
+                    pit != result.end(); ++pit ){
+                const Polygon poly( res );
+                TriangulatedSurface ts;
+                triangulate::ConstraintDelaunayTriangulation cdt;
+                triangulate::triangulate2DZ( poly, cdt );
+                cdt.markDomains();
+                cdt.getTriangles( ts, true );
 
-
-            for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
-                *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
-                                     plane.to_3d( t->vertex( 1 ).toPoint_2() ),
-                                     plane.to_3d( t->vertex( 2 ).toPoint_2() ) ) ;
+                for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
+                    *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
+                                         plane.to_3d( t->vertex( 1 ).toPoint_2() ),
+                                         plane.to_3d( t->vertex( 2 ).toPoint_2() ) ) ;
+                }
             }
         }
     }
@@ -462,13 +500,17 @@ VolumeOutputIteratorType union_( const MarkedPolyhedron& a, const MarkedPolyhedr
     CGAL::Emptyset_iterator no_polylines;
     typedef std::vector<std::pair<MarkedPolyhedron*, int> >  ResultType;
     ResultType result;
-    coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::Join_tag );
-
-    if ( result.size() > 1 ) { //otherwise, they are left as they are
+    DEBUG_OUT << "joining polyhedron\n";
+    try {
+        coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::Join_tag );
+        if ( result.size() == 1)  *out++ = *result[0].first;
         for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
-            *out++ = *it->first;
             delete it->first;
         }
+        DEBUG_OUT << "joined in" << result.size() << " polyhedron\n";
+    }
+    catch (std::logic_error){
+        // will happen if they only share an edge
     }
 
     return out;
@@ -479,27 +521,99 @@ void gnuplot( const char* , VectorPrimitiveType )
 {
 }
 
-void gnuplot( const char* fileName, std::vector<typename boost::shared_ptr<Triangle_3> >&   a )
+//void gnuplot( const char * fileName, const std::vector<typename boost::shared_ptr<Triangle_3> >&   a )
+//{
+//    std::ofstream out( fileName );
+//
+//    for ( unsigned i=0; i<a.size(); i++ ) {
+//        if ( !a[i].get() ) continue;
+//        for ( unsigned j=0; j<4; j++ ) {
+//            out << a[i]->vertex( j%3 ).x() << " " <<   a[i]->vertex( j%3 ).y() << "\n";
+//        }
+//
+//        out << "\n";
+//    }
+//
+//}
+
+void gnuplot( const char * fileName, const std::vector<typename boost::shared_ptr<PolygonWH_2> >&   a )
 {
     std::ofstream out( fileName );
 
     for ( unsigned i=0; i<a.size(); i++ ) {
-        for ( unsigned j=0; j<4; j++ ) {
-            out << a[i]->vertex( j%3 ).x() << " " <<   a[i]->vertex( j%3 ).y() << "\n";
+        if ( !a[i].get() ) continue;
+        std::vector< Polygon_2 > rings( 1, a[i]->outer_boundary() );
+        rings.insert( rings.end(), a[i]->holes_begin(), a[i]->holes_end() );
+
+        for ( std::vector< Polygon_2 >::iterator ring = rings.begin(); ring != rings.end(); ++ring ) {
+            for (Polygon_2::Vertex_const_iterator v = ring->vertices_begin(); 
+                    v!=ring->vertices_end(); ++v){
+                out << v->x() << " " <<  v->y() << "\n";
+            }
+            out << "\n";
+        }
+    }
+}
+
+/*
+void union_( std::vector<typename boost::shared_ptr<Triangle_3> > , std::vector<typename boost::shared_ptr<Triangle_3> > )
+{
+    if ( !a.size() || !b.size() ) return;
+    const Plane_3 plane = a.supporting_plane();
+
+    if ( b.supporting_plane() == plane ){
+        // we deal globally with the merge, we put all triangles in the plane an create
+        // a constrained triangulation
+
+        triangulate::ConstraintDelaunayTriangulation cdt;
+
+        for (std::vector<typename boost::shared_ptr<Triangle_3> >::const_iterator tit = a.begin(); 
+                tit != a.end(); ++tit ){
+            Vertex_handle last ;
+            for ( unsigned i=0; i<4; i++ ) {
+                Vertex_handle vertex = cdt.addVertex( g.vertex( i ).coordinate() );
+                if ( i != 0 ) cdt.addConstraint( last, vertex ) ;
+                last = vertex ;
+            }
+        }
+        for (std::vector<typename boost::shared_ptr<Triangle_3> >::const_iterator tit = b.begin(); 
+                tit != b.end(); ++tit ){
+            Vertex_handle last ;
+            for ( unsigned i=0; i<4; i++ ) {
+                Vertex_handle vertex = cdt.addVertex( g.vertex( i ).coordinate() );
+                if ( i != 0 ) cdt.addConstraint( last, vertex ) ;
+                last = vertex ;
+            }
         }
 
-        out << "\n";
+        cdt.markDomains();
+        TriangulatedSurface ts;
+        cdt.getTriangles( ts, true );
+
+        a.resize(0);
+        b.resize(0);
+
+        for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
+            const Triangle_3 * t = new Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
+                                                   plane.to_3d( t->vertex( 1 ).toPoint_2() ),
+                                                   plane.to_3d( t->vertex( 2 ).toPoint_2() ) ) ;
+            a.push_back( t );
+            b.push_back( t
+        }
+        
+
+    }
+    else{
+        // do nothing yet
+        // @todo decide if we want to split the triangles the way we do segments (and do it)
     }
 
 }
+*/
 
-void union_( std::vector<typename boost::shared_ptr<Triangle_3> > , std::vector<typename boost::shared_ptr<Triangle_3> > )
-{
-    BOOST_THROW_EXCEPTION( NotImplementedException( "Union of triangles is not implemented" ) );
-}
 
-template <class VectorPrimitiveType>
-void union_( VectorPrimitiveType& a, VectorPrimitiveType& b )
+template <class VectorPrimitiveType, class HandleBoxVectorType>
+void unionT( VectorPrimitiveType& a, VectorPrimitiveType& b, HandleBoxVectorType & boxes)
 {
 
     // we can do it the dumb o(n^2) way because n is small
@@ -513,6 +627,14 @@ void union_( VectorPrimitiveType& a, VectorPrimitiveType& b )
     // to avoid join of already joinde primitives, the join of two triangles yields a TIN
     // and we must have a way to identify wich triangle pairs belong to the same TIN
     // we need a specific triangle U triangle
+    //
+    // For polygons and triangles, the merge can result in more than one primitive
+    // because: 
+    // - the union of 2 polygons yield more than one polygon in the case where the 
+    //   polygon is cgal valid but sfs invalid (self intersecting outer ring)
+    // - the union of 2 triangles yiels a polygon that is triangulated
+    gnuplot("a.out", a);
+    gnuplot("b.out", b);
 
     typedef typename VectorPrimitiveType::value_type PrimPrt;
     typedef typename PrimPrt::element_type PrimitiveType;
@@ -521,41 +643,55 @@ void union_( VectorPrimitiveType& a, VectorPrimitiveType& b )
 
     for ( unsigned i=0; i<a.size(); i++ ) {
         for ( unsigned j=0; j<b.size(); j++ ) {
+            if ( alreadyJoined[i].end() != std::find( alreadyJoined[i].begin(), alreadyJoined[i].end(),j )) DEBUG_OUT << "already joined " << i << " and " << j << "\n";
             if ( !a[i].get()  || !b[j].get() || // removed in the loop
-                    a[i].get() == b[j].get() ||
+                    a[i].get() == b[j].get() || // it's actually the same primitive
                     alreadyJoined[i].end() != std::find( alreadyJoined[i].begin(), alreadyJoined[i].end(),j )
                ) {
                 continue;    // they are already the same,
             }
+            DEBUG_OUT << "joining " << i << " and " << j << "\n";
 
             // because they have been merged previously
             std::vector<PrimitiveType> out;
             union_( *a[i], *b[j], std::back_inserter( out ) );
 
             if ( out.size() == 1 ) { // they have been merged into one, so we replace both with it
-                a[i].reset( new PrimitiveType( out[0] ) );
-                b[j] = a[i];
+                typename boost::shared_ptr<PrimitiveType> newPrim( new PrimitiveType( out[0] ) );
+                changeAdress( a[j], newPrim , boxes);
+                changeAdress( b[j], newPrim , boxes);
+                DEBUG_OUT << "merged\n";
             }
             else if ( out.size() > 1 ) { // they have been merged into several,
                 // so we put them at the end and set the ptr to NULL;
-                a[i].reset();
-                b[j].reset();
-                std::vector< unsigned > newB;
+                DEBUG_OUT << "result " << out.size() << "\n";
+                BOOST_THROW_EXCEPTION( NotImplementedException("union yields several primitives") );
+                //a[i].reset();
+                //b[j].reset();
+                //std::vector< unsigned > newB;
 
-                for ( unsigned k=0; k<out.size(); k++ ) {
-                    newB.push_back( b.size() + k );
-                }
+                //for ( unsigned k=0; k<out.size(); k++ ) {
+                //    newB.push_back( b.size() + k );
+                //}
 
-                for ( unsigned k=0; k<out.size(); k++ ) {
-                    alreadyJoined.push_back( newB );
-                }
+                //for ( unsigned k=0; k<out.size(); k++ ) {
+                //    alreadyJoined.push_back( newB );
+                //}
 
-                for ( typename std::vector<PrimitiveType>::const_iterator it=out.begin();
-                        it!=out.end(); ++it ) {
-                    a.push_back( PrimPrt( new PrimitiveType( *it ) ) );
-                    b.push_back( a.back() );
-                }
+                //for ( typename std::vector<PrimitiveType>::const_iterator it=out.begin();
+                //        it!=out.end(); ++it ) {
+                //    a.push_back( PrimPrt( new PrimitiveType( *it ) ) );
+                //    b.push_back( a.back() );
+                //}
             }
+
+            char af[20];
+            char bf[20];
+            sprintf(af, "a%05d%05d.out", i, j);
+            sprintf(bf, "b%05d%05d.out", i, j);
+
+            gnuplot(af, a);
+            gnuplot(bf, b);
 
             // else no merge occured, so we do nothing
         }
@@ -577,33 +713,36 @@ void union_( VectorPrimitiveType& a, VectorPrimitiveType& b )
 
 
 template <int Dim>
-void union_( PrimitiveVec<Dim>& a, PrimitiveVec<Dim>& b )
+void union_( PrimitiveVec<Dim>& a, PrimitiveVec<Dim>& b, typename HandledBox<Dim>::Vector & boxes )
 {
     switch ( a.which() ) {
     case PrimitivePoint:
-        union_( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(),
-                b.template as< typename PrimitiveVec<Dim>::PointPtrVec >() );
+        unionT( a.template as< typename PrimitiveVec<Dim>::PointPtrVec >(),
+                b.template as< typename PrimitiveVec<Dim>::PointPtrVec >(), boxes );
         break;
 
     case PrimitiveSegment:
-        union_( a.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(),
-                b.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >() );
+        unionT( a.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(),
+                b.template as< typename PrimitiveVec<Dim>::SegmentPtrVec >(), boxes );
         break;
 
     case PrimitiveSurface:
-        union_( a.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >(),
-                b.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >() );
+        unionT( a.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >(),
+                b.template as< typename PrimitiveVec<Dim>::SurfacePtrVec >(), boxes );
         break;
 
     case PrimitiveVolume:
-        union_( a.template as< typename PrimitiveVec<Dim>::VolumePtrVec >(),
-                b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >() );
+        unionT( a.template as< typename PrimitiveVec<Dim>::VolumePtrVec >(),
+                b.template as< typename PrimitiveVec<Dim>::VolumePtrVec >(), boxes );
         break;
     }
 }
 
 template <int Dim>
 struct UnionOnBoxCollision {
+
+    UnionOnBoxCollision( typename HandledBox<Dim>::Vector& boxes ):_boxes(boxes){}
+
     void operator()( typename HandledBox<Dim>::Type& a,
                      typename HandledBox<Dim>::Type& b ) {
         // note that all primitives in a have the same type, same holds for primitives in b
@@ -614,9 +753,11 @@ struct UnionOnBoxCollision {
             differenceInplace( *a.handle(), *b.handle() );
         }
         else {
-            union_( *a.handle(), *b.handle() );
+            union_( *a.handle(), *b.handle(), _boxes );
         }
     }
+private:
+    typename HandledBox<Dim>::Vector& _boxes;
 };
 
 template <int Dim>
@@ -679,9 +820,12 @@ void union_( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometrySet<D
     typename HandledBox<Dim>::Vector aboxes = compute_bboxes( a );
     typename HandledBox<Dim>::Vector bboxes = compute_bboxes( b );
 
-    CGAL::box_intersection_d( aboxes.begin(), aboxes.end(),
-                              bboxes.begin(), bboxes.end(),
-                              UnionOnBoxCollision<Dim>() );
+    typename HandledBox<Dim>::Vector boxes( aboxes );
+    boxes.insert( boxes.end(), bboxes.begin(), bboxes.end() );
+
+    CGAL::box_intersection_d( boxes.begin(), boxes.begin() + aboxes.size(),
+                              boxes.begin() + aboxes.size(), boxes.end(),
+                              UnionOnBoxCollision<Dim>(boxes) );
 
     // now collect primitives in all bboxes and we are done
     GeometrySet<Dim> temp, temp2;
@@ -701,7 +845,7 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidi
     algorithm::union_( gsa, gsb, output );
 
     GeometrySet<2> filtered;
-    output.filterCovered( filtered );
+    output.filterCovered( filtered ); //@todo remove this, normally the algo won't duplicate primitives
     return filtered.recompose();
 }
 
