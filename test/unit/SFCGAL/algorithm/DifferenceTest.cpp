@@ -150,22 +150,6 @@ BOOST_AUTO_TEST_CASE( testDifferencePolygonPolygon2D )
         BOOST_CHECK( algorithm::isValid( *diff ) );
         BOOST_CHECK( *diff == *io::readWkt( "POLYGON((-1 -1,1 -1,1 -0.5,1 1,-1 1,-1 -1),(1 -0.5,-0.5 -0.5,-0.5 0.5,0.5 0.5,1 -0.5))" ) );
     }
-
-    // two polygons,  the result from CGAL has self intersecting outer ring, to be dealt with latter
-    {
-        std::auto_ptr<Geometry> ls1 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
-        std::auto_ptr<Geometry> ls2 = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-0.5 -0.5,-0.5 0.5,0 0,-0.5 -0.5),(0.5 0.5,0.5 -0.5,0 0,0.5 0.5))" );
-        bool caugh = false;
-
-        try {
-            std::auto_ptr<Geometry> diff = algorithm::difference( *ls1, *ls2 );
-        }
-        catch ( NotImplementedException ) {
-            caugh = true;
-        }
-
-        BOOST_CHECK( caugh );
-    }
 }
 
 BOOST_AUTO_TEST_CASE( testDifferenceVolumeVolume )

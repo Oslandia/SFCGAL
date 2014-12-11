@@ -43,6 +43,20 @@ namespace SFCGAL {
 
 namespace algorithm {
 
+template <int Dim>
+struct CollisionMapper {
+    typedef std::vector< PrimitiveHandle<Dim>* > PrimitiveHandleSet;
+    typedef std::map< PrimitiveHandle<Dim>*, PrimitiveHandleSet > Map;
+    CollisionMapper( Map& map ) : _map( map ) {};
+    void operator()( const typename PrimitiveBox<Dim>::Type& a,
+                     const typename PrimitiveBox<Dim>::Type& b ) {
+        _map[a.handle()].push_back( b.handle() );
+    }
+
+private:
+    Map& _map;
+};
+
 template < typename OutputIteratorType >
 OutputIteratorType difference( const Point_2& primitive, const PrimitiveHandle<2>& pb, OutputIteratorType out )
 {

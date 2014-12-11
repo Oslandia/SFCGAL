@@ -38,6 +38,7 @@
 
 #include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/volume.h>
+#include <SFCGAL/algorithm/connection.h>
 
 #include <CGAL/Bbox_3.h>
 #include <CGAL/IO/Polyhedron_iostream.h>
@@ -681,13 +682,35 @@ void recompose_surfaces( const GeometrySet<3>::SurfaceCollection& surfaces, std:
         return;
     }
 
-    TriangulatedSurface* tri = new TriangulatedSurface;
+
+    std::auto_ptr<TriangulatedSurface> tri( new TriangulatedSurface );
 
     for ( GeometrySet<3>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
         tri->addTriangle( new Triangle( it->primitive() ) );
     }
 
-    output.push_back( tri );
+    algorithm::SurfaceGraph graph( *tri );
+    std::vector< size_t > component( boost::num_vertices( graph.faceGraph() ) );
+    BOOST_ASSERT( tri->numTriangles() == component.size() );
+    const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
+
+    if ( 1 == numComponents ) {
+        output.push_back( tri.release() );
+    }
+    else {
+        std::vector< TriangulatedSurface* > sout( numComponents );
+
+        for ( unsigned c = 0; c < numComponents; c++ ) {
+            sout[c] = new TriangulatedSurface;
+            output.push_back( sout[c] );
+        }
+
+        const size_t numTriangles = tri->numTriangles() ;
+
+        for ( size_t t = 0; t != numTriangles; ++t ) {
+            sout[ component[t] ]->addTriangle( tri->triangleN( t ) );
+        }
+    }
 }
 
 void recompose_volumes( const GeometrySet<2>::VolumeCollection&, std::vector<Geometry*>&, dim_t<2> )

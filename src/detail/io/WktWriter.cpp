@@ -180,6 +180,7 @@ void WktWriter::writeInner( const Point& g )
         _s << "EMPTY" ;
         return ;
     }
+
     _s << "(";
     writeCoordinate( g );
     _s << ")";

@@ -131,6 +131,9 @@ SurfaceGraph::SurfaceGraph( const TriangulatedSurface& tin ) :
     const size_t numTriangles = tin.numTriangles() ;
 
     for ( size_t t = 0; t != numTriangles; ++t ) { // for each polygon
+        const FaceIndex idx = boost::add_vertex( _graph );
+        BOOST_ASSERT( idx == t );
+        ( void )idx;
         const Triangle& triangle = tin.triangleN( t ) ;
         addRing( triangle.toPolygon().exteriorRing(), t );
     }
