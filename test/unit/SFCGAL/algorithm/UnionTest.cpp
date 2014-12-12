@@ -30,7 +30,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
+#define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 using namespace SFCGAL;
 using namespace boost::unit_test ;
@@ -154,14 +154,11 @@ BOOST_AUTO_TEST_CASE( GardenFailures )
     }
 
     // infinite loop
-    try {
+    {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
         std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((0 0,10 0,10 0,10 10,0 10,0 0))" );
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
-    }
-    catch ( NotImplementedException e ) {
-        std::cerr << e.what() << "\n";
     }
 
     // infinite loop

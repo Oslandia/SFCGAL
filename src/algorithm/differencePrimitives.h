@@ -26,7 +26,6 @@
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
 #include <SFCGAL/detail/GeometrySet.h>
-#include <SFCGAL/detail/algorithm/needsUnion.h>
 
 #include <CGAL/Boolean_set_operations_2.h>
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
@@ -353,7 +352,7 @@ PolygonOutputIteratorType fix_cgal_valid_polygon( const PolygonWH_2& p, PolygonO
         for ( unsigned i = 0; i < boundaries.size(); i++ ){
             *out++ = PolygonWH_2( boundaries[i], holes[i].begin(), holes[i].end() );
         }
-        std::cerr << "extracted " << boundaries.size() << " boundaries, dispatched " << nbHoles << " holes \n";
+        //std::cerr << "extracted " << boundaries.size() << " boundaries, dispatched " << nbHoles << " holes \n";
     }
     else {
         *out++ = p;

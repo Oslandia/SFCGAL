@@ -33,7 +33,7 @@
 // @todo replace de change adress by some kind of visitor on primitives that will update
 // all ptrs pointing to the same thing without the need for going through all lists
 // to update adresses
-#define DEBUG_OUT if (1) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
+#define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 using namespace SFCGAL::detail;
 
@@ -43,6 +43,9 @@ namespace algorithm {
 // we don't want to merge triangles an retriangulate because it's conceptually
 // a pain to have a union of two yielding more than one primitive
 // either two primitives merge into one, or they don't merge
+//
+// @todo replace that with polyhedral surface or tin to avoid 
+// problem of moving slightly out of plane points in the plane
 struct PolygonWH_3
 {
     PolygonWH_3( const Triangle_3 & t)
@@ -427,25 +430,25 @@ SegmentOutputIteratorType union_( const typename SegmentPtr_d<Dim>::Type::elemen
     const SegmentType* s = CGAL::object_cast< SegmentType >( &inter );
 
     if ( p ) {
-        // create 4 segments:
-        SegmentType res[4] = { SegmentType( a.source(), *p ),
-                               SegmentType( b.source(), *p ),
-                               SegmentType( *p, a.target() ),
-                               SegmentType( *p, b.target() )
-                             };
-        unsigned nbSegmentsWithLength = 0;
+        //// create 4 segments:
+        //SegmentType res[4] = { SegmentType( a.source(), *p ),
+        //                       SegmentType( b.source(), *p ),
+        //                       SegmentType( *p, a.target() ),
+        //                       SegmentType( *p, b.target() )
+        //                     };
+        //unsigned nbSegmentsWithLength = 0;
 
-        for ( unsigned i=0; i<4; i++ ) {
-            nbSegmentsWithLength += ( res[i].target() != res[i].source() ) ? 1 : 0;
-        }
+        //for ( unsigned i=0; i<4; i++ ) {
+        //    nbSegmentsWithLength += ( res[i].target() != res[i].source() ) ? 1 : 0;
+        //}
 
-        if ( nbSegmentsWithLength >= 3 ) { // end-to end otherwise
-            for ( unsigned i=0; i<4; i++ ) {
-                if ( res[i].target() != res[i].source() ) {
-                    *out++ = res[i];
-                }
-            }
-        }
+        //if ( nbSegmentsWithLength >= 3 ) { // end-to end otherwise
+        //    for ( unsigned i=0; i<4; i++ ) {
+        //        if ( res[i].target() != res[i].source() ) {
+        //            *out++ = res[i];
+        //        }
+        //    }
+        //}
     }
     else if ( s ) {
         // that is a join, we must find the points that are the further appart
@@ -514,7 +517,9 @@ OutputIteratorType union_( const PolygonWH_3 & a, const PolygonWH_3 & b, OutputI
         const PolygonWH_3 bp(b, a.plane()); // put them in the same plane 
                                             // for 2D operation 
                                             // (the projection needs beeing the same)
-        out = union_( a, bp, out);
+        std::vector< PolygonWH_2 > res;
+        union_( a.poly(), bp.poly(), std::back_inserter(res));
+        if ( res.size() == 1 ) *out++ = PolygonWH_3( res[0], a.plane() );
     }
     return out;
 }
