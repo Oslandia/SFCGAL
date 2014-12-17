@@ -34,7 +34,7 @@
 #include <CGAL/corefinement_operations.h>
 #include <CGAL/Point_inside_polyhedron_3.h>
 
-using namespace SFCGAL::detail;
+
 
 namespace SFCGAL {
 
@@ -45,12 +45,16 @@ typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
 typedef CGAL::Polygon_2<Kernel> Polygon_2;
 typedef CGAL::Polygon_with_holes_2<Kernel> PolygonWH_2;
+typedef detail::NoVolume NoVolume;
 
 typedef CGAL::Vector_3<Kernel> Vector_3;
 typedef CGAL::Point_3<Kernel> Point_3;
 typedef CGAL::Segment_3<Kernel> Segment_3;
 typedef CGAL::Triangle_3<Kernel> Triangle_3;
 typedef CGAL::Plane_3<Kernel> Plane_3;
+typedef detail::MarkedPolyhedron MarkedPolyhedron;
+
+CGAL::Object intersection( const CGAL::Triangle_3<Kernel> & a, const CGAL::Triangle_3<Kernel> & b );
 
 inline
 bool do_intersect( const Point_2& point, const PolygonWH_2& polygon )
@@ -290,16 +294,29 @@ SegmentOutputIteratorType difference( const Segment_2& segment, const PolygonWH_
     return out;
 }
 
+// assuming two disjoint (except at a point) polygon, test if the first a hole of the second
+inline
+bool isHoleOf( const Polygon_2 & hole, const Polygon_2 & poly)
+{
+    return CGAL::bounded_side_2( poly.vertices_begin(), 
+                               poly.vertices_end(), *hole.vertices_begin(), Kernel() ) 
+        == CGAL::ON_BOUNDED_SIDE || 
+         CGAL::bounded_side_2( poly.vertices_begin(), 
+                               poly.vertices_end(), *(hole.vertices_begin()+1), Kernel() ) 
+        == CGAL::ON_BOUNDED_SIDE ;
+        
+}
+
 template < typename PolygonOutputIteratorType>
 PolygonOutputIteratorType fix_cgal_valid_polygon( const PolygonWH_2& p, PolygonOutputIteratorType out )
 {
     const Polygon_2& outer = p.outer_boundary();
+    //std::cerr << "in fix outer " << outer << "\n"; 
     if ( !outer.is_simple() ){
         // the holes are simple, so we need to find the intersection points, then split 
         // the outer ring into simple components and put holes in the right one
         // note that the hole may touch the outer boundary at a point,
         // so if the tested hole point falls on the boundary, we test the next
-
 
         std::vector< Polygon_2 > boundaries;
         std::vector< std::vector<Point_2> > stack(1);
@@ -319,38 +336,66 @@ PolygonOutputIteratorType fix_cgal_valid_polygon( const PolygonWH_2& p, PolygonO
             }
         }
         if ( stack.size() ) boundaries.push_back( Polygon_2( stack.back().begin(), stack.back().end() ) );
+        //std::cerr << "in fix boundaries " << boundaries.size() << "\n"; 
 
-        // @todo check that exterior rings are all oriented in the same
-        // direction, otherwize they should be added to holes
-        const CGAL::Orientation ori = boundaries[0].orientation();
-        for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin()+1; 
+        std::vector<Polygon_2> holes( p.holes_begin(), p.holes_end() );
+
+        // one of the boundaries may be a hole
+        std::vector< Polygon_2 > cw;
+        std::vector< Polygon_2 > ccw;
+        for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin(); 
                     b != boundaries.end(); ++b ){
-            if ( b->orientation() != ori ){
-                BOOST_THROW_EXCEPTION( NotImplementedException("This particular case of polygon fixing not implemented"));
-            }
+            if ( b->orientation() == CGAL::CLOCKWISE ) cw.push_back( *b );
+            else ccw.push_back( *b );
         }
 
+        //std::cerr << "in fix " << ccw.size() << " ccw and " << cw.size() << " cw\n";
 
-        std::vector< std::vector< Polygon_2 > > holes(boundaries.size()); // 1/1 with boudaries
-
-        unsigned nbHoles = 0;
-        for ( PolygonWH_2::Hole_const_iterator h = p.holes_begin(); h != p.holes_end(); ++h ){
-            ++nbHoles;
-            for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin(); 
+        // if we have holes, check the orientation of the first hole to see
+        // what is a hole orientation
+        // if we don't have holes, we test if the first ccw is a hole of any
+        // of the cw, if not, then the other are holes
+        bool holesAreCCW = false;
+        if ( !cw.size() ){
+            holesAreCCW = false;
+        }
+        else if ( !ccw.size() ){
+            holesAreCCW = true;
+        }
+        else if ( holes.size() ){
+            holesAreCCW = holes[0].orientation() != CGAL::CLOCKWISE;
+        }
+        else {
+            for ( std::vector< Polygon_2 >::const_iterator b = cw.begin(); 
                     b != boundaries.end(); ++b ){
-                if ( CGAL::bounded_side_2( b->vertices_begin(), 
-                                           b->vertices_end(), *h->vertices_begin(), Kernel() ) 
-                    == CGAL::ON_BOUNDED_SIDE || 
-                     CGAL::bounded_side_2( b->vertices_begin(), 
-                                           b->vertices_end(), *(h->vertices_begin()+1), Kernel() ) 
-                    == CGAL::ON_BOUNDED_SIDE 
-                    ) { 
-                    holes[ b -  boundaries.begin() ].push_back( *h );
+                if ( isHoleOf(ccw[0], *b ) ){
+                    holesAreCCW = true;
+                    break;
                 }
             }
         }
+
+        if ( holesAreCCW ){
+            holes.insert( holes.end(), ccw.begin(), ccw.end() );
+            boundaries.swap( cw );
+        }
+        else{
+            holes.insert( holes.end(), cw.begin(), cw.end() );
+            boundaries.swap( ccw );
+        }
+
+        std::vector< std::vector< Polygon_2 > > sortedHoles(boundaries.size()); // 1/1 with boudaries
+
+        unsigned nbHoles = 0;
+        for ( std::vector< Polygon_2 >::const_iterator h = holes.begin(); h != holes.end(); ++h ){
+            ++nbHoles;
+            for ( std::vector< Polygon_2 >::const_iterator b = boundaries.begin(); 
+                    b != boundaries.end(); ++b ){
+                if ( isHoleOf( *h, *b ) ) sortedHoles[ b - boundaries.begin() ].push_back( *h );
+            }
+        }
         for ( unsigned i = 0; i < boundaries.size(); i++ ){
-            *out++ = PolygonWH_2( boundaries[i], holes[i].begin(), holes[i].end() );
+            *out++ = PolygonWH_2( boundaries[i], sortedHoles[i].begin(), sortedHoles[i].end() );
         }
         //std::cerr << "extracted " << boundaries.size() << " boundaries, dispatched " << nbHoles << " holes \n";
     }
@@ -622,16 +667,16 @@ SegmentOutputIteratorType difference( const Segment_3& segment, const MarkedPoly
 }
 
 // @TODO put that in a proper header
-void _intersection_solid_triangle( const MarkedPolyhedron& pa, const Triangle_3& tri, GeometrySet<3>& output );
+void _intersection_solid_triangle( const MarkedPolyhedron& pa, const Triangle_3& tri, detail::GeometrySet<3>& output );
 
 template < typename TriangleOutputIteratorType>
 TriangleOutputIteratorType intersection( const Triangle_3& triangle, const MarkedPolyhedron& polyhedron, TriangleOutputIteratorType out )
 {
     // call _intersection_solid_triangle
-    GeometrySet<3> res;
+    detail::GeometrySet<3> res;
     _intersection_solid_triangle( polyhedron, triangle, res );
 
-    for ( GeometrySet<3>::SurfaceCollection::const_iterator it = res.surfaces().begin();
+    for ( detail::GeometrySet<3>::SurfaceCollection::const_iterator it = res.surfaces().begin();
             it != res.surfaces().end(); ++it ) {
         *out++ = it->primitive();
     }
@@ -717,19 +762,6 @@ PolygonOutputIteratorType difference( const PolygonWH_2& a, const PolygonWH_2& b
     return out;
 }
 
-template <int Dim>
-struct CollisionMapper {
-    typedef std::vector< PrimitiveHandle<Dim>* > PrimitiveHandleSet;
-    typedef std::map< PrimitiveHandle<Dim>*, PrimitiveHandleSet > Map;
-    CollisionMapper( Map& map ) : _map( map ) {};
-    void operator()( const typename PrimitiveBox<Dim>::Type& a,
-                     const typename PrimitiveBox<Dim>::Type& b ) {
-        _map[a.handle()].push_back( b.handle() );
-    }
-
-private:
-    Map& _map;
-};
 
 }
 }
