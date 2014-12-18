@@ -43,58 +43,192 @@ enum PrimitiveType {
     PrimitiveEmpty = 4
 };
 
+template <int Dim>
+struct Segment_d: detail::Segment_d<Dim>::Type
+{
+    typedef typename detail::Point_d<Dim>::Type PointType;
+    typedef typename detail::Segment_d<Dim>::Type SegmentType;
+    typedef typename std::vector< PointType > PointVector;
+    typedef typename std::vector< SegmentType > SegmentVector;
+
+    Segment_d( const SegmentType & s ): SegmentType(s){}
+    void splitAt( const PointType & p ) { _split.push_back( p ); }
+    void remove( const SegmentType & s ) 
+    { 
+        _split.push_back( s.source() );
+        _split.push_back( s.target() );
+        _remove.push_back( s ); 
+    }
+
+    template < class OutputIterator >
+    OutputIterator pieces( OutputIterator out ) const {
+        PointVector points( 1, this->source() );
+        points.insert( points.end(), _split.begin(), _split.end() );
+        points.push_back( this->target() );
+        std::sort( points.begin()+1, points.end()-1, Nearer< PointType >( this->source() ) );
+
+        for ( typename PointVector::const_iterator p = points.begin(), q = p+1; 
+                q != points.end(); ++p, q++ ) {
+            if ( *p != *q ){
+                PointType m = CGAL::midpoint( *p, *q );
+                typename SegmentVector::const_iterator r = _remove.begin();
+                for ( ; r != _remove.end() && !r->has_on( m ); ++r );
+                if ( r == _remove.end() ){
+                    *out++ = SegmentType( *p, *q );
+                }
+            }
+        }
+        return out;
+    }
+
+    SegmentVector pieces() const {
+        SegmentVector result;
+        this->pieces( std::back_inserter(result) );
+        return result;
+    }
+
+private:
+    PointVector _split;
+    SegmentVector _remove;
+};
+
 template <int Dim> struct Surface_d {};
 
 template <>
 struct Surface_d<3>: Triangle_3
 {
-    typedef std::vector< algorithm::Point_3 > PointVector;
-    typedef std::vector< Segment_3 > SegmentVector;
+    typedef std::vector< algorithm::Point_2 > PointVector;
+    typedef std::vector< Segment_2 > SegmentVector;
     typedef std::vector< PointVector > SurfaceVector;
 
-    Surface_d( const Triangle_3 & s ): Triangle_3( s ){}
+    Surface_d( const Triangle_3 & s ): Triangle_3( s ), _plane( s.supporting_plane() ) 
+    {
+        this->splitAt( s );
+    }
 
-    void splitAt( const Segment_3 & s){ _split.push_back(s); }
+    void splitAt( const Segment_3 & s)
+    { 
+        _split.push_back(Segment_2( _plane.to_2d(s.source()), _plane.to_2d(s.target()) ));
+    }
+
+    template <typename Point3Iterator>
+    void splitAt( Point3Iterator begin, Point3Iterator end ) // polygon with unclosed ring
+    {
+        if (begin == end) return;
+        Point3Iterator s = begin, t = s+1;
+        for ( ; t != end; ++t, ++s ){
+            _split.push_back( Segment_2( _plane.to_2d(*s), _plane.to_2d(*t) ) );
+        }
+        _split.push_back( Segment_2( _plane.to_2d(*s), _plane.to_2d(*begin) ) );
+    }
 
     void splitAt( const Triangle_3 & t)
     { 
-        _split.push_back( Segment_3( t.vertex(0), t.vertex(1) ) ); 
-        _split.push_back( Segment_3( t.vertex(1), t.vertex(2) ) ); 
-        _split.push_back( Segment_3( t.vertex(2), t.vertex(0) ) ); 
+        const algorithm::Point_3 v[3] = { t.vertex( 0 ), t.vertex( 1 ), t.vertex( 2 ) };
+        this->splitAt( v, v+3 );
     }
 
-    void splitAt( const PointVector & p )
+    void splitAt( const std::vector< algorithm::Point_3 > & p ) // polygon with unclosed ring
     {
-        if (!p.size()) return;
-        for ( PointVector::const_iterator s = p.begin(), t = s+1; t != p.end(); ++t, ++s ){
-            _split.push_back( Segment_3( *s, *t ) );
-        }
+        this->splitAt( p.begin(), p.end() );
     }
 
-    void remove( const PointVector & p ){
-        this->splitAt( p ); 
-        _remove.push_back( p ); 
+    template <typename Point3Iterator> // polygon with unclosed ring
+    void remove( Point3Iterator begin, Point3Iterator end )
+    {
+        if ( begin == end ) return;
+        this->splitAt( begin, end );
+        PointVector v;
+        for ( Point3Iterator i = begin; i != end; ++i ) v.push_back( _plane.to_2d( *i ) );
+        _remove.push_back( v ); 
+    }
+
+    void remove( const std::vector< algorithm::Point_3 > & p )
+    {
+        this->remove( p.begin(), p.end() );
     }
 
     void remove( const Triangle_3 & t )
     {
-        PointVector v(1, t.vertex(0));
-        v.push_back( t.vertex( 1 ) );
-        v.push_back( t.vertex( 2 ) );
-        v.push_back( t.vertex( 0 ) );
-        this->splitAt( v );
-        _remove.push_back( v );
+        const algorithm::Point_3 v[3] = { t.vertex( 0 ), t.vertex( 1 ), t.vertex( 2 ) };
+        this->remove( v, v+3 );
     }
 
     std::vector< Triangle_3 > pieces()
     {
-        BOOST_THROW_EXCEPTION(NotImplementedException("Triangle reconstruction is not implemented"));
+        // we need to process the split lines because there may be several lines at the same place
+        // and this won't play nice with the triangulation, the same stands for the lines lying
+        // on the triangle edges
+        // 
+        // after that we just check, for each triangle, if a point fall in a removed part and remove it
+        // we can do that by pairwise union of all segments
+        std::vector< Segment_2 > filtered;
+        {
+            std::vector< Segment_d<2> > lines( _split.begin(), _split.begin()+3 );
+            for (typename SegmentVector::const_iterator c = _split.begin()+3; c != _split.end(); ++c){
+                Segment_d<2> current( *c );
+                for (std::vector< Segment_d<2> >::iterator l = lines.begin(); l != lines.end(); ++l){
+                    CGAL::Object inter = CGAL::intersection( *l, current );
+                    const Point_2 * p = CGAL::object_cast< Point_2 >( &inter );
+                    const Segment_2 * s = CGAL::object_cast< Segment_2 >( &inter );
+                    if ( p ) {
+                        current.splitAt( *p );
+                        l->splitAt( *p );
+                    }
+                    else if ( s ) {
+                        current.remove( *s );
+                        l->splitAt( s->source() );
+                        l->splitAt( s->target() );
+                    }
+                }
+                lines.push_back( current );
+            }
+            for (std::vector< Segment_d<2> >::const_iterator l = lines.begin(); l != lines.end(); ++l){
+                l->pieces( std::back_inserter( filtered ) );
+            }
+        }
+
+        DEBUG_OUT << "triangulating " << filtered.size() << " lines\n";
+
+        // now we want to triangulate
+        TriangulatedSurface ts;
+        {
+            typedef triangulate::ConstraintDelaunayTriangulation::Vertex_handle Vertex_handle;
+            triangulate::ConstraintDelaunayTriangulation cdt;
+            for (std::vector< Segment_2 >::const_iterator f = filtered.begin(); f != filtered.end(); ++f){
+                Vertex_handle s = cdt.addVertex( f->source() );
+                Vertex_handle t = cdt.addVertex( f->target() );
+                cdt.addConstraint( s, t ) ;
+            }
+            cdt.getTriangles( ts );
+        }
+
+        // filter removed triangles
         std::vector< Triangle_3 > res;
-        res.push_back( *this );
+        for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
+            // define a point inside triangle
+            const Point_2 a( t->vertex( 0 ).toPoint_2() );
+            const Point_2 b( t->vertex( 1 ).toPoint_2() );
+            const Point_2 c( t->vertex( 2 ).toPoint_2() );
+            const Point_2 point( a + ( Vector_2( a, b ) + Vector_2( a, c ) )/3 );
+
+            // find if triangle is in a removed spot
+            SurfaceVector::const_iterator r = _remove.begin();
+            for ( ; r != _remove.end() 
+                    && CGAL::bounded_side_2( r->begin(), r->end(), point, Kernel() ) 
+                    == CGAL::ON_UNBOUNDED_SIDE; ++r );
+
+            if ( r == _remove.end() ){ 
+                res.push_back( Triangle_3( _plane.to_3d( a ), _plane.to_3d( b ), _plane.to_3d( c ) ) ); 
+            }
+        }
+        DEBUG_OUT << "generated " << res.size() << " triangles\n";
+
         return res;
     }
 
 private:
+    algorithm::Plane_3 _plane;
     SegmentVector _split;
     SurfaceVector _remove;
 };
@@ -122,57 +256,6 @@ private:
 };
 
 
-template <int Dim>
-struct Segment_d: detail::Segment_d<Dim>::Type
-{
-    typedef typename detail::Point_d<Dim>::Type PointType;
-    typedef typename detail::Segment_d<Dim>::Type SegmentType;
-    typedef typename std::vector< PointType > PointVector;
-    typedef typename std::vector< SegmentType > SegmentVector;
-
-    struct Nearer {
-        Nearer( const PointType& reference ) :_ref( reference ) {}
-        bool operator()( const PointType& lhs, const PointType& rhs ) const {
-            return CGAL::squared_distance( _ref, lhs ) < CGAL::squared_distance( _ref, rhs );
-        }
-    private:
-        const PointType _ref;
-    };
-
-    Segment_d( const SegmentType & s ): SegmentType(s){}
-    void splitAt( const PointType & p ) { _split.push_back( p ); }
-    void remove( const SegmentType & s ) 
-    { 
-        _split.push_back( s.source() );
-        _split.push_back( s.target() );
-        _remove.push_back( s ); 
-    }
-
-    SegmentVector pieces() const {
-        SegmentVector result;
-        PointVector points( 1, this->source() );
-        points.insert( points.end(), _split.begin(), _split.end() );
-        points.push_back( this->target() );
-        std::sort( points.begin()+1, points.end()-1, Nearer( this->source() ) );
-
-        for ( typename PointVector::const_iterator p = points.begin(), q = p+1; 
-                q != points.end(); ++p, q++ ) {
-            if ( *p != *q ){
-                PointType m = CGAL::midpoint( *p, *q );
-                typename SegmentVector::const_iterator r = _remove.begin();
-                for ( ; r != _remove.end() && !r->has_on( m ); ++r );
-                if ( r == _remove.end() ){
-                    result.push_back( SegmentType( *p, *q ) );
-                }
-            }
-        }
-        return result;
-    }
-
-private:
-    PointVector _split;
-    SegmentVector _remove;
-};
 
 // takes care of RAII of primitives
 template <int Dim>
@@ -399,7 +482,7 @@ void union_segment_surface(typename ObservablePrimitive<2>::Handle a,typename Ob
     points.push_back( a.asSegment().target() );
 
     // order point according to the distance from source
-    std::sort( points.begin()+1, points.end()-1, Segment_d<2>::Nearer( points[0] ) );
+    std::sort( points.begin()+1, points.end()-1, Nearer<Point_2>( points[0] ) );
 
     // cut segment with pieces that have length and wich midpoint is inside polygon
     for ( std::vector< Point_2 >::const_iterator p = points.begin(), q = p+1; q != points.end(); ++p, ++q ) {
@@ -426,10 +509,59 @@ void union_segment_volume(typename ObservablePrimitive<2>::Handle ,typename Obse
     BOOST_ASSERT(false); // there shouldn't be any volume in 2D
 }
 
-void union_segment_volume(typename ObservablePrimitive<3>::Handle ,typename ObservablePrimitive<3>::Handle  )
+void union_segment_volume(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
 {
-    // take the complement of the difference to mark
-    BOOST_THROW_EXCEPTION( NotImplementedException("Union segment Volume not implemented" ) );
+    const Segment_3& segment = a.asSegment();
+    const MarkedPolyhedron& polyhedron = b.asVolume();
+
+    std::vector< FaceBbox > bboxes( polyhedron.facets_begin(), polyhedron.facets_end() );
+    std::vector< FaceBboxBase > bbox( 1, FaceBboxBase( segment.bbox(),polyhedron.facets_begin()->facet_begin() ) ); // nevermind the facet handle, it's not used anyway
+    FaceSegmentCollide::CollisionVector collisions;
+    FaceSegmentCollide cb( collisions );
+    CGAL::box_intersection_d( bbox.begin(), bbox.end(),
+                              bboxes.begin(), bboxes.end(),
+                              cb );
+
+    CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
+    if ( !collisions.size() ) {
+        // completely in or out, we just test one point
+
+        if ( CGAL::ON_UNBOUNDED_SIDE != is_in_poly( segment.source() ) ) {
+            a.asSegment().remove( a.asSegment() );
+        }
+    }
+    else {
+        std::vector< Triangle_3 > triangles;
+        collidingTriangles( collisions, std::back_inserter( triangles ) );
+
+        // first step, substract faces
+        for ( std::vector< Triangle_3 >::const_iterator tri=triangles.begin();
+                tri != triangles.end(); ++tri ) {
+            typename ObservablePrimitive<3>::Handle h( new ObservablePrimitive<3>( *tri ) );
+            union_segment_surface( a, h );
+        }
+
+        // second step, for each segment, add intersection points and test each middle point
+        // to know if it's in or out
+        std::vector< Point_3 > points;
+        for ( std::vector< Triangle_3 >::const_iterator tri=triangles.begin();
+                tri != triangles.end(); ++tri ) {
+            CGAL::Object inter = CGAL::intersection( segment, *tri );
+            const Point_3* p = CGAL::object_cast< Point_3 >( &inter );
+            if ( p ) points.push_back( *p );
+        }
+        if ( points.size() ){
+            std::sort( points.begin(), points.end(), Nearer<Point_3>( segment.source() ) );
+
+            // mark segments pieces that have length and wich midpoint is inside polyhedron
+            for ( std::vector< Point_3 >::const_iterator p = points.begin(), q = p+1; 
+                    q != points.end(); ++p, ++q ) {
+                if ( *p != *q && CGAL::ON_UNBOUNDED_SIDE != is_in_poly( CGAL::midpoint( *p,*q ) ) ) {
+                    a.asSegment().remove( Segment_3( *p, *q ) );
+                }
+            }
+        }
+    }
 }
 
 
@@ -513,7 +645,7 @@ void union_volume_volume(typename ObservablePrimitive<3>::Handle a,typename Obse
     }
     catch (std::logic_error){
         // will happen if they only share an edge
-        std::cerr << "SFCGAL NOTICE: the previous CGAL warning is due to a shared edge, it is not a problem\n";
+        std::cerr << "SFCGAL NOTICE: the previous CGAL error is due to a shared edge, it is not a problem\n";
     }
 }
 
@@ -582,7 +714,7 @@ void collectPrimitives( const typename HandledBox<Dim>::Vector& boxes, detail::G
 
         case PrimitiveSegment :
             {
-            typename Segment_d<Dim>::SegmentVector pieces( bit->handle().asSegment().pieces() );
+            typename std::vector< typename detail::Segment_d<Dim>::Type > pieces( bit->handle().asSegment().pieces() );
             output.addSegments( pieces.begin(), pieces.end() );
             empty.registerObservers( bit->handle() );
             }

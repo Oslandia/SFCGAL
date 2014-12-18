@@ -114,6 +114,23 @@ BOOST_AUTO_TEST_CASE( LineLine )
     }
 }
 
+BOOST_AUTO_TEST_CASE( LineVolume )
+{
+    std::auto_ptr<Geometry> a = io::readWkt( "LINESTRING(-1 -1 -1,2 2 2)" );
+    std::auto_ptr<Geometry> b = io::readWkt(
+                                      "SOLID((((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
+             ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
+             ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
+             ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
+             ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
+             ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" );
+    std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
+    BOOST_CHECK( u->geometryTypeId() == TYPE_GEOMETRYCOLLECTION );
+    BOOST_CHECK( u->geometryN(0).geometryTypeId() == TYPE_LINESTRING );
+    BOOST_CHECK( u->geometryN(1).geometryTypeId() == TYPE_LINESTRING );
+    BOOST_CHECK( u->geometryN(2).geometryTypeId() == TYPE_SOLID );
+}
+
 BOOST_AUTO_TEST_CASE( PointSurface )
 {
     {
@@ -179,6 +196,26 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon )
         std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
         BOOST_CHECK( *u == *io::readWkt( "POLYGON((0 0,1 0,2 0,2 1,1 1,0 1,0 0))" ) );
+    }
+
+    {
+        std::auto_ptr<Geometry> base = io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" );
+        Polygon a( base->as<Polygon>() );
+        algorithm::translate( a, .75, 0, 0); //disjoined
+        GeometryCollection b;
+        b.addGeometry( base->as<Polygon>() );
+        b.addGeometry( base->as<Polygon>() );
+        algorithm::translate( b.geometryN(1), 1.5, 0, 0 );
+
+        std::auto_ptr<Geometry> u = algorithm::union_( a, b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( u->geometryTypeId() == TYPE_POLYGON );
+        BOOST_CHECK( algorithm::area3D(*u) == 2.5 );
+
+        u = algorithm::union3D( a, b );
+        DEBUG_OUT << u->asText() <<"\n";
+        BOOST_CHECK( u->geometryTypeId() == TYPE_TRIANGULATEDSURFACE );
+        BOOST_CHECK( algorithm::area3D(*u) == 2.5 );
     }
 }
 

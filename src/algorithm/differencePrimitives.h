@@ -40,6 +40,7 @@ namespace SFCGAL {
 
 namespace algorithm {
 
+typedef CGAL::Vector_2<Kernel> Vector_2;
 typedef CGAL::Point_2<Kernel> Point_2;
 typedef CGAL::Segment_2<Kernel> Segment_2;
 typedef CGAL::Triangle_2<Kernel> Triangle_2;
