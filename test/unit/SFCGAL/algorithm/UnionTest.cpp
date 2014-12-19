@@ -269,6 +269,9 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon3 )
     //TriangulatedSurface ts;
     //triangulate::triangulatePolygon3D( *u, ts );
     //io::vtk( ts, "out.vtk" );
+    u = algorithm::union3D( a, b );
+    BOOST_CHECK( std::abs( algorithm::area3D( *u ) - 25.56 ) < .01 );
+    //io::vtk( *u, "out.vtk" );
 }
 
 BOOST_AUTO_TEST_CASE( GardenFailures1 )
@@ -389,7 +392,6 @@ BOOST_AUTO_TEST_CASE( VolumeVolume )
         Solid b = a->as<Solid>();
         algorithm::translate( b, 1, 1, 1 ); // share a corner
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, b );
-        std::cerr << u->asText() << "\n";
         BOOST_CHECK( u->geometryTypeId() == TYPE_MULTISOLID );
         BOOST_CHECK( algorithm::volume( *u ) == 2 );
     }

@@ -48,9 +48,9 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         if ( ! sfcgalAssertGeometryValidity ) {\
             BOOST_THROW_EXCEPTION(GeometryInvalidityException(\
                 ( boost::format(ctxt "%s is invalid : %s : %s")\
-                  % g.geometryType()\
+                  % (g).geometryType()\
                   % sfcgalAssertGeometryValidity.reason()\
-                  % g.asText()\
+                  % (g).asText()\
                 ).str()\
             ));\
         }\
@@ -61,8 +61,8 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
     {\
         using namespace SFCGAL;\
-        if ( g.is3D() ) {\
-            std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( g.clone() );\
+        if ( (g).is3D() ) {\
+            std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );\
             algorithm::force2D( *sfcgalAssertGeometryValidityClone );\
             SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 2D - " ); \
         }\
@@ -73,8 +73,8 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g) \
     {\
         using namespace SFCGAL;\
-        if ( !g.is3D() ) {\
-            std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( g.clone() );\
+        if ( !(g).is3D() ) {\
+            std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );\
             algorithm::force3D( *sfcgalAssertGeometryValidityClone );\
             SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 3D - " ); \
         }\

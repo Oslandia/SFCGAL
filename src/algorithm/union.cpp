@@ -107,6 +107,11 @@ struct Surface_d<3>: Triangle_3 {
         this->splitAt( s );
     }
 
+    void splitAt( const algorithm::Point_3& p ) {
+        //@note this is a degenerated segment, but works anyway
+        _split.push_back( Segment_2( _plane.to_2d( p ), _plane.to_2d( p ) ) );
+    }
+
     void splitAt( const Segment_3& s ) {
         _split.push_back( Segment_2( _plane.to_2d( s.source() ), _plane.to_2d( s.target() ) ) );
     }
@@ -699,11 +704,16 @@ void union_surface_surface( Handle<2> a,Handle<2> b )
 void union_surface_surface( Handle<3> a,Handle<3> b )
 {
     CGAL::Object inter = intersection( a.asSurface(), b.asSurface() );
+    const Point_3* p = CGAL::object_cast< Point_3 >( &inter );
     const Segment_3* s = CGAL::object_cast< Segment_3 >( &inter );
     const Triangle_3* t = CGAL::object_cast< Triangle_3 >( &inter );
-    const std::vector<Point_3>* p = CGAL::object_cast< std::vector<Point_3> >( &inter );
+    const std::vector<Point_3>* v = CGAL::object_cast< std::vector<Point_3> >( &inter );
 
-    if ( s ) {
+    if ( p ) {
+        a.asSurface().splitAt( *p );
+        b.asSurface().splitAt( *p );
+    }
+    else if ( s ) {
         a.asSurface().splitAt( *s );
         b.asSurface().splitAt( *s );
     }
@@ -711,9 +721,9 @@ void union_surface_surface( Handle<3> a,Handle<3> b )
         a.asSurface().splitAt( *t );
         b.asSurface().remove( *t );
     }
-    else if ( p ) {
-        a.asSurface().splitAt( *p );
-        b.asSurface().remove( *p );
+    else if ( v ) {
+        a.asSurface().splitAt( *v );
+        b.asSurface().remove( *v );
     }
 }
 
@@ -937,7 +947,9 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
-    return union_( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry>  result( union_( ga, gb, NoValidityCheck() ) );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( *result );
+    return result;
 }
 
 std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
@@ -961,7 +973,9 @@ std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
-    return union3D( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry>  result( union3D( ga, gb, NoValidityCheck() ) );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( *result );
+    return result;
 }
 
 void handleLeakTest()
