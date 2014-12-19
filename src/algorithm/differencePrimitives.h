@@ -411,6 +411,8 @@ inline
 PolygonWH_2
 fix_sfs_valid_polygon( const PolygonWH_2& p )
 {
+    CGAL::Gps_segment_traits_2<Kernel> traits;
+    if ( are_holes_and_boundary_pairwise_disjoint( p, traits ) ) return p; 
     // a polygon is valid for sfs and invalid for CGAL when two rings intersect
     // on a point that is not a ring vertex
     // we add this vertex to fix the polygon

@@ -26,6 +26,9 @@
 #include <cstdio>
 #include <algorithm>
 
+//for debug
+#include <SFCGAL/io/vtk.h>
+
 #define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 
@@ -202,6 +205,7 @@ struct Surface_d<3>: Triangle_3
             }
             cdt.getTriangles( ts );
         }
+        io::vtk( ts, "pre_filter.vtk" );
 
         // filter removed triangles
         std::vector< Triangle_3 > res;
@@ -244,6 +248,10 @@ struct Surface_d<2>: PolygonWH_2
 
     void splitAt( const Segment_2 & s){ _split.push_back(s); }
 
+    void addSplitsFrom( const Surface_d<2> & other ){
+        _split.insert( _split.end(), other._split.begin(), other._split.end() );
+    }
+
     std::vector< PolygonWH_2 > pieces() const
     { 
         std::vector< PolygonWH_2 > res;
@@ -255,123 +263,197 @@ private:
     SegmentVector _split;
 };
 
+// for debug prints
+template <typename T >
+std::ostream & operator<<( std::ostream & out, std::set< T * > & obs)
+{
+    for ( typename std::set< T * >::iterator h = obs.begin(); h != obs.end(); ++h ){
+        out << *h << "\n";
+    }
+    return out;
+}
 
 
 // takes care of RAII of primitives
+
 template <int Dim>
-struct ObservablePrimitive: boost::variant< 
-        typename detail::Point_d<Dim>::Type,
-        Segment_d<Dim>,
-        Surface_d<Dim>,
-        typename detail::Volume_d<Dim>::Type,
-        EmptyPrimitive >
+class Handle
 {
-    template <class T>
-    ObservablePrimitive( const T & p ) :  boost::variant< 
-        typename detail::Point_d<Dim>::Type,
-        Segment_d<Dim>,
-        Surface_d<Dim>,
-        typename detail::Volume_d<Dim>::Type,
-        EmptyPrimitive >( p ) {}
-
-
-    struct Handle: boost::shared_ptr< boost::shared_ptr< ObservablePrimitive > >
+    struct ObservablePrimitive: boost::variant< 
+            typename detail::Point_d<Dim>::Type,
+            Segment_d<Dim>,
+            Surface_d<Dim>,
+            typename detail::Volume_d<Dim>::Type,
+            EmptyPrimitive >
     {
-        Handle( ): boost::shared_ptr< boost::shared_ptr< ObservablePrimitive > >(new boost::shared_ptr< ObservablePrimitive >( new ObservablePrimitive<Dim>( EmptyPrimitive() ) ) ) {}
+        template <class T>
+        ObservablePrimitive( const T & p ) :  boost::variant< 
+            typename detail::Point_d<Dim>::Type,
+            Segment_d<Dim>,
+            Surface_d<Dim>,
+            typename detail::Volume_d<Dim>::Type,
+            EmptyPrimitive >( p ) {}
 
-        Handle( ObservablePrimitive * p ): boost::shared_ptr< boost::shared_ptr< ObservablePrimitive > >( new boost::shared_ptr< ObservablePrimitive >( p ) )
+        template <class T>
+        inline T& as() 
         {
-            p->_observers.push_back( *this );
+            return boost::get<T&>( *this );
         }
 
-        typename detail::Point_d<Dim>::Type & asPoint()
-        {
-            BOOST_ASSERT(this->which() == PrimitivePoint);
-            return boost::get<typename detail::Point_d<Dim>::Type& >( *(this->get()->get()) );
-        }
+        std::set< ObservablePrimitive ** > _observers; // this is for ref counting and handle updating
 
-        Segment_d<Dim> & asSegment() 
-        {
-            BOOST_ASSERT(this->which() == PrimitiveSegment);
-            return boost::get<Segment_d<Dim> & >( *(this->get()->get()) );
-        }
-
-        Surface_d<Dim> & asSurface() 
-        {
-            BOOST_ASSERT(this->which() == PrimitiveSurface);
-            return boost::get<Surface_d<Dim> & >( *(this->get()->get()) );
-        }
-
-        typename detail::Volume_d<Dim>::Type & asVolume() 
-        {
-            BOOST_ASSERT(this->which() == PrimitiveVolume);
-            return boost::get<typename detail::Volume_d<Dim>::Type& >( *(this->get()->get()) );
-        }
-
-        PrimitiveType which() { return PrimitiveType(this->get()->get()->which()); }
-
-        bool empty() { return which() == PrimitiveEmpty;}
-
-        void registerObservers( Handle a ) 
-        { 
-            this->get()->get()->_observers.insert(this->get()->get()->_observers.end(), a->get()->_observers.begin(), a->get()->_observers.end() ); 
-            for ( typename HandleList::iterator h=this->get()->get()->_observers.begin(); h!=this->get()->get()->_observers.end(); ++h ){ 
-                *(h->get()) = *(this->get());
-            }
-        };
+    private:
+        // non copyable
+        ObservablePrimitive( const ObservablePrimitive &);
+        ObservablePrimitive & operator=( const ObservablePrimitive & );
     };
 
-    typedef std::list< Handle > HandleList;
+public:
 
 
-    template <class T>
-    inline T& as() 
+    Handle(): _p( new ObservablePrimitive*( new ObservablePrimitive( EmptyPrimitive() ) ) ) 
     {
-        return boost::get<T&>( *this );
+        (*_p)->_observers.insert(_p);
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+    }
+
+    ~Handle()
+    {
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        (*_p)->_observers.erase(_p);
+        if ( (*_p)->_observers.empty() ){
+            delete (*_p);
+        }
+        delete _p;
+    } 
+
+    Handle( const Handle & other ):_p( new ObservablePrimitive*(*other._p) )
+    {
+        (*_p)->_observers.insert(_p);
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+    }
+
+    template < class PrimitiveType >
+    explicit Handle( const PrimitiveType & primitive ): _p(new ObservablePrimitive*(  new ObservablePrimitive( primitive ) ) )
+    {
+        (*_p)->_observers.insert(_p);
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+    }
+
+    void swap( Handle & other ){
+        (*_p)->_observers.insert(other._p);
+        (*_p)->_observers.erase(_p);
+        (*other._p)->_observers.insert(_p);
+        (*other._p)->_observers.insert(other._p);
+        std::swap( *_p, *other._p );
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        BOOST_ASSERT( (*other._p)->_observers.count(other._p) );
+    }
+
+    Handle & operator=( Handle other ){
+        this->swap( other );
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        return *this;
+    }
+
+    const ObservablePrimitive & operator*() const { BOOST_ASSERT( (*_p)->_observers.count(_p) );return *(*_p); } 
+    ObservablePrimitive & operator*() { BOOST_ASSERT( (*_p)->_observers.count(_p) );return *(*_p); } 
+    const ObservablePrimitive * operator->() const { BOOST_ASSERT( (*_p)->_observers.count(_p) );return (*_p); } 
+    ObservablePrimitive * operator->() { BOOST_ASSERT( (*_p)->_observers.count(_p) );return (*_p); } 
+
+    typename detail::Point_d<Dim>::Type & asPoint()
+    {
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        BOOST_ASSERT( which() == PrimitivePoint );
+        return boost::get<typename detail::Point_d<Dim>::Type& >( *(*_p) );
+    }
+
+    Segment_d<Dim> & asSegment() 
+    {
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        BOOST_ASSERT( which() == PrimitiveSegment );
+        return boost::get<Segment_d<Dim> & >( *(*_p) );
+    }
+
+    Surface_d<Dim> & asSurface() 
+    {
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        BOOST_ASSERT( which() == PrimitiveSurface );
+        return boost::get<Surface_d<Dim> & >( *(*_p) );
+    }
+
+    typename detail::Volume_d<Dim>::Type & asVolume() 
+    {
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+        BOOST_ASSERT( which() == PrimitiveVolume );
+        return boost::get<typename detail::Volume_d<Dim>::Type& >( *(*_p) );
+    }
+
+    PrimitiveType which() { return PrimitiveType( (*_p)->which() ); }
+
+    bool empty() { return which() == PrimitiveEmpty;}
+
+    // makes all handles observing a observe 'this' instead
+    void registerObservers( Handle a ) 
+    { 
+        if ( *a._p == *_p ) return; // both aready observing the same primitive
+
+        ObservablePrimitive * observed = *(a._p);
+        std::vector< ObservablePrimitive ** > observers(observed->_observers.begin(), observed->_observers.end());
+        for ( typename std::vector< ObservablePrimitive ** >::iterator h = observers.begin(); h != observers.end(); ++h ){
+            *(*h) = *_p;
+            (*(*h))->_observers.insert( *h );
+        }
+
+        BOOST_ASSERT( *a._p == *_p );
+
+        delete observed; // we removed all observers
+        BOOST_ASSERT( (*_p)->_observers.count(_p) );
+#ifdef DEBUG
+        for ( typename std::vector< ObservablePrimitive ** >::iterator h = observers.begin(); h != observers.end(); ++h ){
+            BOOST_ASSERT( (*(*h))->_observers.count(*h) );
+        }
+#endif
+
     }
 
 private:
-    HandleList _observers;
-
-    ObservablePrimitive( const ObservablePrimitive &); // no cpy ctor
-    ObservablePrimitive & operator=( const ObservablePrimitive & );
+    ObservablePrimitive ** _p; // mutable because no non const cpy ctor en template classes
 };
 
 template <int Dim>
 struct HandledBox {
-    typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, typename ObservablePrimitive<Dim>::Handle > Type;
+    typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, Handle<Dim>, CGAL::Box_intersection_d::ID_EXPLICIT > Type;
     typedef std::vector< Type > Vector;
 };
 
-template <int Dim>
-typename HandledBox<Dim>::Vector compute_bboxes( const detail::GeometrySet<Dim>& gs )
+template <int Dim, class OutputIterator>
+OutputIterator compute_bboxes( const detail::GeometrySet<Dim>& gs, OutputIterator out )
 {
     typename HandledBox<Dim>::Vector bboxes;
 
     for ( typename detail::GeometrySet<Dim>::PointCollection::const_iterator it = gs.points().begin();
             it != gs.points().end(); ++it ) {
-        typename ObservablePrimitive<Dim>::Handle p( new ObservablePrimitive<Dim>( it->primitive() ) );
-        bboxes.push_back( typename HandledBox<Dim>::Type(it->primitive().bbox(), p) );
+        *out++ = typename HandledBox<Dim>::Type(it->primitive().bbox(), Handle<Dim>( it->primitive() ) );
     }
 
     for ( typename detail::GeometrySet<Dim>::SegmentCollection::const_iterator it = gs.segments().begin();
             it != gs.segments().end(); ++it ) {
-        typename ObservablePrimitive<Dim>::Handle p( new ObservablePrimitive<Dim>( it->primitive() ) );
-        bboxes.push_back( typename HandledBox<Dim>::Type(it->primitive().bbox(), p) );
+        *out++ = typename HandledBox<Dim>::Type(it->primitive().bbox(), Handle<Dim>( it->primitive() ) );
     }
 
     for ( typename detail::GeometrySet<Dim>::SurfaceCollection::const_iterator it = gs.surfaces().begin();
             it != gs.surfaces().end(); ++it ) {
-        typename ObservablePrimitive<Dim>::Handle p( new ObservablePrimitive<Dim>( it->primitive() ) );
-        bboxes.push_back( typename HandledBox<Dim>::Type(it->primitive().bbox(), p) );
+        DEBUG_OUT << "Adding surface " << it->primitive() << "\n";
+        DEBUG_OUT << "       surface box " << it->primitive().bbox() << "\n";
+        *out++ = typename HandledBox<Dim>::Type(it->primitive().bbox(), Handle<Dim>( it->primitive() ) );
     }
 
     for ( typename detail::GeometrySet<Dim>::VolumeCollection::const_iterator it = gs.volumes().begin();
             it != gs.volumes().end(); ++it ) {
-        typename ObservablePrimitive<Dim>::Handle p( new ObservablePrimitive<Dim>( it->primitive() ) );
-        bboxes.push_back( typename HandledBox<Dim>::Type( compute_solid_bbox( it->primitive(), detail::dim_t<Dim>() ), p) );
+        *out++ = typename HandledBox<Dim>::Type( compute_solid_bbox( it->primitive(), detail::dim_t<Dim>() ), Handle<Dim>( it->primitive() ) );
     }
-    return bboxes;
+    return out;
 }
 
 template <class Handle>
@@ -391,28 +473,28 @@ void union_point_segment( Handle a, Handle b )
     }
 }
 
-void union_point_surface(typename ObservablePrimitive<2>::Handle a,typename ObservablePrimitive<2>::Handle b )
+void union_point_surface(Handle<2> a,Handle<2> b )
 {
     if ( do_intersect( a.asPoint(), b.asSurface() ) ) {
         b.registerObservers( a );
     }
 }
 
-void union_point_surface(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_point_surface(Handle<3> a,Handle<3> b )
 {
     if ( b.asSurface().has_on( a.asPoint() ) ) {
         b.registerObservers( a );
     }
 }
 
-void union_point_volume(typename ObservablePrimitive<2>::Handle ,typename ObservablePrimitive<2>::Handle  )
+void union_point_volume(Handle<2> ,Handle<2>  )
 {
     BOOST_ASSERT(false); // there shouldn't be any volume in 2D
 }
 
-void union_point_volume(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_point_volume(Handle<3> a,Handle<3> b )
 {
-    //@todo put is in poly in a struct derived from MarkedPolyhedron to avoid rebuilding every time
+    //@todo put is in poly in a struct derived from MarkedPolyhedron to avoid rebuilding point inside every time
     CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( b.asVolume() );
     if ( CGAL::ON_UNBOUNDED_SIDE != is_in_poly( a.asPoint() ) ) {
         b.registerObservers( a );
@@ -422,7 +504,7 @@ void union_point_volume(typename ObservablePrimitive<3>::Handle a,typename Obser
 
 
 template <int Dim>
-void union_segment_segment(typename ObservablePrimitive<Dim>::Handle a,typename ObservablePrimitive<Dim>::Handle b )
+void union_segment_segment(Handle<Dim> a,Handle<Dim> b )
 {
     typedef typename detail::TypeForDimension<Dim>::Segment SegmentType;
     typedef typename detail::TypeForDimension<Dim>::Point PointType;
@@ -441,17 +523,17 @@ void union_segment_segment(typename ObservablePrimitive<Dim>::Handle a,typename 
     }
 }
 
-void union_segment_segment(typename ObservablePrimitive<2>::Handle a,typename ObservablePrimitive<2>::Handle b )
+void union_segment_segment(Handle<2> a,Handle<2> b )
 {
     union_segment_segment<2>( a, b );
 }
 
-void union_segment_segment(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_segment_segment(Handle<3> a,Handle<3> b )
 {
     union_segment_segment<3>( a, b );
 }
 
-void union_segment_surface(typename ObservablePrimitive<2>::Handle a,typename ObservablePrimitive<2>::Handle b )
+void union_segment_surface(Handle<2> a,Handle<2> b )
 {
     std::vector< Polygon_2 > rings( 1, b.asSurface().outer_boundary() );
     rings.insert( rings.end(), b.asSurface().holes_begin(), b.asSurface().holes_end() );
@@ -494,7 +576,7 @@ void union_segment_surface(typename ObservablePrimitive<2>::Handle a,typename Ob
     }
 }
 
-void union_segment_surface(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_segment_surface(Handle<3> a,Handle<3> b )
 {
     CGAL::Object inter = CGAL::intersection( a.asSegment(), b.asSurface() );
     const Segment_3 * s = CGAL::object_cast< Segment_3 >( &inter );
@@ -504,12 +586,12 @@ void union_segment_surface(typename ObservablePrimitive<3>::Handle a,typename Ob
     }
 }
 
-void union_segment_volume(typename ObservablePrimitive<2>::Handle ,typename ObservablePrimitive<2>::Handle )
+void union_segment_volume(Handle<2> ,Handle<2> )
 {
     BOOST_ASSERT(false); // there shouldn't be any volume in 2D
 }
 
-void union_segment_volume(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_segment_volume(Handle<3> a,Handle<3> b )
 {
     const Segment_3& segment = a.asSegment();
     const MarkedPolyhedron& polyhedron = b.asVolume();
@@ -537,7 +619,7 @@ void union_segment_volume(typename ObservablePrimitive<3>::Handle a,typename Obs
         // first step, substract faces
         for ( std::vector< Triangle_3 >::const_iterator tri=triangles.begin();
                 tri != triangles.end(); ++tri ) {
-            typename ObservablePrimitive<3>::Handle h( new ObservablePrimitive<3>( *tri ) );
+            Handle<3> h( *tri );
             union_segment_surface( a, h );
         }
 
@@ -565,22 +647,21 @@ void union_segment_volume(typename ObservablePrimitive<3>::Handle a,typename Obs
 }
 
 
-void union_surface_surface(typename ObservablePrimitive<2>::Handle a,typename ObservablePrimitive<2>::Handle b )
+void union_surface_surface(Handle<2> a,Handle<2> b )
 {
-    CGAL::Gps_segment_traits_2<Kernel> traits;
     PolygonWH_2 res;
-    if ( CGAL::join(
-                are_holes_and_boundary_pairwise_disjoint( a.asSurface(), traits ) ? a.asSurface() : fix_sfs_valid_polygon( a.asSurface() ),
-                are_holes_and_boundary_pairwise_disjoint( b.asSurface(), traits ) ? b.asSurface() : fix_sfs_valid_polygon( b.asSurface() ),
-                res ) ) {
+    if ( CGAL::join( fix_sfs_valid_polygon( a.asSurface() ), 
+                     fix_sfs_valid_polygon( b.asSurface() ), res ) ) {
         DEBUG_OUT << "merged " << a.asSurface() << " and " << b.asSurface() << "\n";
-        typename ObservablePrimitive<2>::Handle h( new ObservablePrimitive<2>( res ) );
+        Handle<2> h( res );
+        h.asSurface().addSplitsFrom( a.asSurface() );
+        h.asSurface().addSplitsFrom( b.asSurface() );
         h.registerObservers( a );
         h.registerObservers( b );
     }
 }
 
-void union_surface_surface(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_surface_surface(Handle<3> a,Handle<3> b )
 {
     CGAL::Object inter = intersection( a.asSurface(), b.asSurface() );
     const Segment_3 * s = CGAL::object_cast< Segment_3 >( &inter );
@@ -600,12 +681,12 @@ void union_surface_surface(typename ObservablePrimitive<3>::Handle a,typename Ob
     }
 }
 
-void union_surface_volume(typename ObservablePrimitive<2>::Handle ,typename ObservablePrimitive<2>::Handle )
+void union_surface_volume(Handle<2> ,Handle<2> )
 {
     BOOST_ASSERT(false); // there shouldn't be any volume in 2D
 }
 
-void union_surface_volume(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_surface_volume(Handle<3> a,Handle<3> b )
 {
     detail::GeometrySet<3> res;
     _intersection_solid_triangle( b.asVolume(), a.asSurface(), res );
@@ -616,12 +697,12 @@ void union_surface_volume(typename ObservablePrimitive<3>::Handle a,typename Obs
     }
 }
 
-void union_volume_volume(typename ObservablePrimitive<2>::Handle ,typename ObservablePrimitive<2>::Handle )
+void union_volume_volume(Handle<2> ,Handle<2> )
 {
     BOOST_ASSERT(false); // there shouldn't be any volume in 2D
 }
 
-void union_volume_volume(typename ObservablePrimitive<3>::Handle a,typename ObservablePrimitive<3>::Handle b )
+void union_volume_volume(Handle<3> a,Handle<3> b )
 {
     MarkedPolyhedron& p = const_cast<MarkedPolyhedron&>( a.asVolume() );
     MarkedPolyhedron& q = const_cast<MarkedPolyhedron&>( b.asVolume() );
@@ -633,7 +714,7 @@ void union_volume_volume(typename ObservablePrimitive<3>::Handle a,typename Obse
     try {
         coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::Join_tag );
         if ( result.size() == 1){
-            typename ObservablePrimitive<3>::Handle h( new ObservablePrimitive<3>( *result[0].first ) );
+            Handle<3> h( *result[0].first );
             // @todo check that the volume is valid (connection on one point isn't)
             h.registerObservers( a );
             h.registerObservers( b );
@@ -655,6 +736,7 @@ template <int Dim>
 struct UnionOnBoxCollision {
     void operator()( typename HandledBox<Dim>::Type& a,
                      typename HandledBox<Dim>::Type& b ) {
+        DEBUG_OUT << "collision of boxes\n";
         switch ( a.handle().which() ) {
         case PrimitivePoint:
             switch ( b.handle().which() ) {
@@ -703,10 +785,10 @@ struct UnionOnBoxCollision {
 template <int Dim>
 void collectPrimitives( const typename HandledBox<Dim>::Vector& boxes, detail::GeometrySet<Dim>& output )
 {
-    typename ObservablePrimitive<Dim>::Handle empty;
+    Handle<Dim> empty;
     for ( typename  HandledBox<Dim>::Vector::const_iterator bit = boxes.begin();
             bit != boxes.end(); ++bit ) {
-        switch ( (*bit->handle())->which() ) {
+        switch ( bit->handle().which() ) {
         case PrimitivePoint : 
             output.addPrimitive( bit->handle().asPoint() );
             empty.registerObservers( bit->handle() );
@@ -741,20 +823,18 @@ void collectPrimitives( const typename HandledBox<Dim>::Vector& boxes, detail::G
 
 std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
-    detail::GeometrySet<2> gsa( ga ), gsb( gb ), output;
-    typename HandledBox<2>::Vector aboxes( compute_bboxes( gsa ) );
-    typename HandledBox<2>::Vector bboxes( compute_bboxes( gsb ) );
+    typename HandledBox<2>::Vector boxes;
+    compute_bboxes( detail::GeometrySet<2>( ga ), std::back_inserter(boxes) );
+    const unsigned numBoxA = boxes.size();
+    compute_bboxes( detail::GeometrySet<2>( gb ), std::back_inserter(boxes) );
 
-    typename HandledBox<2>::Vector boxes( aboxes );
-    boxes.insert( boxes.end(), bboxes.begin(), bboxes.end() );
-
-    CGAL::box_intersection_d( boxes.begin(), boxes.begin() + aboxes.size(),
-                              boxes.begin() + aboxes.size(), boxes.end(),
+    DEBUG_OUT << "collision between " << boxes.size() << " boxes " << numBoxA << " from A\n"; 
+    CGAL::box_intersection_d( boxes.begin(), boxes.begin() + numBoxA,
+                              boxes.begin() + numBoxA, boxes.end(),
                               UnionOnBoxCollision<2>() );
 
+    detail::GeometrySet<2> output;
     collectPrimitives( boxes, output );
-
-    //algorithm::union_( gsa, gsb, output );
     return output.recompose();
 }
 
@@ -768,20 +848,17 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
 std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
 
-    detail::GeometrySet<3> gsa( ga ), gsb( gb ), output;
-    typename HandledBox<3>::Vector aboxes( compute_bboxes( gsa ) );
-    typename HandledBox<3>::Vector bboxes( compute_bboxes( gsb ) );
+    typename HandledBox<3>::Vector boxes;
+    compute_bboxes( detail::GeometrySet<3>( ga ), std::back_inserter(boxes) );
+    const unsigned numBoxA = boxes.size();
+    compute_bboxes( detail::GeometrySet<3>( gb ), std::back_inserter(boxes) );
 
-    typename HandledBox<3>::Vector boxes( aboxes );
-    boxes.insert( boxes.end(), bboxes.begin(), bboxes.end() );
-
-    CGAL::box_intersection_d( boxes.begin(), boxes.begin() + aboxes.size(),
-                              boxes.begin() + aboxes.size(), boxes.end(),
+    CGAL::box_intersection_d( boxes.begin(), boxes.begin() + numBoxA,
+                              boxes.begin() + numBoxA, boxes.end(),
                               UnionOnBoxCollision<3>() );
 
+    detail::GeometrySet<3> output;
     collectPrimitives( boxes, output );
-
-    //algorithm::union_( gsa, gsb, output );
     return output.recompose();
 }
 
@@ -791,6 +868,16 @@ std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
     return union3D( ga, gb, NoValidityCheck() );
+}
+
+void handleLeakTest()
+{
+    Handle<2> h0( Point_2(0,0) );
+    Handle<2> h1( Point_2(1,1) );
+    Handle<2> empty;
+    empty.registerObservers(empty);
+    empty.registerObservers(h0);
+    h1.registerObservers(h0);
 }
 }
 }

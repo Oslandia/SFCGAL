@@ -30,6 +30,10 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace SFCGAL{ namespace algorithm {
+void handleLeakTest();
+}}
+
 #define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 using namespace SFCGAL;
@@ -37,7 +41,22 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_UnionTest )
 
+
 BOOST_AUTO_TEST_CASE( Handle )
+{
+    algorithm::handleLeakTest();
+}
+
+BOOST_AUTO_TEST_CASE( Handle1 )
+{
+    std::auto_ptr<Geometry> a = io::readWkt( "POINT(0 1)" );
+    std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1)" );
+    std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
+    DEBUG_OUT << u->asText() <<"\n";
+    BOOST_CHECK( *u == *io::readWkt( "POINT(0 1)" ) );
+}
+
+BOOST_AUTO_TEST_CASE( Handle2 )
 {
     std::auto_ptr<Geometry> a = io::readWkt( "MULTIPOINT(0 1,0 1,0 1)" );
     std::auto_ptr<Geometry> b = io::readWkt( "POINT(0 1)" );
@@ -181,7 +200,7 @@ BOOST_AUTO_TEST_CASE( TriangleTriangle )
     }
 }
 
-BOOST_AUTO_TEST_CASE( PolygonPolygon )
+BOOST_AUTO_TEST_CASE( PolygonPolygon1 )
 {
     {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1))" );
@@ -197,7 +216,10 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon )
         DEBUG_OUT << u->asText() <<"\n";
         BOOST_CHECK( *u == *io::readWkt( "POLYGON((0 0,1 0,2 0,2 1,1 1,0 1,0 0))" ) );
     }
+}
 
+BOOST_AUTO_TEST_CASE( PolygonPolygon2 )
+{
     {
         std::auto_ptr<Geometry> base = io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" );
         Polygon a( base->as<Polygon>() );
@@ -208,12 +230,16 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon )
         algorithm::translate( b.geometryN(1), 1.5, 0, 0 );
 
         std::auto_ptr<Geometry> u = algorithm::union_( a, b );
-        DEBUG_OUT << u->asText() <<"\n";
+        io::vtk(*u, "invalid.vtk");
+        DEBUG_OUT << u->asText() << "\n";
+        DEBUG_OUT << "area " << algorithm::area3D(*u) <<"\n";
         BOOST_CHECK( u->geometryTypeId() == TYPE_POLYGON );
         BOOST_CHECK( algorithm::area3D(*u) == 2.5 );
 
         u = algorithm::union3D( a, b );
         DEBUG_OUT << u->asText() <<"\n";
+        DEBUG_OUT << "area " << algorithm::area3D(*u) <<"\n";
+        io::vtk( *u, "polypoly.vtk");
         BOOST_CHECK( u->geometryTypeId() == TYPE_TRIANGULATEDSURFACE );
         BOOST_CHECK( algorithm::area3D(*u) == 2.5 );
     }
