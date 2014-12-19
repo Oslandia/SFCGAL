@@ -716,16 +716,19 @@ TriangleOutputIteratorType difference( const Triangle_3& triangle, const MarkedP
     for ( detail::GeometrySet<3>::PointCollection::const_iterator it = interSet.points().begin();
             it != interSet.points().end(); ++it ) {
         std::vector< Triangle_3 > tmp;
+
         for ( std::vector< Triangle_3 >::const_iterator tri = res.begin(); tri != res.end(); ++tri ) {
             const Point_3 p( it->primitive() );
-            for ( int s = 0; s<3; s++){
-                if ( p != tri->vertex(s) &&  p != tri->vertex((s+1)%3)
-                       && Segment_3( tri->vertex(s), tri->vertex((s+1)%3)).has_on( p ) ){
-                    tmp.push_back( Triangle_3( tri->vertex(s), p, tri->vertex((s+2)%3) ) );
-                    tmp.push_back( Triangle_3( p, tri->vertex((s+1)%3), tri->vertex((s+2)%3) ) );
-                } 
+
+            for ( int s = 0; s<3; s++ ) {
+                if ( p != tri->vertex( s ) &&  p != tri->vertex( ( s+1 )%3 )
+                        && Segment_3( tri->vertex( s ), tri->vertex( ( s+1 )%3 ) ).has_on( p ) ) {
+                    tmp.push_back( Triangle_3( tri->vertex( s ), p, tri->vertex( ( s+2 )%3 ) ) );
+                    tmp.push_back( Triangle_3( p, tri->vertex( ( s+1 )%3 ), tri->vertex( ( s+2 )%3 ) ) );
+                }
             }
         }
+
         tmp.swap( res );
     }
 
