@@ -74,4 +74,11 @@ BOOST_AUTO_TEST_CASE( geometryWithNan )
     BOOST_CHECK_THROW( Coordinate( inf,1.0,2.0 ), NonFiniteValueException  );
     BOOST_CHECK_THROW( Coordinate( sigNaN,1.0,2.0 ), NonFiniteValueException );
 }
+
+BOOST_AUTO_TEST_CASE( disconnectedTIN )
+{
+    std::auto_ptr< Geometry > g( io::readWkt( "TIN(((0 0,1 0,0 1,0 0)),((2 0,3 0,2 1,2 0)))" ) );
+    Validity v = algorithm::isValid( *g );
+    BOOST_CHECK( !v );
+}
 BOOST_AUTO_TEST_SUITE_END()
