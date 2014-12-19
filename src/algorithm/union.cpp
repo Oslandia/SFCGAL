@@ -26,9 +26,6 @@
 #include <cstdio>
 #include <algorithm>
 
-//for debug
-#include <SFCGAL/io/vtk.h>
-
 #define DEBUG_OUT if (0) std::cerr << __FILE__ << ":" << __LINE__ << " debug: "
 
 
@@ -205,7 +202,6 @@ struct Surface_d<3>: Triangle_3
             }
             cdt.getTriangles( ts );
         }
-        io::vtk( ts, "pre_filter.vtk" );
 
         // filter removed triangles
         std::vector< Triangle_3 > res;
@@ -341,11 +337,11 @@ public:
     }
 
     void swap( Handle & other ){
-        (*_p)->_observers.insert(other._p);
         (*_p)->_observers.erase(_p);
-        (*other._p)->_observers.insert(_p);
+        (*other._p)->_observers.erase(other._p);
+        std::swap( _p, other._p );
+        (*_p)->_observers.insert(_p);
         (*other._p)->_observers.insert(other._p);
-        std::swap( *_p, *other._p );
         BOOST_ASSERT( (*_p)->_observers.count(_p) );
         BOOST_ASSERT( (*other._p)->_observers.count(other._p) );
     }
@@ -718,15 +714,15 @@ void union_volume_volume(Handle<3> a,Handle<3> b )
             // @todo check that the volume is valid (connection on one point isn't)
             h.registerObservers( a );
             h.registerObservers( b );
-
-            for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
-                delete it->first;
-            }
         }
     }
     catch (std::logic_error){
         // will happen if they only share an edge
         std::cerr << "SFCGAL NOTICE: the previous CGAL error is due to a shared edge, it is not a problem\n";
+    }
+
+    for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
+        delete it->first;
     }
 }
 
@@ -828,7 +824,6 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidi
     const unsigned numBoxA = boxes.size();
     compute_bboxes( detail::GeometrySet<2>( gb ), std::back_inserter(boxes) );
 
-    DEBUG_OUT << "collision between " << boxes.size() << " boxes " << numBoxA << " from A\n"; 
     CGAL::box_intersection_d( boxes.begin(), boxes.begin() + numBoxA,
                               boxes.begin() + numBoxA, boxes.end(),
                               UnionOnBoxCollision<2>() );
@@ -847,7 +842,6 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
 
 std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
-
     typename HandledBox<3>::Vector boxes;
     compute_bboxes( detail::GeometrySet<3>( ga ), std::back_inserter(boxes) );
     const unsigned numBoxA = boxes.size();

@@ -24,6 +24,8 @@
 #include <SFCGAL/algorithm/translate.h>
 #include <SFCGAL/algorithm/area.h>
 #include <SFCGAL/detail/tools/Registry.h>
+#include <SFCGAL/algorithm/tesselate.h>
+#include <SFCGAL/triangulate/triangulatePolygon.h>
 
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/io/vtk.h>
@@ -230,7 +232,6 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon2 )
         algorithm::translate( b.geometryN(1), 1.5, 0, 0 );
 
         std::auto_ptr<Geometry> u = algorithm::union_( a, b );
-        io::vtk(*u, "invalid.vtk");
         DEBUG_OUT << u->asText() << "\n";
         DEBUG_OUT << "area " << algorithm::area3D(*u) <<"\n";
         BOOST_CHECK( u->geometryTypeId() == TYPE_POLYGON );
@@ -239,10 +240,29 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon2 )
         u = algorithm::union3D( a, b );
         DEBUG_OUT << u->asText() <<"\n";
         DEBUG_OUT << "area " << algorithm::area3D(*u) <<"\n";
-        io::vtk( *u, "polypoly.vtk");
         BOOST_CHECK( u->geometryTypeId() == TYPE_TRIANGULATEDSURFACE );
         BOOST_CHECK( algorithm::area3D(*u) == 2.5 );
     }
+}
+
+BOOST_AUTO_TEST_CASE( PolygonPolygon3 )
+{
+    std::auto_ptr<Geometry> base = io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" );
+    GeometryCollection a;
+    GeometryCollection b;
+    for (unsigned i = 0; i<4; ++i){
+        for (unsigned j = 0; j<4; ++j){
+            Polygon p(  base->as<Polygon>() ); 
+            algorithm::translate( p, std::pow(i, 1.3 ), std::pow(j, 1.3 ), 0 );
+            a.addGeometry( p );
+            algorithm::translate( p, .5, .5, 0 );
+            b.addGeometry( p );
+        }
+    }
+    std::auto_ptr<Geometry> u = algorithm::union_( a, b );
+    TriangulatedSurface ts;
+    triangulate::triangulatePolygon3D(*u, ts); 
+    io::vtk(ts, "out.vtk");
 }
 
 BOOST_AUTO_TEST_CASE( GardenFailures1 )
@@ -251,8 +271,6 @@ BOOST_AUTO_TEST_CASE( GardenFailures1 )
     {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((0 0,10 0,10 0,10 10,0 10,0 0),(2 2,2 5,5 5,5 2,2 2))" );
         std::auto_ptr<Geometry> b = io::readWkt( "TRIANGLE((-1 -1,1 -1,-1 1,-1 -1))" );
-        io::vtk( *a, "a.vtk" );
-        io::vtk( *b, "b.vtk" );
         std::auto_ptr<Geometry> u = algorithm::union_( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
         BOOST_CHECK( algorithm::area(*a) + algorithm::area(*b) == algorithm::area(*u) );
@@ -265,11 +283,8 @@ BOOST_AUTO_TEST_CASE( GardenFailures2 )
     {
         std::auto_ptr<Geometry> a = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-.5 -.5,-.5 .5,.5 .5,.5 -.5,-.5 -.5))" );
         std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-.5 -.5,-.5 .5,.5 .5,.5 -.5,-.5 -.5))" );
-        io::vtk( *a, "a.vtk" );
-        io::vtk( *b, "b.vtk" );
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
-        io::vtk( *u, "u.vtk" );
     }
 }
 
@@ -315,6 +330,14 @@ BOOST_AUTO_TEST_CASE( GardenFailures6 )
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
         DEBUG_OUT << u->asText() <<"\n";
     }
+}
+
+BOOST_AUTO_TEST_CASE( GardenFailures7 )
+{
+    std::auto_ptr<Geometry> a = io::readWkt( "LINESTRING(-1 -1,1 1)" );
+    std::auto_ptr<Geometry> b = io::readWkt( "POLYGON((-1 -1,1 -1,1 1,-1 1,-1 -1),(-.5 -.5,-.5 .5,.5 .5,1 -.5,-.5 -.5))" );
+    std::auto_ptr<Geometry> u = algorithm::union3D( *a, *b );
+    DEBUG_OUT << u->asText() <<"\n";
 }
 
 BOOST_AUTO_TEST_CASE( VolumeVolume )
