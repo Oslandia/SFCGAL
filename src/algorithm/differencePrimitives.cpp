@@ -23,10 +23,10 @@
 
 namespace SFCGAL {
 namespace algorithm {
-    CGAL::Object intersection( const CGAL::Triangle_3<Kernel> & a, const CGAL::Triangle_3<Kernel> & b )
-    {
-        return CGAL::intersection( a, b );
-    }
+CGAL::Object intersection( const CGAL::Triangle_3<Kernel>& a, const CGAL::Triangle_3<Kernel>& b )
+{
+    return CGAL::intersection( a, b );
+}
 }
 }
 
