@@ -690,7 +690,8 @@ void recompose_surfaces( const GeometrySet<3>::SurfaceCollection& surfaces, std:
     }
 
     algorithm::SurfaceGraph graph( *tri );
-    std::vector< unsigned > component( boost::num_vertices( graph.faceGraph() ) );
+    std::vector< size_t > component( boost::num_vertices( graph.faceGraph() ) );
+    BOOST_ASSERT( tri->numTriangles() == component.size() );
     const size_t numComponents = boost::connected_components( graph.faceGraph(), &component[0] );
 
     if ( 1 == numComponents ) {

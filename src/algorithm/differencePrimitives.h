@@ -694,28 +694,41 @@ SegmentOutputIteratorType difference( const Segment_3& segment, const MarkedPoly
 // @TODO put that in a proper header
 void _intersection_solid_triangle( const MarkedPolyhedron& pa, const Triangle_3& tri, detail::GeometrySet<3>& output );
 
-template < typename TriangleOutputIteratorType>
-TriangleOutputIteratorType intersection( const Triangle_3& triangle, const MarkedPolyhedron& polyhedron, TriangleOutputIteratorType out )
-{
-    // call _intersection_solid_triangle
-    detail::GeometrySet<3> res;
-    _intersection_solid_triangle( polyhedron, triangle, res );
-
-    for ( detail::GeometrySet<3>::SurfaceCollection::const_iterator it = res.surfaces().begin();
-            it != res.surfaces().end(); ++it ) {
-        *out++ = it->primitive();
-    }
-
-    return out;
-}
 
 template < typename TriangleOutputIteratorType>
 TriangleOutputIteratorType difference( const Triangle_3& triangle, const MarkedPolyhedron& polyhedron, TriangleOutputIteratorType out )
 {
     std::vector< Triangle_3 > inter;
-    intersection( triangle, polyhedron, std::back_inserter( inter ) );
+    // call _intersection_solid_triangle
+    detail::GeometrySet<3> interSet;
+    _intersection_solid_triangle( polyhedron, triangle, interSet );
+
+    for ( detail::GeometrySet<3>::SurfaceCollection::const_iterator it = interSet.surfaces().begin();
+            it != interSet.surfaces().end(); ++it ) {
+        inter.push_back( it->primitive() );
+    }
+
+
 
     std::vector< Triangle_3 > res( 1, triangle );
+
+    // GOTCHA for intersection points (volume touching triangle) , need to retriangulate
+    for ( detail::GeometrySet<3>::PointCollection::const_iterator it = interSet.points().begin();
+            it != interSet.points().end(); ++it ) {
+        std::vector< Triangle_3 > tmp;
+        for ( std::vector< Triangle_3 >::const_iterator tri = res.begin(); tri != res.end(); ++tri ) {
+            const Point_3 p( it->primitive() );
+            for ( int s = 0; s<3; s++){
+                if ( p != tri->vertex(s) &&  p != tri->vertex((s+1)%3)
+                       && Segment_3( tri->vertex(s), tri->vertex((s+1)%3)).has_on( p ) ){
+                    tmp.push_back( Triangle_3( tri->vertex(s), p, tri->vertex((s+2)%3) ) );
+                    tmp.push_back( Triangle_3( p, tri->vertex((s+1)%3), tri->vertex((s+2)%3) ) );
+                } 
+            }
+        }
+        tmp.swap( res );
+    }
+
 
     for ( std::vector< Triangle_3 >::const_iterator it = inter.begin(); it != inter.end(); ++it ) {
         std::vector< Triangle_3 > tmp;
