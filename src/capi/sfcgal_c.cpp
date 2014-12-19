@@ -184,6 +184,16 @@ extern "C" void sfcgal_geometry_as_text( const sfcgal_geometry_t* pgeom, char** 
     )
 }
 
+extern "C" void sfcgal_geometry_as_text_decim( const sfcgal_geometry_t* pgeom, int numDecimals, char** buffer, size_t* len )
+{
+    SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
+        std::string wkt = reinterpret_cast<const SFCGAL::Geometry*>( pgeom )->asText( numDecimals );
+        *buffer = ( char* )__sfcgal_alloc_handler( wkt.size() + 1 );
+        *len = wkt.size();
+        strncpy( *buffer, wkt.c_str(), *len );
+    )
+}
+
 /**
  * Point
  */
@@ -561,10 +571,10 @@ extern "C" void sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t* p
     )
 }
 
-extern "C" void sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* pgeom, int /*num_decimals*/, char** buffer, size_t* len )
+extern "C" void sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* pgeom, int num_decimals, char** buffer, size_t* len )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR_NO_RET(
-        std::string ewkt = reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->asEWKT();
+        std::string ewkt = reinterpret_cast<const SFCGAL::PreparedGeometry*>( pgeom )->asEWKT( num_decimals );
         *buffer = ( char* )__sfcgal_alloc_handler( ewkt.size() + 1 );
         *len = ewkt.size();
         strncpy( *buffer, ewkt.c_str(), *len );
