@@ -19,6 +19,7 @@
  */
 
 #include <SFCGAL/algorithm/differencePrimitives.h>
+#include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/union.h>
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/triangulate/triangulate2DZ.h>
@@ -755,10 +756,18 @@ void union_volume_volume( Handle<3> a,Handle<3> b )
     typedef CGAL::Polyhedron_corefinement<MarkedPolyhedron> Corefinement;
     Corefinement coref;
     CGAL::Emptyset_iterator no_polylines;
-    typedef std::vector<std::pair<MarkedPolyhedron*, int> >  ResultType;
-    ResultType result;
 
-    try {
+    // volumes must at least share a face, if they share only a point, this will cause
+    // an invalid geometry, if they only share an egde it will cause the CGAL algo to
+    // throw
+    //
+    // for the moment we use hte intersection algo and test the result
+    detail::GeometrySet<3> inter;
+    intersection( detail::GeometrySet<3>( a.asVolume() ), detail::GeometrySet<3>( b.asVolume() ), inter );
+
+    if ( inter.volumes().size() || inter.surfaces().size() ) {
+        typedef std::vector<std::pair<MarkedPolyhedron*, int> >  ResultType;
+        ResultType result;
         coref( p, q, no_polylines, std::back_inserter( result ), Corefinement::Join_tag );
 
         if ( result.size() == 1 ) {
@@ -767,15 +776,12 @@ void union_volume_volume( Handle<3> a,Handle<3> b )
             h.registerObservers( a );
             h.registerObservers( b );
         }
-    }
-    catch ( std::logic_error ) {
-        // will happen if they only share an edge
-        std::cerr << "SFCGAL NOTICE: the previous CGAL error is due to a shared edge, it is not a problem\n";
+
+        for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
+            delete it->first;
+        }
     }
 
-    for ( ResultType::iterator it = result.begin(); it != result.end(); it++ ) {
-        delete it->first;
-    }
 }
 
 

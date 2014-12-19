@@ -379,6 +379,7 @@ BOOST_AUTO_TEST_CASE( VolumeVolume )
         BOOST_CHECK( u->geometryTypeId() == TYPE_SOLID );
         BOOST_CHECK( algorithm::volume( *u ) == 2 );
     }
+
     {
         Solid b = a->as<Solid>();
         algorithm::translate( b, 1, 1, 0 );
@@ -387,8 +388,7 @@ BOOST_AUTO_TEST_CASE( VolumeVolume )
         BOOST_CHECK( algorithm::volume( *u ) == 2 );
     }
 
-    // @todo fix the code to pass the test
-    if ( 0 ) {
+    {
         Solid b = a->as<Solid>();
         algorithm::translate( b, 1, 1, 1 ); // share a corner
         std::auto_ptr<Geometry> u = algorithm::union3D( *a, b );
