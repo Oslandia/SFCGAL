@@ -264,9 +264,11 @@ BOOST_AUTO_TEST_CASE( PolygonPolygon3 )
     }
 
     std::auto_ptr<Geometry> u = algorithm::union_( a, b );
-    TriangulatedSurface ts;
-    triangulate::triangulatePolygon3D( *u, ts );
-    io::vtk( ts, "out.vtk" );
+    DEBUG_OUT << "surface " << algorithm::area( *u ) << "\n";
+    BOOST_CHECK( std::abs( algorithm::area( *u ) - 25.56 ) < .01 );
+    //TriangulatedSurface ts;
+    //triangulate::triangulatePolygon3D( *u, ts );
+    //io::vtk( ts, "out.vtk" );
 }
 
 BOOST_AUTO_TEST_CASE( GardenFailures1 )
