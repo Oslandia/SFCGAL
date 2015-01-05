@@ -40,6 +40,7 @@
 #include <SFCGAL/io/ewkt.h>
 #include <SFCGAL/detail/io/Serialization.h>
 
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/intersects.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/difference.h>
@@ -136,6 +137,11 @@ extern "C" const char* sfcgal_version()
     return SFCGAL::Version();
 }
 
+extern "C" void sfcgal_set_geometry_validation( bool enabled )
+{
+    SFCGAL::algorithm::SKIP_GEOM_VALIDATION = !enabled;
+}
+
 extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry_t* geom )
 {
 
@@ -146,6 +152,13 @@ extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry
         SFCGAL_ERROR( "%s", e.what() );
         return SFCGAL_TYPE_POINT; // to avoid warning
     }
+}
+
+extern "C" int sfcgal_geometry_is_valid( const sfcgal_geometry_t* geom )
+{
+    SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
+        return ( int )bool( SFCGAL::algorithm::isValid( *reinterpret_cast<const SFCGAL::Geometry*>( geom ) ) );
+    )
 }
 
 extern "C" int sfcgal_geometry_is_3d( const sfcgal_geometry_t* geom )

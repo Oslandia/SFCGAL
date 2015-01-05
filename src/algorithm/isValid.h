@@ -29,6 +29,8 @@
 namespace SFCGAL {
 namespace algorithm {
 
+extern bool SKIP_GEOM_VALIDATION;
+
 /**
  * @brief Check validity of a geometry
  * @ingroup public_api
@@ -42,6 +44,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
  */
 #ifndef SFCGAL_NEVER_CHECK_VALIDITY
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g, ctxt)  \
+    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
     {\
         using namespace SFCGAL;\
         const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );\
@@ -59,6 +62,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"")
 
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
+    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
     {\
         using namespace SFCGAL;\
         if ( (g).is3D() ) {\
@@ -71,6 +75,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         }\
     }
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g) \
+    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
     {\
         using namespace SFCGAL;\
         if ( !(g).is3D() ) {\

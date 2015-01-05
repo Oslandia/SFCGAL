@@ -79,10 +79,22 @@ typedef enum {
 } sfcgal_geometry_type_t ;
 
 /**
+ * Set the geometry validation mode
+ * @ingroup capi
+ */
+SFCGAL_API void                      sfcgal_set_geometry_validation( bool enabled );
+
+/**
  * Returns the type of a given geometry
  * @ingroup capi
  */
 SFCGAL_API sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geometry_t* );
+
+/**
+ * Tests if the given geometry is valid or not
+ * @ingroup capi
+ */
+SFCGAL_API int                       sfcgal_geometry_is_valid( const sfcgal_geometry_t* );
 
 /**
  * Tests if the given geometry is 3D or not

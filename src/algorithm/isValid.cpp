@@ -55,6 +55,8 @@ using namespace SFCGAL::detail::algorithm;
 namespace SFCGAL {
 namespace algorithm {
 
+bool SKIP_GEOM_VALIDATION = false;
+
 // to detect unconnected interior in polygon
 struct LoopDetector : public boost::dfs_visitor<> {
     LoopDetector( bool& hasLoop ):_hasLoop( hasLoop ) {}
