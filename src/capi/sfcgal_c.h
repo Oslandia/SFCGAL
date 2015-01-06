@@ -82,7 +82,7 @@ typedef enum {
  * Set the geometry validation mode
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_set_geometry_validation( bool enabled );
+SFCGAL_API void                      sfcgal_set_geometry_validation( int enabled );
 
 /**
  * Returns the type of a given geometry
