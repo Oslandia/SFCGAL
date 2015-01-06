@@ -347,7 +347,7 @@ std::auto_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v 
     }
 
     BOOST_THROW_EXCEPTION( InappropriateGeometryException(
-                               ( boost::format( "unexpected GeometryType in extrude ('%1%')" ) % g.geometryType() ).str()
+                               ( boost::format( "Extrusion of %s is not supported" ) % g.geometryType() ).str()
                            ) );
 }
 
