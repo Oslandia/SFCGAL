@@ -75,6 +75,8 @@ int main( int argc, char* argv[] )
     ( "help", "produce help message" )
     ( "progress", "display progress" )
     ( "verbose",  "verbose mode" )
+    ( "novalidate",  "remove validation of input geometries" )
+    ( "vtk",  "output vtk geom on failure" )
     ;
 
     po::variables_map vm;
@@ -88,6 +90,9 @@ int main( int argc, char* argv[] )
 
     bool verbose  = vm.count( "verbose" ) != 0 ;
     bool progress = vm.count( "progress" ) != 0 ;
+    bool vtk = vm.count( "vtk" ) != 0 ;
+
+    SFCGAL::algorithm::SKIP_GEOM_VALIDATION = vm.count( "novalidate" ) != 0 ;
 
 
     //boost::timer timer ;
@@ -160,7 +165,7 @@ int main( int argc, char* argv[] )
         }
 
         if ( verbose ) {
-            std::cout << ( boost::format( "% 8d" )%g ) << " - " << ( geom.is3D()?"3D":"2D" ) << " " << geom.geometryType() << ( geom.isEmpty()?" (empty)":"" ) << ( algorithm::isValid( geom )?"":" (invalid)" );
+            std::cout << ( boost::format( "% 8d" )%( g+1 ) ) << " - " << ( geom.is3D()?"3D":"2D" ) << " " << geom.geometryType() << ( geom.isEmpty()?" (empty)":"" ) << ( algorithm::isValid( geom )?"":" (invalid)" );
         }
 
         switch ( geom.geometryTypeId() ) {
@@ -395,16 +400,20 @@ int main( int argc, char* argv[] )
                   << e.what() << "\n";\
         std::cerr << "error with " << (algorithm::isValid(*geom1)?"valid":"invalid")\
                   << " geometry " << geom1->asText() ; \
-        io::vtk( *geom1, (boost::format("/tmp/geom1_failure%d.vtk") % numFailure).str() );\
+        if (vtk) io::vtk( *geom1, (boost::format("/tmp/geom1_failure%d.vtk") % numFailure).str() );\
         if (geom2!=testCollection.end() ) {\
-            std::cerr << " and " << (algorithm::isValid(*geom1)?"valid":"invalid")\
+            std::cerr << " and " << (algorithm::isValid(*geom2)?"valid":"invalid")\
                       << " geometry " << geom2->asText();\
-            io::vtk( *geom2, (boost::format("/tmp/geom2_failure%d.vtk") % numFailure).str() );\
+            if (vtk) io::vtk( *geom2, (boost::format("/tmp/geom2_failure%d.vtk") % numFailure).str() );\
         }\
         std::cerr << "\n";\
         }\
         catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
     }\
+    }
+
+    if ( verbose ) {
+        std::cout << "Testing unary and binary functions\n";
     }
 
     for ( GeomIter geom1=testCollection.begin(); geom1!=testCollection.end(); ++geom1 ) {
