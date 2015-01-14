@@ -123,11 +123,20 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_geometry_clone( const sfcgal_geometr
 SFCGAL_API void                      sfcgal_geometry_delete( sfcgal_geometry_t* );
 
 /**
- * Returns a WKT representation of the given geometry
+ * Returns a WKT representation of the given geometry using CGAL exact integer fractions as coordinate values
  * @post buffer is returned allocated and must be freed by the caller
  * @ingroup capi
  */
 SFCGAL_API void                      sfcgal_geometry_as_text( const sfcgal_geometry_t*, char** buffer, size_t* len );
+
+/**
+ * Returns a WKT representation of the given geometry using floating point coordinate values.
+ * Floating point precision can be set via the numDecimals parameter.
+ * Setting numDecimals to -1 yields the same result as sfcgal_geometry_as_text. 
+ * @post buffer is returned allocated and must be freed by the caller
+ * @ingroup capi
+ */
+SFCGAL_API void                      sfcgal_geometry_as_text_decim( const sfcgal_geometry_t*, int numDecimals, char** buffer, size_t* len );
 
 /**
  * Creates an empty point
