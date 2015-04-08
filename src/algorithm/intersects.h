@@ -30,7 +30,7 @@ class PolyhedralSurface;
 class TriangulatedSurface;
 namespace detail {
 template <int Dim> class GeometrySet;
-template <int Dim> class PrimitiveHandle;
+template <int Dim> struct PrimitiveHandle;
 }
 
 namespace algorithm {

@@ -935,7 +935,7 @@ void collectPrimitives( const typename HandledBox<Dim>::Vector& boxes, detail::G
 
 std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
-    typename HandledBox<2>::Vector boxes;
+    HandledBox<2>::Vector boxes;
     compute_bboxes( detail::GeometrySet<2>( ga ), std::back_inserter( boxes ) );
     const unsigned numBoxA = boxes.size();
     compute_bboxes( detail::GeometrySet<2>( gb ), std::back_inserter( boxes ) );
@@ -960,7 +960,7 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
 
 std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
-    typename HandledBox<3>::Vector boxes;
+    HandledBox<3>::Vector boxes;
     compute_bboxes( detail::GeometrySet<3>( ga ), std::back_inserter( boxes ) );
     const unsigned numBoxA = boxes.size();
     compute_bboxes( detail::GeometrySet<3>( gb ), std::back_inserter( boxes ) );
