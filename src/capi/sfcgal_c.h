@@ -132,7 +132,7 @@ SFCGAL_API void                      sfcgal_geometry_as_text( const sfcgal_geome
 /**
  * Returns a WKT representation of the given geometry using floating point coordinate values.
  * Floating point precision can be set via the numDecimals parameter.
- * Setting numDecimals to -1 yields the same result as sfcgal_geometry_as_text. 
+ * Setting numDecimals to -1 yields the same result as sfcgal_geometry_as_text.
  * @post buffer is returned allocated and must be freed by the caller
  * @ingroup capi
  */
