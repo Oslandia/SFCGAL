@@ -48,7 +48,7 @@ public:
      */
     virtual const char* what() const throw();
     /**
-     * returns diagnostic informations (file, line, etc.)
+     * returns diagnostic information (file, line, etc.)
      */
     std::string diagnostic() const throw();
 protected:

@@ -51,7 +51,7 @@ void SurfaceGraph::addRing( const LineString& ring, FaceIndex faceIndex )
 
             if ( foundEdgeWithBadOrientation != _edgeMap.end() ) {
                 _isValid = Validity::invalid(
-                               ( boost::format( "inconsistant orientation of PolyhedralSurface detected at edge %d (%d-%d) of polygon %d" ) % s % edge.first % edge.second % faceIndex ).str()
+                               ( boost::format( "inconsistent orientation of PolyhedralSurface detected at edge %d (%d-%d) of polygon %d" ) % s % edge.first % edge.second % faceIndex ).str()
                            );
             }
 

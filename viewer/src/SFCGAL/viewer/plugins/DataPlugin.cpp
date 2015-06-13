@@ -91,7 +91,7 @@ void DataPlugin::load()
 {
     QMenu* pluginMenu = viewerWindow()->menuBar()->addMenu( "Data" ) ;
 
-    QAction* actionDisplayInformations = pluginMenu->addAction( QString( "&display informations" ) );
+    QAction* actionDisplayInformations = pluginMenu->addAction( QString( "&display information" ) );
     connect( actionDisplayInformations, SIGNAL( triggered() ), this, SLOT( displayInformations() ) );
 }
 

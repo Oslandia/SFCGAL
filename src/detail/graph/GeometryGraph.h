@@ -52,7 +52,7 @@ inline EdgeDirection reverse( const EdgeDirection& direction )
  *
  * @brief [private]Represents the vertices and edges for a list of geometries.
  *
- * A boost::adjancency_list is wrapped in order to be able to annex some informations
+ * A boost::adjancency_list is wrapped in order to be able to annex some information
  * and to provide basic functionalities.
  *
  * @warning duplicate matching is performed in GeometryGraphBuilder (allows to modify position once it's done)
