@@ -28,7 +28,7 @@ namespace graph {
 
 /**
  * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
- * more informations)
+ * more information)
  */
 struct SFCGAL_API Edge {
     Edge( const int& face_ = -1 );
