@@ -77,6 +77,20 @@ void straightSkeletonToMultiLineString(
     }
 }
 
+boost::shared_ptr< Straight_skeleton_2 >
+straightSkeleton(Polygon_with_holes_2 poly)
+{
+  boost::shared_ptr< CGAL::Straight_skeleton_2<CGAL::Epick> > sk  =
+  CGAL::create_interior_straight_skeleton_2(
+    poly.outer_boundary().vertices_begin(),
+    poly.outer_boundary().vertices_end  (),
+    poly.holes_begin   (),
+    poly.holes_end     (),
+    CGAL::Epick()
+  );
+  return CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
+}
+
 
 
 ///
@@ -135,15 +149,8 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
 
 
     Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
-    boost::shared_ptr< CGAL::Straight_skeleton_2<CGAL::Epick> > skeleton_  =
-        CGAL::create_interior_straight_skeleton_2(polygon.outer_boundary().vertices_begin()
-                                            ,polygon.outer_boundary().vertices_end  ()
-                                            ,polygon.holes_begin   ()
-                                            ,polygon.holes_end     ()
-                                            ,CGAL::Epick()
-                                            );
     boost::shared_ptr< Straight_skeleton_2 > skeleton =
-        CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *skeleton_ ) ;
+        straightSkeleton( polygon );
 
     if ( !skeleton.get() ) {
         BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
@@ -163,7 +170,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         Polygon_with_holes_2 polygon = g.polygonN( i ).toPolygon_with_holes_2() ;
-        boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+        boost::shared_ptr< Straight_skeleton_2 > skeleton = straightSkeleton( polygon ) ;
 
         if ( !skeleton.get() ) {
             BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
