@@ -78,7 +78,7 @@ void straightSkeletonToMultiLineString(
 }
 
 boost::shared_ptr< Straight_skeleton_2 >
-straightSkeleton(Polygon_with_holes_2 poly)
+straightSkeleton(const Polygon_with_holes_2& poly)
 {
   boost::shared_ptr< CGAL::Straight_skeleton_2<CGAL::Epick> > sk  =
   CGAL::create_interior_straight_skeleton_2(
