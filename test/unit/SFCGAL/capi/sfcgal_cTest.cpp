@@ -74,6 +74,34 @@ BOOST_AUTO_TEST_CASE( testErrorOnBadGeometryType )
     BOOST_CHECK( hasError == true );
 }
 
+BOOST_AUTO_TEST_CASE( testStraightSkeletonPolygon )
+{
+    sfcgal_set_error_handlers( printf, on_error );
+
+    std::auto_ptr<Geometry> g( io::readWkt(
+"POLYGON((0 0, 20 0, 20 10, 0 10, 0 0))"
+    ) );
+
+    hasError = false;
+    sfcgal_geometry_t* sk = sfcgal_geometry_straight_skeleton( g.get() );
+    BOOST_CHECK( hasError == false );
+    BOOST_CHECK_EQUAL( 5, sfcgal_geometry_collection_num_geometries( sk ) );
+}
+
+BOOST_AUTO_TEST_CASE( testStraightSkeletonMultiPolygon )
+{
+    sfcgal_set_error_handlers( printf, on_error );
+
+    std::auto_ptr<Geometry> g( io::readWkt(
+"MULTIPOLYGON(((0 0, 20 0, 20 10, 0 10, 0 0)),((100 0,200 0,150 100,100 0)))"
+    ) );
+
+    hasError = false;
+    sfcgal_geometry_t* sk = sfcgal_geometry_straight_skeleton( g.get() );
+    BOOST_CHECK( hasError == false );
+    BOOST_CHECK_EQUAL( 8, sfcgal_geometry_collection_num_geometries( sk ) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
