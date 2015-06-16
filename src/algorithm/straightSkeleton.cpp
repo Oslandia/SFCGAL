@@ -47,7 +47,8 @@ typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 template<class K>
 void straightSkeletonToMultiLineString(
     const CGAL::Straight_skeleton_2<K>& ss,
-    MultiLineString& result
+    MultiLineString& result,
+    bool innerOnly=false
 )
 {
     typedef CGAL::Straight_skeleton_2<K> Ss ;
@@ -62,6 +63,11 @@ void straightSkeletonToMultiLineString(
     for ( Halfedge_const_iterator it = ss.halfedges_begin(); it != ss.halfedges_end(); ++it ) {
         // skip contour edge
         if ( ! it->is_bisector() ) {
+            continue ;
+        }
+
+        // Skip non-inner edges if requested
+        if ( innerOnly && ! it->is_inner_bisector() ) {
             continue ;
         }
 
@@ -96,33 +102,33 @@ straightSkeleton(const Polygon_with_holes_2& poly)
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly )
 {
     switch ( g.geometryTypeId() ) {
     case TYPE_TRIANGLE:
-        return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation ) ;
+        return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation, innerOnly ) ;
 
     case TYPE_POLYGON:
-        return straightSkeleton( g.as< Polygon >(), autoOrientation ) ;
+        return straightSkeleton( g.as< Polygon >(), autoOrientation, innerOnly ) ;
 
     case TYPE_MULTIPOLYGON:
-        return straightSkeleton( g.as< MultiPolygon >(), autoOrientation ) ;
+        return straightSkeleton( g.as< MultiPolygon >(), autoOrientation, innerOnly ) ;
 
     default:
         return std::auto_ptr< MultiLineString >( new MultiLineString );
     }
 }
 
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, bool innerOnly )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    return straightSkeleton( g, autoOrientation, NoValidityCheck() );
+    return straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly );
 }
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/ )
+std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/, bool innerOnly )
 {
     std::auto_ptr< MultiLineString > result( new MultiLineString );
 
@@ -156,7 +162,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
         BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
     }
 
-    straightSkeletonToMultiLineString( *skeleton, *result ) ;
+    straightSkeletonToMultiLineString( *skeleton, *result, innerOnly ) ;
     return result ;
 }
 
@@ -164,7 +170,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/ )
+std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/, bool innerOnly )
 {
     std::auto_ptr< MultiLineString > result( new MultiLineString );
 
@@ -176,12 +182,21 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
             BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
         }
 
-        straightSkeletonToMultiLineString( *skeleton, *result ) ;
+        straightSkeletonToMultiLineString( *skeleton, *result, innerOnly ) ;
     }
 
     return result ;
 }
 
+std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
+
+    std::auto_ptr< MultiLineString > mx =
+        straightSkeleton( g, false, NoValidityCheck(), true );
+
+    return mx;
+}
 
 }//namespace algorithm
 }//namespace SFCGAL

@@ -782,6 +782,14 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfc
  */
 SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* geom );
 
+/**
+ * Returns the approximate medial axis for the given Polygon
+ * Approximate medial axis is based on straight skeleton
+ * @pre isValid(geom) == true
+ * @ingroup capi
+ */
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_approximate_medial_axis( const sfcgal_geometry_t* geom );
+
 /*--------------------------------------------------------------------------------------*
  *
  * Error handling
