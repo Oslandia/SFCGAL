@@ -731,6 +731,7 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union_3d, SFCGAL::algorithm::union
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( convexhull, SFCGAL::algorithm::convexHull )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( convexhull_3d, SFCGAL::algorithm::convexHull3D )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( straight_skeleton, SFCGAL::algorithm::straightSkeleton )
+SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( approximate_medial_axis, SFCGAL::algorithm::approximateMedialAxis )
 SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( tesselate, SFCGAL::algorithm::tesselate )
 
 #define SFCGAL_GEOMETRY_FUNCTION_UNARY_MEASURE( name, sfcgal_function ) \

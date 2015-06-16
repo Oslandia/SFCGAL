@@ -47,7 +47,8 @@ typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 template<class K>
 void straightSkeletonToMultiLineString(
     const CGAL::Straight_skeleton_2<K>& ss,
-    MultiLineString& result
+    MultiLineString& result,
+    bool innerOnly=false
 )
 {
     typedef CGAL::Straight_skeleton_2<K> Ss ;
@@ -62,6 +63,11 @@ void straightSkeletonToMultiLineString(
     for ( Halfedge_const_iterator it = ss.halfedges_begin(); it != ss.halfedges_end(); ++it ) {
         // skip contour edge
         if ( ! it->is_bisector() ) {
+            continue ;
+        }
+
+        // Skip non-inner edges if requested
+        if ( innerOnly && ! it->is_inner_bisector() ) {
             continue ;
         }
 
@@ -182,6 +188,15 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
     return result ;
 }
 
+std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
+
+    std::auto_ptr< MultiLineString > ms =
+        straightSkeleton( g, false, NoValidityCheck() );
+
+    /* Remove from output set lines that touch the border */
+}
 
 }//namespace algorithm
 }//namespace SFCGAL

@@ -37,6 +37,14 @@ namespace algorithm {
 struct NoValidityCheck;
 
 /**
+ * @brief build an approximate medial axis for a Polygon
+ * @param g input geometry
+ * @ingroup public_api
+ * @pre g is a valid geometry
+ */
+SFCGAL_API std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g );
+
+/**
  * @brief build a 2D straight skeleton for a Polygon
  * @todo add supports for TriangulatedSurface and PolyhedralSurface
  * @todo output M as distance to border?
