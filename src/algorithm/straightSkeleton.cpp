@@ -33,6 +33,7 @@
 #include <SFCGAL/algorithm/intersection.h>
 
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
+#include <CGAL/Straight_skeleton_converter_2.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -134,7 +135,15 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
 
 
     Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
-    boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
+    boost::shared_ptr< CGAL::Straight_skeleton_2<CGAL::Epick> > skeleton_  =
+        CGAL::create_interior_straight_skeleton_2(polygon.outer_boundary().vertices_begin()
+                                            ,polygon.outer_boundary().vertices_end  ()
+                                            ,polygon.holes_begin   ()
+                                            ,polygon.holes_end     ()
+                                            ,CGAL::Epick()
+                                            );
+    boost::shared_ptr< Straight_skeleton_2 > skeleton =
+        CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *skeleton_ ) ;
 
     if ( !skeleton.get() ) {
         BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
