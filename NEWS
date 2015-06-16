@@ -1,4 +1,9 @@
-1.0.5:
+1.1.0 (2015-01-14):
+    * New spatial operation Union(geom, geom) and Difference(geom, geom).
+    * Exposed Volume(geom) in C api and added output with a decimal
+      representation sfcgal_geometry_as_text_decim (thanks @matze09)
+    * Minor bug fixes
+1.0.5 (2014-08-19):
     * Fix validity check message when converting to 2D
     * Fix a polygon orientation test (postgis bug #2818)
     * Fix a bug in plane3D
@@ -9,6 +14,7 @@
       * Avoid osg dependency when viewer is not built
       * Fix postgresql include directory
       * Add detection of lib64 directories
-1.0.4:
+1.0.4 (2013-11-29):
     Fix compilation with CGAL 4.3
  
+For older news, see https://github.com/Oslandia/SFCGAL/releases
