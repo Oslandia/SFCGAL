@@ -192,10 +192,10 @@ std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    std::auto_ptr< MultiLineString > ms =
+    std::auto_ptr< MultiLineString > mx =
         straightSkeleton( g, false, NoValidityCheck(), true );
 
-    /* Remove from output set lines that touch the border */
+    return mx;
 }
 
 }//namespace algorithm
