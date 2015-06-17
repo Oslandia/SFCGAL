@@ -45,9 +45,9 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_StraightSkeletonTest )
 
 BOOST_AUTO_TEST_CASE( testTriangle )
 {
-    std::auto_ptr< Geometry > g( io::readWkt( "TRIANGLE((0 0,1 0,1 1,0 0))" ) );
+    std::auto_ptr< Geometry > g( io::readWkt( "TRIANGLE((1 1,2 1,2 2,1 1))" ) );
 
-    std::string expectedWKT( "MULTILINESTRING((0.0 0.0,0.7 0.3),(1.0 0.0,0.7 0.3),(1.0 1.0,0.7 0.3))" );
+    std::string expectedWKT( "MULTILINESTRING((1.0 1.0,1.7 1.3),(2.0 1.0,1.7 1.3),(2.0 2.0,1.7 1.3))" );
     {
         std::auto_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ) ;
         BOOST_CHECK_EQUAL( result->numGeometries(), 3U );
