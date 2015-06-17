@@ -34,6 +34,7 @@
 #include <SFCGAL/MultiSolid.h>
 
 #include <SFCGAL/detail/transform/AffineTransform3.h>
+#include <SFCGAL/detail/transform/AffineTransform2.h>
 
 
 namespace SFCGAL {
@@ -46,6 +47,17 @@ void       translate( Geometry& g, const Kernel::Vector_3& v )
 {
     transform::AffineTransform3 visitor(
         CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, v )
+    );
+    g.accept( visitor ) ;
+}
+
+///
+///
+///
+void       translate( Geometry& g, const Kernel::Vector_2& v )
+{
+    transform::AffineTransform2 visitor(
+        CGAL::Aff_transformation_2< Kernel >( CGAL::TRANSLATION, v )
     );
     g.accept( visitor ) ;
 }
