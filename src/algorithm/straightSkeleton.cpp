@@ -139,7 +139,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
     // test if holes touch, since CGAL segfaults if it does
     const size_t numRings =  g.numRings();
 
-    for ( size_t ri=1; ri < numRings; ++ri ) {
+    for ( size_t ri=0; ri < numRings-1; ++ri ) {
         for ( size_t rj=ri+1; rj < numRings; ++rj ) {
             std::auto_ptr<Geometry> inter = g.is3D()
                                             ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
