@@ -106,7 +106,9 @@ straightSkeleton(const Polygon_with_holes_2& poly)
   return CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
 }
 
-// Throw an exception if holes touch, since CGAL segfaults in that case.
+// Throw an exception if any two polygon rings touch,
+// since CGAL segfaults in that case.
+// @todo find upstream reference to find out exact case
 // See https://github.com/Oslandia/SFCGAL/issues/75
 void
 checkNoTouchingHoles( const Polygon& g )
@@ -119,6 +121,9 @@ checkNoTouchingHoles( const Polygon& g )
                                             ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
                                             : intersection( g.ringN( ri ), g.ringN( rj ) );
 
+            // @note this check would accept rings touching at
+            //       more than a single point, which may be
+            //       still dangerous. @todo find out !
             if ( ! inter->isEmpty() && inter->is< Point >() ) {
                 BOOST_THROW_EXCEPTION( NotImplementedException(
                                            "straight skeleton of Polygon with touching interior rings is not implemented"
