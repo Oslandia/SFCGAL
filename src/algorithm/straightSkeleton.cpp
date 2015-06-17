@@ -20,6 +20,7 @@
 
 #include <SFCGAL/algorithm/straightSkeleton.h>
 
+#include <SFCGAL/Envelope.h>
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/Triangle.h>
@@ -32,6 +33,8 @@
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/intersection.h>
 
+#include <SFCGAL/detail/transform/AffineTransform3.h>
+
 #include <CGAL/create_straight_skeleton_from_polygon_with_holes_2.h>
 #include <CGAL/Straight_skeleton_converter_2.h>
 
@@ -42,13 +45,16 @@ typedef Kernel::Point_2                    Point_2 ;
 typedef CGAL::Polygon_2<Kernel>            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2 ;
 typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
+typedef transform::AffineTransform3        AffineTransform3;
+
 
 
 template<class K>
 void straightSkeletonToMultiLineString(
     const CGAL::Straight_skeleton_2<K>& ss,
     MultiLineString& result,
-    bool innerOnly=false
+    bool innerOnly,
+    Kernel::Vector_3& translate
 )
 {
     typedef CGAL::Straight_skeleton_2<K> Ss ;
@@ -76,10 +82,13 @@ void straightSkeletonToMultiLineString(
             continue ;
         }
 
-        result.addGeometry( new LineString(
+        std::auto_ptr<LineString> ls ( new LineString(
                                 Point( it->opposite()->vertex()->point() ),
-                                Point( it->vertex()->point() )
-                            ) );
+                                Point( it->vertex()->point() ) )
+                         );
+        AffineTransform3 affine( CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, translate ) );
+        affine.transform( *ls );
+        result.addGeometry( ls.release() );
     }
 }
 
@@ -97,6 +106,24 @@ straightSkeleton(const Polygon_with_holes_2& poly)
   return CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
 }
 
+Polygon_with_holes_2
+preparePolygon( const Polygon& poly, Kernel::Vector_3& trans )
+{
+  Envelope env = poly.envelope();
+  double dx = env.xMin();
+  double dy = env.yMin();
+  double dz = env.is3D() ? env.zMin() : 0;
+  trans = Kernel::Vector_3(-dx, -dy, -dz);
+
+  // @todo: avoid cloning !
+  AffineTransform3 affine( CGAL::Aff_transformation_3< Kernel >( CGAL::TRANSLATION, trans ) );
+  std::auto_ptr<Polygon> cloned ( poly.clone() );
+  affine.transform( *cloned );
+  Polygon_with_holes_2 ret = cloned->toPolygon_with_holes_2();
+  trans = -trans;
+
+  return ret;
+}
 
 
 ///
@@ -154,7 +181,8 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
     }
 
 
-    Polygon_with_holes_2 polygon = g.toPolygon_with_holes_2() ;
+    Kernel::Vector_3 trans;
+    Polygon_with_holes_2 polygon = preparePolygon( g, trans );
     boost::shared_ptr< Straight_skeleton_2 > skeleton =
         straightSkeleton( polygon );
 
@@ -162,7 +190,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
         BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
     }
 
-    straightSkeletonToMultiLineString( *skeleton, *result, innerOnly ) ;
+    straightSkeletonToMultiLineString( *skeleton, *result, innerOnly, trans ) ;
     return result ;
 }
 
@@ -175,14 +203,15 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
     std::auto_ptr< MultiLineString > result( new MultiLineString );
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
-        Polygon_with_holes_2 polygon = g.polygonN( i ).toPolygon_with_holes_2() ;
+        Kernel::Vector_3 trans;
+        Polygon_with_holes_2 polygon = preparePolygon( g.polygonN( i ), trans );
         boost::shared_ptr< Straight_skeleton_2 > skeleton = straightSkeleton( polygon ) ;
 
         if ( !skeleton.get() ) {
             BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
         }
 
-        straightSkeletonToMultiLineString( *skeleton, *result, innerOnly ) ;
+        straightSkeletonToMultiLineString( *skeleton, *result, innerOnly, trans ) ;
     }
 
     return result ;
