@@ -65,9 +65,9 @@ BOOST_AUTO_TEST_CASE( testTriangle )
 
 BOOST_AUTO_TEST_CASE( testPolygon )
 {
-    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0 0,10 0,10 10,0 10,0 0))" ) );
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((1 1,11 1,11 11,1 11,1 1))" ) );
 
-    std::string expectedWKT( "MULTILINESTRING((0 0,5 5),(10 0,5 5),(10 10,5 5),(0 10,5 5))" );
+    std::string expectedWKT( "MULTILINESTRING((1 1,6 6),(11 1,6 6),(11 11,6 6),(1 11,6 6))" );
     {
         std::auto_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ) ;
         BOOST_CHECK_EQUAL( result->numGeometries(), 4U );
