@@ -106,9 +106,32 @@ straightSkeleton(const Polygon_with_holes_2& poly)
   return CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
 }
 
+// Throw an exception if holes touch, since CGAL segfaults in that case.
+// See https://github.com/Oslandia/SFCGAL/issues/75
+void
+checkNoTouchingHoles( const Polygon& g )
+{
+    const size_t numRings =  g.numRings();
+
+    for ( size_t ri=0; ri < numRings-1; ++ri ) {
+        for ( size_t rj=ri+1; rj < numRings; ++rj ) {
+            std::auto_ptr<Geometry> inter = g.is3D()
+                                            ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
+                                            : intersection( g.ringN( ri ), g.ringN( rj ) );
+
+            if ( ! inter->isEmpty() && inter->is< Point >() ) {
+                BOOST_THROW_EXCEPTION( NotImplementedException(
+                                           "straight skeleton of Polygon with touching interior rings is not implemented"
+                                       ) );
+            }
+        }
+    }
+}
+
 Polygon_with_holes_2
 preparePolygon( const Polygon& poly, Kernel::Vector_3& trans )
 {
+  checkNoTouchingHoles( poly );
   Envelope env = poly.envelope();
   double dx = env.xMin();
   double dy = env.yMin();
@@ -162,24 +185,6 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
     if ( g.isEmpty() ) {
         return result ;
     }
-
-    // test if holes touch, since CGAL segfaults if it does
-    const size_t numRings =  g.numRings();
-
-    for ( size_t ri=0; ri < numRings-1; ++ri ) {
-        for ( size_t rj=ri+1; rj < numRings; ++rj ) {
-            std::auto_ptr<Geometry> inter = g.is3D()
-                                            ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
-                                            : intersection( g.ringN( ri ), g.ringN( rj ) );
-
-            if ( ! inter->isEmpty() && inter->is< Point >() ) {
-                BOOST_THROW_EXCEPTION( NotImplementedException(
-                                           "straight skeleton of Polygon with touching interior rings is not implemented"
-                                       ) );
-            }
-        }
-    }
-
 
     Kernel::Vector_3 trans;
     Polygon_with_holes_2 polygon = preparePolygon( g, trans );
