@@ -18,9 +18,9 @@ if( SFCGAL_BUILD_BENCH )
 	add_subdirectory( bench )
 endif()
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    add_test( style-test ${CMAKE_SOURCE_DIR}/script/test-style-SFCGAL.sh )
-endif()
+#if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+#    add_test( style-test ${CMAKE_SOURCE_DIR}/script/test-style-SFCGAL.sh )
+#endif()
   
 
 
