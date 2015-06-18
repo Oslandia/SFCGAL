@@ -9,7 +9,7 @@ compiler:
   - clang
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq && sudo apt-get install -qq cmake libcgal-dev libboost-all-dev libmpfr-dev libgmp-dev; fi
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq && sudo apt-get install -qq cmake libcgal-dev libboost-all-dev libboost-timer-dev libboost-chrono-dev libmpfr-dev libgmp-dev; fi
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install cmake cgal boost mpfr gmp; fi
 
 before_script:
