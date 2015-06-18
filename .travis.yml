@@ -1,8 +1,8 @@
 language: cpp
 
-os:
-  - linux
-  - osx
+# os:
+#  - linux
+#  - osx
 
 compiler:
   - gcc
@@ -13,7 +13,8 @@ before_install:
   - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install cmake cgal boost mpfr gmp; fi
 
 before_script:
-  - cmake -DSFCGAL_BUILD_TESTS=1
+  - cmake -DSFCGAL_BUILD_TESTS=ON
 
 script:
-  -  make test
+  - make
+  - make test
