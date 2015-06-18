@@ -4,6 +4,7 @@ Makefile
 cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
+Testing
 
 .settings
 .cproject
@@ -26,5 +27,4 @@ polygon_triangulation2.obj
 
 gmon.out
 
-include/SFCGAL/version.h
-include/SFCGAL/config.h
+include/SFCGAL
