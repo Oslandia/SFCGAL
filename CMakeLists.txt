@@ -72,7 +72,10 @@ if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_B
 	set( SFCGAL_Boost_COMPONENTS program_options chrono filesystem timer ${SFCGAL_Boost_COMPONENTS} )
 endif()
 find_package( Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED )
-
+if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 58))
+	message( STATUS "Defining BOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT" )
+	add_definitions( "-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT" )
+endif()
 
 #-- GMP (facultative)  -------------------------------------
 find_package( GMP )
