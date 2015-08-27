@@ -62,6 +62,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,-0.1 0.5,0.1 -0.5,-0.5 -0.5),(0.1 -0.5,0.1 0.5,0.5 0.5,0.5 -0.5,0.1 -0.5))", true, "one contact point between 2 interior rings"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-.7 0,.7 0,0 -.7,-.7 0),(-.5 0,-.5 .5,0 .5,-.5 0),(.5 0,.1 .5,.5 .5,.5 0))", true, "3 touching interior ring define a connected interior"},
         // invalid
+        {"POLYGON((1 2,1 2,1 2,1 2))", false, "degenerated to a point"},
         {"POLYGON((-1.0 -1.0,-1.0 1.0,-1.0 -1.0))", false, "only 3 points"},
         {"POLYGON((-1.0 -1.0,-1.0 1.0,1.0 1.0,-1.0 -1.0,-1.0 1.0))", false, "not closed"},
         {"POLYGON((-1.0 -1.0,1.0 -1.0,1.0 -1.0,-1.0 -1.0,-1.0 -1.0))", false, "zero surface"},
@@ -88,6 +89,7 @@ const std::vector< TestGeometry > createTestGeometries()
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 -0.1 0.5,1.0 -0.1 -0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.1 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 0.1 -0.5))", true, "two interior rings"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0),(1.0 -0.5 -0.5,1.0 -0.5 0.5,1.0 -0.1 0.5,1.0 0.1 -0.5,1.0 -0.5 -0.5),(1.0 0.1 -0.5,1.0 0.1 0.5,1.0 0.5 0.5,1.0 0.5 -0.5,1.0 0.1 -0.5))", true, "one contact point between 2 interior rings"},
         // invalid
+        {"POLYGON((1 2 0,1 2 0,1 2 0,1 2 0))", false, "degenerated to a point"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 -1.0 -1.0))", false, "only 3 points"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 -1.0 1.0,1.0 1.0 1.0,1.0 -1.0 -1.0,1.0 -1.0 1.0))", false, "not closed"},
         {"POLYGON((1.0 -1.0 -1.0,1.0 1.0 -1.0,1.0 1.0 -1.0,1.0 -1.0 -1.0,1.0 -1.0 -1.0))", false, "zero surface"},

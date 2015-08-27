@@ -141,6 +141,18 @@ const Validity isValid( const Polygon& p, const double& toleranceAbs )
         }
     }
 
+    // When polygon degenerates to a single point, it is not trapped by the rest of the code, 
+    // so we check that here
+    for ( size_t r=0; r != numRings; ++r ) {
+        const LineString & ring = p.ringN( r );
+        const Point & start = ring.startPoint();
+        size_t i = 0;
+        for( ; i < ring.numPoints() && start == ring.pointN(i); i++ ) ; // noop 
+        if ( i == ring.numPoints() ){
+            return Validity::invalid( ( boost::format( "ring %d degenerated to a point" ) % r ).str() );
+        }
+    }
+
     // Orientation in 2D
     if ( !p.is3D() ) {
         // Opposit orientation for interior and exterior rings
