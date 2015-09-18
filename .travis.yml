@@ -9,8 +9,7 @@ compiler:
   - clang
 
 before_install:
-  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get update -qq && sudo apt-get install -qq cmake libcgal-dev libboost-all-dev libmpfr-dev libgmp-dev && wget https://gforge.inria.fr/frs/download.php/zip/8307/CGAL-4.3.zip && unzip CGAL-4.3.zip && cd CGAL-4.3 && cmake && make && sudo make install; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then brew update && brew install cmake cgal boost mpfr gmp; fi
+  - ./travis/${TRAVIS_OS_NAME}/before_install.sh
 
 before_script:
   - cmake -DSFCGAL_BUILD_TESTS=ON
