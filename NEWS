@@ -1,3 +1,9 @@
+1.2.0 (2015-09-18):
+    * Improve the computation speed of straight skeletons by using an inexact construction kernel
+    * Add a new function approximateMedialAxis
+    * Fix an invalidity case (polygon degenerated to a point) #108
+    * Fix compilation issues with boost 1.58
+    * Add Travis support
 1.1.0 (2015-01-14):
     * New spatial operation Union(geom, geom) and Difference(geom, geom).
     * Exposed Volume(geom) in C api and added output with a decimal
