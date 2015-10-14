@@ -100,7 +100,9 @@ straightSkeleton(const Polygon_with_holes_2& poly)
     poly.holes_end     (),
     CGAL::Epick()
   );
-  return CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
+  boost::shared_ptr< Straight_skeleton_2 > ret;
+  if ( sk ) ret = CGAL::convert_straight_skeleton_2< Straight_skeleton_2 > ( *sk ) ;
+  return ret;
 }
 
 // Throw an exception if any two polygon rings touch,
