@@ -9,3 +9,7 @@ Run all tests with:
 Run specific tests with:
 
  ./standalone-regress-test-SFCGAL --run_test=TestSuite/Test
+
+See more options with:
+
+ ./standalone-regress-test-SFCGAL --help
