@@ -1,0 +1,11 @@
+Tester file is built with "make" if enabled at configure time
+
+ cmake -D SFCGAL_BUILD_TESTS=True <srcdir> # in top-level build dir
+
+Run all tests with:
+
+ ./standalone-regress-test-SFCGAL
+
+Run specific tests with:
+
+ ./standalone-regress-test-SFCGAL --run_test=TestSuite/Test
