@@ -68,14 +68,21 @@ namespace {
             std::istringstream iss( line );
             std::string inputWkt ;
             std::string outputWkt ;
+            std::string obtWkt ;
 
             BOOST_CHECK( std::getline( iss, inputWkt, '|' ) );
             BOOST_CHECK( std::getline( iss, outputWkt, '|' ) );
 
             std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
-            std::auto_ptr< MultiLineString > result = algorithm::straightSkeleton( *g ) ;
-            std::string exp = lbl + result->asText( 6 );
-            std::string obt = lbl + outputWkt;
+            std::auto_ptr< MultiLineString > result;
+            try {
+              result = algorithm::straightSkeleton( *g ) ;
+              obtWkt = result->asText( 6 );
+            } catch (const std::exception& e) {
+              obtWkt = std::string(e.what());
+            }
+            std::string obt = lbl + obtWkt;
+            std::string exp = lbl + outputWkt;
             BOOST_CHECK_EQUAL( exp, obt );
         }
     }
@@ -94,7 +101,12 @@ BOOST_AUTO_TEST_CASE( testStraightSkeletonTest )
       while ( it != directory_iterator() )
       {
         path f = *it;
-        runTest(f.c_str());
+        try {
+          runTest(f.c_str());
+        } catch (const std::exception &e) {
+          // There must be a better way to do this...
+          std::cerr << "Failed test: " << f << ": " << e.what() << std::endl;
+        }
         ++it;
       }
     }
