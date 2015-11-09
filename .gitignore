@@ -28,3 +28,14 @@ polygon_triangulation2.obj
 gmon.out
 
 include/SFCGAL
+
+.gdb_history
+libSFCGAL.la
+sfcgal-config
+src/libSFCGAL.so*
+test/bench/bench-SFCGAL
+test/garden/garden-test-SFCGAL
+test/regress/convex_hull/test-regress-convex_hull
+test/regress/polygon_triangulator/test-regress-polygon_triangulator
+test/regress/standalone/standalone-regress-test-SFCGAL
+test/unit/unit-test-SFCGAL
