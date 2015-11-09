@@ -58,6 +58,7 @@ namespace {
 
         int lineno = 0;
         while ( std::getline( ifs, line ) ) {
+            ++lineno;
             if ( line[0] == '#' || line.empty() ) {
                 continue ;
             }
@@ -70,10 +71,24 @@ namespace {
             std::string outputWkt ;
             std::string obtWkt ;
 
-            BOOST_CHECK( std::getline( iss, inputWkt, '|' ) );
-            BOOST_CHECK( std::getline( iss, outputWkt, '|' ) );
+            if ( ! std::getline( iss, inputWkt, '|' ) ||
+                 ! std::getline( iss, outputWkt, '|' ) )
+            {
+                std::stringstream ss;
+                ss << lbl << "missing `|' char in test file";
+                BOOST_CHECK_EQUAL("", ss.str());
+                continue;
+            }
 
-            std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
+            std::auto_ptr< Geometry > g;
+            try {
+              g = io::readWkt( inputWkt );
+            } catch (const std::exception &e) {
+              std::stringstream ss;
+              ss << lbl << e.what();
+              BOOST_CHECK_EQUAL("", ss.str());
+              continue;
+            }
             std::auto_ptr< MultiLineString > result;
             try {
               result = algorithm::straightSkeleton( *g ) ;
@@ -101,12 +116,7 @@ BOOST_AUTO_TEST_CASE( testStraightSkeletonTest )
       while ( it != directory_iterator() )
       {
         path f = *it;
-        try {
-          runTest(f.c_str());
-        } catch (const std::exception &e) {
-          // There must be a better way to do this...
-          std::cerr << "Failed test: " << f << ": " << e.what() << std::endl;
-        }
+        runTest(f.c_str());
         ++it;
       }
     }
