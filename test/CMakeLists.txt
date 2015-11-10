@@ -18,3 +18,5 @@ if( SFCGAL_BUILD_BENCH )
 	add_subdirectory( bench )
 endif()
 
+# add a custom rule "check" that adds verbosity to ctest
+add_custom_target(check COMMAND ${CMAKE_CTEST_COMMAND} --verbose)

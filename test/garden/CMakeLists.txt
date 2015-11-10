@@ -17,9 +17,9 @@ set_target_properties( ${REGRESS_NAME} PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS ${REGRESS_NAME} DESTINATION bin )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" )
-    add_test( garden-testd ${CMAKE_CURRENT_BINARY_DIR}/garden-test-SFCGALd )
+    add_test( garden-testd ${CMAKE_CURRENT_BINARY_DIR}/garden-test-SFCGALd --verbose)
 else()
-    add_test( garden-test ${CMAKE_CURRENT_BINARY_DIR}/garden-test-SFCGAL )
+    add_test( garden-test ${CMAKE_CURRENT_BINARY_DIR}/garden-test-SFCGAL --verbose)
 endif()
 
 
