@@ -38,6 +38,7 @@ before_install:
   - bash ./travis/${TRAVIS_OS_NAME}/install_cgal.sh $CGAL_VERSION
 
 before_script:
+  - find $HOME
   - cmake -DCGAL_DIR=$HOME/CGAL-${CGAL_VERSION} -DSFCGAL_BUILD_TESTS=ON
 
 script:
