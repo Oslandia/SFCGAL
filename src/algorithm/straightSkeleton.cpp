@@ -45,7 +45,7 @@ typedef CGAL::Polygon_2<Kernel>            Polygon_2 ;
 typedef CGAL::Polygon_with_holes_2<Kernel> Polygon_with_holes_2 ;
 typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 
-
+namespace { // anonymous
 
 template<class K>
 void straightSkeletonToMultiLineString(
@@ -78,6 +78,88 @@ void straightSkeletonToMultiLineString(
         // avoid duplicates
         if ( it->opposite() < it ) {
             continue ;
+        }
+
+        std::auto_ptr<LineString> ls ( new LineString(
+                                Point( it->opposite()->vertex()->point() ),
+                                Point( it->vertex()->point() ) )
+                         );
+        algorithm::translate( *ls, translate );
+        result.addGeometry( ls.release() );
+    }
+}
+
+/**
+ * Return abc angle in radians
+ */
+static double
+angle(const Point &a, const Point &b, const Point &c)
+{
+  Point ab( to_double(b.x() - a.x()), to_double(b.y() - a.y()) );
+  Point cb( to_double(b.x() - c.x()), to_double(b.y() - c.y()) );
+
+  double dot = ( to_double(ab.x() * cb.x() + ab.y() * cb.y()) ); /* dot product */
+  double cross = ( to_double(ab.x() * cb.y() - ab.y() * cb.x()) ); /* cross product */
+
+  double alpha = std::atan2(cross, dot);
+
+  return alpha;
+}
+
+template<class K>
+void straightSkeletonToMedialAxis(
+    const CGAL::Straight_skeleton_2<K>& ss,
+    MultiLineString& result,
+    Kernel::Vector_2& translate
+)
+{
+    typedef CGAL::Straight_skeleton_2<K> Ss ;
+
+    typedef typename Ss::Halfedge_const_handle   Halfedge_const_handle ;
+    typedef typename Ss::Halfedge_const_iterator Halfedge_const_iterator ;
+
+    // Maximum angle for touching bisectors to be
+    // retained in the ouptput. The value is in
+    // radians and represents the angle between the
+    // bisector and the defining edge.
+    //
+    // The angle between the incident edges will be double
+    // this value, so CGAL_PI / 8.0 means 45 degrees between
+    // defining edges
+    //
+    // TODO: take as parameter ?
+    //
+    // NOTE: I'm adding some tolerance here to include those angles
+    //       of exactly 45 degrees that are otherwise cut out due
+    //       to rounding precision
+    //
+    const double maxTouchingAngle = CGAL_PI / 8.0 + 1e-15;
+
+    for ( Halfedge_const_iterator it = ss.halfedges_begin(); it != ss.halfedges_end(); ++it ) {
+        // skip contour edge
+        if ( ! it->is_bisector() ) {
+            continue ;
+        }
+
+        // avoid duplicates
+        if ( it->opposite() < it ) {
+            continue ;
+        }
+
+        // Skip non-inner edges unless they bisect
+        // a low angle pair of segments
+        if ( ! it->is_inner_bisector() ) {
+
+            const Halfedge_const_handle& de1 = it->defining_contour_edge ();
+
+            // We need to check the angle formed by:
+            const Point& p1 = it->vertex()->point();
+            const Point& p2 = de1->vertex()->point();
+            const Point& p3 = de1->opposite()->vertex()->point();
+
+            double ang = angle(p1, p2, p3);
+
+            if ( ang > maxTouchingAngle ) continue ;
         }
 
         std::auto_ptr<LineString> ls ( new LineString(
@@ -148,6 +230,30 @@ preparePolygon( const Polygon& poly, Kernel::Vector_2& trans )
   return ret;
 }
 
+void
+extractPolygons( const Geometry& g, std::vector< Polygon >& vect )
+{
+  switch ( g.geometryTypeId() ) {
+  case TYPE_TRIANGLE:
+      vect.push_back( g.as< Triangle >().toPolygon() );
+      break;
+  case TYPE_POLYGON:
+      vect.push_back( g.as< Polygon >() );
+      break;
+  case TYPE_MULTIPOLYGON:
+  {
+      const MultiPolygon& mp = g.as< MultiPolygon >();
+      for ( size_t i = 0; i < mp.numGeometries(); i++ ) {
+        vect.push_back( mp.polygonN( i ) );
+      }
+      break;
+  }
+  default:
+      break;
+  }
+}
+
+} // namespace anonymous
 
 ///
 ///
@@ -226,8 +332,23 @@ std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    std::auto_ptr< MultiLineString > mx =
-        straightSkeleton( g, false, NoValidityCheck(), true );
+    std::auto_ptr< MultiLineString > mx( new MultiLineString );
+
+    std::vector< Polygon > polys;
+    extractPolygons( g, polys );
+
+    for ( size_t i=0; i<polys.size(); ++i )
+    {
+        Kernel::Vector_2 trans;
+        Polygon_with_holes_2 polygon = preparePolygon( polys[i], trans );
+        boost::shared_ptr< Straight_skeleton_2 > skeleton = straightSkeleton( polygon ) ;
+
+        if ( !skeleton.get() ) {
+            BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
+        }
+
+        straightSkeletonToMedialAxis( *skeleton, *mx, trans ) ;
+    }
 
     return mx;
 }
