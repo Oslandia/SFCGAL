@@ -115,7 +115,6 @@ void straightSkeletonToMedialAxis(
 {
     typedef CGAL::Straight_skeleton_2<K> Ss ;
 
-    typedef typename Ss::Vertex_const_handle     Vertex_const_handle ;
     typedef typename Ss::Halfedge_const_handle   Halfedge_const_handle ;
     typedef typename Ss::Halfedge_const_iterator Halfedge_const_iterator ;
 
