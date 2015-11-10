@@ -39,7 +39,7 @@ before_install:
 
 before_script:
   - find $HOME
-  - cmake -DCGAL_DIR=$HOME/CGAL-${CGAL_VERSION} -DSFCGAL_BUILD_TESTS=ON
+  - cmake -DCGAL_DIR=$HOME/CGAL -DSFCGAL_BUILD_TESTS=ON
 
 script:
   - make
