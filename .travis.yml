@@ -15,12 +15,6 @@ env:
 # new infrastructure
 sudo: false
 
-# cache CGAL
-cache:
-  directories:
-  - $HOME/CGAL-4.3
-  - $HOME/CGAL-4.7
-
 addons:
   apt:
     sources:
