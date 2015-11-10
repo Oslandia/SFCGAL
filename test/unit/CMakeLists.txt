@@ -23,8 +23,8 @@ set_target_properties( unit-test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS unit-test-SFCGAL DESTINATION bin )
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" )
-    add_test( unit-testd ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGALd --auto_start_dbg=y --log_level=error)
+    add_test( unit-testd ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGALd --auto_start_dbg=y --log_level=all)
 else()
-    add_test( unit-test ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGAL --auto_start_dbg=y --log_level=error)
+    add_test( unit-test ${CMAKE_CURRENT_BINARY_DIR}/unit-test-SFCGAL --auto_start_dbg=y --log_level=all)
 endif()
 
