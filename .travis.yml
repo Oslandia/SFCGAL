@@ -5,7 +5,7 @@ language: cpp
 #  - osx
 
 compiler:
-  - gcc
+#  - gcc
   - clang
 
 env:
