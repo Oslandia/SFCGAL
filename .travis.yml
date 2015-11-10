@@ -8,8 +8,12 @@ compiler:
   - gcc
   - clang
 
+env:
+  - CGAL_VERSION=4.3
+  - CGAL_VERSION=4.7
+
 before_install:
-  - ./travis/${TRAVIS_OS_NAME}/before_install.sh
+  - ./travis/${TRAVIS_OS_NAME}/before_install.sh $CGAL_VERSION
 
 before_script:
   - cmake -DSFCGAL_BUILD_TESTS=ON
