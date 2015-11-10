@@ -45,7 +45,7 @@ before_install:
 
 before_script:
   - export CGAL_DIR=$HOME/CGAL-${CGAL_VERSION}
-  - cmake -DSFCGAL_BUILD_TESTS=ON
+  - cmake -DCGAL_DIR=$HOME/CGAL-${CGAL_VERSION} -DSFCGAL_BUILD_TESTS=ON
 
 script:
   - make
