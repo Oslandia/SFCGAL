@@ -166,7 +166,15 @@ void minkowskiSum( const LineString& gA, const Polygon_2& gB, Polygon_set_2& pol
         P.push_back( gA.pointN( i ).toPoint_2() );
         P.push_back( gA.pointN( i+1 ).toPoint_2() );
 
+        //
+        // We want to compute the "minkowski sum" on each segment of the line string
+        // This is not very well defined. But it appears CGAL supports it.
+        // However we must use the explicit "full convolution" method for that particular case in CGAL >= 4.7
+#if CGAL_VERSION_NR < 1040701000 // version 4.7
         Polygon_with_holes_2 part = minkowski_sum_2( P, gB );
+#else
+        Polygon_with_holes_2 part = minkowski_sum_by_full_convolution_2( P, gB );
+#endif
 
         // merge into a polygon set
         if ( polygonSet.is_empty() ) {

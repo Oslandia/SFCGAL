@@ -32,7 +32,7 @@
 
 #include <CGAL/IO/Polyhedron_iostream.h>
 
-#include <CGAL/Point_inside_polyhedron_3.h>
+#include <SFCGAL/detail/Point_inside_polyhedron.h>
 
 using namespace SFCGAL::detail;
 
@@ -48,7 +48,7 @@ void _intersection_solid_segment( const PrimitiveHandle<3>& pa, const PrimitiveH
     const CGAL::Segment_3<Kernel>* segment = pb.as<CGAL::Segment_3<Kernel> >();
 
     MarkedPolyhedron* ext_poly_nc = const_cast<MarkedPolyhedron*>( ext_poly );
-    CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_ext( *ext_poly_nc );
+    Point_inside_polyhedron<MarkedPolyhedron, Kernel> is_in_ext( *ext_poly_nc );
 
     GeometrySet<3> triangles;
     GeometrySet<3> spoint( segment->source() );
@@ -151,7 +151,7 @@ void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Trian
     CGAL::Intersection_of_Polyhedra_3<MarkedPolyhedron,Kernel, Split_visitor> intersect_polys( visitor );
     intersect_polys( polya, polyb, std::back_inserter( polylines ) );
 
-    CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> point_inside_q( polya );
+    Point_inside_polyhedron<MarkedPolyhedron, Kernel> point_inside_q( polya );
 
     if ( polylines.size() == 0 ) {
         // no surface intersection
@@ -168,7 +168,13 @@ void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Trian
     // triangle decomposition
     std::list<MarkedPolyhedron> decomposition;
     Is_not_marked criterion;
+#if CGAL_VERSION_NR < 1040701000 // version 4.7
+    // Before 4.7, extract_connected_components lies in CGAL::internal
     CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter( decomposition ) );
+#else
+    // After 4.7, it's now in CGAL::internal::corefinement
+    CGAL::internal::corefinement::extract_connected_components( polyb, criterion, std::back_inserter( decomposition ) );
+#endif
 
     bool hasSurface = false;
 

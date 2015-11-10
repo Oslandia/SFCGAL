@@ -37,7 +37,7 @@
 
 #include <CGAL/box_intersection_d.h>
 
-#include <CGAL/Point_inside_polyhedron_3.h>
+#include <SFCGAL/detail/Point_inside_polyhedron.h>
 
 using namespace SFCGAL::detail;
 
@@ -256,7 +256,7 @@ struct intersects_volume_x : public boost::static_visitor<bool> {
             // this test is needed only if its a volume
             // if the polyhedron is not closed, this is not a volume, actually
 
-            CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( *polyhedron );
+            Point_inside_polyhedron<MarkedPolyhedron, Kernel> is_in_poly( *polyhedron );
 
             GeometrySet<3> points;
             points.collectPoints( geometry );

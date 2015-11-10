@@ -525,7 +525,7 @@ void union_point_volume( Handle<2> ,Handle<2>  )
 void union_point_volume( Handle<3> a,Handle<3> b )
 {
     //@todo put is in poly in a struct derived from MarkedPolyhedron to avoid rebuilding point inside every time
-    CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( b.asVolume() );
+    Point_inside_polyhedron<MarkedPolyhedron, Kernel> is_in_poly( b.asVolume() );
 
     if ( CGAL::ON_UNBOUNDED_SIDE != is_in_poly( a.asPoint() ) ) {
         b.registerObservers( a );
@@ -638,7 +638,7 @@ void union_segment_volume( Handle<3> a,Handle<3> b )
                               bboxes.begin(), bboxes.end(),
                               cb );
 
-    CGAL::Point_inside_polyhedron_3<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
+    Point_inside_polyhedron<MarkedPolyhedron, Kernel> is_in_poly( polyhedron );
 
     if ( !collisions.size() ) {
         // completely in or out, we just test one point
