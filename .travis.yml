@@ -12,33 +12,11 @@ env:
 #  - CGAL_VERSION=4.3
   - CGAL_VERSION=4.7
 
-# new infrastructure
-sudo: false
-
-addons:
-  apt:
-    sources:
-    - boost-latest
-    - kalakris-cmake
-    packages:
-    - cmake
-    - libboost-chrono1.55-dev
-    - libboost-program-options1.55-dev
-    - libboost-filesystem1.55-dev
-    - libboost-timer1.55-dev
-    - libboost-test1.55-dev
-    - libboost-date-time1.55-dev
-    - libboost-thread1.55-dev
-    - libboost-system1.55-dev
-    - libboost-serialization1.55-dev
-    - libmpfr-dev
-    - libgmp-dev
-
 before_install:
-  - bash ./travis/${TRAVIS_OS_NAME}/install_cgal.sh $CGAL_VERSION
+  - ./travis/${TRAVIS_OS_NAME}/before_install.sh $CGAL_VERSION
 
 before_script:
-  - CGAL_DIR=$HOME/CGAL-${CGAL_VERSION} cmake -DSFCGAL_BUILD_TESTS=ON
+  - cmake -DSFCGAL_BUILD_TESTS=ON
 
 script:
   - make
