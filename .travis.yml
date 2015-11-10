@@ -9,7 +9,7 @@ compiler:
   - clang
 
 env:
-  - CGAL_VERSION=4.3
+#  - CGAL_VERSION=4.3
   - CGAL_VERSION=4.7
 
 # new infrastructure
