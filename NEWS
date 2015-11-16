@@ -1,6 +1,9 @@
+1.2.3 (201?-MM-DD):
+    * Retain bisectors of narrow angles in MedialAxis output
 1.2.2 (2015-11-16):
     * Fix compilation issues with CGAL 4.7
     * Fix Travis CI support for CGAL 4.3 and CGAL 4.7
+    * Fix potential crash in StraightSkeleton (#111)
 1.2.1 - invalid release
 1.2.0 (2015-09-18):
     * Improve the computation speed of straight skeletons by using an inexact construction kernel
