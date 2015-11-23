@@ -102,6 +102,26 @@ BOOST_AUTO_TEST_CASE( testStraightSkeletonMultiPolygon )
     BOOST_CHECK_EQUAL( 8, sfcgal_geometry_collection_num_geometries( sk ) );
 }
 
+BOOST_AUTO_TEST_CASE( testApproximateMedialAxis )
+{
+    sfcgal_set_error_handlers( printf, on_error );
+
+    std::auto_ptr<Geometry> g( io::readWkt(
+"POLYGON((-42 9,-44 9,-42 8,-22 7,-22 21,1 22,-5 13,-5 12,-4 13,2 23,-23 22,-23 8,-42 9))"
+    ) );
+
+    hasError = false;
+    sfcgal_geometry_t* sk = sfcgal_geometry_approximate_medial_axis( g.get() );
+    BOOST_CHECK( hasError == false );
+    // TODO: check length = 71.5634135885843
+    // NOTE: length not available in C-API
+    // algorithm::length
+    //BOOST_CHECK_EQUAL( 71.56, round(algorithm::length(sk)*100)/100; );
+    BOOST_CHECK_EQUAL( 11, sfcgal_geometry_collection_num_geometries( sk ) );
+
+    sfcgal_geometry_delete(sk);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
