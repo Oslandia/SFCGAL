@@ -21,14 +21,24 @@
 #ifndef _SFCGAL_KERNEL_H_
 #define _SFCGAL_KERNEL_H_
 
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 namespace SFCGAL {
 
 /**
- * default Kernel
+ * Required kernel for robutness in CGAL when predicates are invoked (line side for ex.)
  */
-typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
+typedef CGAL::Exact_predicates_inexact_constructions_kernel Epick ;
+/**
+ * Required kernel for robutness in CGAL when geometries are built
+ */
+typedef CGAL::Exact_predicates_exact_constructions_kernel Epeck ;
+
+/**
+ * default working Kernel
+ */
+typedef Epeck Kernel ;
 
 
 /**

@@ -179,8 +179,14 @@ public:
     }
 
 private:
-    boost::variant< Empty, Kernel::Point_2, Kernel::Point_3 > _storage;
-
+    boost::variant< 
+        Empty,/* next step
+        Epick::Point_2,
+        Epick::Point_3,
+        */
+        Epeck::Point_2,
+        Epeck::Point_3
+    > _storage;
 public:
     /**
      * Serialization
