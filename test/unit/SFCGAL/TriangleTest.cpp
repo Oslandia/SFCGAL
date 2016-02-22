@@ -47,9 +47,9 @@ BOOST_AUTO_TEST_CASE( testConstructorTriangle_2 )
     BOOST_CHECK( ! g.isEmpty() );
     BOOST_CHECK( ! g.is3D() ) ;
 
-    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_2(), a );
-    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_2(), b );
-    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_2(), c );
+    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_2<Kernel>(), a );
+    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_2<Kernel>(), b );
+    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_2<Kernel>(), c );
 }
 //Triangle( const Kernel::Triangle_3 & triangle ) ;
 BOOST_AUTO_TEST_CASE( testConstructorTriangle_3 )
@@ -62,9 +62,9 @@ BOOST_AUTO_TEST_CASE( testConstructorTriangle_3 )
     BOOST_CHECK( ! g.isEmpty() );
     BOOST_CHECK( g.is3D() ) ;
 
-    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_3(), a );
-    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_3(), b );
-    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_3(), c );
+    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_3<Kernel>(), a );
+    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_3<Kernel>(), b );
+    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_3<Kernel>(), c );
 }
 //Triangle( const Point & p, const Point & q, const Point & r );
 //Triangle( const Triangle & other );
@@ -81,9 +81,9 @@ BOOST_AUTO_TEST_CASE( testReverse )
     Triangle g( Kernel::Triangle_3( a,b,c ) ) ;
     g.reverse();
 
-    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_3(), a );
-    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_3(), c );
-    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_3(), b );
+    BOOST_CHECK_EQUAL( g.vertex( 0 ).toPoint_3<Kernel>(), a );
+    BOOST_CHECK_EQUAL( g.vertex( 1 ).toPoint_3<Kernel>(), c );
+    BOOST_CHECK_EQUAL( g.vertex( 2 ).toPoint_3<Kernel>(), b );
 }
 
 //Polygon               toPolygon() const ;

@@ -226,9 +226,9 @@ struct Surface_d<3>: Triangle_3 {
 
         for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
             // define a point inside triangle
-            const Point_2 a( t->vertex( 0 ).toPoint_2() );
-            const Point_2 b( t->vertex( 1 ).toPoint_2() );
-            const Point_2 c( t->vertex( 2 ).toPoint_2() );
+            const Point_2 a( t->vertex( 0 ).toPoint_2<Kernel>() );
+            const Point_2 b( t->vertex( 1 ).toPoint_2<Kernel>() );
+            const Point_2 c( t->vertex( 2 ).toPoint_2<Kernel>() );
             const Point_2 point( a + ( Vector_2( a, b ) + Vector_2( a, c ) )/3 );
 
             // find if triangle is in a removed spot

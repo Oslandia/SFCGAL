@@ -195,7 +195,7 @@ Offset_polygon_2 circleToPolygon( const Kernel::Circle_2& circle )
 void offset( const Point& gA, const double& radius, Offset_polygon_set_2& polygonSet )
 {
     SFCGAL_OFFSET_ASSERT_FINITE_RADIUS( radius );
-    Kernel::Circle_2 circle( gA.toPoint_2(), radius * radius );
+    Kernel::Circle_2 circle( gA.toPoint_2<Kernel>(), radius * radius );
 
     if ( polygonSet.is_empty() ) {
         polygonSet.insert( circleToPolygon( circle ) );
@@ -215,8 +215,8 @@ void offset( const LineString& lineString, const double& radius, Offset_polygon_
 
     for ( size_t i = 0; i < lineString.numSegments(); i++ ) {
         Polygon_2 P ;
-        P.push_back( lineString.pointN( i ).toPoint_2() );
-        P.push_back( lineString.pointN( i+1 ).toPoint_2() );
+        P.push_back( lineString.pointN( i ).toPoint_2<Kernel>() );
+        P.push_back( lineString.pointN( i+1 ).toPoint_2<Kernel>() );
         Offset_polygon_with_holes_2  offset = CGAL::approximated_offset_2( P, radius, SFCGAL_OFFSET_ACCURACY ) ;
 
         if ( polygonSet.is_empty() ) {

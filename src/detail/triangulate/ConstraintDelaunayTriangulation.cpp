@@ -51,8 +51,8 @@ ConstraintDelaunayTriangulation::Vertex_handle ConstraintDelaunayTriangulation::
     }
 
     Vertex_handle vertex = _projectionPlane
-                           ? _cdt.insert( _projectionPlane->to_2d( position.toPoint_3() ) )
-                           : _cdt.insert( position.toPoint_2() );
+                           ? _cdt.insert( _projectionPlane->to_2d( position.toPoint_3<Kernel>() ) )
+                           : _cdt.insert( position.toPoint_2<Kernel>() );
     vertex->info().original = position ;
     return vertex ;
 }

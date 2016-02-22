@@ -101,26 +101,26 @@ BOOST_AUTO_TEST_CASE( testGetSetM )
 
 //inline Kernel::Vector_2 toVector_2() const
 //inline Kernel::Vector_3 toVector_3() const
-//inline Kernel::Point_2 toPoint_2() const
-//inline Kernel::Point_3 toPoint_3() const
+//inline Kernel::Point_2 toPoint_2<Kernel>() const
+//inline Kernel::Point_3 toPoint_3<Kernel>() const
 BOOST_AUTO_TEST_CASE( emptyToVector_2 )
 {
     Point g ;
-    CGAL::Vector_2< Kernel > p = g.toVector_2();
+    CGAL::Vector_2< Kernel > p = g.toVector_2<Kernel>();
     BOOST_CHECK_EQUAL( CGAL::to_double( p.x() ), 0.0 );
     BOOST_CHECK_EQUAL( CGAL::to_double( p.y() ), 0.0 );
 }
 BOOST_AUTO_TEST_CASE( xyToVector_2 )
 {
     Point g( 3.0, 4.0 );
-    CGAL::Vector_2< Kernel > p = g.toVector_2();
+    CGAL::Vector_2< Kernel > p = g.toVector_2<Kernel>();
     BOOST_CHECK_EQUAL( CGAL::to_double( p.x() ), 3.0 );
     BOOST_CHECK_EQUAL( CGAL::to_double( p.y() ), 4.0 );
 }
 BOOST_AUTO_TEST_CASE( xyToVector_3 )
 {
     Point g( 3.0, 4.0 );
-    CGAL::Vector_3< Kernel > p = g.toVector_3();
+    CGAL::Vector_3< Kernel > p = g.toVector_3<Kernel>();
 
     BOOST_CHECK_EQUAL( CGAL::to_double( p.x() ), 3.0 );
     BOOST_CHECK_EQUAL( CGAL::to_double( p.y() ), 4.0 );

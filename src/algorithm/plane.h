@@ -53,7 +53,7 @@ bool hasPlane3D( const Polygon& polygon,
     size_t  n = 0 ;
 
     for ( size_t i = 0; i < exteriorRing.numPoints(); i++ ) {
-        Point_3 p = exteriorRing.pointN( i ).toPoint_3() ;
+        Point_3 p = exteriorRing.pointN( i ).toPoint_3<Kernel>() ;
 
         if ( n == 0 ) {
             a = p ;
@@ -119,7 +119,7 @@ CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact = true )
         nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
     }
 
-    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
+    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3<Kernel>(), nrml );
 }
 
 
@@ -162,7 +162,7 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     int numPoint = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        c = c + ( *x )->toVector_3() ;
+        c = c + ( *x )->toVector_3<Kernel>() ;
         ++numPoint;
     }
 
@@ -174,11 +174,11 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     typename Kernel::FT maxDistanceSq = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+        const Vector_3 cx = ( *x )->toVector_3<Kernel>() - c ;
         const typename Kernel::FT dSq = cx * cx ;
 
         if ( dSq > maxDistanceSq ) {
-            f = ( *x )->toVector_3() ;
+            f = ( *x )->toVector_3<Kernel>() ;
             maxDistanceSq = dSq ;
         }
     }
@@ -194,12 +194,12 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     maxDistanceSq = 0; // watch out, we reuse the variable
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+        const Vector_3 cx = ( *x )->toVector_3<Kernel>() - c ;
         const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line (CF)
         const typename Kernel::FT dSq = ( cx - cp ).squared_length() ;
 
         if ( dSq > maxDistanceSq ) {
-            g = ( *x )->toVector_3() ;
+            g = ( *x )->toVector_3<Kernel>() ;
             maxDistanceSq = dSq ;
         }
     }
@@ -214,7 +214,7 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+        const Vector_3 cx = ( *x )->toVector_3<Kernel>() - c ;
 
         if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
             // std::cout << "point out of plane\n";

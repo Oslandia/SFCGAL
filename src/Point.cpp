@@ -70,39 +70,6 @@ Point::Point( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z, con
 ///
 ///
 ///
-Point::Point( const double& x, const double& y ):
-    Geometry(),
-    _coordinate( x,y ),
-    _m( NaN() )
-{
-
-}
-
-///
-///
-///
-Point::Point( const double& x, const double& y, const double& z ):
-    Geometry(),
-    _coordinate( x,y,z ),
-    _m( NaN() )
-{
-
-}
-
-///
-///
-///
-Point::Point( const double& x, const double& y, const double& z, const double& m ):
-    Geometry(),
-    _coordinate( x,y,z ),
-    _m( m )
-{
-
-}
-
-///
-///
-///
 Point::Point( const Kernel::Point_2& other ):
     _coordinate( other ),
     _m( NaN() )
@@ -262,14 +229,14 @@ bool Point::operator != ( const Point& other ) const
 template <int D>
 struct do_toPoint_d {
     static CGAL::Point_2<Kernel> toPoint( const Point* p ) {
-        return p->toPoint_2();
+        return p->toPoint_2<Kernel>();
     }
 };
 
 template <>
 struct do_toPoint_d<3> {
     static CGAL::Point_3<Kernel> toPoint( const Point* p ) {
-        return p->toPoint_3();
+        return p->toPoint_3<Kernel>();
     }
 };
 
@@ -284,4 +251,3 @@ template CGAL::Point_3<Kernel> Point::toPoint_d<3>() const;
 
 
 }//SFCGAL
-

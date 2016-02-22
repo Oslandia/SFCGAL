@@ -180,8 +180,8 @@ BOOST_AUTO_TEST_CASE( testLessXY_XYZ )
 /// bool operator != ( const Coordinate & other ) const ;
 /// inline Kernel::Vector_2 toVector_2() const
 /// inline Kernel::Vector_3 toVector_3() const
-/// Kernel::Point_2 toPoint_2() const;
-/// Kernel::Point_3 toPoint_3() const;
+/// Kernel::Point_2 toPoint_2<Kernel>() const;
+/// Kernel::Point_3 toPoint_3<Kernel>() const;
 
 
 BOOST_AUTO_TEST_SUITE_END()

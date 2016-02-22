@@ -511,9 +511,9 @@ OutputIteratorType difference( const Triangle_3& p, const Triangle_3& q, OutputI
             triangulate::triangulatePolygon3D( poly, ts );
 
             for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
-                *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2() ),
-                                     plane.to_3d( t->vertex( 1 ).toPoint_2() ),
-                                     plane.to_3d( t->vertex( 2 ).toPoint_2() ) ) ;
+                *out++ = Triangle_3( plane.to_3d( t->vertex( 0 ).toPoint_2<Kernel>() ),
+                                     plane.to_3d( t->vertex( 1 ).toPoint_2<Kernel>() ),
+                                     plane.to_3d( t->vertex( 2 ).toPoint_2<Kernel>() ) ) ;
             }
         }
     }
@@ -588,7 +588,7 @@ TriangleOutputIteratorType collidingTriangles( const FaceSegmentCollide::Collisi
         while ( it != *cit );
 
         if ( points.size() == 3 ) {
-            *out++ = Triangle_3( points[0].toPoint_3(), points[1].toPoint_3(), points[2].toPoint_3() ) ;
+            *out++ = Triangle_3( points[0].toPoint_3<Kernel>(), points[1].toPoint_3<Kernel>(), points[2].toPoint_3<Kernel>() ) ;
         }
         else {
             const Polygon poly( points );
@@ -596,9 +596,9 @@ TriangleOutputIteratorType collidingTriangles( const FaceSegmentCollide::Collisi
             triangulate::triangulatePolygon3D( poly, ts );
 
             for ( TriangulatedSurface::iterator t = ts.begin(); t != ts.end(); ++t ) {
-                *out++ = Triangle_3( t->vertex( 0 ).toPoint_3(),
-                                     t->vertex( 1 ).toPoint_3(),
-                                     t->vertex( 2 ).toPoint_3() );
+                *out++ = Triangle_3( t->vertex( 0 ).toPoint_3<Kernel>(),
+                                     t->vertex( 1 ).toPoint_3<Kernel>(),
+                                     t->vertex( 2 ).toPoint_3<Kernel>() );
             }
         }
     }

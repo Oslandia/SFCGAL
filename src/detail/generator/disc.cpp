@@ -50,7 +50,7 @@ std::auto_ptr< Polygon > disc(
     double dTheta = M_PI_4 / nQuadrantSegments ;
 
     for ( size_t i = 0; i < nQuadrantSegments * 4; i++ ) {
-        Kernel::Vector_2 p = center.toVector_2() + radius * Kernel::Vector_2( cos( i*dTheta ), sin( i*dTheta ) ) ;
+        Kernel::Vector_2 p = center.toVector_2<Kernel>() + radius * Kernel::Vector_2( cos( i*dTheta ), sin( i*dTheta ) ) ;
         exteriorRing->addPoint( new Point( p.x(), p.y() ) ) ;
     }
 

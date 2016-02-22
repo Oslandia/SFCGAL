@@ -230,7 +230,7 @@ public:
         // thanks to a binary tree (PointMap)
         for ( size_t i = 0; i < surf.numGeometries(); i++ ) {
             for ( size_t j = 0; j < 3; j++ ) {
-                Point p = surf.geometryN( i ).vertex( j ).toPoint_3();
+                Point p = surf.geometryN( i ).vertex( j ).toPoint_3<Kernel>();
 
                 if ( points.find( p ) == points.end() ) {
                     B.add_vertex( p );

@@ -55,20 +55,6 @@ public:
      * XY Constructor with exact coordinates
      */
     Point( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z, const double& m = NaN() ) ;
-    /**
-     * XY constructor
-     */
-    Point( const double& x, const double& y ) ;
-
-    /**
-     * XYZ constructor
-     */
-    Point( const double& x, const double& y, const double& z ) ;
-
-    /**
-     * XYZM constructor
-     */
-    Point( const double& x, const double& y, const double& z, const double& m  ) ;
 
     /**
      * Constructor from CGAL::Point_2<K>
@@ -171,29 +157,33 @@ public:
     /**
      * @see Coordinate::toVector_2()
      */
-    inline Kernel::Vector_2 toVector_2() const {
-        return _coordinate.toVector_2();
+    template < typename K >
+    inline typename K::Vector_2 toVector_2() const {
+        return _coordinate.toVector_2<K>();
     }
 
     /**
      * @see Coordinate::toVector_3()
      */
-    inline Kernel::Vector_3 toVector_3() const {
-        return _coordinate.toVector_3();
+    template < typename K >
+    inline typename K::Vector_3 toVector_3() const {
+        return _coordinate.toVector_3<K>();
     }
 
     /**
-     * @see Coordinate::toPoint_2()
+     * @see Coordinate::toPoint_3<Kernel>()
      */
+    template < typename K >
     inline Kernel::Point_2 toPoint_2() const {
-        return _coordinate.toPoint_2();
+        return _coordinate.toPoint_2<K>();
     }
 
     /**
-     * @see Coordinate::toPoint_3()
+     * @see Coordinate::toPoint_3<Kernel>()
      */
+    template < typename K >
     inline Kernel::Point_3 toPoint_3() const {
-        return _coordinate.toPoint_3();
+        return _coordinate.toPoint_3<K>();
     }
 
     /**

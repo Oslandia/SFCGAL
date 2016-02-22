@@ -29,10 +29,15 @@
 #include <boost/serialization/split_member.hpp>
 
 #include <SFCGAL/numeric.h>
-
 #include <SFCGAL/Kernel.h>
 
+#include <SFCGAL/detail/CoordinateToPoint2Visitor.h>
+#include <SFCGAL/detail/CoordinateToPoint3Visitor.h>
+
 namespace SFCGAL {
+
+// class for Empty coordinate
+class Empty {};
 
 /**
  * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Kernel::Point_2,
@@ -52,17 +57,7 @@ public:
      * XYZ Constructor with exact coordinates
      */
     Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z ) ;
-    /**
-     * XYZ constructor
-     * @warning x,y,z must not be not be NaN nor inf
-     */
-    Coordinate( const double& x, const double& y, const double& z ) ;
 
-    /**
-     * XY constructor
-     * @warning x,y must not be not be NaN nor inf
-     */
-    Coordinate( const double& x, const double& y ) ;
     /**
      * Constructor from CGAL::Point_2<K>
      */
@@ -152,29 +147,37 @@ public:
     /**
      * @brief Converts to Kernel::Vector_2
      */
-    inline Kernel::Vector_2 toVector_2() const {
-        return Kernel::Vector_2( CGAL::ORIGIN, toPoint_2() );
+    template < typename K >
+    inline typename K::Vector_2 toVector_2() const {
+        return typename K::Vector_2( CGAL::ORIGIN, toPoint_2<K>() );
     }
 
     /**
      * @brief Converts to Kernel::Vector_3
      */
-    inline Kernel::Vector_3 toVector_3() const {
-        return Kernel::Vector_3( CGAL::ORIGIN, toPoint_3() );
+    template < typename K >
+    inline typename K::Vector_3 toVector_3() const {
+        return typename K::Vector_3( CGAL::ORIGIN, toPoint_3<K>() );
     }
 
     /**
      * @brief Converts to Kernel::Point_2
      */
-    Kernel::Point_2 toPoint_2() const;
+    template < typename K >
+    typename K::Point_2 toPoint_2() const {
+        detail::CoordinateToPoint2Visitor<K> visitor;
+        return boost::apply_visitor(visitor,_storage) ;
+    }
 
     /**
      * @brief Converts to Kernel::Point_3
      */
-    Kernel::Point_3 toPoint_3() const;
+    template < typename K >
+    typename K::Point_3 toPoint_3() const {
+        detail::CoordinateToPoint3Visitor<K> visitor;
+        return boost::apply_visitor(visitor,_storage) ;
+    }
 
-    // class for Empty coordinate
-    class Empty {};
 private:
     boost::variant< Empty, Kernel::Point_2, Kernel::Point_3 > _storage;
 

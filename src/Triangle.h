@@ -119,14 +119,14 @@ public:
      * Convert to CGAL::Triangle_2
      */
     inline Kernel::Triangle_2 toTriangle_2() const {
-        return Kernel::Triangle_2( vertex( 0 ).toPoint_2(), vertex( 1 ).toPoint_2(), vertex( 2 ).toPoint_2() );
+        return Kernel::Triangle_2( vertex( 0 ).toPoint_2<Kernel>(), vertex( 1 ).toPoint_2<Kernel>(), vertex( 2 ).toPoint_2<Kernel>() );
     }
 
     /**
      * Convert to CGAL::Triangle_3
      */
     inline Kernel::Triangle_3 toTriangle_3() const {
-        return Kernel::Triangle_3( vertex( 0 ).toPoint_3(), vertex( 1 ).toPoint_3(), vertex( 2 ).toPoint_3() );
+        return Kernel::Triangle_3( vertex( 0 ).toPoint_3<Kernel>(), vertex( 1 ).toPoint_3<Kernel>(), vertex( 2 ).toPoint_3<Kernel>() );
     }
 
     /**

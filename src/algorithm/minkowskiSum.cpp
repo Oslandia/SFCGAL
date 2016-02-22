@@ -127,7 +127,7 @@ void minkowskiSum( const Point& gA, const Polygon_2& gB, Polygon_set_2& polygonS
 
     CGAL::Aff_transformation_2< Kernel > translate(
         CGAL::TRANSLATION,
-        gA.toVector_2()
+        gA.toVector_2<Kernel>()
     );
 
     Polygon_2 sum ;
@@ -163,8 +163,8 @@ void minkowskiSum( const LineString& gA, const Polygon_2& gB, Polygon_set_2& pol
 
     for ( int i = 0; i < npt - 1 ; i++ ) {
         Polygon_2 P;
-        P.push_back( gA.pointN( i ).toPoint_2() );
-        P.push_back( gA.pointN( i+1 ).toPoint_2() );
+        P.push_back( gA.pointN( i ).toPoint_2<Kernel>() );
+        P.push_back( gA.pointN( i+1 ).toPoint_2<Kernel>() );
 
         //
         // We want to compute the "minkowski sum" on each segment of the line string

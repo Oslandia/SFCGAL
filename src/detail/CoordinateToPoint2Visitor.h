@@ -18,33 +18,30 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <SFCGAL/detail/transform/AffineTransform2.h>
-
-#include <SFCGAL/Point.h>
+#ifndef _SFCGAL_DETAIL_COORDINATETOPOINT2VISITOR_H_
+#define _SFCGAL_DETAIL_COORDINATETOPOINT2VISITOR_H_
 
 namespace SFCGAL {
-namespace transform {
+    class Empty ;
+namespace detail {
 
-///
-///
-///
-AffineTransform2::AffineTransform2( CGAL::Aff_transformation_2< Kernel > transform ):
-    _transform( transform )
-{
+    template < typename K >
+    class CoordinateToPoint2Visitor : public boost::static_visitor<typename K::Point_2> {
+    public:
+        typedef typename K::Point_2 result_type ;
 
-}
+        result_type operator()( const Empty& ) const {
+            return result_type( CGAL::ORIGIN );
+        }
+        result_type operator()( const Kernel::Point_2& storage ) const {
+            return storage;
+        }
+        result_type operator()( const Kernel::Point_3& storage ) const {
+            return result_type( storage.x(), storage.y() );
+        }
+    };
 
-/*
- * [SFCGAL::Transform]
- */
-void AffineTransform2::transform( Point& p )
-{
-    if ( ! p.isEmpty() ) {
-        p = Point( p.toPoint_2<Kernel>().transform( _transform ) );
-    }
-}
-
-
-}//transform
+}//detail
 }//SFCGAL
 
+#endif

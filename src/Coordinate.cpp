@@ -30,7 +30,7 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-    _storage( Coordinate::Empty() )
+    _storage( Empty() )
 {
 }
 
@@ -50,31 +50,6 @@ Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::
     _storage( Kernel::Point_3( x, y, z ) )
 {
 
-}
-
-
-///
-///
-///
-Coordinate::Coordinate( const double& x, const double& y )
-{
-    if ( !std::isfinite( x ) || !std::isfinite( y ) ) {
-        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
-    }
-
-    _storage = Kernel::Point_2( x, y );
-}
-
-///
-///
-///
-Coordinate::Coordinate( const double& x, const double& y, const double& z )
-{
-    if ( !std::isfinite( x ) || !std::isfinite( y ) || !std::isfinite( z ) ) {
-        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
-    }
-
-    _storage = Kernel::Point_3( x, y, z );
 }
 
 ///
@@ -125,7 +100,7 @@ Coordinate::~Coordinate()
 
 class CoordinateDimensionVisitor : public boost::static_visitor<int> {
 public:
-    int operator()( const Coordinate::Empty& ) const {
+    int operator()( const Empty& ) const {
         return 0;
     }
     int operator()( const Kernel::Point_2& ) const {
@@ -165,7 +140,7 @@ bool Coordinate::is3D() const
 
 class GetXVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-    Kernel::FT operator()( const Coordinate::Empty& ) const {
+    Kernel::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate x value" ) );
         return 0;
     }
@@ -188,7 +163,7 @@ Kernel::FT Coordinate::x() const
 
 class GetYVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-    Kernel::FT operator()( const Coordinate::Empty& ) const {
+    Kernel::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate y value" ) );
         return 0;
     }
@@ -211,7 +186,7 @@ Kernel::FT Coordinate::y() const
 
 class GetZVisitor : public boost::static_visitor<Kernel::FT> {
 public:
-    Kernel::FT operator()( const Coordinate::Empty& ) const {
+    Kernel::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
         return 0;
     }
@@ -242,7 +217,7 @@ public:
 
     }
 
-    void operator()( Coordinate::Empty& ) const {
+    void operator()( Empty& ) const {
 
     }
     void operator()( Kernel::Point_2& storage ) const {
@@ -285,50 +260,6 @@ Coordinate& Coordinate::round( const long& scaleFactor )
 
 
 //----------------------
-
-class ToPoint2Visitor : public boost::static_visitor<Kernel::Point_2> {
-public:
-    Kernel::Point_2 operator()( const Coordinate::Empty& ) const {
-        return Kernel::Point_2( CGAL::ORIGIN );
-    }
-    Kernel::Point_2 operator()( const Kernel::Point_2& storage ) const {
-        return storage;
-    }
-    Kernel::Point_2 operator()( const Kernel::Point_3& storage ) const {
-        return Kernel::Point_2( storage.x(), storage.y() );
-    }
-};
-
-///
-///
-///
-Kernel::Point_2 Coordinate::toPoint_2() const
-{
-    ToPoint2Visitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
-
-class ToPoint3Visitor : public boost::static_visitor<Kernel::Point_3> {
-public:
-    Kernel::Point_3 operator()( const Coordinate::Empty& /*storage*/ ) const {
-        return Kernel::Point_3( CGAL::ORIGIN );
-    }
-    Kernel::Point_3 operator()( const Kernel::Point_2& storage ) const {
-        return Kernel::Point_3( storage.x(), storage.y(), 0.0 );
-    }
-    Kernel::Point_3 operator()( const Kernel::Point_3& storage ) const {
-        return storage;
-    }
-};
-
-///
-///
-///
-Kernel::Point_3 Coordinate::toPoint_3() const
-{
-    ToPoint3Visitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
 
 ///
 ///
@@ -402,4 +333,3 @@ bool Coordinate::operator != ( const Coordinate& other ) const
 
 
 }//SFCGAL
-

@@ -275,7 +275,7 @@ double area3D( const Polygon& g )
         CGAL::Polygon_2< Kernel > projectedPolygon;
 
         for ( size_t j = 0; j < ring.numPoints() - 1 ; j++ ) {
-            CGAL::Point_3< Kernel > point = ring.pointN( j ).toPoint_3();
+            CGAL::Point_3< Kernel > point = ring.pointN( j ).toPoint_3<Kernel>();
             CGAL::Point_2< Kernel > projectedPoint(
                 ( point - b ) * ux,
                 ( point - b ) * uy
@@ -302,9 +302,9 @@ double area3D( const Polygon& g )
 double area3D( const Triangle& g )
 {
     CGAL::Triangle_3< Kernel > triangle(
-        g.vertex( 0 ).toPoint_3(),
-        g.vertex( 1 ).toPoint_3(),
-        g.vertex( 2 ).toPoint_3()
+        g.vertex( 0 ).toPoint_3<Kernel>(),
+        g.vertex( 1 ).toPoint_3<Kernel>(),
+        g.vertex( 2 ).toPoint_3<Kernel>()
     );
     return sqrt( CGAL::to_double( triangle.squared_area() ) ) ;
 }

@@ -455,8 +455,8 @@ bool selfIntersectsImpl( const LineString& line )
             std::auto_ptr< Geometry > inter; // null if no intersection
 
             if ( Dim == 2 ) {
-                const CGAL::Segment_2< Kernel > s1( l.pointN( i ).toPoint_2(), l.pointN( i + 1 ).toPoint_2() ) ;
-                const CGAL::Segment_2< Kernel > s2( l.pointN( j ).toPoint_2(), l.pointN( j + 1 ).toPoint_2() ) ;
+                const CGAL::Segment_2< Kernel > s1( l.pointN( i ).toPoint_2<Kernel>(), l.pointN( i + 1 ).toPoint_2<Kernel>() ) ;
+                const CGAL::Segment_2< Kernel > s2( l.pointN( j ).toPoint_2<Kernel>(), l.pointN( j + 1 ).toPoint_2<Kernel>() ) ;
                 const CGAL::Object out = CGAL::intersection( s1, s2 );
 
                 if ( out.is< Kernel::Point_2 >() ) {
@@ -468,8 +468,8 @@ bool selfIntersectsImpl( const LineString& line )
                 }
             }
             else {
-                const CGAL::Segment_3< Kernel > s1( l.pointN( i ).toPoint_3(), l.pointN( i + 1 ).toPoint_3() ) ;
-                const CGAL::Segment_3< Kernel > s2( l.pointN( j ).toPoint_3(), l.pointN( j + 1 ).toPoint_3() ) ;
+                const CGAL::Segment_3< Kernel > s1( l.pointN( i ).toPoint_3<Kernel>(), l.pointN( i + 1 ).toPoint_3<Kernel>() ) ;
+                const CGAL::Segment_3< Kernel > s2( l.pointN( j ).toPoint_3<Kernel>(), l.pointN( j + 1 ).toPoint_3<Kernel>() ) ;
                 const CGAL::Object out = CGAL::intersection( s1, s2 );
 
                 if ( out.is< Kernel::Point_3 >() ) {

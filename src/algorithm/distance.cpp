@@ -146,7 +146,7 @@ double distancePointPoint( const Point& gA, const Point& gB )
 
     return CGAL::sqrt(
                CGAL::to_double(
-                   CGAL::squared_distance( gA.toPoint_2(), gB.toPoint_2() )
+                   CGAL::squared_distance( gA.toPoint_2<Kernel>(), gB.toPoint_2<Kernel>() )
                )
            );
 }
@@ -458,7 +458,7 @@ const Circle boundingCircle( const Geometry& geom )
     int numPoint = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        c = c + ( *x )->toVector_2() ;
+        c = c + ( *x )->toVector_2<Kernel>() ;
         ++numPoint;
     }
 
@@ -470,11 +470,11 @@ const Circle boundingCircle( const Geometry& geom )
     Kernel::FT maxDistanceSq = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_2 cx = ( *x )->toVector_2() - c ;
+        const Vector_2 cx = ( *x )->toVector_2<Kernel>() - c ;
         const Kernel::FT dSq = cx * cx ;
 
         if ( dSq > maxDistanceSq ) {
-            f = ( *x )->toVector_2() ;
+            f = ( *x )->toVector_2<Kernel>() ;
             maxDistanceSq = dSq ;
         }
     }
@@ -578,10 +578,10 @@ double distancePointSegment( const Point& p, const Point& a, const Point& b )
     return CGAL::sqrt(
                CGAL::to_double(
                    CGAL::squared_distance(
-                       p.toPoint_2(),
+                       p.toPoint_2<Kernel>(),
                        Segment_2(
-                           a.toPoint_2(),
-                           b.toPoint_2()
+                           a.toPoint_2<Kernel>(),
+                           b.toPoint_2<Kernel>()
                        )
                    )
                )
@@ -601,8 +601,8 @@ double distanceSegmentSegment( const Point& a, const Point& b, const Point& c, c
 
     return CGAL::sqrt( CGAL::to_double(
                            CGAL::squared_distance(
-                               CGAL::Segment_2< Kernel >( a.toPoint_2(), b.toPoint_2() ),
-                               CGAL::Segment_2< Kernel >( c.toPoint_2(), d.toPoint_2() )
+                               CGAL::Segment_2< Kernel >( a.toPoint_2<Kernel>(), b.toPoint_2<Kernel>() ),
+                               CGAL::Segment_2< Kernel >( c.toPoint_2<Kernel>(), d.toPoint_2<Kernel>() )
                            )
                        ) );
 }

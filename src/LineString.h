@@ -223,7 +223,7 @@ public:
             return this->it_ == other.it_;
         }
         const Kernel::Point_2& dereference() const {
-            p_ = it_->toPoint_2();
+            p_ = it_->toPoint_2<Kernel>();
             return p_;
         }
         mutable Kernel::Point_2 p_;
@@ -265,7 +265,7 @@ public:
             return this->it_ == other.it_;
         }
         const Kernel::Point_3& dereference() const {
-            p_ = it_->toPoint_3();
+            p_ = it_->toPoint_3<Kernel>();
             return p_;
         }
         mutable Kernel::Point_3 p_;

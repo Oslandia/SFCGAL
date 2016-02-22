@@ -72,7 +72,7 @@ std::auto_ptr<Geometry> convexHull( const Geometry& g )
     std::vector< Point_2 > points ;
 
     for ( size_t i = 0; i < getPointVisitor.points.size(); i++ ) {
-        points.push_back( getPointVisitor.points[i]->toPoint_2() );
+        points.push_back( getPointVisitor.points[i]->toPoint_2<Kernel>() );
     }
 
     // resulting extreme points
@@ -125,7 +125,7 @@ std::auto_ptr<Geometry> convexHull3D( const Geometry& g )
     std::vector< Point_3 > points ;
 
     for ( size_t i = 0; i < getPointVisitor.points.size(); i++ ) {
-        points.push_back( getPointVisitor.points[i]->toPoint_3() );
+        points.push_back( getPointVisitor.points[i]->toPoint_3<Kernel>() );
     }
 
     /*

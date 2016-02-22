@@ -83,7 +83,7 @@ LineString* extrude( const Point& g, const Kernel::Vector_3& v )
         return new LineString() ;
     }
 
-    Kernel::Point_3 a = g.toPoint_3() ;
+    Kernel::Point_3 a = g.toPoint_3<Kernel>() ;
     Kernel::Point_3 b = a + v ;
 
     return new LineString( Point( a ), Point( b ) );
@@ -104,8 +104,8 @@ PolyhedralSurface* extrude( const LineString& g, const Kernel::Vector_3& v )
     for ( size_t i = 0; i < g.numPoints() - 1; i++ ) {
         std::auto_ptr< LineString > ring( new LineString ) ;
 
-        Kernel::Point_3 a = g.pointN( i ).toPoint_3() ;
-        Kernel::Point_3 b = g.pointN( i+1 ).toPoint_3() ;
+        Kernel::Point_3 a = g.pointN( i ).toPoint_3<Kernel>() ;
+        Kernel::Point_3 b = g.pointN( i+1 ).toPoint_3<Kernel>() ;
         ring->addPoint( new Point( a ) );
         ring->addPoint( new Point( b ) );
         ring->addPoint( new Point( b + v ) );

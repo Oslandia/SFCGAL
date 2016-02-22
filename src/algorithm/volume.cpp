@@ -41,9 +41,9 @@ const Kernel::FT volume( const Solid& solid, NoValidityCheck )
 
         for ( size_t j=0; j<numTriangles; j++ ) {
             const Triangle& tri = tin.triangleN( j );
-            vol = vol + CGAL::volume( origin, tri.vertex( 0 ).toPoint_3(),
-                                      tri.vertex( 1 ).toPoint_3(),
-                                      tri.vertex( 2 ).toPoint_3() );
+            vol = vol + CGAL::volume( origin, tri.vertex( 0 ).toPoint_3<Kernel>(),
+                                      tri.vertex( 1 ).toPoint_3<Kernel>(),
+                                      tri.vertex( 2 ).toPoint_3<Kernel>() );
         }
     }
 

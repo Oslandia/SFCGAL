@@ -150,7 +150,7 @@ double distancePointPoint3D( const Point& gA, const Point& gB )
 
     return CGAL::sqrt(
                CGAL::to_double(
-                   CGAL::squared_distance( gA.toPoint_3(), gB.toPoint_3() )
+                   CGAL::squared_distance( gA.toPoint_3<Kernel>(), gB.toPoint_3<Kernel>() )
                )
            );
 }
@@ -547,7 +547,7 @@ const Sphere boundingSphere( const Geometry& geom )
     int numPoint = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        c = c + ( *x )->toVector_3() ;
+        c = c + ( *x )->toVector_3<Kernel>() ;
         ++numPoint;
     }
 
@@ -559,11 +559,11 @@ const Sphere boundingSphere( const Geometry& geom )
     Kernel::FT maxDistanceSq = 0;
 
     for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+        const Vector_3 cx = ( *x )->toVector_3<Kernel>() - c ;
         const Kernel::FT dSq = cx * cx ;
 
         if ( dSq > maxDistanceSq ) {
-            f = ( *x )->toVector_3() ;
+            f = ( *x )->toVector_3<Kernel>() ;
             maxDistanceSq = dSq ;
         }
     }
@@ -664,10 +664,10 @@ double distancePointSegment3D( const Point& p, const Point& a, const Point& b )
     return CGAL::sqrt(
                CGAL::to_double(
                    CGAL::squared_distance(
-                       p.toPoint_3(),
+                       p.toPoint_3<Kernel>(),
                        Segment_3(
-                           a.toPoint_3(),
-                           b.toPoint_3()
+                           a.toPoint_3<Kernel>(),
+                           b.toPoint_3<Kernel>()
                        )
                    )
                )
@@ -719,8 +719,8 @@ double distancePointTriangle3D( const Point& p_, const Point& a_, const Point& b
     BOOST_ASSERT( ! b_.isEmpty() );
     BOOST_ASSERT( ! c_.isEmpty() );
 
-    Point_3 p = p_.toPoint_3();
-    Triangle_3 abc( a_.toPoint_3(), b_.toPoint_3(), c_.toPoint_3() ) ;
+    Point_3 p = p_.toPoint_3<Kernel>();
+    Triangle_3 abc( a_.toPoint_3<Kernel>(), b_.toPoint_3<Kernel>(), c_.toPoint_3<Kernel>() ) ;
 
     squared_distance_t dMin = squaredDistancePointTriangle3D( p, abc );
     return CGAL::sqrt( CGAL::to_double( dMin ) ) ;
@@ -741,8 +741,8 @@ double distanceSegmentSegment3D( const Point& a, const Point& b, const Point& c,
 
     return CGAL::sqrt( CGAL::to_double(
                            CGAL::squared_distance(
-                               CGAL::Segment_3< Kernel >( a.toPoint_3(), b.toPoint_3() ),
-                               CGAL::Segment_3< Kernel >( c.toPoint_3(), d.toPoint_3() )
+                               CGAL::Segment_3< Kernel >( a.toPoint_3<Kernel>(), b.toPoint_3<Kernel>() ),
+                               CGAL::Segment_3< Kernel >( c.toPoint_3<Kernel>(), d.toPoint_3<Kernel>() )
                            )
                        ) );
 }
@@ -796,13 +796,13 @@ double distanceSegmentTriangle3D( const Point& sA_, const Point& sB_,
     BOOST_ASSERT( ! tB_.isEmpty() );
     BOOST_ASSERT( ! tC_.isEmpty() );
 
-    Point_3 sA = sA_.toPoint_3();
-    Point_3 sB = sB_.toPoint_3();
+    Point_3 sA = sA_.toPoint_3<Kernel>();
+    Point_3 sB = sB_.toPoint_3<Kernel>();
     Segment_3 sAB( sA, sB );
 
-    Point_3 tA = tA_.toPoint_3();
-    Point_3 tB = tB_.toPoint_3();
-    Point_3 tC = tC_.toPoint_3();
+    Point_3 tA = tA_.toPoint_3<Kernel>();
+    Point_3 tB = tB_.toPoint_3<Kernel>();
+    Point_3 tC = tC_.toPoint_3<Kernel>();
     Triangle_3 tABC( tA, tB, tC );
 
     squared_distance_t dMin = squaredDistanceSegmentTriangle3D( sAB, tABC );

@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( testNormal3 )
     {
         CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), true );
         //std::cout << CGAL::exact(normal) << std::endl;
-        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3<Kernel>(), normal );
         //std::cout << CGAL::exact(plane) << std::endl;
         BOOST_CHECK( ! plane.is_degenerate() );
     }
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE( testNormal3 )
     {
         CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), false );
         //std::cout << CGAL::exact(normal) << std::endl;
-        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3<Kernel>(), normal );
         //std::cout << CGAL::exact(plane) << std::endl;
         BOOST_CHECK( ! plane.is_degenerate() );
     }

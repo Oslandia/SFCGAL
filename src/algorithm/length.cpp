@@ -37,8 +37,8 @@ double length( const LineString& g )
 
     for ( size_t i = 0; i < g.numSegments(); i++ ) {
         Kernel::Segment_2 segment(
-            g.pointN( i ).toPoint_2(),
-            g.pointN( i+1 ).toPoint_2()
+            g.pointN( i ).toPoint_2<Kernel>(),
+            g.pointN( i+1 ).toPoint_2<Kernel>()
         );
         result += CGAL::sqrt( CGAL::to_double( segment.squared_length() ) ) ;
     }
@@ -110,8 +110,8 @@ double length3D( const LineString& g )
 
     for ( size_t i = 0; i < g.numSegments(); i++ ) {
         Kernel::Segment_3 segment(
-            g.pointN( i ).toPoint_3(),
-            g.pointN( i+1 ).toPoint_3()
+            g.pointN( i ).toPoint_3<Kernel>(),
+            g.pointN( i+1 ).toPoint_3<Kernel>()
         );
         result += CGAL::sqrt( CGAL::to_double( segment.squared_length() ) ) ;
     }

@@ -71,9 +71,9 @@ namespace detail {
 void _decompose_triangle( const Triangle& tri, GeometrySet<2>::SurfaceCollection& surfaces, dim_t<2> )
 {
     CGAL::Polygon_2<Kernel> outer;
-    outer.push_back( tri.vertex( 0 ).toPoint_2() );
-    outer.push_back( tri.vertex( 1 ).toPoint_2() );
-    outer.push_back( tri.vertex( 2 ).toPoint_2() );
+    outer.push_back( tri.vertex( 0 ).toPoint_2<Kernel>() );
+    outer.push_back( tri.vertex( 1 ).toPoint_2<Kernel>() );
+    outer.push_back( tri.vertex( 2 ).toPoint_2<Kernel>() );
 
     if ( outer.orientation() == CGAL::CLOCKWISE ) {
         outer.reverse_orientation();
@@ -83,9 +83,9 @@ void _decompose_triangle( const Triangle& tri, GeometrySet<2>::SurfaceCollection
 }
 void _decompose_triangle( const Triangle& tri, GeometrySet<3>::SurfaceCollection& surfaces, dim_t<3> )
 {
-    CGAL::Triangle_3<Kernel> outtri( tri.vertex( 0 ).toPoint_3(),
-                                     tri.vertex( 1 ).toPoint_3(),
-                                     tri.vertex( 2 ).toPoint_3() );
+    CGAL::Triangle_3<Kernel> outtri( tri.vertex( 0 ).toPoint_3<Kernel>(),
+                                     tri.vertex( 1 ).toPoint_3<Kernel>(),
+                                     tri.vertex( 2 ).toPoint_3<Kernel>() );
     surfaces.push_back( outtri );
 }
 
@@ -102,9 +102,9 @@ void _decompose_polygon( const Polygon& poly, GeometrySet<3>::SurfaceCollection&
 
     for ( size_t i = 0; i < surf.numTriangles(); ++i ) {
         const Triangle& tri = surf.triangleN( i );
-        surfaces.push_back( CGAL::Triangle_3<Kernel>( tri.vertex( 0 ).toPoint_3(),
-                            tri.vertex( 1 ).toPoint_3(),
-                            tri.vertex( 2 ).toPoint_3() )
+        surfaces.push_back( CGAL::Triangle_3<Kernel>( tri.vertex( 0 ).toPoint_3<Kernel>(),
+                            tri.vertex( 1 ).toPoint_3<Kernel>(),
+                            tri.vertex( 2 ).toPoint_3<Kernel>() )
                           );
     }
 }
