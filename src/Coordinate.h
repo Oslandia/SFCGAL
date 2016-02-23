@@ -82,14 +82,17 @@ public:
 
     /**
      * @brief Get the dimension of the coordinates
+     * TODO externalize
      */
     int          coordinateDimension() const ;
     /**
      * @brief Tests if the coordinates are empty
+     * TODO externalize
      */
     bool         isEmpty() const ;
     /**
      * @brief Tests if Z is defined
+     * TODO externalize
      */
     bool         is3D() const ;
 
@@ -190,6 +193,7 @@ private:
 public:
     /**
      * Serialization
+     * TODO remove or visit coordinates
      */
     template <class Archive>
     void save( Archive& ar, const unsigned int /*version*/ ) const {
@@ -197,13 +201,13 @@ public:
         ar << dim;
 
         if ( _storage.which() > 0 ) {
-            const Kernel::FT& x_ = x();
-            const Kernel::FT& y_ = y();
+            Kernel::FT x_ = toPoint_2<Kernel>().x();
+            Kernel::FT y_ = toPoint_2<Kernel>().y();
             ar << x_;
             ar << y_;
 
             if ( _storage.which() == 2 ) {
-                const Kernel::FT& z_ = z();
+                Kernel::FT z_ = toPoint_3<Kernel>().z();
                 ar << z_;
             }
         }

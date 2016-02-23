@@ -91,19 +91,25 @@ void straightSkeletonToMultiLineString(
 
 /**
  * Return abc angle in radians
+ * TODO use CGAL::angle(a,b,c)
  */
 static double
-angle(const Point &a, const Point &b, const Point &c)
-{
-  Point ab( to_double(b.x() - a.x()), to_double(b.y() - a.y()) );
-  Point cb( to_double(b.x() - c.x()), to_double(b.y() - c.y()) );
+_angle(const Point &pa, const Point &pb, const Point &pc) {
+    Kernel::Point_2 a = pa.toPoint_2<Kernel>();
+    Kernel::Point_2 b = pb.toPoint_2<Kernel>();
+    Kernel::Point_2 c = pc.toPoint_2<Kernel>();
+    
+    //Point ab( to_double(b.x() - a.x()), to_double(b.y() - a.y()) );
+    Kernel::Vector_2 ab = b - a ;
+    //Point cb( to_double(b.x() - c.x()), to_double(b.y() - c.y()) );
+    Kernel::Vector_2 cb = b - c ;
+    
+    double dot = ( CGAL::to_double(ab.x() * cb.x() + ab.y() * cb.y()) ); /* dot product */
+    double cross = ( CGAL::to_double(ab.x() * cb.y() - ab.y() * cb.x()) ); /* cross product */
 
-  double dot = ( to_double(ab.x() * cb.x() + ab.y() * cb.y()) ); /* dot product */
-  double cross = ( to_double(ab.x() * cb.y() - ab.y() * cb.x()) ); /* cross product */
+    double alpha = std::atan2(cross, dot);
 
-  double alpha = std::atan2(cross, dot);
-
-  return alpha;
+    return alpha;
 }
 
 template<class K>
@@ -157,7 +163,7 @@ void straightSkeletonToMedialAxis(
             const Point& p2 = de1->vertex()->point();
             const Point& p3 = de1->opposite()->vertex()->point();
 
-            double ang = angle(p1, p2, p3);
+            double ang = _angle(p1, p2, p3);
 
             if ( ang > maxTouchingAngle ) continue ;
         }

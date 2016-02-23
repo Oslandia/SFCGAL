@@ -9,6 +9,8 @@ Testing
 .settings
 .cproject
 .project
+/nbproject/
+
 bin
 lib
 Debug

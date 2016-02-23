@@ -233,21 +233,27 @@ extern "C" sfcgal_geometry_t* sfcgal_point_create_from_xyz( double x, double y, 
 extern "C" double sfcgal_point_x( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->x() );
+        return CGAL::to_double( 
+            down_const_cast<SFCGAL::Point>( geom )->toPoint_2<SFCGAL::Kernel>().x() 
+        );
     )
 }
 
 extern "C" double sfcgal_point_y( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->y() );
+        return CGAL::to_double( 
+            down_const_cast<SFCGAL::Point>( geom )->toPoint_2<SFCGAL::Kernel>().y() 
+        );
     )
 }
 
 extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
-        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->z() );
+        return CGAL::to_double( 
+            down_const_cast<SFCGAL::Point>( geom )->toPoint_3<SFCGAL::Kernel>().z() 
+        );
     )
 }
 

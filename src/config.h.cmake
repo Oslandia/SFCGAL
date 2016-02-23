@@ -31,6 +31,11 @@
  */
 #cmakedefine SFCGAL_WITH_MPFR
 
+/**
+ * Indicates if deprecated features are disabled
+ * (mainly used for progressive x(), y(), z() accessors removal)
+ */
+#cmakedefine SFCGAL_WITH_DEPRECATED
 
 /**
  * indicates if OpenSceneGraph dependency is activated

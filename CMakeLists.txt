@@ -19,6 +19,9 @@ option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
 option( SFCGAL_BUILD_VIEWER "build viewer and OpenSceneGraph support (outputs in 3D formats)" OFF )
 
+# progressive refactoring
+option( SFCGAL_WITH_DEPRECATED "keep deprecated features" ON )
+
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 

@@ -137,8 +137,8 @@ bool isCounterClockWiseOriented( const LineString& ls )
     Kernel::FT z = 0 ;
 
     for ( size_t i = 0; i < ls.numSegments(); ++i ) {
-        const Point& pi = ls.pointN( i );
-        const Point& pj = ls.pointN( i+1 );
+        Kernel::Point_2 pi = ls.pointN( i ).toPoint_2<Kernel>();
+        Kernel::Point_2 pj = ls.pointN( i+1 ).toPoint_2<Kernel>();
         z += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
     }
 
@@ -151,9 +151,12 @@ bool isCounterClockWiseOriented( const LineString& ls )
 bool isCounterClockWiseOriented( const Triangle& tri )
 {
     // Compute the 'z' part of the cross product
-
-    return ( tri.vertex( 2 ).x() - tri.vertex( 1 ).x() ) * ( tri.vertex( 0 ).y() - tri.vertex( 1 ).y() ) -
-           ( tri.vertex( 2 ).y() - tri.vertex( 1 ).y() ) * ( tri.vertex( 0 ).x() - tri.vertex( 1 ).x() ) > 0;
+    Kernel::Point_2 v0 = tri.vertex( 0 ).toPoint_2<Kernel>() ;
+    Kernel::Point_2 v1 = tri.vertex( 1 ).toPoint_2<Kernel>() ;
+    Kernel::Point_2 v2 = tri.vertex( 2 ).toPoint_2<Kernel>() ;
+    
+    return ( v2.x() - v1.x() ) * ( v0.y() - v1.y() ) -
+           ( v2.y() - v1.y() ) * ( v0.x() - v1.x() ) > 0;
 }
 
 ///

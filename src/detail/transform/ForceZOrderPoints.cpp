@@ -42,7 +42,9 @@ ForceZOrderPoints::ForceZOrderPoints( const Kernel::FT& defaultZ ):
 void ForceZOrderPoints::transform( Point& p )
 {
     if ( ! p.is3D() ) {
-        p = Point( p.x(), p.y(), _defaultZ );
+        //TODO coordinate visitor
+        Kernel::Point_2 p2d = p.toPoint_2<Kernel>();
+        p = Point( p2d.x(), p2d.y(), _defaultZ );
     }
 }
 

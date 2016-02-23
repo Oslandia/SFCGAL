@@ -134,18 +134,20 @@ void WktWriter::writeCoordinateType( const Geometry& g )
 ///
 void WktWriter::writeCoordinate( const Point& g )
 {
+    // TODO coordinate visitor
+    Kernel::Point_3 p = g.toPoint_3<Kernel>();
     if ( _exactWrite ) {
-        _s << CGAL::exact( g.x() ) << " " << CGAL::exact( g.y() );
+        _s << CGAL::exact( p.x() ) << " " << CGAL::exact( p.y() );
 
         if ( g.is3D() ) {
-            _s << " " << CGAL::exact( g.z() );
+            _s << " " << CGAL::exact( p.z() );
         }
     }
     else {
-        _s << g.x() << " " << g.y() ;
+        _s << p.x() << " " << p.y() ;
 
         if ( g.is3D() ) {
-            _s << " " << g.z() ;
+            _s << " " << p.z() ;
         }
     }
 

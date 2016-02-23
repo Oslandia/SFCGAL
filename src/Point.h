@@ -97,7 +97,9 @@ public:
     //-- SFCGAL::Geometry
     virtual bool         isMeasured() const ;
     //--- accessors
-
+    
+// TODO SCGAL::get_x< K >(Coordinate|Point) for testing and low level purpose?
+#ifdef SFCGAL_WITH_DEPRECATED
     /**
      * Returns the x value as a double throw for empty Point
      */
@@ -116,6 +118,7 @@ public:
     inline Kernel::RT z() const {
         return _coordinate.z() ;
     }
+#endif //SFCGAL_WITH_DEPRECATED
 
     /**
      * Returns the m value (NaN is not defined)
