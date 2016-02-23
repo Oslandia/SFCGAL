@@ -53,8 +53,6 @@ class PolyhedralSurface ;
 class Solid ;
 //not SFA, appears in GML/CityGML
 class MultiSolid ;
-//not SFA, appears in GML/CityGML
-class Grid ;
 
 class Envelope ;
 
