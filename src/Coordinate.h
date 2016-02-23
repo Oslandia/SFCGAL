@@ -182,11 +182,10 @@ public:
     }
 
 private:
-    boost::variant< 
-        Empty,/* next step
+    boost::variant<
+        Empty,
         Epick::Point_2,
         Epick::Point_3,
-        */
         Epeck::Point_2,
         Epeck::Point_3
     > _storage;

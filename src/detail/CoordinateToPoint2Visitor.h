@@ -33,11 +33,27 @@ namespace detail {
         result_type operator()( const Empty& ) const {
             return result_type( CGAL::ORIGIN );
         }
-        result_type operator()( const Kernel::Point_2& storage ) const {
-            return storage;
+
+        result_type operator()( const Epick::Point_2& storage ) const {
+            CGAL::Cartesian_converter<Epick,K> converter ;
+            return converter( storage );
         }
-        result_type operator()( const Kernel::Point_3& storage ) const {
-            return result_type( storage.x(), storage.y() );
+        result_type operator()( const Epick::Point_3& storage ) const {
+            CGAL::Cartesian_converter<Epick,K> converter ;
+            return converter(
+                Epick::Point_2( storage.x(), storage.y() )
+            );
+        }
+
+        result_type operator()( const Epeck::Point_2& storage ) const {
+            CGAL::Cartesian_converter<Epeck,K> converter ;
+            return converter( storage ) ;
+        }
+        result_type operator()( const Epeck::Point_3& storage ) const {
+            CGAL::Cartesian_converter<Epeck,K> converter ;
+            return converter(
+                Epeck::Point_2( storage.x(), storage.y() )
+            );
         }
     };
 

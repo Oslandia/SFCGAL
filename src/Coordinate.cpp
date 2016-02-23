@@ -103,10 +103,16 @@ public:
     int operator()( const Empty& ) const {
         return 0;
     }
-    int operator()( const Kernel::Point_2& ) const {
+    int operator()( const Epeck::Point_2& ) const {
         return 2;
     }
-    int operator()( const Kernel::Point_3& ) const {
+    int operator()( const Epeck::Point_3& ) const {
+        return 3;
+    }
+    int operator()( const Epick::Point_2& ) const {
+        return 2;
+    }
+    int operator()( const Epick::Point_3& ) const {
         return 3;
     }
 };
@@ -130,24 +136,53 @@ bool Coordinate::isEmpty() const
     return _storage.which() == 0;
 }
 
+
+class CoordinateIs3dVisitor : public boost::static_visitor<bool> {
+public:
+    bool operator()( const Empty& /*storage */) const {
+        return false ;
+    }
+    bool operator()( const Epick::Point_2& /*storage */) const {
+        return false ;
+    }
+    bool operator()( const Epick::Point_3& /*storage */) const {
+        return true ;
+    }
+    bool operator()( const Epeck::Point_2& /*storage */) const {
+        return false ;
+    }
+    bool operator()( const Epeck::Point_3& /*storage */) const {
+        return true ;
+    }
+};
+
 ///
 ///
 ///
 bool Coordinate::is3D() const
 {
-    return _storage.which() == 2;
+    return boost::apply_visitor( CoordinateIs3dVisitor(), _storage) ;
 }
 
-class GetXVisitor : public boost::static_visitor<Kernel::FT> {
+// TODO remove (deprecated)
+class GetXVisitor : public boost::static_visitor<Epeck::FT> {
 public:
-    Kernel::FT operator()( const Empty& ) const {
-        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate x value" ) );
+    Epeck::FT operator()( const Empty& ) const {
+        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
         return 0;
     }
-    Kernel::FT operator()( const Kernel::Point_2& storage ) const {
+    Epeck::FT operator()( const Epick::Point_2& storage ) const {
+        CGAL::Cartesian_converter<Epick,Epeck> converter ;
+        return converter(storage).x();
+    }
+    Epeck::FT operator()( const Epick::Point_3& storage ) const {
+        CGAL::Cartesian_converter<Epick,Epeck> converter ;
+        return converter(storage).x();
+    }
+    Epeck::FT operator()( const Epeck::Point_2& storage ) const {
         return storage.x();
     }
-    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
         return storage.x();
     }
 };
@@ -155,22 +190,33 @@ public:
 ///
 ///
 ///
-Kernel::FT Coordinate::x() const
+Epeck::FT Coordinate::x() const
 {
     GetXVisitor visitor;
     return boost::apply_visitor( visitor, _storage );
 }
 
-class GetYVisitor : public boost::static_visitor<Kernel::FT> {
+// TODO remove (deprecated)
+class GetYVisitor : public boost::static_visitor<Epeck::FT> {
 public:
-    Kernel::FT operator()( const Empty& ) const {
+    Epeck::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate y value" ) );
         return 0;
     }
-    Kernel::FT operator()( const Kernel::Point_2& storage ) const {
+
+    Epeck::FT operator()( const Epick::Point_2& storage ) const {
+        CGAL::Cartesian_converter<Epick,Epeck> converter ;
+        return converter(storage).y();
+    }
+    Epeck::FT operator()( const Epick::Point_3& storage ) const {
+        CGAL::Cartesian_converter<Epick,Epeck> converter ;
+        return converter(storage).y();
+    }
+
+    Epeck::FT operator()( const Epeck::Point_2& storage ) const {
         return storage.y();
     }
-    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
         return storage.y();
     }
 };
@@ -178,22 +224,32 @@ public:
 ///
 ///
 ///
-Kernel::FT Coordinate::y() const
+Epeck::FT Coordinate::y() const
 {
     GetYVisitor visitor;
     return boost::apply_visitor( visitor, _storage );
 }
 
-class GetZVisitor : public boost::static_visitor<Kernel::FT> {
+// TODO remove (deprecated)
+class GetZVisitor : public boost::static_visitor<Epeck::FT> {
 public:
-    Kernel::FT operator()( const Empty& ) const {
+    Epeck::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
         return 0;
     }
-    Kernel::FT operator()( const Kernel::Point_2& ) const {
+
+    Epeck::FT operator()( const Epick::Point_2& ) const {
         return 0;
     }
-    Kernel::FT operator()( const Kernel::Point_3& storage ) const {
+    Epeck::FT operator()( const Epick::Point_3& storage ) const {
+        CGAL::Cartesian_converter<Epick,Epeck> converter ;
+        return converter(storage).z();
+    }
+
+    Epeck::FT operator()( const Epeck::Point_2& ) const {
+        return 0;
+    }
+    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
         return storage.z();
     }
 };
@@ -201,7 +257,7 @@ public:
 ///
 ///
 ///
-Kernel::FT Coordinate::z() const
+Epeck::FT Coordinate::z() const
 {
     GetZVisitor visitor;
     return boost::apply_visitor( visitor, _storage );
@@ -209,7 +265,10 @@ Kernel::FT Coordinate::z() const
 
 //----------------------
 
-
+/*
+ * TODO remove and replace by a rounding conversion to Epick
+ *  so that multi-kernel makes sens
+ */
 class RoundVisitor : public boost::static_visitor<> {
 public:
     RoundVisitor( const long& scaleFactor ):
@@ -220,31 +279,49 @@ public:
     void operator()( Empty& ) const {
 
     }
-    void operator()( Kernel::Point_2& storage ) const {
+
+    void operator()( Epeck::Point_2& storage ) const {
         storage = Kernel::Point_2(
-                      _roundFT( storage.x() ),
-                      _roundFT( storage.y() )
-                  );
+            _roundFT( storage.x() ),
+            _roundFT( storage.y() )
+        );
     }
-    void operator()( Kernel::Point_3& storage ) const {
+    void operator()( Epeck::Point_3& storage ) const {
         storage = Kernel::Point_3(
-                      _roundFT( storage.x() ),
-                      _roundFT( storage.y() ),
-                      _roundFT( storage.z() )
-                  );
+            _roundFT( storage.x() ),
+            _roundFT( storage.y() ),
+            _roundFT( storage.z() )
+        );
     }
 
 
+    void operator()( Epick::Point_2& storage ) const {
+        storage = Epick::Point_2(
+            _roundFT( storage.x() ),
+            _roundFT( storage.y() )
+        );
+    }
+    void operator()( Epick::Point_3& storage ) const {
+        storage = Epick::Point_3(
+            _roundFT( storage.x() ),
+            _roundFT( storage.y() ),
+            _roundFT( storage.z() )
+        );
+    }
 
 private:
     long _scaleFactor ;
 
+    Epick::FT _roundFT( const Epick::FT& v ) const {
+        return SFCGAL::round( v * _scaleFactor ) / _scaleFactor ;
+    }
 
-    Kernel::FT _roundFT( const Kernel::FT& v ) const {
+    // TODO replace return by Epick::FT
+    Epeck::FT _roundFT( const Epeck::FT& v ) const {
         return Kernel::FT( CGAL::Gmpq(
-                               SFCGAL::round( v.exact() * _scaleFactor ),
-                               _scaleFactor
-                           ) ) ;
+            SFCGAL::round( v.exact() * _scaleFactor ),
+            _scaleFactor
+        ) ) ;
     }
 
 };
