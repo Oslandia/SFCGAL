@@ -40,8 +40,8 @@ namespace SFCGAL {
 class Empty {};
 
 /**
- * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Kernel::Point_2,
- * or a Kernel::Point_3)
+ * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Epeck::Point_2,
+ * or a Epeck::Point_3)
  */
 class SFCGAL_API Coordinate {
 public:
@@ -50,22 +50,42 @@ public:
      */
     Coordinate() ;
     /**
-     * XY Constructor with exact coordinates
+     * XY Constructor with double coordinates
+     * @deprecated
      */
-    Coordinate( const Kernel::FT& x, const Kernel::FT& y ) ;
+    Coordinate( const double& x, const double& y ) ;
+    /**
+     * XYZ Constructor with double coordinates
+     * @deprecated
+     */
+    Coordinate( const double& x, const double& y, const double& z ) ;
+    /**
+     * XY Constructor with exact coordinates
+     * @deprecated
+     */
+    Coordinate( const Epeck::FT& x, const Epeck::FT& y ) ;
     /**
      * XYZ Constructor with exact coordinates
+     * @deprecated
      */
-    Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z ) ;
+    Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT& z ) ;
 
     /**
      * Constructor from CGAL::Point_2<K>
      */
-    Coordinate( const Kernel::Point_2& other ) ;
+    Coordinate( const Epick::Point_2& other ) ;
     /**
      * Constructor from CGAL::Point_3<K>
      */
-    Coordinate( const Kernel::Point_3& other ) ;
+    Coordinate( const Epick::Point_3& other ) ;
+    /**
+     * Constructor from CGAL::Point_2<K>
+     */
+    Coordinate( const Epeck::Point_2& other ) ;
+    /**
+     * Constructor from CGAL::Point_3<K>
+     */
+    Coordinate( const Epeck::Point_3& other ) ;
 
     /**
      * copy constructor
@@ -102,19 +122,19 @@ public:
      * @brief Gets the x value
      * @warning Exact, NaN for empty coordinates
      */
-    Kernel::FT x() const;
+    Epeck::FT x() const;
 
     /**
      * @brief Gets the y value
      * @warning Exact, NaN for empty coordinates
      */
-    Kernel::FT y() const;
+    Epeck::FT y() const;
 
     /**
      * @brief Gets the z value
      * @warning Exact, NaN for empty or 0 for 2D coordinates
      */
-    Kernel::FT z() const;
+    Epeck::FT z() const;
 
     //-- helper
 
@@ -148,7 +168,7 @@ public:
     bool operator != ( const Coordinate& other ) const ;
 
     /**
-     * @brief Converts to Kernel::Vector_2
+     * @brief Converts to K::Vector_2
      */
     template < typename K >
     inline typename K::Vector_2 toVector_2() const {
@@ -156,7 +176,7 @@ public:
     }
 
     /**
-     * @brief Converts to Kernel::Vector_3
+     * @brief Converts to K::Vector_3
      */
     template < typename K >
     inline typename K::Vector_3 toVector_3() const {
@@ -164,7 +184,7 @@ public:
     }
 
     /**
-     * @brief Converts to Kernel::Point_2
+     * @brief Converts to K::Point_2
      */
     template < typename K >
     typename K::Point_2 toPoint_2() const {
@@ -173,7 +193,7 @@ public:
     }
 
     /**
-     * @brief Converts to Kernel::Point_3
+     * @brief Converts to K::Point_3
      */
     template < typename K >
     typename K::Point_3 toPoint_3() const {
@@ -199,14 +219,14 @@ public:
         int dim = coordinateDimension();
         ar << dim;
 
-        if ( _storage.which() > 0 ) {
-            Kernel::FT x_ = toPoint_2<Kernel>().x();
-            Kernel::FT y_ = toPoint_2<Kernel>().y();
+        if ( ! isEmpty() ) {
+            Epeck::FT x_ = toPoint_2<Epeck>().x();
+            Epeck::FT y_ = toPoint_2<Epeck>().y();
             ar << x_;
             ar << y_;
 
-            if ( _storage.which() == 2 ) {
-                Kernel::FT z_ = toPoint_3<Kernel>().z();
+            if ( is3D() ) {
+                Epeck::FT z_ = toPoint_3<Epeck>().z();
                 ar << z_;
             }
         }
@@ -221,17 +241,17 @@ public:
             _storage = Empty();
         }
         else if ( dim == 2 ) {
-            Kernel::FT x_, y_;
+            Epeck::FT x_, y_;
             ar >> x_;
             ar >> y_;
-            _storage = Kernel::Point_2( x_, y_ );
+            _storage = Epeck::Point_2( x_, y_ );
         }
         else if ( dim == 3 ) {
-            Kernel::FT x_, y_, z_;
+            Epeck::FT x_, y_, z_;
             ar >> x_;
             ar >> y_;
             ar >> z_;
-            _storage = Kernel::Point_3( x_, y_, z_ );
+            _storage = Epeck::Point_3( x_, y_, z_ );
         }
     }
 

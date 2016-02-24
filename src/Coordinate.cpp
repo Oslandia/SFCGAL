@@ -37,8 +37,32 @@ Coordinate::Coordinate():
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y ):
-    _storage( Kernel::Point_2( x, y ) )
+Coordinate::Coordinate( const double& x, const double& y )
+{
+    if ( !std::isfinite( x ) || !std::isfinite( y ) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
+    }
+    // TODO Epick::Point_2 (could lead to behavior change)
+    _storage = Epeck::Point_2( x, y );
+}
+
+///
+///
+///
+Coordinate::Coordinate( const double& x, const double& y, const double& z )
+{
+    if ( !std::isfinite( x ) || !std::isfinite( y ) || !std::isfinite( z ) ) {
+        BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
+    }
+    // TODO Epick::Point_2 (could lead to behavior change)
+    _storage = Epeck::Point_3( x, y, z );
+}
+
+///
+///
+///
+Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y ):
+    _storage( Epeck::Point_2( x, y ) )
 {
 
 }
@@ -46,8 +70,8 @@ Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y ):
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z ):
-    _storage( Kernel::Point_3( x, y, z ) )
+Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT& z ):
+    _storage( Epeck::Point_3( x, y, z ) )
 {
 
 }
@@ -55,7 +79,7 @@ Coordinate::Coordinate( const Kernel::FT& x, const Kernel::FT& y, const Kernel::
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::Point_2& other ):
+Coordinate::Coordinate( const Epick::Point_2& other ):
     _storage( other )
 {
 
@@ -64,7 +88,25 @@ Coordinate::Coordinate( const Kernel::Point_2& other ):
 ///
 ///
 ///
-Coordinate::Coordinate( const Kernel::Point_3& other ):
+Coordinate::Coordinate( const Epick::Point_3& other ):
+    _storage( other )
+{
+
+}
+
+///
+///
+///
+Coordinate::Coordinate( const Epeck::Point_2& other ):
+    _storage( other )
+{
+
+}
+
+///
+///
+///
+Coordinate::Coordinate( const Epeck::Point_3& other ):
     _storage( other )
 {
 
@@ -281,13 +323,13 @@ public:
     }
 
     void operator()( Epeck::Point_2& storage ) const {
-        storage = Kernel::Point_2(
+        storage = Epeck::Point_2(
             _roundFT( storage.x() ),
             _roundFT( storage.y() )
         );
     }
     void operator()( Epeck::Point_3& storage ) const {
-        storage = Kernel::Point_3(
+        storage = Epeck::Point_3(
             _roundFT( storage.x() ),
             _roundFT( storage.y() ),
             _roundFT( storage.z() )
@@ -318,7 +360,7 @@ private:
 
     // TODO replace return by Epick::FT
     Epeck::FT _roundFT( const Epeck::FT& v ) const {
-        return Kernel::FT( CGAL::Gmpq(
+        return Epeck::FT( CGAL::Gmpq(
             SFCGAL::round( v.exact() * _scaleFactor ),
             _scaleFactor
         ) ) ;

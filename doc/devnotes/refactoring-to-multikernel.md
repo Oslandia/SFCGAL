@@ -36,6 +36,11 @@ After :
 boost::variant< Empty, Epick::Point_2, Epick::Point_3, Epeck::Point_2, Epeck::Point_3 >
 ```
 
+* [ ] Restore constructor from doubles (Epick::FT) and Epick::Point
+
+Note : Clarify the role of std::is_finite controls before removing them
+
+
 # Changes that could break behavior (i.e. regress-test)
 
 * [ ] SLoriot : As missing Z is considered as zero, always store Point_3 and tag "is3D"?
@@ -60,6 +65,10 @@ Lead to questionning on the best way to deal with exact computation in SFCGAL. S
 
 * [ ] Replace Coordinate class by a typedef on ```boost::variant< Empty, Epick::Point_2, Epick::Point_3, Epeck::Point_2, Epeck::Point_3 >``` in order to externalize visitors?
 
+
+# Changes that lead to massive changes
+
+* [ ] depreciate SFCGAL::Kernel in order to review/explicit Epick/Epeck usage everywhere
 
 
 # Perf checks
