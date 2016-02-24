@@ -37,6 +37,10 @@
 #include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/triangulate/triangulatePolygon.h>
 
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_vertex_base_with_info_2.h>
+#include <CGAL/Triangulation_face_base_with_info_2.h>
+
 #include "../test_config.h"
 #include "Bench.h"
 
@@ -52,26 +56,9 @@ using namespace SFCGAL::triangulate ;
 #define N_POINTS 100000
 
 typedef CGAL::Creator_uniform_2< double, Kernel::Point_2 > Creator ;
-
+typedef CGAL::Creator_uniform_2< double, Epick::Point_2 > EpickCreator ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_BenchTriangulation )
-
-BOOST_AUTO_TEST_CASE( testMultiPointTriangulation )
-{
-    CGAL::Random_points_in_disc_2< Kernel::Point_2, Creator > g( 150.0 );
-
-    MultiPoint multiPoint ;
-
-    for ( int i = 0; i < N_POINTS; i++ ) {
-        Kernel::Point_2 p = *( ++g ) ;
-        multiPoint.addGeometry( new Point( p ) ) ;
-    }
-
-    bench().start( boost::format( "triangulate2DZ %s points" ) % N_POINTS );
-    ConstraintDelaunayTriangulation cdt = triangulate2DZ( multiPoint ) ;
-    bench().stop();
-}
-
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 {

@@ -9,4 +9,4 @@ Epick::Point_2 epickPoint = converter(epeckPoint);
 
 # Approximate computation (interval) with Epeck
 
-TODO copy/paste SLoriot's example
+[cgal-approximate.md](cgal-approximate.md)
