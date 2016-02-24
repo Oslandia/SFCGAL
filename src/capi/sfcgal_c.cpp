@@ -137,7 +137,7 @@ extern "C" const char* sfcgal_version()
     return SFCGAL::Version();
 }
 
-extern "C" void sfcgal_set_geometry_validation( int enabled )
+extern "C" void sfcgal_set_geometry_validation( int /*enabled*/ )
 {
 }
 
