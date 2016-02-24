@@ -46,6 +46,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/format.hpp>
+#include <boost/foreach.hpp>
 
 #include <CGAL/point_generators_2.h>
 
@@ -57,6 +58,8 @@ using namespace SFCGAL::triangulate ;
 
 template < typename K >
 std::vector< CGAL::Point_2<K> > generatePoints(){
+    CGAL::default_random = CGAL::Random(0);
+    
     typedef CGAL::Creator_uniform_2< double, CGAL::Point_2<K> > Creator ;
     typedef CGAL::Point_2<K> Point_2 ;
     
@@ -95,6 +98,29 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeck )
     bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (reference)" ) % N_POINTS );
     CGAL::Constrained_Delaunay_triangulation_2< Epeck > triangulation ;
     triangulation.insert(points.begin(), points.end());
+    bench().stop();
+    
+    BOOST_CHECK_EQUAL( N_POINTS, triangulation.number_of_vertices() );
+    BOOST_CHECK( triangulation.number_of_faces() > 0 );
+}
+
+
+BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeckMisused )
+{
+    // prepare point set
+    std::vector< Epeck::Point_2 > points = generatePoints<Epeck>() ;
+    
+    // compute triangulation
+    bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (reference)" ) % N_POINTS );
+    CGAL::Constrained_Delaunay_triangulation_2< Epeck > triangulation ;
+    // BAD WAY!
+    BOOST_FOREACH(Epeck::Point_2 point, points){
+        triangulation.insert(point);
+    }
+    // GOOD WAY
+    //triangulation.insert(points.begin(), points.end());
+    
+    
     bench().stop();
     
     BOOST_CHECK_EQUAL( N_POINTS, triangulation.number_of_vertices() );
