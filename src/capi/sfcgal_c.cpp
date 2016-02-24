@@ -886,12 +886,10 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_force_rhr( const sfcgal_geometry_t
 extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* ga )
 {
     const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
-    SFCGAL::TriangulatedSurface* surf = new SFCGAL::TriangulatedSurface;
 
     try {
-        SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-        SFCGAL::triangulate::triangulate2DZ( *g, cdt );
-        cdt.getTriangles( *surf );
+        std::auto_ptr< SFCGAL::TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *g );
+        return static_cast<SFCGAL::Geometry*>( result.release() );
     }
     catch ( std::exception& e ) {
         SFCGAL_WARNING( "During triangulate_2d(A) :" );
@@ -899,8 +897,6 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geom
         SFCGAL_ERROR( "%s", e.what() );
         return 0;
     }
-
-    return static_cast<SFCGAL::Geometry*>( surf );
 }
 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_extrude( const sfcgal_geometry_t* ga, double x, double y, double z )

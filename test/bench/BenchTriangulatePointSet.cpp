@@ -140,11 +140,10 @@ BOOST_AUTO_TEST_CASE( testTriangulate2DZ )
     
     // compute triangulation
     bench().start( boost::format( "SFCGAL - triangulate2DZ %s points" ) % N_POINTS );
-    ConstraintDelaunayTriangulation triangulation = triangulate2DZ( multiPoint ) ;
+    std::auto_ptr< TriangulatedSurface > triangulation = triangulate2DZ( multiPoint ) ;
     bench().stop();
     
-    BOOST_CHECK_EQUAL( N_POINTS, triangulation.numVertices() );
-    BOOST_CHECK( triangulation.numTriangles() > 0 );
+    BOOST_CHECK( triangulation->numTriangles() > 0 );
 }
 
 

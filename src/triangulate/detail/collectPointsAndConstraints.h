@@ -18,24 +18,30 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
-#define _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
+#ifndef _SFCGAL_TRIANGULATE_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
+#define _SFCGAL_TRIANGULATE_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
 
-#include <SFCGAL/config.h>
+#include <vector>
 
+#include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 namespace SFCGAL {
 namespace triangulate {
-
-/**
- * @brief Constraint 2DZ Delaunay Triangulation (keep Z if defined, a projectionPlane may be provided)
- */
-SFCGAL_API std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g );
-
-}//algorithm
-}//SFCGAL
+namespace detail {
+    
+     /**
+      * Extract points and constraints from geometry
+      */
+     void collectPointsAndConstraints( 
+         const Geometry & g,
+         std::vector< Kernel::Point_2 > & points,
+         std::vector< std::pair< std::size_t, std::size_t > > & contraints
+     ) ;
+    
+} // triangulate
+} // triangulate
+} // SFCGAL
 
 #endif
 

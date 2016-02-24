@@ -431,10 +431,7 @@ int main( int argc, char* argv[] )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ; )
 
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(
-            triangulate::ConstraintDelaunayTriangulation cdt;
-            triangulate::triangulate2DZ( *geom1, cdt );
-            TriangulatedSurface surf;
-            cdt.getTriangles( surf );
+            triangulate::triangulate2DZ( *geom1 );
         )
 
         for ( geom2=testCollection.begin() ; geom2!=testCollection.end(); ++geom2 ) {

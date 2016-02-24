@@ -120,8 +120,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation2D )
     }
 
     bench().start( boost::format( "triangulate2D %s points" ) % N_POINTS );
-    SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-    SFCGAL::triangulate::triangulate2DZ( multiPoint, cdt ) ;
+    std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( multiPoint ) ;
     bench().stop();
 }
 
@@ -132,8 +131,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch2D )
 //	std::cout << fractal->asText(5) << std::endl ;
 
     bench().start( boost::format( "triangulate2D hoch(%s)" ) % N );
-    SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-    SFCGAL::triangulate::triangulate2DZ( *fractal, cdt ) ;
+    std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *fractal ) ;
     bench().stop();
 }
 
@@ -147,8 +145,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D )
     bench().start( boost::format( "triangulate2D disc x %s" ) % N ) ;
 
     for ( int i = 0; i < N; i++ ) {
-        SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-        SFCGAL::triangulate::triangulate2DZ( *disc, cdt ) ;
+        std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *disc ) ;
     }
 
     bench().stop() ;
@@ -164,8 +161,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D_roundingSixDecimal )
     bench().start( boost::format( "triangulate2D disc x %s (round 6 six decimals)" ) % N ) ;
 
     for ( int i = 0; i < N; i++ ) {
-        SFCGAL::triangulate::ConstraintDelaunayTriangulation cdt;
-        SFCGAL::triangulate::triangulate2DZ( *disc, cdt ) ;
+        std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *disc ) ;
     }
 
     bench().stop() ;

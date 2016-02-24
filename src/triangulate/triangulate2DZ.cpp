@@ -24,142 +24,56 @@
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/Triangle.h>
+#include <SFCGAL/TriangulatedSurface.h>
 
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/algorithm/isValid.h>
 
+#include <SFCGAL/triangulate/detail/collectPointsAndConstraints.h>
+
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+
 namespace SFCGAL {
 namespace triangulate {
 
-typedef ConstraintDelaunayTriangulation::Vertex_handle Vertex_handle ;
-
 ///
 ///
 ///
-void triangulate2DZ( const Point& g, ConstraintDelaunayTriangulation& triangulation )
+std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
 {
-    triangulation.addVertex( g.coordinate() );
-}
-///
-///
-///
-void triangulate2DZ( const LineString& g, ConstraintDelaunayTriangulation& triangulation )
-{
-    Vertex_handle last ;
+    // TODO
+    // typedef CGAL::Projection_traits_xy_3<Kernel>                Projection;
+    // typedef CGAL::Constrained_Delaunay_triangulation_2<Projection>  CDT;
 
-    for ( size_t i = 0; i < g.numPoints(); i++ ) {
-        Vertex_handle vertex = triangulation.addVertex( g.pointN( i ).coordinate() );
+    std::vector< Kernel::Point_2 > points ;
+    std::vector< std::pair< std::size_t, std::size_t > > constraints ;
+    detail::collectPointsAndConstraints(g,points,constraints);
 
-        if ( i != 0 ) {
-            triangulation.addConstraint( last, vertex ) ;
-        }
+    typedef CGAL::Constrained_Delaunay_triangulation_2< Epeck > CDT ;
+    typedef CDT::Finite_faces_iterator   Finite_faces_iterator ;
+    
+    CDT triangulation ;
+    triangulation.insert_constraints(
+        points.begin(), points.end(),
+        constraints.begin(), constraints.end()
+    );
+    
+    std::auto_ptr< TriangulatedSurface > triangulatedSurface(
+        new TriangulatedSurface()
+    );
+    triangulatedSurface->reserve( triangulation.number_of_faces() );
+    for ( Finite_faces_iterator it = triangulation.finite_faces_begin(); it != triangulation.finite_faces_end(); ++it ) {
+        Epeck::Point_2 a = it->vertex( 0 )->point() ;
+        Epeck::Point_2 b = it->vertex( 1 )->point() ;
+        Epeck::Point_2 c = it->vertex( 2 )->point() ;
 
-        last = vertex ;
+        triangulatedSurface->addTriangle( new Triangle( 
+            Point( a ), 
+            Point( b ), 
+            Point( c )
+        ) );
     }
-}
-///
-///
-///
-void triangulate2DZ( const Polygon& g, ConstraintDelaunayTriangulation& triangulation )
-{
-    for ( size_t i = 0; i < g.numRings(); i++ ) {
-        triangulate2DZ( g.ringN( i ), triangulation ) ;
-    }
-}
-///
-///
-///
-void triangulate2DZ( const Triangle& g, ConstraintDelaunayTriangulation& triangulation )
-{
-    Vertex_handle last ;
-
-    for ( size_t i = 0; i < 4; i++ ) {
-        Vertex_handle vertex = triangulation.addVertex( g.vertex( i ).coordinate() );
-
-        if ( i != 0 ) {
-            triangulation.addConstraint( last, vertex ) ;
-        }
-
-        last = vertex ;
-    }
-}
-///
-///
-///
-void triangulateCollection2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangulation )
-{
-    for ( size_t i = 0; i < g.numGeometries(); i++ ) {
-        triangulate2DZ( g.geometryN( i ), triangulation ) ;
-    }
-}
-
-
-
-///
-///
-///
-void triangulate2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangulation )
-{
-
-    if ( g.isEmpty() ) {
-        return;
-    }
-
-    if ( triangulation.hasProjectionPlane() ) {
-        SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE( g, triangulation.projectionPlane() );
-    }
-    else {
-        SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
-    }
-
-
-    switch ( g.geometryTypeId() ) {
-    case TYPE_POINT:
-        triangulate2DZ( g.as< Point >(), triangulation );
-        return ;
-
-    case TYPE_LINESTRING:
-        triangulate2DZ( g.as< LineString >(), triangulation );
-        return ;
-
-    case TYPE_POLYGON:
-        triangulate2DZ( g.as< Polygon >(), triangulation );
-        return ;
-
-    case TYPE_TRIANGLE:
-        triangulate2DZ( g.as< Triangle >(), triangulation );
-        return ;
-
-    case TYPE_MULTIPOINT:
-    case TYPE_MULTILINESTRING:
-    case TYPE_MULTIPOLYGON:
-    case TYPE_POLYHEDRALSURFACE:
-    case TYPE_TRIANGULATEDSURFACE:
-    case TYPE_GEOMETRYCOLLECTION:
-        triangulateCollection2DZ( g, triangulation );
-        return ;
-
-    case TYPE_SOLID:
-    case TYPE_MULTISOLID:
-        // note: we can't have à valid geom in 2D that comes from à solid
-        // since a solid closed and thus self-intersects once projected
-        BOOST_THROW_EXCEPTION(
-            InappropriateGeometryException(
-                ( boost::format( "can't process 2DZ triangulation for type '%1%'" ) % g.geometryType() ).str()
-            )
-        );
-    }
-}
-
-
-///
-///
-///
-ConstraintDelaunayTriangulation triangulate2DZ( const Geometry& g )
-{
-    ConstraintDelaunayTriangulation triangulation ;
-    triangulate2DZ( g,triangulation );
-    return triangulation ;
+    return triangulatedSurface ;
 }
 
 
