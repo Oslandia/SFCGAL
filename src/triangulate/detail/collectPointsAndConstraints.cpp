@@ -36,17 +36,17 @@ namespace detail {
 
 size_t appendPoint(
     const Point & g,
-    std::vector< Kernel::Point_2 > & points
+    std::vector< Kernel::Point_3 > & points
 ){
     size_t id = points.size() ;
-    points.push_back( g.toPoint_2<Kernel>() );
+    points.push_back( g.toPoint_3<Kernel>() );
     return id ;
 }
 
 
 void collectPointsAndConstraintsFromLineString(
     const LineString & g,
-    std::vector< Kernel::Point_2 > & points,
+    std::vector< Kernel::Point_3 > & points,
     std::vector< std::pair< std::size_t, std::size_t > > & constraints
 ){
     size_t last = 0 ;
@@ -66,7 +66,7 @@ void collectPointsAndConstraintsFromLineString(
 
 void collectPointsAndConstraintsFromTriangle( 
     const Triangle& g,
-    std::vector< Kernel::Point_2 > & points,
+    std::vector< Kernel::Point_3 > & points,
     std::vector< std::pair< std::size_t, std::size_t > > & constraints    
 )
 {
@@ -86,7 +86,7 @@ void collectPointsAndConstraintsFromTriangle(
 
 void collectPointsAndConstraintsFromPolygon(
     const Polygon & g,
-    std::vector< Kernel::Point_2 > & points,
+    std::vector< Kernel::Point_3 > & points,
     std::vector< std::pair< std::size_t, std::size_t > > & constraints
 ){
     for ( size_t i = 0; i < g.numRings(); i++ ) {
@@ -97,7 +97,7 @@ void collectPointsAndConstraintsFromPolygon(
 
 void collectPointsAndConstraintsFromCollection(
     const GeometryCollection & g,
-    std::vector< Kernel::Point_2 > & points,
+    std::vector< Kernel::Point_3 > & points,
     std::vector< std::pair< std::size_t, std::size_t > > & constraints
 ){
     for ( GeometryCollection::const_iterator it = g.begin(); it != g.end(); ++it ){
@@ -113,7 +113,7 @@ void collectPointsAndConstraintsFromCollection(
 ///
 void collectPointsAndConstraints( 
     const Geometry & g,
-    std::vector< Kernel::Point_2 > & points,
+    std::vector< Kernel::Point_3 > & points,
     std::vector< std::pair< std::size_t, std::size_t > > & constraints
 )
 {
