@@ -139,7 +139,6 @@ extern "C" const char* sfcgal_version()
 
 extern "C" void sfcgal_set_geometry_validation( int enabled )
 {
-    SFCGAL::algorithm::SKIP_GEOM_VALIDATION = !enabled;
 }
 
 extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry_t* geom )

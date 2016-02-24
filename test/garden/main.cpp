@@ -75,7 +75,6 @@ int main( int argc, char* argv[] )
     ( "help", "produce help message" )
     ( "progress", "display progress" )
     ( "verbose",  "verbose mode" )
-    ( "novalidate",  "remove validation of input geometries" )
     ( "vtk",  "output vtk geom on failure" )
     ;
 
@@ -91,9 +90,6 @@ int main( int argc, char* argv[] )
     bool verbose  = vm.count( "verbose" ) != 0 ;
     bool progress = vm.count( "progress" ) != 0 ;
     bool vtk = vm.count( "vtk" ) != 0 ;
-
-    SFCGAL::algorithm::SKIP_GEOM_VALIDATION = vm.count( "novalidate" ) != 0 ;
-
 
     //boost::timer timer ;
     boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();

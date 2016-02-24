@@ -45,17 +45,79 @@
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/detail/ForceValidityVisitor.h>
 #include <SFCGAL/Kernel.h>
+#include <SFCGAL/Exception.h>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/graph/undirected_dfs.hpp>
+#include <boost/format.hpp>
 
 using namespace SFCGAL::detail::algorithm;
 
 namespace SFCGAL {
-namespace algorithm {
 
-bool SKIP_GEOM_VALIDATION = false;
+void SFCGAL_ASSERT_GEOMETRY_VALIDITY_( const Geometry& g, const std::string& ctxt )
+{
+    if ( !(g).hasValidityFlag() )
+    {
+        const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );
+        if ( ! sfcgalAssertGeometryValidity ) {
+            throw GeometryInvalidityException(
+                                              ( boost::format(ctxt + "%s is invalid : %s : %s")
+                                                % (g).geometryType()
+                                                % sfcgalAssertGeometryValidity.reason()
+                                                % (g).asText()
+                                                ).str()
+                                              );
+        }
+    }
+}
+
+void SFCGAL_ASSERT_GEOMETRY_VALIDITY( const Geometry& g )
+{
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"");
+}
+
+void SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( const Geometry& g )
+{
+    if ( !(g).hasValidityFlag() )
+    {
+        using namespace SFCGAL;
+        if ( (g).is3D() ) {
+            std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
+            algorithm::force2D( *sfcgalAssertGeometryValidityClone );
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 2D - " );
+        }
+        else {
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+        }
+    }
+}
+
+void SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( const Geometry& g )
+{
+    if ( !(g).hasValidityFlag() )
+    {
+        using namespace SFCGAL;
+        if ( !(g).is3D() ) {
+            std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
+            algorithm::force3D( *sfcgalAssertGeometryValidityClone );
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 3D - " );
+        }
+        else {
+            SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+        }
+    }
+}
+
+void SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE( const Geometry& /*g*/ )
+{
+    throw NotImplementedException("validation on geometry projected on arbitrary plane is not implemented");
+}
+
+
+
+namespace algorithm {
 
 // to detect unconnected interior in polygon
 struct LoopDetector : public boost::dfs_visitor<> {
