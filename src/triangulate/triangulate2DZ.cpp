@@ -106,7 +106,7 @@ void triangulate2DZ( const Geometry& g, ConstraintDelaunayTriangulation& triangu
     }
 
     if ( triangulation.hasProjectionPlane() ) {
-        SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE( g, triangulation.projectionPlane() );
+        SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE( g );
     }
     else {
         SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );

@@ -148,7 +148,7 @@ Geometry&   Geometry::geometryN( size_t const& n )
 ///
 ///
 ///
-Geometry::Geometry()
+Geometry::Geometry() : validityFlag_( false )
 {
 
 }
@@ -156,9 +156,19 @@ Geometry::Geometry()
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& )
+Geometry::Geometry( Geometry const& other ) : validityFlag_( other.validityFlag_ )
 {
 
+}
+
+bool Geometry::hasValidityFlag() const
+{
+        return validityFlag_;
+}
+
+void Geometry::forceValidityFlag( bool valid )
+{
+        validityFlag_ = valid;
 }
 
 ///

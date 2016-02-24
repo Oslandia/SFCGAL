@@ -27,9 +27,17 @@
 #include <SFCGAL/algorithm/force3D.h>
 
 namespace SFCGAL {
-namespace algorithm {
 
-extern bool SKIP_GEOM_VALIDATION;
+/**
+ * Functions used to assert for geometry validity
+ * @note exception message is apparently limited in length, thus print the reason for invalidity before its text representation (that can be very long)
+ */
+void SFCGAL_API SFCGAL_ASSERT_GEOMETRY_VALIDITY( const Geometry& g );
+void SFCGAL_API SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( const Geometry& g );
+void SFCGAL_API SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( const Geometry& g );
+void SFCGAL_API SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE( const Geometry& g );
+
+namespace algorithm {
 
 /**
  * @brief Check validity of a geometry
@@ -38,63 +46,10 @@ extern bool SKIP_GEOM_VALIDATION;
 SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs= 1e-9 );
 
 /**
- * Macro used to by-pass validity check
- * @note do not convert to function since BOOST_THROW_EXCEPTION locates the throwing point (function and line)
- * @note exception message is apparently limited in length, thus print the reason for invalidity before its text representation (that can be very long)
+ * Sets the geometry flag on a geometry and propagate to every internal geometries
+ * @ingroup public_api
  */
-#ifndef SFCGAL_NEVER_CHECK_VALIDITY
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g, ctxt)  \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
-    {\
-        using namespace SFCGAL;\
-        const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );\
-        if ( ! sfcgalAssertGeometryValidity ) {\
-            BOOST_THROW_EXCEPTION(GeometryInvalidityException(\
-                ( boost::format(ctxt "%s is invalid : %s : %s")\
-                  % (g).geometryType()\
-                  % sfcgalAssertGeometryValidity.reason()\
-                  % (g).asText()\
-                ).str()\
-            ));\
-        }\
-    }
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g) \
-        SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"")
-
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
-    {\
-        using namespace SFCGAL;\
-        if ( (g).is3D() ) {\
-            std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );\
-            algorithm::force2D( *sfcgalAssertGeometryValidityClone );\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 2D - " ); \
-        }\
-        else {\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );\
-        }\
-    }
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g) \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
-    {\
-        using namespace SFCGAL;\
-        if ( !(g).is3D() ) {\
-            std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );\
-            algorithm::force3D( *sfcgalAssertGeometryValidityClone );\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 3D - " ); \
-        }\
-        else {\
-            SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );\
-        }\
-    }
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE(g, plane) \
-   BOOST_THROW_EXCEPTION( NotImplementedException("validation on geometry projected on arbitrary plane is not implemented") );
-#else
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY(g)
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g)
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g)
-#  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_ON_PLANE(g, plane)
-#endif
+SFCGAL_API void propagateValidityFlag( Geometry& g, bool valid );
 
 /**
  * Tag used for variants of algorithm that do not do validity check

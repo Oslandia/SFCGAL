@@ -139,7 +139,6 @@ extern "C" const char* sfcgal_version()
 
 extern "C" void sfcgal_set_geometry_validation( int enabled )
 {
-    SFCGAL::algorithm::SKIP_GEOM_VALIDATION = !enabled;
 }
 
 extern "C" sfcgal_geometry_type_t sfcgal_geometry_type_id( const sfcgal_geometry_t* geom )
@@ -982,5 +981,11 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_offset_polygon( const sfcgal_geome
     }
 
     return mp.release();
+}
+
+extern "C" void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid )
+{
+    SFCGAL::Geometry* g1 = reinterpret_cast<SFCGAL::Geometry*>( geom );
+    SFCGAL::algorithm::propagateValidityFlag( *g1, valid != 0 );
 }
 

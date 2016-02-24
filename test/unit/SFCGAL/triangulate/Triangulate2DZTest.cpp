@@ -86,11 +86,7 @@ BOOST_AUTO_TEST_CASE( testSolid )
                                                       ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
                                                       ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1))))" ) );
 
-#ifndef SFCGAL_NEVER_CHECK_VALIDITY
     BOOST_CHECK_THROW( triangulate2DZ( *g ), GeometryInvalidityException );
-#else
-    BOOST_CHECK_THROW( triangulate2DZ( *g ), InappropriateGeometryException );
-#endif
 }
 
 
