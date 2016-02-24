@@ -38,13 +38,19 @@ extern bool SKIP_GEOM_VALIDATION;
 SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs= 1e-9 );
 
 /**
+ * Sets the geometry flag on a geometry and propagate to every internal geometries
+ * @ingroup public_api
+ */
+SFCGAL_API void propagateValidityFlag( Geometry& g, bool valid );
+
+/**
  * Macro used to by-pass validity check
  * @note do not convert to function since BOOST_THROW_EXCEPTION locates the throwing point (function and line)
  * @note exception message is apparently limited in length, thus print the reason for invalidity before its text representation (that can be very long)
  */
 #ifndef SFCGAL_NEVER_CHECK_VALIDITY
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g, ctxt)  \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
+    if (!(SFCGAL::algorithm::SKIP_GEOM_VALIDATION || (g).hasValidityFlag()) ) \
     {\
         using namespace SFCGAL;\
         const Validity sfcgalAssertGeometryValidity = algorithm::isValid( g );\
@@ -62,7 +68,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         SFCGAL_ASSERT_GEOMETRY_VALIDITY_(g,"")
 
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D(g) \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
+    if (!(SFCGAL::algorithm::SKIP_GEOM_VALIDATION || (g).hasValidityFlag())) \
     {\
         using namespace SFCGAL;\
         if ( (g).is3D() ) {\
@@ -75,7 +81,7 @@ SFCGAL_API const Validity isValid( const Geometry& g, const double& toleranceAbs
         }\
     }
 #  define SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D(g) \
-    if (!SFCGAL::algorithm::SKIP_GEOM_VALIDATION)\
+    if (!(SFCGAL::algorithm::SKIP_GEOM_VALIDATION || (g).hasValidityFlag())) \
     {\
         using namespace SFCGAL;\
         if ( !(g).is3D() ) {\

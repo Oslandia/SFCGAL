@@ -164,6 +164,19 @@ public:
 
     //virtual bool         isSimple() const = 0 ;
 
+    
+    /**
+     * Force the state of the validity flag. The validity flag allows to bypass validity checks
+     * If the flag is true, it means the geometry is considered valid
+     * If the flag is false, it means the validity state of the geometry is unknown
+     * The flag is only changed for this geometry and not the internal geometries.
+     * @see propagateValidityFlag
+     */
+    void forceValidityFlag( bool validity );
+
+    /** Returns the validity flag */
+    bool hasValidityFlag() const;
+
     /**
      * [OGC/SFA]returns the WKT string
      * @param numDecimals extension specify fix precision output
@@ -272,6 +285,8 @@ protected:
     Geometry();
     Geometry( const Geometry& );
     const Geometry& operator=( const Geometry& );
+
+    bool validityFlag_;
 };
 
 /**

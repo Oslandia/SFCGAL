@@ -43,12 +43,12 @@
 #include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
+#include <SFCGAL/detail/ForceValidityVisitor.h>
 #include <SFCGAL/Kernel.h>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/graph/undirected_dfs.hpp>
-
 
 using namespace SFCGAL::detail::algorithm;
 
@@ -494,6 +494,12 @@ const Validity isValid( const Geometry& g, const double& toleranceAbs )
                                ( boost::format( "isValid( %s ) is not defined" ) % g.geometryType() ).str()
                            ) );
     return Validity::invalid( ( boost::format( "isValid( %s ) is not defined" ) % g.geometryType() ).str() ); // to avoid warning
+}
+
+void propagateValidityFlag( Geometry& g, bool valid )
+{
+    detail::ForceValidityVisitor v( valid );
+    g.accept( v );
 }
 
 } // namespace algorithm
