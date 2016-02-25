@@ -98,6 +98,16 @@ SFCGAL_API sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geome
 SFCGAL_API int                       sfcgal_geometry_is_valid( const sfcgal_geometry_t* );
 
 /**
+ * Tests if the given geometry is valid or not
+ * And return details in case of invalidity
+ * @param geom the input geometry
+ * @param invalidity_reason input/output parameter. If non null, a null-terminated string could be allocated and contain reason of the invalidity
+ * @param invalidity_location input/output parameter. If non null, a geometry could be allocated and contain the location of the invalidity
+ * @ingroup capi
+ */
+SFCGAL_API int                       sfcgal_geometry_is_valid_detail( const sfcgal_geometry_t* geom, char** invalidity_reason, sfcgal_geometry_t** invalidity_location );
+
+/**
  * Tests if the given geometry is 3D or not
  * @ingroup capi
  */

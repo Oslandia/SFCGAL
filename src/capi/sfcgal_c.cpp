@@ -160,6 +160,36 @@ extern "C" int sfcgal_geometry_is_valid( const sfcgal_geometry_t* geom )
     )
 }
 
+extern "C" int sfcgal_geometry_is_valid_detail( const sfcgal_geometry_t* geom, char** invalidity_reason, sfcgal_geometry_t** invalidity_location )
+{
+    // invalidity location is not supported for now
+    if ( invalidity_location )
+        *invalidity_location = 0;
+    // set to null for now
+    if ( invalidity_reason )
+        *invalidity_reason = 0;
+
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    if ( g->hasValidityFlag() )
+        return true;
+    bool is_valid = false;
+    try
+    {
+        SFCGAL::Validity validity = SFCGAL::algorithm::isValid( *g );
+        is_valid = validity;
+        if ( !is_valid && invalidity_reason ) {
+            *invalidity_reason = strdup( validity.reason().c_str() );
+        }
+    }
+    catch ( SFCGAL::Exception& e )
+    {
+        if ( invalidity_reason ) {
+            *invalidity_reason = strdup( e.what() );
+        }
+    }
+    return is_valid;
+}
+
 extern "C" int sfcgal_geometry_is_3d( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
