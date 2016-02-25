@@ -17,7 +17,6 @@ endif()
 option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
 option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
-option( SFCGAL_BUILD_VIEWER "build viewer and OpenSceneGraph support (outputs in 3D formats)" OFF )
 
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
@@ -68,7 +67,7 @@ if ( SFCGAL_BUILD_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework program_options ${SFCGAL_Boost_COMPONENTS} )
 endif()
 #-- program_options
-if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG OR SFCGAL_BUILD_VIEWER )
+if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG )
 	set( SFCGAL_Boost_COMPONENTS program_options chrono filesystem timer ${SFCGAL_Boost_COMPONENTS} )
 endif()
 find_package( Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED )
@@ -136,18 +135,6 @@ link_directories(
 	${MPFR_LIBRARY_DIRS}	
 	${GMP_LIBRARY_DIRS}	
 )
-
-#-- optional OpenSceneGraph support
-if ( SFCGAL_BUILD_VIEWER )
-	find_package( OpenSceneGraph COMPONENTS osgDB osgUtil REQUIRED )
-	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} ) 
-	
-	# config.h generation
-	set( SFCGAL_WITH_OSG "ON" )
-	add_subdirectory( viewer )
-endif()
-
-
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------
 option( SFCGAL_WARNING_AS_ERROR "fail the build on warnings" OFF )
