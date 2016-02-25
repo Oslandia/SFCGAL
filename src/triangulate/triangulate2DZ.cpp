@@ -67,6 +67,7 @@ std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
             points.begin(), points.end()
         );
     }else{
+        SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
         cdt.insert_constraints(
             points.begin(), points.end(),
             constraints.begin(), constraints.end()
