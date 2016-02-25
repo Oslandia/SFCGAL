@@ -124,13 +124,13 @@ public:
      * Returns the m value (NaN is not defined)
      */
     inline double    m() const {
-        return _m ;
+        return _coordinate.m() ;
     }
     /**
      * Sets the m value
      */
     inline void      setM( const double& m ) {
-        _m = m ;
+        _coordinate.setM(m);
     }
 
 
@@ -212,10 +212,6 @@ public:
     }
 private:
     Coordinate _coordinate ;
-    /**
-     * @brief m coordinates (NaN if not defined)
-     */
-    double _m ;
 };
 
 

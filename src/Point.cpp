@@ -32,8 +32,7 @@ namespace SFCGAL {
 ///
 Point::Point():
     Geometry(),
-    _coordinate(),
-    _m( NaN() )
+    _coordinate()
 {
 }
 
@@ -41,8 +40,7 @@ Point::Point():
 ///
 ///
 Point::Point( const Coordinate& coordinate ):
-    _coordinate( coordinate ),
-    _m( NaN() )
+    _coordinate( coordinate )
 {
 
 }
@@ -51,8 +49,7 @@ Point::Point( const Coordinate& coordinate ):
 ///
 ///
 Point::Point( const Kernel::FT& x, const Kernel::FT& y ):
-    _coordinate( x,y ),
-    _m( NaN() )
+    _coordinate( x,y )
 {
 
 }
@@ -61,18 +58,16 @@ Point::Point( const Kernel::FT& x, const Kernel::FT& y ):
 ///
 ///
 Point::Point( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z, const double& m ):
-    _coordinate( x,y,z ),
-    _m( m )
+    _coordinate( x,y,z)
 {
-
+    _coordinate.setM(m);
 }
 
 ///
 ///
 ///
 Point::Point( const Kernel::Point_2& other ):
-    _coordinate( other ),
-    _m( NaN() )
+    _coordinate( other )
 {
 
 }
@@ -81,8 +76,7 @@ Point::Point( const Kernel::Point_2& other ):
 ///
 ///
 Point::Point( const Kernel::Point_3& other ):
-    _coordinate( other ),
-    _m( NaN() )
+    _coordinate( other )
 {
 
 }
@@ -92,9 +86,8 @@ Point::Point( const Kernel::Point_3& other ):
 ///
 ///
 Point::Point( const Point& other ):
-    Geometry(),
-    _coordinate( other._coordinate ),
-    _m( other._m )
+    Geometry(other),
+    _coordinate( other._coordinate )
 {
 
 }
@@ -104,8 +97,8 @@ Point::Point( const Point& other ):
 ///
 Point& Point::operator = ( const Point& other )
 {
+    _metadata = other._metadata ;
     _coordinate = other._coordinate ;
-    _m          = other._m ;
     return *this ;
 }
 
@@ -180,7 +173,7 @@ bool Point::is3D() const
 ///
 bool  Point::isMeasured() const
 {
-    return ! isNaN( _m ) ;
+    return _coordinate.isMeasured() ;
 }
 
 ///

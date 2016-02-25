@@ -30,7 +30,8 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-    _storage( Empty() )
+    _storage( Empty() ),
+    _m(SFCGAL::NaN())
 {
 }
 
@@ -44,6 +45,7 @@ Coordinate::Coordinate( const double& x, const double& y )
     }
     // TODO Epick::Point_2 (could lead to behavior change)
     _storage = Epeck::Point_2( x, y );
+    _m = SFCGAL::NaN();
 }
 
 ///
@@ -56,13 +58,15 @@ Coordinate::Coordinate( const double& x, const double& y, const double& z )
     }
     // TODO Epick::Point_2 (could lead to behavior change)
     _storage = Epeck::Point_3( x, y, z );
+    _m = SFCGAL::NaN();
 }
 
 ///
 ///
 ///
 Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y ):
-    _storage( Epeck::Point_2( x, y ) )
+    _storage( Epeck::Point_2( x, y ) ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -71,7 +75,8 @@ Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y ):
 ///
 ///
 Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT& z ):
-    _storage( Epeck::Point_3( x, y, z ) )
+    _storage( Epeck::Point_3( x, y, z ) ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -80,7 +85,8 @@ Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT&
 ///
 ///
 Coordinate::Coordinate( const Epick::Point_2& other ):
-    _storage( other )
+    _storage( other ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -89,7 +95,8 @@ Coordinate::Coordinate( const Epick::Point_2& other ):
 ///
 ///
 Coordinate::Coordinate( const Epick::Point_3& other ):
-    _storage( other )
+    _storage( other ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -98,7 +105,8 @@ Coordinate::Coordinate( const Epick::Point_3& other ):
 ///
 ///
 Coordinate::Coordinate( const Epeck::Point_2& other ):
-    _storage( other )
+    _storage( other ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -107,7 +115,8 @@ Coordinate::Coordinate( const Epeck::Point_2& other ):
 ///
 ///
 Coordinate::Coordinate( const Epeck::Point_3& other ):
-    _storage( other )
+    _storage( other ),
+    _m(SFCGAL::NaN())
 {
 
 }
@@ -117,7 +126,8 @@ Coordinate::Coordinate( const Epeck::Point_3& other ):
 ///
 ///
 Coordinate::Coordinate( const Coordinate& other ):
-    _storage( other._storage )
+    _storage( other._storage ),
+    _m(other._m)
 {
 
 }
@@ -128,6 +138,7 @@ Coordinate::Coordinate( const Coordinate& other ):
 Coordinate& Coordinate::operator = ( const Coordinate& other )
 {
     _storage = other._storage;
+    _m = other._m ;
     return *this ;
 }
 

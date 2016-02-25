@@ -290,10 +290,6 @@ protected:
     Geometry( const Geometry& );
     const Geometry& operator=( const Geometry& );
 
-private:
-    /*
-     * Metadata on the geometry
-     */
     detail::GeometryMetadata _metadata ;
 };
 

@@ -6,27 +6,10 @@ namespace detail {
 ///
 ///
 ///
-GeometryMetadata::GeometryMetadata( bool is3d, bool validityFlag):
-    _is3d(is3d),
+GeometryMetadata::GeometryMetadata(bool validityFlag):
     _validityFlag(validityFlag)
 {
     
-}
-
-///
-///
-///
-bool GeometryMetadata::is3D() const 
-{
-    return _is3d ;
-}
-
-///
-///
-///
-void GeometryMetadata::set3D( bool is3d ) 
-{
-    _is3d = is3d ;
 }
 
 ///

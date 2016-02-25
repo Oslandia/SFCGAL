@@ -135,6 +135,27 @@ public:
      * @warning Exact, NaN for empty or 0 for 2D coordinates
      */
     Epeck::FT z() const;
+    
+    
+    /**
+     * Indicates if M is defined (not NaN)
+     */
+    inline double isMeasured() const {
+        return ! SFCGAL::isNaN(_m);
+    }
+    
+    /**
+     * Returns the m value (NaN is not defined)
+     */
+    inline double    m() const {
+        return _m ;
+    }
+    /**
+     * Sets the m value
+     */
+    inline void      setM( const double& m ) {
+        _m = m ;
+    }
 
     //-- helper
 
@@ -209,6 +230,8 @@ private:
         Epeck::Point_2,
         Epeck::Point_3
     > _storage;
+    
+    double _m ;
 public:
     template<class Archive>
     void serialize( Archive& ar, const unsigned int /*version*/ ) {

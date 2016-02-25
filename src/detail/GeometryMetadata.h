@@ -9,16 +9,7 @@ namespace detail {
      */
     class GeometryMetadata {
     public:
-        GeometryMetadata( bool is3d = false, bool validityFlag = false);
-        
-        /**
-         * Indicite if geometry is 3D
-         */
-        bool is3D() const ;
-        /**
-         * set 3d flag
-         */
-        void set3D( bool is3d ) ;
+        GeometryMetadata( bool validityFlag = false);
         
         /**
          * Force the state of the validity flag. The validity flag allows to bypass validity checks
@@ -32,8 +23,6 @@ namespace detail {
         bool validityFlag() const;
         
     private:
-        // TODO optimize storage?
-        bool _is3d ;
         bool _validityFlag ;
     } ;
     
