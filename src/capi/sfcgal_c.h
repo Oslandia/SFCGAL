@@ -81,6 +81,7 @@ typedef enum {
 /**
  * Set the geometry validation mode
  * @ingroup capi
+ * @note obsolete
  */
 SFCGAL_API void                      sfcgal_set_geometry_validation( int enabled );
 
@@ -462,6 +463,12 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry
  */
 SFCGAL_API void                      sfcgal_solid_add_shell( sfcgal_geometry_t* solid, sfcgal_geometry_t* shell );
 
+
+/**
+ * Sets the validity flag of the geometry.
+ * FIXME We better have geometry constructors to directly build valid geometries
+ */
+void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid );
 
 /*--------------------------------------------------------------------------------------*
  *

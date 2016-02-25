@@ -954,7 +954,7 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
     std::auto_ptr<Geometry>  result( union_( ga, gb, NoValidityCheck() ) );
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( *result );
+    propagateValidityFlag( *result, true );
     return result;
 }
 
@@ -979,8 +979,8 @@ std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
-    std::auto_ptr<Geometry>  result( union3D( ga, gb, NoValidityCheck() ) );
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( *result );
+    std::auto_ptr<Geometry> result( union3D( ga, gb, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
     return result;
 }
 

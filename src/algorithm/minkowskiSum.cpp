@@ -283,7 +283,9 @@ std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gA );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gB );
 
-    return minkowskiSum( gA, gB, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( minkowskiSum( gA, gB, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 
 } // namespace algorithm

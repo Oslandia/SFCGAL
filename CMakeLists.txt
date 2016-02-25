@@ -214,12 +214,6 @@ enable_testing()
 #note : not available on windows without export/import
 OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
 
-# option : do we check geometry validity before each processing ?
-option( SFCGAL_CHECK_VALIDITY "Always checks geometry validity" ON )
-if ( NOT SFCGAL_CHECK_VALIDITY )
-  add_definitions( "-DSFCGAL_NEVER_CHECK_VALIDITY" )
-endif()
-
 #-- build the library
 add_subdirectory( src )
 
