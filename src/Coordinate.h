@@ -73,19 +73,22 @@ public:
     /**
      * Constructor from CGAL::Point_2<K>
      */
-    Coordinate( const Epick::Point_2& other ) ;
+    template < typename K >
+    Coordinate( const CGAL::Point_2<K>& point ) {
+        CGAL::Cartesian_converter<K,Epeck> converter;
+        _storage = converter(point);
+        _m = SFCGAL::NaN();
+    }
+
     /**
      * Constructor from CGAL::Point_3<K>
      */
-    Coordinate( const Epick::Point_3& other ) ;
-    /**
-     * Constructor from CGAL::Point_2<K>
-     */
-    Coordinate( const Epeck::Point_2& other ) ;
-    /**
-     * Constructor from CGAL::Point_3<K>
-     */
-    Coordinate( const Epeck::Point_3& other ) ;
+    template < typename K >
+    Coordinate( const CGAL::Point_3<K>& point ) {
+        CGAL::Cartesian_converter<K,Epeck> converter;
+        _storage = converter(point);
+        _m = SFCGAL::NaN();
+    }
 
     /**
      * copy constructor
@@ -225,8 +228,6 @@ public:
 private:
     boost::variant<
         Empty,
-        Epick::Point_2,
-        Epick::Point_3,
         Epeck::Point_2,
         Epeck::Point_3
     > _storage;

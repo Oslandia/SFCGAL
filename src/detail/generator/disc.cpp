@@ -50,13 +50,16 @@ std::auto_ptr< Polygon > disc(
     double dTheta = M_PI_4 / nQuadrantSegments ;
 
     for ( size_t i = 0; i < nQuadrantSegments * 4; i++ ) {
-        Kernel::Vector_2 p = center.toVector_2<Kernel>() + radius * Kernel::Vector_2( cos( i*dTheta ), sin( i*dTheta ) ) ;
-        exteriorRing->addPoint( new Point( p.x(), p.y() ) ) ;
+        double x = CGAL::to_double( center.x() ) + radius * cos(i*dTheta);
+        double y = CGAL::to_double( center.y() ) + radius * sin(i*dTheta);
+        exteriorRing->addPoint( new Point( x, y ) ) ;
     }
 
     exteriorRing->addPoint( exteriorRing->startPoint() ) ;
 
-    return std::auto_ptr< Polygon >( new Polygon( exteriorRing.release() ) );
+    std::auto_ptr< Polygon > result( new Polygon( exteriorRing.release() ) );
+    result->forceValidityFlag(true);
+    return result ;
 }
 
 } // namespace generator

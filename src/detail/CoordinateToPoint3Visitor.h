@@ -25,36 +25,29 @@ namespace SFCGAL {
     class Coordinate ;
 namespace detail {
 
-    template < typename K >
-    class CoordinateToPoint3Visitor : public boost::static_visitor<typename K::Point_3> {
+    template < typename K2 >
+    class CoordinateToPoint3Visitor : public boost::static_visitor<typename K2::Point_3> {
     public:
-        typedef typename K::Point_3 result_type ;
+        typedef typename K2::Point_3 result_type ;
 
         result_type operator()( const Empty& ) const {
             return result_type( CGAL::ORIGIN );
         }
 
-        result_type operator()( const Epick::Point_2& storage ) const {
-            CGAL::Cartesian_converter<Epick,K> converter ;
+        template < typename K1 >
+        result_type operator()( const CGAL::Point_2<K1> & storage ) const {
+            CGAL::Cartesian_converter<K1,K2> converter ;
             return converter(
-                Epick::Point_3( storage.x(), storage.y(), 0.0 )
+                CGAL::Point_3<K1>( storage.x(), storage.y(), 0.0 )
             );
         }
-        result_type operator()( const Epick::Point_3& storage ) const {
-            CGAL::Cartesian_converter<Epick,K> converter ;
+        
+        template < typename K1 >
+        result_type operator()( const CGAL::Point_3<K1> & storage ) const {
+            CGAL::Cartesian_converter<K1,K2> converter ;
             return converter(storage) ;
         }
 
-        result_type operator()( const Epeck::Point_2& storage ) const {
-            CGAL::Cartesian_converter<Epeck,K> converter ;
-            return converter(
-                Epeck::Point_3( storage.x(), storage.y(), 0.0 )
-            );
-        }
-        result_type operator()( const Epeck::Point_3& storage ) const {
-            CGAL::Cartesian_converter<Epeck,K> converter ;
-            return converter(storage) ;
-        }
     };
 
 }//detail

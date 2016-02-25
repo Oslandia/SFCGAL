@@ -81,46 +81,6 @@ Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT&
 
 }
 
-///
-///
-///
-Coordinate::Coordinate( const Epick::Point_2& other ):
-    _storage( other ),
-    _m(SFCGAL::NaN())
-{
-
-}
-
-///
-///
-///
-Coordinate::Coordinate( const Epick::Point_3& other ):
-    _storage( other ),
-    _m(SFCGAL::NaN())
-{
-
-}
-
-///
-///
-///
-Coordinate::Coordinate( const Epeck::Point_2& other ):
-    _storage( other ),
-    _m(SFCGAL::NaN())
-{
-
-}
-
-///
-///
-///
-Coordinate::Coordinate( const Epeck::Point_3& other ):
-    _storage( other ),
-    _m(SFCGAL::NaN())
-{
-
-}
-
 
 ///
 ///
@@ -156,16 +116,12 @@ public:
     int operator()( const Empty& ) const {
         return 0;
     }
-    int operator()( const Epeck::Point_2& ) const {
+    template < typename K >
+    int operator()( const CGAL::Point_2<K>& ) const {
         return 2;
     }
-    int operator()( const Epeck::Point_3& ) const {
-        return 3;
-    }
-    int operator()( const Epick::Point_2& ) const {
-        return 2;
-    }
-    int operator()( const Epick::Point_3& ) const {
+    template < typename K >
+    int operator()( const CGAL::Point_3<K>& ) const {
         return 3;
     }
 };
@@ -195,16 +151,12 @@ public:
     bool operator()( const Empty& /*storage */) const {
         return false ;
     }
-    bool operator()( const Epick::Point_2& /*storage */) const {
+    template < typename K >
+    bool operator()( const CGAL::Point_2<K>& /*storage */) const {
         return false ;
     }
-    bool operator()( const Epick::Point_3& /*storage */) const {
-        return true ;
-    }
-    bool operator()( const Epeck::Point_2& /*storage */) const {
-        return false ;
-    }
-    bool operator()( const Epeck::Point_3& /*storage */) const {
+    template < typename K >
+    bool operator()( const CGAL::Point_3<K>& /*storage */) const {
         return true ;
     }
 };
@@ -223,14 +175,6 @@ public:
     Epeck::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
         return 0;
-    }
-    Epeck::FT operator()( const Epick::Point_2& storage ) const {
-        CGAL::Cartesian_converter<Epick,Epeck> converter ;
-        return converter(storage).x();
-    }
-    Epeck::FT operator()( const Epick::Point_3& storage ) const {
-        CGAL::Cartesian_converter<Epick,Epeck> converter ;
-        return converter(storage).x();
     }
     Epeck::FT operator()( const Epeck::Point_2& storage ) const {
         return storage.x();
@@ -256,16 +200,6 @@ public:
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate y value" ) );
         return 0;
     }
-
-    Epeck::FT operator()( const Epick::Point_2& storage ) const {
-        CGAL::Cartesian_converter<Epick,Epeck> converter ;
-        return converter(storage).y();
-    }
-    Epeck::FT operator()( const Epick::Point_3& storage ) const {
-        CGAL::Cartesian_converter<Epick,Epeck> converter ;
-        return converter(storage).y();
-    }
-
     Epeck::FT operator()( const Epeck::Point_2& storage ) const {
         return storage.y();
     }
@@ -289,14 +223,6 @@ public:
     Epeck::FT operator()( const Empty& ) const {
         BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
         return 0;
-    }
-
-    Epeck::FT operator()( const Epick::Point_2& ) const {
-        return 0;
-    }
-    Epeck::FT operator()( const Epick::Point_3& storage ) const {
-        CGAL::Cartesian_converter<Epick,Epeck> converter ;
-        return converter(storage).z();
     }
 
     Epeck::FT operator()( const Epeck::Point_2& ) const {
@@ -347,29 +273,10 @@ public:
         );
     }
 
-
-    void operator()( Epick::Point_2& storage ) const {
-        storage = Epick::Point_2(
-            _roundFT( storage.x() ),
-            _roundFT( storage.y() )
-        );
-    }
-    void operator()( Epick::Point_3& storage ) const {
-        storage = Epick::Point_3(
-            _roundFT( storage.x() ),
-            _roundFT( storage.y() ),
-            _roundFT( storage.z() )
-        );
-    }
-
 private:
     long _scaleFactor ;
 
-    Epick::FT _roundFT( const Epick::FT& v ) const {
-        return SFCGAL::round( v * _scaleFactor ) / _scaleFactor ;
-    }
-
-    // TODO replace return by Epick::FT
+    // round to a fraction
     Epeck::FT _roundFT( const Epeck::FT& v ) const {
         return Epeck::FT( CGAL::Gmpq(
             SFCGAL::round( v.exact() * _scaleFactor ),
