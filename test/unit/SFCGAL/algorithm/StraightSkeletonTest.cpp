@@ -147,5 +147,13 @@ BOOST_AUTO_TEST_CASE( testMultiPolygonWithTouchingHoles )
     BOOST_CHECK_THROW( algorithm::straightSkeleton( *g ), NotImplementedException );
 }
 
+BOOST_AUTO_TEST_CASE( testDistanceInM )
+{
+    std::auto_ptr< Geometry > g( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
+    std::auto_ptr<Geometry> out( algorithm::straightSkeleton( *g, /* autoOrientation */ true, /* innerOnly */ false, /* outputDistanceInM */ true ) );
+    std::string expectedWKT( "MULTILINESTRING M((-0.0 -0.0 0.0,0.5 0.5 0.5),(1.0 -0.0 0.0,0.5 0.5 0.5),(1.0 1.0 0.0,0.5 0.5 0.5),(-0.0 1.0 0.0,0.5 0.5 0.5))" );
+    BOOST_CHECK_EQUAL( out->asText( 1 ), expectedWKT );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

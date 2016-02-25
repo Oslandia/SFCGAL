@@ -800,6 +800,14 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfc
 SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* geom );
 
 /**
+ * Returns the straight skeleton of the given Geometry with the distance to the border as M coordinate
+ * @pre isValid(geom) == true
+ * @post isValid(return) == true
+ * @ingroup capi
+ */
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom );
+
+/**
  * Returns the approximate medial axis for the given Polygon
  * Approximate medial axis is based on straight skeleton
  * @pre isValid(geom) == true

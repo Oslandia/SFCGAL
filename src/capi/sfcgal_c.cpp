@@ -1019,3 +1019,20 @@ extern "C" void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid 
     SFCGAL::algorithm::propagateValidityFlag( *g1, valid != 0 );
 }
 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom )
+{
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    std::auto_ptr<SFCGAL::MultiLineString> mls;
+
+    try {
+        mls = SFCGAL::algorithm::straightSkeleton( *g1, /*autoOrientation*/ true, /*innerOnly*/ false, /*outputDistanceInM*/ true );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During straight_skeleton_distance_in_m(A):" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( geom ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return mls.release();
+}
