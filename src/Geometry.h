@@ -31,6 +31,8 @@
 
 #include <boost/assert.hpp>
 
+#include <SFCGAL/detail/GeometryMetadata.h>
+
 namespace CGAL {
 class Object;
 }
@@ -280,11 +282,19 @@ public:
     void serialize( Archive& /*ar*/, const unsigned int /*version*/ ) {
     }
 protected:
-    Geometry();
+    /*
+     * TODO remove default value to force children to provide this informations
+     *    according constructor invoked
+     */
+    Geometry( const detail::GeometryMetadata & metadata = detail::GeometryMetadata() );
     Geometry( const Geometry& );
     const Geometry& operator=( const Geometry& );
 
-    bool validityFlag_;
+private:
+    /*
+     * Metadata on the geometry
+     */
+    detail::GeometryMetadata _metadata ;
 };
 
 /**

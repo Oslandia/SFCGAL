@@ -148,7 +148,8 @@ Geometry&   Geometry::geometryN( size_t const& n )
 ///
 ///
 ///
-Geometry::Geometry() : validityFlag_( false )
+Geometry::Geometry(const detail::GeometryMetadata & metadata) : 
+    _metadata( metadata )
 {
 
 }
@@ -156,19 +157,26 @@ Geometry::Geometry() : validityFlag_( false )
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& other ) : validityFlag_( other.validityFlag_ )
+Geometry::Geometry( Geometry const& other ) : 
+    _metadata( other._metadata )
 {
 
 }
 
+///
+///
+///
 bool Geometry::hasValidityFlag() const
 {
-        return validityFlag_;
+    return _metadata.validityFlag() ;
 }
 
+///
+///
+///
 void Geometry::forceValidityFlag( bool valid )
 {
-        validityFlag_ = valid;
+    _metadata.setValidityFlag(valid);
 }
 
 ///
