@@ -110,33 +110,6 @@ Coordinate::~Coordinate()
 
 }
 
-
-class CoordinateDimensionVisitor : public boost::static_visitor<int> {
-public:
-    int operator()( const Empty& ) const {
-        return 0;
-    }
-    template < typename K >
-    int operator()( const CGAL::Point_2<K>& ) const {
-        return 2;
-    }
-    template < typename K >
-    int operator()( const CGAL::Point_3<K>& ) const {
-        return 3;
-    }
-};
-
-
-///
-///
-///
-int Coordinate::coordinateDimension() const
-{
-    CoordinateDimensionVisitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
-
-
 ///
 ///
 ///

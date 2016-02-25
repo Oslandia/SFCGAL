@@ -22,7 +22,7 @@
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/union.h>
 #include <SFCGAL/algorithm/isValid.h>
-#include <SFCGAL/triangulate/triangulate2DZ.h>
+#include <SFCGAL/detail/triangulate/ConstraintDelaunayTriangulation.h>
 
 #include <cstdio>
 #include <algorithm>

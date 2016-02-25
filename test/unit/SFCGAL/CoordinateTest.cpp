@@ -99,24 +99,6 @@ BOOST_AUTO_TEST_CASE( testCopyConstructorXY )
     BOOST_CHECK_EQUAL( copy.y(), 4 );
 }
 
-/// Coordinate& operator = ( const Coordinate & other ) ;
-/// ~Coordinate() ;
-/// int          coordinateDimension() const ;
-BOOST_AUTO_TEST_CASE( testCoordinateDimensionEmpty )
-{
-    Coordinate g ;
-    BOOST_CHECK_EQUAL( g.coordinateDimension(), 0 );
-}
-BOOST_AUTO_TEST_CASE( testCoordinateDimensionXY )
-{
-    Coordinate g( 3,4 ) ;
-    BOOST_CHECK_EQUAL( g.coordinateDimension(), 2 );
-}
-BOOST_AUTO_TEST_CASE( testCoordinateDimensionXYZ )
-{
-    Coordinate g( 3,4,5 ) ;
-    BOOST_CHECK_EQUAL( g.coordinateDimension(), 3 );
-}
 
 /// bool         isEmpty() const ;
 /// bool         is3D() const ;

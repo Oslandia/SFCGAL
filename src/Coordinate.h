@@ -104,11 +104,6 @@ public:
     ~Coordinate() ;
 
     /**
-     * @brief Get the dimension of the coordinates
-     * TODO externalize
-     */
-    int          coordinateDimension() const ;
-    /**
      * @brief Tests if the coordinates are empty
      * TODO externalize
      */

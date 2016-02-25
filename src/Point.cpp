@@ -148,7 +148,10 @@ int Point::dimension() const
 ///
 int Point::coordinateDimension() const
 {
-    return _coordinate.coordinateDimension() + ( isMeasured() ? 1 : 0 ) ;
+    if ( _coordinate.isEmpty() ){
+        return 0 ;
+    }
+    return 2 + ( is3D() ? 1 : 0 ) + ( isMeasured() ? 1 : 0 ) ;
 }
 
 
