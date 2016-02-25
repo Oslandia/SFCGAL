@@ -26,10 +26,6 @@
 #include <string>
 #include <boost/format.hpp>
 
-#include <boost/iostreams/concepts.hpp>
-#include <boost/iostreams/stream.hpp>
-
-
 /**
  *
  * Helper method to log debug message

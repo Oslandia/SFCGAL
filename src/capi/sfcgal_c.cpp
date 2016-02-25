@@ -160,6 +160,36 @@ extern "C" int sfcgal_geometry_is_valid( const sfcgal_geometry_t* geom )
     )
 }
 
+extern "C" int sfcgal_geometry_is_valid_detail( const sfcgal_geometry_t* geom, char** invalidity_reason, sfcgal_geometry_t** invalidity_location )
+{
+    // invalidity location is not supported for now
+    if ( invalidity_location )
+        *invalidity_location = 0;
+    // set to null for now
+    if ( invalidity_reason )
+        *invalidity_reason = 0;
+
+    const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    if ( g->hasValidityFlag() )
+        return true;
+    bool is_valid = false;
+    try
+    {
+        SFCGAL::Validity validity = SFCGAL::algorithm::isValid( *g );
+        is_valid = validity;
+        if ( !is_valid && invalidity_reason ) {
+            *invalidity_reason = strdup( validity.reason().c_str() );
+        }
+    }
+    catch ( SFCGAL::Exception& e )
+    {
+        if ( invalidity_reason ) {
+            *invalidity_reason = strdup( e.what() );
+        }
+    }
+    return is_valid;
+}
+
 extern "C" int sfcgal_geometry_is_3d( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
@@ -991,3 +1021,20 @@ extern "C" void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid 
     SFCGAL::algorithm::propagateValidityFlag( *g1, valid != 0 );
 }
 
+extern "C" sfcgal_geometry_t* sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom )
+{
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    std::auto_ptr<SFCGAL::MultiLineString> mls;
+
+    try {
+        mls = SFCGAL::algorithm::straightSkeleton( *g1, /*autoOrientation*/ true, /*innerOnly*/ false, /*outputDistanceInM*/ true );
+    }
+    catch ( std::exception& e ) {
+        SFCGAL_WARNING( "During straight_skeleton_distance_in_m(A):" );
+        SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( geom ) )->asText().c_str() );
+        SFCGAL_ERROR( "%s", e.what() );
+        return 0;
+    }
+
+    return mls.release();
+}

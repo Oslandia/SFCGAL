@@ -86,9 +86,7 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
 
-    std::auto_ptr<Geometry> result( tesselate( g, NoValidityCheck() ) );
-    propagateValidityFlag( *result, true );
-    return result;
+    return tesselate( g, NoValidityCheck() );
 }
 
 } // namespace algorithm

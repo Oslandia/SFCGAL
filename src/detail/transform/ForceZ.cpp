@@ -40,9 +40,10 @@ ForceZ::ForceZ( const Kernel::FT& defaultZ ):
 void ForceZ::transform( Point& p )
 {
     if ( ! p.isEmpty() && ! p.is3D() ) {
-        //TODO coordinate visitor
-        Kernel::Point_2 p2d = p.toPoint_2<Kernel>();
-        p = Point( p2d.x(), p2d.y(), _defaultZ );
+        Point pt( p.x(), p.y(), _defaultZ );
+        if ( p.isMeasured() )
+            pt.setM( p.m() );
+        p = pt;
     }
 }
 

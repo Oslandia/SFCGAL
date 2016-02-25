@@ -47,7 +47,7 @@ typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 
 namespace { // anonymous
 
-template<class K>
+template<class K, bool outputDistanceInM>
 void straightSkeletonToMultiLineString(
     const CGAL::Straight_skeleton_2<K>& ss,
     MultiLineString& result,
@@ -80,12 +80,19 @@ void straightSkeletonToMultiLineString(
             continue ;
         }
 
-        std::auto_ptr<LineString> ls ( new LineString(
-                                Point( it->opposite()->vertex()->point() ),
-                                Point( it->vertex()->point() ) )
-                         );
+        LineString* ls = 0;
+        if ( outputDistanceInM ) {
+            Point pa( it->opposite()->vertex()->point() );
+            Point pb( it->vertex()->point() );
+            pa.setM( CGAL::to_double(it->opposite()->vertex()->time()) );
+            pb.setM( CGAL::to_double(it->vertex()->time()) );
+            ls = new LineString( pa, pb );
+        }
+        else {
+            ls = new LineString( it->opposite()->vertex()->point(), it->vertex()->point() );
+        }
         algorithm::translate( *ls, translate );
-        result.addGeometry( ls.release() );
+        result.addGeometry( ls );
     }
 }
 
@@ -264,35 +271,35 @@ extractPolygons( const Geometry& g, std::vector< Polygon >& vect )
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly, bool outputDistanceInM )
 {
     switch ( g.geometryTypeId() ) {
     case TYPE_TRIANGLE:
-        return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation, innerOnly ) ;
+        return straightSkeleton( g.as< Triangle >().toPolygon(), autoOrientation, innerOnly, outputDistanceInM ) ;
 
     case TYPE_POLYGON:
-        return straightSkeleton( g.as< Polygon >(), autoOrientation, innerOnly ) ;
+        return straightSkeleton( g.as< Polygon >(), autoOrientation, innerOnly, outputDistanceInM ) ;
 
     case TYPE_MULTIPOLYGON:
-        return straightSkeleton( g.as< MultiPolygon >(), autoOrientation, innerOnly ) ;
+        return straightSkeleton( g.as< MultiPolygon >(), autoOrientation, innerOnly, outputDistanceInM ) ;
 
     default:
         return std::auto_ptr< MultiLineString >( new MultiLineString );
     }
 }
 
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, bool innerOnly )
+std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, bool innerOnly, bool outputDistanceInM )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    std::auto_ptr<MultiLineString> result( straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly ) );
+    std::auto_ptr<MultiLineString> result( straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly, outputDistanceInM ) );
     propagateValidityFlag( *result, true );
     return result;
 }
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/, bool innerOnly )
+std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
 {
     std::auto_ptr< MultiLineString > result( new MultiLineString );
 
@@ -309,7 +316,10 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
         BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
     }
 
-    straightSkeletonToMultiLineString( *skeleton, *result, innerOnly, trans ) ;
+    if ( outputDistanceInM )
+        straightSkeletonToMultiLineString<Kernel, true> ( *skeleton, *result, innerOnly, trans ) ;
+    else
+        straightSkeletonToMultiLineString<Kernel, false> ( *skeleton, *result, innerOnly, trans ) ;
     return result ;
 }
 
@@ -317,7 +327,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/, bool innerOnly )
+std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
 {
     std::auto_ptr< MultiLineString > result( new MultiLineString );
 
@@ -330,7 +340,10 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
             BOOST_THROW_EXCEPTION( Exception( "CGAL failed to create straightSkeleton" ) ) ;
         }
 
-        straightSkeletonToMultiLineString( *skeleton, *result, innerOnly, trans ) ;
+        if ( outputDistanceInM )
+            straightSkeletonToMultiLineString<Kernel, true>( *skeleton, *result, innerOnly, trans ) ;
+        else
+            straightSkeletonToMultiLineString<Kernel, false>( *skeleton, *result, innerOnly, trans ) ;
     }
 
     return result ;

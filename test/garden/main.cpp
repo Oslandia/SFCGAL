@@ -424,6 +424,7 @@ int main( int argc, char* argv[] )
         }
 
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1 ) ; )
+        CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::straightSkeleton( *geom1, /*autoOrientation*/ false, /*innerOnly*/ true, /*outputDistanceInM*/ true ) ; )
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED( ( void )algorithm::tesselate( *geom1 ) ; )
 
         CATCH_INVALID_GEOM_AND_NOT_IMPLEMENTED(

@@ -353,9 +353,7 @@ std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r )
 {
     SFCGAL_OFFSET_ASSERT_FINITE_RADIUS( r );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-    std::auto_ptr<MultiPolygon> result( offset( g, r, NoValidityCheck() ) );
-    propagateValidityFlag( *result, true );
-    return result;
+    return offset( g, r, NoValidityCheck() );
 }
 
 }//namespace algorithm
