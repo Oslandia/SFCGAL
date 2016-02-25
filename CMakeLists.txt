@@ -75,6 +75,10 @@ if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 58))
 	message( STATUS "Defining BOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT" )
 	add_definitions( "-DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT" )
 endif()
+# patch boost 1.60.0      
+if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND (${Boost_SUBMINOR_VERSION} EQUAL 0))
+  include_directories( patches/boost-1.60.0 )
+endif()
 
 #-- GMP (facultative)  -------------------------------------
 find_package( GMP )
