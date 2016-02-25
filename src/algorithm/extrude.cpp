@@ -363,7 +363,9 @@ std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT 
 std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-    return extrude( g, dx, dy, dz, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( extrude( g, dx, dy, dz, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 
 SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz )

@@ -405,7 +405,9 @@ std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
-    return difference( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( difference( ga, gb, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 
 std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
@@ -424,7 +426,9 @@ std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
 
-    return difference3D( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( difference3D( ga, gb, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 }
 }

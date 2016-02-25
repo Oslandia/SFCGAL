@@ -165,7 +165,9 @@ std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
 
-    return intersection( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( intersection( ga, gb, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 
 std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
@@ -184,7 +186,9 @@ std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
 
-    return intersection3D( ga, gb, NoValidityCheck() );
+    std::auto_ptr<Geometry> result( intersection3D( ga, gb, NoValidityCheck() ) );
+    propagateValidityFlag( *result, true );
+    return result;
 }
 }
 }
