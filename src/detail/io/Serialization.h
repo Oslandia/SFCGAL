@@ -159,7 +159,72 @@ void serialize( Archive& ar, SFCGAL::Kernel::FT& q, const unsigned int version )
     split_free( ar, q, version );
 }
 
+
+
+// -- K::Point_2
+
+template<class Archive,typename K>
+void save(Archive & ar, const CGAL::Point_2<K> & c, unsigned int /*version*/)
+{
+    typename K::FT x_ = c.x(), y_ = c.y();
+    ar << x_ ;
+    ar << y_ ;
 }
+
+template<class Archive,typename K>
+void load(Archive & ar, CGAL::Point_2<K> & c, unsigned int /*version*/)
+{
+    typename K::FT x_, y_;
+    ar >> x_ ;
+    ar >> y_ ;
+    c = CGAL::Point_2<K>( x_, y_ );
 }
+
+template<class Archive,typename K>
+void serialize(Archive & ar, CGAL::Point_2<K> & c, const unsigned int version)
+{
+    split_free(ar, c, version); 
+}
+
+
+// -- K::Point_3
+
+template<class Archive,typename K>
+void save(Archive & ar, const CGAL::Point_3<K> & c, unsigned int /*version*/)
+{
+    typename K::FT x_ = c.x(), y_ = c.y(), z_ = c.z();;
+    ar << x_ ;
+    ar << y_ ;
+    ar << z_ ;
+}
+
+template<class Archive,typename K>
+void load(Archive & ar, CGAL::Point_3<K> & c, unsigned int /*version*/)
+{
+    typename K::FT x_, y_, z_;
+    ar >> x_ ;
+    ar >> y_ ;
+    ar >> z_ ;
+    c = CGAL::Point_3<K>( x_, y_, z_ );
+}
+
+template<class Archive,typename K>
+void serialize(Archive & ar, CGAL::Point_3<K> & c, const unsigned int version)
+{
+    split_free(ar, c, version); 
+}
+
+// -- Empty
+
+template<class Archive>
+void serialize( Archive& /*ar*/, SFCGAL::Empty& /*c*/, const unsigned int /*version*/ )
+{
+    // nothing to serialize
+}
+
+
+} // namespace serialization
+} // namespace boost
+
 
 #endif

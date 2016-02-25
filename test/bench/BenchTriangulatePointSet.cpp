@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeckMisused )
     std::vector< Epeck::Point_2 > points = generatePoints<Epeck>() ;
     
     // compute triangulation
-    bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (reference)" ) % N_POINTS );
+    bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (bad way, point by point)" ) % N_POINTS );
     CGAL::Constrained_Delaunay_triangulation_2< Epeck > triangulation ;
     // BAD WAY!
     BOOST_FOREACH(Epeck::Point_2 point, points){

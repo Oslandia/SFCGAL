@@ -26,7 +26,7 @@
 #include <boost/assert.hpp>
 #include <boost/array.hpp>
 #include <boost/variant.hpp>
-#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/variant.hpp>
 
 #include <SFCGAL/numeric.h>
 #include <SFCGAL/Kernel.h>
@@ -210,54 +210,9 @@ private:
         Epeck::Point_3
     > _storage;
 public:
-    /**
-     * Serialization
-     * TODO remove or visit coordinates
-     */
-    template <class Archive>
-    void save( Archive& ar, const unsigned int /*version*/ ) const {
-        int dim = coordinateDimension();
-        ar << dim;
-
-        if ( ! isEmpty() ) {
-            Epeck::FT x_ = toPoint_2<Epeck>().x();
-            Epeck::FT y_ = toPoint_2<Epeck>().y();
-            ar << x_;
-            ar << y_;
-
-            if ( is3D() ) {
-                Epeck::FT z_ = toPoint_3<Epeck>().z();
-                ar << z_;
-            }
-        }
-    }
-
-    template <class Archive>
-    void load( Archive& ar, const unsigned int /*version*/ ) {
-        int dim;
-        ar >> dim;
-
-        if ( dim == 0 ) {
-            _storage = Empty();
-        }
-        else if ( dim == 2 ) {
-            Epeck::FT x_, y_;
-            ar >> x_;
-            ar >> y_;
-            _storage = Epeck::Point_2( x_, y_ );
-        }
-        else if ( dim == 3 ) {
-            Epeck::FT x_, y_, z_;
-            ar >> x_;
-            ar >> y_;
-            ar >> z_;
-            _storage = Epeck::Point_3( x_, y_, z_ );
-        }
-    }
-
     template<class Archive>
-    void serialize( Archive& ar, const unsigned int version ) {
-        boost::serialization::split_member( ar, *this, version );
+    void serialize( Archive& ar, const unsigned int /*version*/ ) {
+        ar & _storage ;
     }
 };
 
