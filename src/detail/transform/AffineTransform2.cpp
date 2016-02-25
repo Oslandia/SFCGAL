@@ -40,7 +40,11 @@ AffineTransform2::AffineTransform2( CGAL::Aff_transformation_2< Kernel > transfo
 void AffineTransform2::transform( Point& p )
 {
     if ( ! p.isEmpty() ) {
-        p = Point( p.toPoint_2().transform( _transform ) );
+        // FIXME add a Point::Point( Kernel::Point_2&, double m );
+        Point pt( p.toPoint_2().transform( _transform ) );
+        if ( p.isMeasured() )
+            pt.setM( p.m() );
+        p = pt;
     }
 }
 

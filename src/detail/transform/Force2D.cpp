@@ -31,7 +31,10 @@ namespace transform {
 void Force2D::transform( Point& p )
 {
     if ( ! p.isEmpty() && p.is3D() ) {
-        p = Point( p.x(), p.y() );
+        Point pt( p.x(), p.y() );
+        if ( p.isMeasured() )
+            pt.setM( p.m() );
+        p = pt;
     }
 }
 
