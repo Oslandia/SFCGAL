@@ -39,13 +39,13 @@ namespace SFCGAL {
      * @warning An empty geometry is a empty GeometryCollection
      */
     template < typename K >
-    using Geometry = boost::make_recursive_variant<
+    using Geometry = typename boost::make_recursive_variant<
         Point<K>,                              // Point
         LineString<K>,                         // LineString
         Polygon<K>,                            // Polygon
         Triangle<K>,                           // Triangle
         std::vector<boost::recursive_variant_> // GeometryCollection
-    > ;
+    >::type ;
     
     /**
      * A GeometryCollection
