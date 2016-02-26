@@ -23,6 +23,7 @@
 #include <SFCGAL/detail/io/WktReader.h>
 #include <SFCGAL/detail/io/WktWriter.h>
 #include <SFCGAL/detail/tools/CharArrayBuffer.h>
+#include <SFCGAL/Exception.h>
 
 using namespace SFCGAL::detail::io;
 
@@ -45,7 +46,12 @@ std::auto_ptr< Geometry > readWkt( const std::string& s )
 {
     std::istringstream iss( s );
     WktReader wktReader( iss );
-    return std::auto_ptr< Geometry >( wktReader.readGeometry() );
+    std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
+    if ( !wktReader.eof() ) {
+        std::string remaining( s.substr( iss.tellg() ) );
+        throw WktParseException( "Extra characters in WKT: " + remaining );
+    }
+    return geom;
 }
 
 ///
@@ -56,7 +62,12 @@ std::auto_ptr< Geometry > readWkt( const char* str, size_t len )
     CharArrayBuffer buf( str, str + len );
     std::istream istr( &buf );
     WktReader wktReader( istr );
-    return std::auto_ptr< Geometry >( wktReader.readGeometry() );
+    std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
+    if ( !wktReader.eof() ) {
+        std::string remaining( str + istr.tellg(), str + len );
+        throw WktParseException( "Extra characters in WKT: " + remaining );
+    }
+    return geom;
 }
 
 }//io

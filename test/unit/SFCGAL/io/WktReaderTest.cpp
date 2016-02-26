@@ -261,6 +261,36 @@ BOOST_AUTO_TEST_CASE( charArrayRead )
     BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
 }
 
+BOOST_AUTO_TEST_CASE( wktExtraCharacters )
+{
+    bool threw = false;
+    try
+    {
+        std::auto_ptr< Geometry > g( readWkt( "POINT(0 0)POINT(1 0)" ) );
+    }
+    catch ( WktParseException& e )
+    {
+        std::string err( e.what() );
+        BOOST_CHECK_EQUAL( err, "Extra characters in WKT: POINT(1 0)" );
+        threw = true;
+    }
+    BOOST_CHECK( threw );
+
+    threw = false;
+    try
+    {
+        char str[] = "POINT(0 0)POINT(1 0)";
+        std::auto_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
+    }
+    catch ( WktParseException& e )
+    {
+        std::string err( e.what() );
+        BOOST_CHECK_EQUAL( err, "Extra characters in WKT: POINT(1 0)" );
+        threw = true;
+    }
+    BOOST_CHECK( threw );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 
