@@ -35,7 +35,7 @@ namespace detail {
       */
      void collectPointsAndConstraints( 
          const Geometry & g,
-         std::vector< Kernel::Point_3 > & points,
+         std::vector< Epick::Point_3 > & points,
          std::vector< std::pair< std::size_t, std::size_t > > & contraints
      ) ;
     

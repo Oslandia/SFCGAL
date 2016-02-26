@@ -23,28 +23,32 @@
 
 #include <SFCGAL/config.h>
 
+#include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
 #include <boost/array.hpp>
-#include <boost/variant.hpp>
-#include <boost/serialization/variant.hpp>
 
 #include <SFCGAL/numeric.h>
 #include <SFCGAL/Kernel.h>
 
-#include <SFCGAL/detail/CoordinateToPoint2Visitor.h>
-#include <SFCGAL/detail/CoordinateToPoint3Visitor.h>
-
 namespace SFCGAL {
 
-// class for Empty coordinate
-class Empty {};
-
 /**
- * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Epeck::Point_2,
- * or a Epeck::Point_3)
+ * @brief Coordinate class represents the Coordinate of a Point. It is 
+ * stored as an Epeck::Point_3. The real dimension (Empty, Point_2, Point_3) is 
+ * tagged as a "storageDimension".
+ *
+ * As it's often necessary to attach data to Point in 3D (textures coordinates, normals, etc.), 
+ * the Coordinate is also able to carry a user data as a "Measure". In OGC SFA,
+ * the measure is a "double" corresponding to the M coordinate. At coordinate level, 
+ * SFCGAL extends this concept in order to allow the storage of any user data bellow a boost::any (a safe void*).
+ * 
+ * @warning In order to keep standard conformance, at geometry level, the coordinate is measured if
+ *  and only if the measure is a double considered as NaN if cast to double is impossible.
+ * 
  */
 class SFCGAL_API Coordinate {
 public:
+    typedef boost::uint8_t storage_dimension_t ;
     /**
      * Empty Coordinate constructor
      */
@@ -74,10 +78,12 @@ public:
      * Constructor from CGAL::Point_2<K>
      */
     template < typename K >
-    Coordinate( const CGAL::Point_2<K>& point ) {
+    Coordinate( const CGAL::Point_2<K>& other ) {
         CGAL::Cartesian_converter<K,Epeck> converter;
-        _storage = converter(point);
-        _m = SFCGAL::NaN();
+        _storage = converter(
+            CGAL::Point_3<K>(other.x(),other.y(),0)
+        );
+        _storageDimension = 2;
     }
 
     /**
@@ -87,7 +93,7 @@ public:
     Coordinate( const CGAL::Point_3<K>& point ) {
         CGAL::Cartesian_converter<K,Epeck> converter;
         _storage = converter(point);
-        _m = SFCGAL::NaN();
+        _storageDimension = 3;
     }
 
     /**
@@ -105,14 +111,16 @@ public:
 
     /**
      * @brief Tests if the coordinates are empty
-     * TODO externalize
      */
-    bool         isEmpty() const ;
+    bool isEmpty() const {
+        return _storageDimension == 0 ;
+    }
     /**
      * @brief Tests if Z is defined
-     * TODO externalize
      */
-    bool         is3D() const ;
+    bool is3D() const {
+        return _storageDimension == 3 ;
+    }
 
     //--- accessors
 
@@ -120,45 +128,48 @@ public:
      * @brief Gets the x value
      * @warning Exact, NaN for empty coordinates
      */
-    Epeck::FT x() const;
+    Epeck::FT x() const {
+        return _storage.x() ;
+    }
 
     /**
      * @brief Gets the y value
-     * @warning Exact, NaN for empty coordinates
+     * @warning Exact, 0 for empty coordinates
      */
-    Epeck::FT y() const;
+    Epeck::FT y() const {
+        return _storage.y() ;
+    }
 
     /**
      * @brief Gets the z value
-     * @warning Exact, NaN for empty or 0 for 2D coordinates
+     * @warning Exact, 0 if not 3D
      */
-    Epeck::FT z() const;
-    
-    
-    /**
-     * Indicates if M is defined (not NaN)
-     */
-    inline double isMeasured() const {
-        return ! SFCGAL::isNaN(_m);
+    Epeck::FT z() const {
+        return _storage.z() ;
     }
     
+    
     /**
-     * Returns the m value (NaN is not defined)
+     * Returns the measure
      */
-    inline double    m() const {
-        return _m ;
+    inline boost::any measure() const {
+        return _measure ;
     }
     /**
-     * Sets the m value
+     * Set the measure
      */
-    inline void      setM( const double& m ) {
-        _m = m ;
+    inline void setMeasure( boost::any measure ) {
+        _measure = measure;
     }
 
     //-- helper
 
     /**
-     * @brief round coordinates with a scale factor
+     *
+     * @brief round coordinates with a scale factor. This operation
+     * is performed in order to reduce the size of the integer in
+     * CGAL exact number representation (mpq_class in GMP). 
+     * 
      * @return *this
      */
     Coordinate& round( const long& scaleFactor = 1 ) ;
@@ -169,20 +180,23 @@ public:
     /**
      * @brief Compares two points (lexicographic order)
      *
-     * @warning coordinates must have the same dimension
+     * @warning compare each value of the 3D storage vector, should 
+     *   be used with caution when working different dimension
      */
     bool operator < ( const Coordinate& other ) const ;
 
     /**
      * @brief Compares with an other point
      *
-     * @warning coordinates must have the same dimension
+     * @warning compare each value of the 3D storage vector, should 
+     *   be used with caution when working different dimension
      */
     bool operator == ( const Coordinate& other ) const ;
     /**
      * @brief Compares with an other point
      *
-     * @warning coordinates must have the same dimension
+     * @warning compare each value of the 3D storage vector, should 
+     *   be used with caution when working different dimension
      */
     bool operator != ( const Coordinate& other ) const ;
 
@@ -207,8 +221,8 @@ public:
      */
     template < typename K >
     typename K::Point_2 toPoint_2() const {
-        detail::CoordinateToPoint2Visitor<K> visitor;
-        return boost::apply_visitor(visitor,_storage) ;
+        CGAL::Cartesian_converter<Epeck,K> converter;
+        return converter( Epeck::Point_2( x(), y() ) );
     }
 
     /**
@@ -216,22 +230,18 @@ public:
      */
     template < typename K >
     typename K::Point_3 toPoint_3() const {
-        detail::CoordinateToPoint3Visitor<K> visitor;
-        return boost::apply_visitor(visitor,_storage) ;
+        CGAL::Cartesian_converter<Epeck,K> converter;
+        return converter( _storage );
     }
 
 private:
-    boost::variant<
-        Empty,
-        Epeck::Point_2,
-        Epeck::Point_3
-    > _storage;
-    
-    double _m ;
+    boost::any _measure ;
+    Epeck::Point_3 _storage ;
+    storage_dimension_t _storageDimension ;
 public:
     template<class Archive>
     void serialize( Archive& ar, const unsigned int /*version*/ ) {
-        ar & _storage ;
+        ar & _storage & _storageDimension ;
     }
 };
 

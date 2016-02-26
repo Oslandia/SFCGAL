@@ -43,7 +43,7 @@ namespace triangulate {
 ///
 std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
 {
-    //TODO check validity
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
     
     std::auto_ptr< TriangulatedSurface > triangulatedSurface(
         new TriangulatedSurface()
@@ -53,42 +53,41 @@ std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
     }
     bool is3D = g.is3D();
     
-    std::vector< Kernel::Point_3 > points ;
+    std::vector< Epick::Point_3 > points;
     std::vector< std::pair< std::size_t, std::size_t > > constraints ;
     detail::collectPointsAndConstraints(g,points,constraints);
     
-    typedef CGAL::Projection_traits_xy_3<Epeck>  Gt;
+    typedef CGAL::Projection_traits_xy_3<Epick>  Gt;
     typedef CGAL::Constrained_Delaunay_triangulation_2<Gt> CDT ;
     typedef CDT::Finite_faces_iterator   Finite_faces_iterator ;
     
     CDT cdt ;
-    if ( constraints.empty() ){
-        // why 2 time faster?
-        cdt.insert(
-            points.begin(), points.end()
-        );
-    }else{
-        SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
-        cdt.insert_constraints(
-            points.begin(), points.end(),
-            constraints.begin(), constraints.end()
+    cdt.insert(points.begin(), points.end());
+    
+    typedef std::vector< std::pair< std::size_t, std::size_t > >::const_iterator constraint_iterator ;
+    for ( constraint_iterator it = constraints.begin(); it != constraints.end(); ++it ){
+        cdt.insert_constraint(
+            points[it->first],
+            points[it->second]
         );
     }
     
     triangulatedSurface->reserve( cdt.number_of_faces() );
     for ( Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it ) {
-        Epeck::Point_3 a = it->vertex( 0 )->point() ;
-        Epeck::Point_3 b = it->vertex( 1 )->point() ;
-        Epeck::Point_3 c = it->vertex( 2 )->point() ;
+        Epick::Point_3 a = it->vertex( 0 )->point() ;
+        Epick::Point_3 b = it->vertex( 1 )->point() ;
+        Epick::Point_3 c = it->vertex( 2 )->point() ;
 
         if ( is3D ){
             triangulatedSurface->addTriangle( new Triangle( 
-                Epeck::Point_2(a.x(),a.y()), 
-                Epeck::Point_2(b.x(),b.y()), 
-                Epeck::Point_2(c.x(),c.y())
+                Point(a.x(),a.y()), 
+                Point(b.x(),b.y()), 
+                Point(c.x(),c.y())
             ) );
         }else{
-            triangulatedSurface->addTriangle( new Triangle( a, b, c ) );
+            triangulatedSurface->addTriangle( new Triangle( 
+                Point(a), Point(b), Point(c) 
+            ) );
         }
     }
     return triangulatedSurface ;

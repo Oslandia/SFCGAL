@@ -214,15 +214,6 @@ void serialize(Archive & ar, CGAL::Point_3<K> & c, const unsigned int version)
     split_free(ar, c, version); 
 }
 
-// -- Empty
-
-template<class Archive>
-void serialize( Archive& /*ar*/, SFCGAL::Empty& /*c*/, const unsigned int /*version*/ )
-{
-    // nothing to serialize
-}
-
-
 } // namespace serialization
 } // namespace boost
 

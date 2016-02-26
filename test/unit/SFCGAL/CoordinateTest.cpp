@@ -32,9 +32,13 @@ BOOST_AUTO_TEST_CASE( testDefaultConstructor )
 {
     Coordinate g ;
     BOOST_CHECK( g.isEmpty() );
-    BOOST_CHECK_THROW( g.x(), Exception );
-    BOOST_CHECK_THROW( g.y(), Exception );
-    BOOST_CHECK_THROW( g.z(), Exception );
+    // Removed restriction in 2.0 (Empty considered (0,0,0) if misused)
+    //BOOST_CHECK_THROW( g.x(), Exception );
+    //BOOST_CHECK_THROW( g.y(), Exception );
+    //BOOST_CHECK_THROW( g.z(), Exception );
+    BOOST_CHECK_EQUAL( g.x(), 0 );
+    BOOST_CHECK_EQUAL( g.y(), 0 );
+    BOOST_CHECK_EQUAL( g.z(), 0 );
 }
 
 /// Coordinate( const Kernel::FT & x, const Kernel::FT & y ) ;
@@ -133,19 +137,24 @@ BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
 
 
 /// bool operator < ( const Coordinate & other ) const ;
-BOOST_AUTO_TEST_CASE( testLessEmpty )
+/// bool operator == ( const Coordinate & other ) const ;
+/// bool operator != ( const Coordinate & other ) const ;
+BOOST_AUTO_TEST_CASE( testCompareEmpty )
 {
     Coordinate gA ;
     Coordinate gB ;
-    BOOST_CHECK_THROW( ( gA < gB ), Exception ) ;
+    //BOOST_CHECK_THROW( ( gA < gB ), Exception ) ;
+    // More permissive in 2.0 (empty considered as null vector)
+    BOOST_CHECK( gA == gB );
+    BOOST_CHECK( ! (gA < gB) );
 }
-BOOST_AUTO_TEST_CASE( testLessXY_XY )
+BOOST_AUTO_TEST_CASE( testCompareXY_XY )
 {
     BOOST_CHECK( ! ( Coordinate( 0,0 ) < Coordinate( 0,0 ) ) ) ;
     BOOST_CHECK(   ( Coordinate( 0,0 ) < Coordinate( 1,0 ) ) ) ;
     BOOST_CHECK(   ( Coordinate( 1,0 ) < Coordinate( 1,1 ) ) ) ;
 }
-BOOST_AUTO_TEST_CASE( testLessXYZ_XYZ )
+BOOST_AUTO_TEST_CASE( testCompareXYZ_XYZ )
 {
     BOOST_CHECK( ! ( Coordinate( 0,0,0 ) < Coordinate( 0,0,0 ) ) ) ;
     BOOST_CHECK(   ( Coordinate( 0,0,0 ) < Coordinate( 1,0,0 ) ) ) ;
@@ -153,13 +162,17 @@ BOOST_AUTO_TEST_CASE( testLessXYZ_XYZ )
     BOOST_CHECK( ! ( Coordinate( 1,1,0 ) < Coordinate( 1,1,0 ) ) ) ;
     BOOST_CHECK(   ( Coordinate( 1,1,0 ) < Coordinate( 1,1,1 ) ) ) ;
 }
-BOOST_AUTO_TEST_CASE( testLessXY_XYZ )
+BOOST_AUTO_TEST_CASE( testCompareXY_XYZ )
 {
-    BOOST_CHECK_THROW( ( Coordinate( 0,0 ) < Coordinate( 0,0,0 ) ), Exception ) ;
+    // BOOST_CHECK_THROW( ( Coordinate( 0,0 ) < Coordinate( 0,0,0 ) ), Exception ) ;
+    // 2D points considered as 3D points in plane (X,Y,0) for mixed comparison that should't be used
+    
+    Coordinate gA( 0,0 ) ;
+    Coordinate gB( 0,0,0 );
+    BOOST_CHECK( !(gA < gB) );
+    BOOST_CHECK( gA == gB );
 }
 
-/// bool operator == ( const Coordinate & other ) const ;
-/// bool operator != ( const Coordinate & other ) const ;
 /// inline Kernel::Vector_2 toVector_2() const
 /// inline Kernel::Vector_3 toVector_3() const
 /// Kernel::Point_2 toPoint_2<Kernel>() const;

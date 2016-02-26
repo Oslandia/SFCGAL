@@ -50,14 +50,26 @@ public:
      * empty Triangle constructor
      */
     Triangle();
+    
     /**
      * Constructor with a CGAL triangle
      */
-    Triangle( const Kernel::Triangle_2& triangle ) ;
+    template < typename K >
+    Triangle( const CGAL::Triangle_2<K>& triangle ) {
+        for ( int i = 0; i < 3; i++ ){
+            _vertices[i] = Point(triangle.vertex(i));
+        }
+    }
     /**
      * Constructor with a CGAL triangle
      */
-    Triangle( const Kernel::Triangle_3& triangle ) ;
+    template < typename K >
+    Triangle( const CGAL::Triangle_3<K>& triangle ) {
+        for ( int i = 0; i < 3; i++ ){
+            _vertices[i] = Point(triangle.vertex(i));
+        }
+    }
+    
     /**
      * constructor with 3 points
      */

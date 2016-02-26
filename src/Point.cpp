@@ -60,7 +60,7 @@ Point::Point( const Kernel::FT& x, const Kernel::FT& y ):
 Point::Point( const Kernel::FT& x, const Kernel::FT& y, const Kernel::FT& z, const double& m ):
     _coordinate( x,y,z)
 {
-    _coordinate.setM(m);
+    _coordinate.setMeasure(m);
 }
 
 ///
@@ -176,7 +176,27 @@ bool Point::is3D() const
 ///
 bool  Point::isMeasured() const
 {
-    return _coordinate.isMeasured() ;
+    return ! SFCGAL::isNaN( m() ) ;
+}
+
+///
+///
+///
+double Point::m() const 
+{
+    try {
+        return boost::any_cast< double >( _coordinate.measure() ) ;
+    }catch (std::bad_cast & ){
+        return SFCGAL::NaN();
+    }
+}
+
+///
+///
+///
+void Point::setM( const double& m ) 
+{
+    _coordinate.setMeasure(m);
 }
 
 ///

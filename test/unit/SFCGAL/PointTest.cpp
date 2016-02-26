@@ -40,10 +40,13 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
     BOOST_CHECK( ! g.is3D() );
     BOOST_CHECK( ! g.isMeasured() );
 
-    // no more access to double
-    BOOST_CHECK_THROW( g.x(), Exception );
-    BOOST_CHECK_THROW( g.y(), Exception );
-    BOOST_CHECK_THROW( g.z(), Exception );
+    // Removed restriction in 2.0 (Empty considered (0,0,0) if misused)
+    //BOOST_CHECK_THROW( g.x(), Exception );
+    //BOOST_CHECK_THROW( g.y(), Exception );
+    //BOOST_CHECK_THROW( g.z(), Exception );
+    BOOST_CHECK_EQUAL( g.x(), 0 );
+    BOOST_CHECK_EQUAL( g.y(), 0 );
+    BOOST_CHECK_EQUAL( g.z(), 0 );
     BOOST_CHECK( isNaN( g.m() ) );
 }
 

@@ -123,15 +123,11 @@ public:
     /**
      * Returns the m value (NaN is not defined)
      */
-    inline double    m() const {
-        return _coordinate.m() ;
-    }
+    double    m() const ; 
     /**
      * Sets the m value
      */
-    inline void      setM( const double& m ) {
-        _coordinate.setM(m);
-    }
+    void      setM( const double& m ) ;
 
 
     /**
@@ -177,7 +173,7 @@ public:
      * @see Coordinate::toPoint_3<Kernel>()
      */
     template < typename K >
-    inline Kernel::Point_2 toPoint_2() const {
+    inline CGAL::Point_2<K> toPoint_2() const {
         return _coordinate.toPoint_2<K>();
     }
 
@@ -185,7 +181,7 @@ public:
      * @see Coordinate::toPoint_3<Kernel>()
      */
     template < typename K >
-    inline Kernel::Point_3 toPoint_3() const {
+    inline CGAL::Point_3<K> toPoint_3() const {
         return _coordinate.toPoint_3<K>();
     }
 

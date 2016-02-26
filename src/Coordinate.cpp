@@ -30,8 +30,9 @@ namespace SFCGAL {
 ///
 ///
 Coordinate::Coordinate():
-    _storage( Empty() ),
-    _m(SFCGAL::NaN())
+    _measure(),
+    _storage(0,0,0),
+    _storageDimension(0)
 {
 }
 
@@ -43,9 +44,8 @@ Coordinate::Coordinate( const double& x, const double& y )
     if ( !std::isfinite( x ) || !std::isfinite( y ) ) {
         BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
     }
-    // TODO Epick::Point_2 (could lead to behavior change)
-    _storage = Epeck::Point_2( x, y );
-    _m = SFCGAL::NaN();
+    _storage = Epeck::Point_3( x, y, 0 );
+    _storageDimension = 2;
 }
 
 ///
@@ -56,17 +56,17 @@ Coordinate::Coordinate( const double& x, const double& y, const double& z )
     if ( !std::isfinite( x ) || !std::isfinite( y ) || !std::isfinite( z ) ) {
         BOOST_THROW_EXCEPTION( NonFiniteValueException( "cannot create coordinate with non finite value" ) );
     }
-    // TODO Epick::Point_2 (could lead to behavior change)
     _storage = Epeck::Point_3( x, y, z );
-    _m = SFCGAL::NaN();
+    _storageDimension = 3;
 }
 
 ///
 ///
 ///
 Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y ):
-    _storage( Epeck::Point_2( x, y ) ),
-    _m(SFCGAL::NaN())
+    _measure(),
+    _storage(x,y,0),
+    _storageDimension(2)
 {
 
 }
@@ -75,8 +75,9 @@ Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y ):
 ///
 ///
 Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT& z ):
-    _storage( Epeck::Point_3( x, y, z ) ),
-    _m(SFCGAL::NaN())
+    _measure(),
+    _storage(x,y,z),
+    _storageDimension(3)
 {
 
 }
@@ -86,8 +87,9 @@ Coordinate::Coordinate( const Epeck::FT& x, const Epeck::FT& y, const Epeck::FT&
 ///
 ///
 Coordinate::Coordinate( const Coordinate& other ):
+    _measure(other._measure),
     _storage( other._storage ),
-    _m(other._m)
+    _storageDimension(other._storageDimension)
 {
 
 }
@@ -97,8 +99,9 @@ Coordinate::Coordinate( const Coordinate& other ):
 ///
 Coordinate& Coordinate::operator = ( const Coordinate& other )
 {
+    _measure = other._measure ;
     _storage = other._storage;
-    _m = other._m ;
+    _storageDimension = other._storageDimension;
     return *this ;
 }
 
@@ -110,161 +113,25 @@ Coordinate::~Coordinate()
 
 }
 
-///
-///
-///
-bool Coordinate::isEmpty() const
+
+// TODO externalize
+Epeck::FT _roundFT( const Epeck::FT& v, const long& scaleFactor ) 
 {
-    return _storage.which() == 0;
+    return Epeck::FT( CGAL::Gmpq(
+        SFCGAL::round( v.exact() * scaleFactor ),
+        scaleFactor
+    ) ) ;
 }
 
-
-class CoordinateIs3dVisitor : public boost::static_visitor<bool> {
-public:
-    bool operator()( const Empty& /*storage */) const {
-        return false ;
-    }
-    template < typename K >
-    bool operator()( const CGAL::Point_2<K>& /*storage */) const {
-        return false ;
-    }
-    template < typename K >
-    bool operator()( const CGAL::Point_3<K>& /*storage */) const {
-        return true ;
-    }
-};
-
-///
-///
-///
-bool Coordinate::is3D() const
-{
-    return boost::apply_visitor( CoordinateIs3dVisitor(), _storage) ;
-}
-
-// TODO remove (deprecated)
-class GetXVisitor : public boost::static_visitor<Epeck::FT> {
-public:
-    Epeck::FT operator()( const Empty& ) const {
-        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
-        return 0;
-    }
-    Epeck::FT operator()( const Epeck::Point_2& storage ) const {
-        return storage.x();
-    }
-    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
-        return storage.x();
-    }
-};
-
-///
-///
-///
-Epeck::FT Coordinate::x() const
-{
-    GetXVisitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
-
-// TODO remove (deprecated)
-class GetYVisitor : public boost::static_visitor<Epeck::FT> {
-public:
-    Epeck::FT operator()( const Empty& ) const {
-        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate y value" ) );
-        return 0;
-    }
-    Epeck::FT operator()( const Epeck::Point_2& storage ) const {
-        return storage.y();
-    }
-    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
-        return storage.y();
-    }
-};
-
-///
-///
-///
-Epeck::FT Coordinate::y() const
-{
-    GetYVisitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
-
-// TODO remove (deprecated)
-class GetZVisitor : public boost::static_visitor<Epeck::FT> {
-public:
-    Epeck::FT operator()( const Empty& ) const {
-        BOOST_THROW_EXCEPTION( Exception( "trying to get an empty coordinate z value" ) );
-        return 0;
-    }
-
-    Epeck::FT operator()( const Epeck::Point_2& ) const {
-        return 0;
-    }
-    Epeck::FT operator()( const Epeck::Point_3& storage ) const {
-        return storage.z();
-    }
-};
-
-///
-///
-///
-Epeck::FT Coordinate::z() const
-{
-    GetZVisitor visitor;
-    return boost::apply_visitor( visitor, _storage );
-}
-
-//----------------------
-
-/*
- * TODO remove and replace by a rounding conversion to Epick
- *  so that multi-kernel makes sens
- */
-class RoundVisitor : public boost::static_visitor<> {
-public:
-    RoundVisitor( const long& scaleFactor ):
-        _scaleFactor( scaleFactor ) {
-
-    }
-
-    void operator()( Empty& ) const {
-
-    }
-
-    void operator()( Epeck::Point_2& storage ) const {
-        storage = Epeck::Point_2(
-            _roundFT( storage.x() ),
-            _roundFT( storage.y() )
-        );
-    }
-    void operator()( Epeck::Point_3& storage ) const {
-        storage = Epeck::Point_3(
-            _roundFT( storage.x() ),
-            _roundFT( storage.y() ),
-            _roundFT( storage.z() )
-        );
-    }
-
-private:
-    long _scaleFactor ;
-
-    // round to a fraction
-    Epeck::FT _roundFT( const Epeck::FT& v ) const {
-        return Epeck::FT( CGAL::Gmpq(
-            SFCGAL::round( v.exact() * _scaleFactor ),
-            _scaleFactor
-        ) ) ;
-    }
-
-};
-
-
+// TODO externalize
 Coordinate& Coordinate::round( const long& scaleFactor )
 {
-    RoundVisitor roundVisitor( scaleFactor ) ;
-    boost::apply_visitor( roundVisitor, _storage ) ;
-    return *this ;
+    _storage = Epeck::Point_3(
+        _roundFT( _storage.x(), scaleFactor ),
+        _roundFT( _storage.y(), scaleFactor ),
+        _roundFT( _storage.z(), scaleFactor )
+    );
+    return *this;
 }
 
 
@@ -276,16 +143,6 @@ Coordinate& Coordinate::round( const long& scaleFactor )
 ///
 bool Coordinate::operator < ( const Coordinate& other ) const
 {
-    // no empty comparison
-    if ( isEmpty() || other.isEmpty() ) {
-        BOOST_THROW_EXCEPTION( Exception( "try to compare empty points using a < b " ) );
-    }
-
-    // no mixed dimension comparison
-    if ( ( is3D() && ! other.is3D() ) || ( ! is3D() && other.is3D() ) ) {
-        BOOST_THROW_EXCEPTION( Exception( "try to compare empty points with different coordinate dimension using a < b" ) );
-    }
-
     // comparison along x
     if ( x() < other.x() ) {
         return true ;
@@ -302,14 +159,12 @@ bool Coordinate::operator < ( const Coordinate& other ) const
         return false;
     }
 
-    // comparison along z if possible
-    if ( is3D() ) {
-        if ( z() < other.z() ) {
-            return true ;
-        }
-        else if ( other.z() < z() ) {
-            return false;
-        }
+    // comparison along z
+    if ( z() < other.z() ) {
+        return true ;
+    }
+    else if ( other.z() < z() ) {
+        return false;
     }
 
     // points are equals
@@ -321,16 +176,7 @@ bool Coordinate::operator < ( const Coordinate& other ) const
 ///
 bool Coordinate::operator == ( const Coordinate& other ) const
 {
-    if ( isEmpty() ) {
-        return other.isEmpty() ;
-    }
-
-    if ( is3D() || other.is3D() ) {
-        return x() == other.x() && y() == other.y()  && z() == other.z() ;
-    }
-    else {
-        return x() == other.x() && y() == other.y() ;
-    }
+    return x() == other.x() && y() == other.y()  && z() == other.z() ;
 }
 
 ///

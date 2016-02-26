@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
     std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
     BOOST_CHECK_EQUAL( fractal->exteriorRing().numPoints(), 49153U );
 
-    bench().start( boost::format( "triangulate hoch(%s)" ) % N );
+    bench().start( boost::format( "triangulatePolygon3D hoch(%s)" ) % N );
     TriangulatedSurface triangulatedSurface ;
     SFCGAL::triangulate::triangulatePolygon3D( *fractal, triangulatedSurface ) ;
     bench().stop() ;
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch_roundingSixDecimal )
 
     fractal->round( 100000 ) ;
 
-    bench().start( boost::format( "triangulate hoch(%s) (round 6 six decimals)" ) % N );
+    bench().start( boost::format( "triangulatePolygon3D hoch(%s) (round 6 six decimals)" ) % N );
     TriangulatedSurface triangulatedSurface ;
     SFCGAL::triangulate::triangulatePolygon3D( *fractal, triangulatedSurface ) ;
     bench().stop() ;
@@ -126,14 +126,17 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation2D )
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch2D )
 {
-    const int N = 7 ;
+    const int N = 7;
     std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
-//	std::cout << fractal->asText(5) << std::endl ;
 
-    bench().start( boost::format( "triangulate2D hoch(%s)" ) % N );
+    fractal->round( 100000 ) ;
+    
+    int nPoints = fractal->exteriorRing().numPoints();
+    bench().start( boost::format( "triangulate2D hoch(%s) (%s points)" ) % N % nPoints );
     std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *fractal ) ;
     bench().stop();
 }
+
 
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D )
 {

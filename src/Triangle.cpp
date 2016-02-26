@@ -36,26 +36,6 @@ Triangle::Triangle() :
     _vertices[2] = Point();
 }
 
-///
-///
-///
-Triangle::Triangle( const Kernel::Triangle_2& triangle )
-{
-    for ( int i = 0; i < 3; i++ ) {
-        _vertices[i] = triangle.vertex( i ) ;
-    }
-}
-
-
-///
-///
-///
-Triangle::Triangle( const Kernel::Triangle_3& triangle )
-{
-    for ( int i = 0; i < 3; i++ ) {
-        _vertices[i] = triangle.vertex( i ) ;
-    }
-}
 
 ///
 ///
