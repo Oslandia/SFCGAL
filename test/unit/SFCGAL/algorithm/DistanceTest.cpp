@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE( testDistancePolygonPolygon_disjoint )
 
 BOOST_AUTO_TEST_CASE( testDistanceMultiPointMultiPoint_disjoint )
 {
-    std::auto_ptr< Geometry > gA( io::readWkt( "MULTIPOINT((0.0 0.0),(1.0 0.0),(1.0 1.0),(0.0 1.0)))" ) );
+    std::auto_ptr< Geometry > gA( io::readWkt( "MULTIPOINT((0.0 0.0),(1.0 0.0),(1.0 1.0),(0.0 1.0))" ) );
     std::auto_ptr< Geometry > gB( io::readWkt( "MULTIPOINT((8.0 8.0),(4.0 5.0))" ) );
     BOOST_CHECK_EQUAL( gA->distance( *gB ), 5.0 );
 }

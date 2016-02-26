@@ -47,8 +47,10 @@ std::auto_ptr< Geometry > readWkt( const std::string& s )
     std::istringstream iss( s );
     WktReader wktReader( iss );
     std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
-    if ( !wktReader.eof() ) {
-        std::string remaining( s.substr( iss.tellg() ) );
+
+    char extra;
+    if ( iss >> extra ) {
+        std::string remaining( s.substr( int(iss.tellg()) - 1 ) );
         throw WktParseException( "Extra characters in WKT: " + remaining );
     }
     return geom;
@@ -63,8 +65,9 @@ std::auto_ptr< Geometry > readWkt( const char* str, size_t len )
     std::istream istr( &buf );
     WktReader wktReader( istr );
     std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
-    if ( !wktReader.eof() ) {
-        std::string remaining( str + istr.tellg(), str + len );
+    char extra;
+    if ( istr >> extra ) {
+        std::string remaining( str + int(istr.tellg()) - 1, str + len );
         throw WktParseException( "Extra characters in WKT: " + remaining );
     }
     return geom;

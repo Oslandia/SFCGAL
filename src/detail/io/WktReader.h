@@ -139,11 +139,6 @@ public:
      */
     bool                     readPointCoordinate( Point& p ) ;
 
-    /**
-     * Returns true if the reader reached end of stream
-     */
-    bool eof() const { return _reader.eof(); }
-
 private:
     /**
      * input stream
