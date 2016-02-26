@@ -73,7 +73,7 @@ std::auto_ptr< Polygon > hoch( const unsigned int& order )
     ring->addPoint( new Point( points.front().x(), points.front().y() ) ) ;
 
     result->setExteriorRing( ring.release() );
-
+    result->forceValidityFlag( true );
     return result ;
 }
 

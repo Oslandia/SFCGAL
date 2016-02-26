@@ -43,7 +43,7 @@ namespace triangulate {
 ///
 std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
 {
-    SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
     
     std::auto_ptr< TriangulatedSurface > triangulatedSurface(
         new TriangulatedSurface()
@@ -62,15 +62,10 @@ std::auto_ptr< TriangulatedSurface > triangulate2DZ( const Geometry& g )
     typedef CDT::Finite_faces_iterator   Finite_faces_iterator ;
     
     CDT cdt ;
-    cdt.insert(points.begin(), points.end());
-    
-    typedef std::vector< std::pair< std::size_t, std::size_t > >::const_iterator constraint_iterator ;
-    for ( constraint_iterator it = constraints.begin(); it != constraints.end(); ++it ){
-        cdt.insert_constraint(
-            points[it->first],
-            points[it->second]
-        );
-    }
+    cdt.insert_constraints(
+        points.begin(), points.end(),
+        constraints.begin(), constraints.end()
+    );
     
     triangulatedSurface->reserve( cdt.number_of_faces() );
     for ( Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it ) {

@@ -71,7 +71,7 @@ std::vector< CGAL::Point_2<K> > generatePoints(){
 }
 
 
-BOOST_AUTO_TEST_SUITE( SFCGAL_BenchTriangulatePointSet )
+BOOST_AUTO_TEST_SUITE( SFCGAL_BenchTriangulate2DZ )
 
 BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpick )
 {
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpick )
     std::vector< Epick::Point_2 > points = generatePoints<Epick>() ;
     
     // compute triangulation
-    bench().start( boost::format( "ref Epick - triangulate2DZ %s points" ) % N_POINTS );
+    bench().start( boost::format( "triangulate2DZ %s points (ref Epick)" ) % N_POINTS );
     CGAL::Constrained_Delaunay_triangulation_2< Epick > triangulation ;
     triangulation.insert(points.begin(), points.end());
     bench().stop();
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeck )
     std::vector< Epeck::Point_2 > points = generatePoints<Epeck>() ;
     
     // compute triangulation
-    bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (reference)" ) % N_POINTS );
+    bench().start( boost::format( "triangulate2DZ %s points (ref Epeck)" ) % N_POINTS );
     CGAL::Constrained_Delaunay_triangulation_2< Epeck > triangulation ;
     triangulation.insert(points.begin(), points.end());
     bench().stop();
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeckMisused )
     std::vector< Epeck::Point_2 > points = generatePoints<Epeck>() ;
     
     // compute triangulation
-    bench().start( boost::format( "ref Epeck - triangulate2DZ %s points (bad way, point by point)" ) % N_POINTS );
+    bench().start( boost::format( "triangulate2DZ %s points (ref Epeck point by point)" ) % N_POINTS );
     CGAL::Constrained_Delaunay_triangulation_2< Epeck > triangulation ;
     // BAD WAY!
     BOOST_FOREACH(Epeck::Point_2 point, points){
@@ -119,7 +119,6 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulationReferenceEpeckMisused )
     }
     // GOOD WAY
     //triangulation.insert(points.begin(), points.end());
-    
     
     bench().stop();
     
@@ -139,11 +138,57 @@ BOOST_AUTO_TEST_CASE( testTriangulate2DZ )
     }
     
     // compute triangulation
-    bench().start( boost::format( "SFCGAL - triangulate2DZ %s points" ) % N_POINTS );
+    bench().start( boost::format( "triangulate2DZ %s points (MultiPoint)" ) % N_POINTS );
     std::auto_ptr< TriangulatedSurface > triangulation = triangulate2DZ( multiPoint ) ;
     bench().stop();
     
     BOOST_CHECK( triangulation->numTriangles() > 0 );
+}
+
+
+
+BOOST_AUTO_TEST_CASE( testTriangulateHoch )
+{
+    const int N = 7;
+    std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
+
+    int nPoints = fractal->exteriorRing().numPoints();
+    bench().start( boost::format( "triangulate2DZ hoch(%s) (%s points)" ) % N % nPoints );
+    std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *fractal ) ;
+    bench().stop();
+}
+
+
+BOOST_AUTO_TEST_CASE( testTriangulateDisc )
+{
+    const int N = 20000 ;
+
+    std::auto_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
+//	std::cout << fractal->asText(5) << std::endl ;
+
+    bench().start( boost::format( "triangulate2DZ disc x %s" ) % N ) ;
+
+    for ( int i = 0; i < N; i++ ) {
+        std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *disc ) ;
+    }
+
+    bench().stop() ;
+}
+
+BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D_roundingSixDecimal )
+{
+    const int N = 20000 ;
+
+    std::auto_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
+    disc->round( 100000 ) ;
+
+    bench().start( boost::format( "triangulate2DZ disc x %s (round 6 six decimals)" ) % N ) ;
+
+    for ( int i = 0; i < N; i++ ) {
+        std::auto_ptr< TriangulatedSurface > result = SFCGAL::triangulate::triangulate2DZ( *disc ) ;
+    }
+
+    bench().stop() ;
 }
 
 
