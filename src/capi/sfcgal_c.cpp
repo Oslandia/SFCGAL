@@ -1019,6 +1019,12 @@ extern "C" void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid 
     SFCGAL::algorithm::propagateValidityFlag( *g1, valid != 0 );
 }
 
+extern "C" int sfcgal_geometry_has_validity_flag( const sfcgal_geometry_t* geom )
+{
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    return g1->hasValidityFlag() ? 1 : 0;
+}
+
 extern "C" sfcgal_geometry_t* sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom )
 {
     const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
