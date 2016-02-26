@@ -155,5 +155,13 @@ BOOST_AUTO_TEST_CASE( testDistanceInM )
     BOOST_CHECK_EQUAL( out->asText( 1 ), expectedWKT );
 }
 
+BOOST_AUTO_TEST_CASE( testMultiEmptyEmpty )
+{
+    std::auto_ptr< Geometry > g( io::readWkt( "MULTIPOLYGON(EMPTY,EMPTY)" ) );
+    std::auto_ptr<Geometry> out( algorithm::straightSkeleton( *g ) );
+    std::string expectedWKT( "MULTILINESTRING EMPTY" );
+    BOOST_CHECK_EQUAL( out->asText( 1 ), expectedWKT );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 

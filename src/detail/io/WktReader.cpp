@@ -381,7 +381,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint& g )
             }
         }
 
-        g.addGeometry( p.release() );
+        if ( !p->isEmpty() ) g.addGeometry( p.release() );
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
@@ -412,7 +412,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString& g )
 
         std::auto_ptr< LineString > lineString( new LineString() );
         readInnerLineString( *lineString );
-        g.addGeometry( lineString.release() );
+        if ( !lineString->isEmpty() ) g.addGeometry( lineString.release() );
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
@@ -442,7 +442,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon& g )
 
         std::auto_ptr< Polygon > polygon( new Polygon() );
         readInnerPolygon( *polygon );
-        g.addGeometry( polygon.release() );
+        if ( !polygon->isEmpty() ) g.addGeometry( polygon.release() );
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
@@ -471,7 +471,9 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection& g )
     while( ! _reader.eof() ) {
 
         //read a full wkt geometry ex : POINT(2.0 6.0)
-        g.addGeometry( readGeometry() );
+        Geometry* gg = readGeometry();
+        if ( !gg->isEmpty() )
+            g.addGeometry( gg );
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
@@ -597,7 +599,7 @@ void WktReader::readInnerMultiSolid( MultiSolid& g )
 
         std::auto_ptr< Solid > solid( new Solid() );
         readInnerSolid( *solid );
-        g.addGeometry( solid.release() );
+        if ( !solid->isEmpty() ) g.addGeometry( solid.release() );
 
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
