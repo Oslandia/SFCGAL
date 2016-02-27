@@ -30,6 +30,43 @@ Finally :
  
 * [ ] Restore CGAL API minimizing changes
 
+## Supported geometry types
 
+* Geometry (variant type for primitive and collection types)
+* Primitive types
+    * [x] Point
+    * [x] LineString
+    * [x] Triangle
+    * [x] Polygon (with holes)
+    * [ ] Solid
+* Collection
+    * [x] MultiPoint
+    * [x] MultiLineString
+    * [x] TriangulatedSurface
+    * [x] MultiPolygon
+    * [x] GeometryCollection
 
+Note that :
+* All geometry types are stored in 3D. Z is simply ignored when working in 2D.
+* A LineString is implicitly a LinearRing when it is a ring in a Polygon (with startPoint = endPoint).
+* A MultiPolygon is implicity a closed PolyhedralSurface with correct orientation when it is a shell in a solid.
+
+# Features
+
+### IO format
+
+- [ ] WKT
+- [ ] HEXA-WKB
+
+### Convex hull
+
+- [ ] convexHull
+- [ ] convexHull3D
+
+### Constraint delaunay triangulation
+
+- [x] triangulate2DZ( g ) : 2DZ triangulation of points sets with constraints
+- [ ] triangulatePolygons( g : Geometry ) : Triangulate polygons in there planes
+
+TODO add all CAPI features.
 
