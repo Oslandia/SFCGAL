@@ -22,13 +22,13 @@
 ## Refactoring method
 
 * [ ] Restore types as typedef on CGAL structures with a variant to manage dynamism on geometry
-* [ ] Restore io from WKT and add HexaWKB reader
+* [ ] Restore io from WKT and add HexaWKB reader
 * [ ] Restore progressively algorithm (with tests and benchmarks)
 * [ ] Restore the garden test
 
 Finally :
  
-* [ ] Restore CGAL API minimizing changes
+* [ ] Restore CGAL API minimizing changes
 
 
 
