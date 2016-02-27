@@ -24,7 +24,6 @@ if( CGAL_LIBRARY )
 endif()
 
 if(CGAL_FIND_VERSION)
-    message("CGAL_DIR ${CGAL_DIR}")
     find_file(version_file version.h HINTS $ENV{CGAL_DIR}/include ${CGAL_DIR}/include ${CGAL_INCLUDE_DIRS} PATH_SUFFIXES CGAL)
     file(STRINGS ${version_file} version_str REGEX "# *define +CGAL_VERSION +")
     string( REGEX REPLACE "# *define +CGAL_VERSION +" "" CGAL_VERSION ${version_str})

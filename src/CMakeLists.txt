@@ -1,15 +1,19 @@
-
+FILE(GLOB_RECURSE SFCAL_HEADERS "${CMAKE_SOURCE_DIR}/src/*.h")
 FILE(GLOB_RECURSE SFCAL_SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
-add_library( sfcgal2
+
+add_library( SFCGAL
+    ${SFCAL_HEADERS}
     ${SFCAL_SOURCES}
 )
-target_link_libraries( sfcgal2
+
+target_link_libraries( SFCGAL
     ${CGAL_LIBRARIES}
     ${Boost_LIBRARIES}
     ${MPFR_LIBRARIES}
     ${GMP_LIBRARIES}
 )
-install(TARGETS sfcgal2 
+
+install(TARGETS SFCGAL 
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -5,33 +5,17 @@
 #include <boost/variant.hpp>
 
 #include <SFCGAL/kernels.h>
+#include <SFCGAL/Point.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Triangle.h>
+
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/TriangulatedSurface.h>
 
 namespace SFCGAL {
-    
-    /**
-     * A 3D point
-     */
-    template < typename K > 
-    using Point = CGAL::Point_3< K > ;
-    
-    /**
-     * A 3D LineString
-     */
-    template < typename K > 
-    using LineString = std::vector< Point< K > > ;
-    
-    /**
-     * A 3D Polygon with holes
-     * @warning this is a strange GIS object in 3D
-     */
-    template < typename K > 
-    using Polygon = std::vector< LineString< K > > ;
-    
-    /**
-     * A 3D Triangle
-     */
-    template < typename K > 
-    using Triangle = CGAL::Triangle_3<K> ;
     
     /**
      * A geometry is variant.
@@ -40,19 +24,28 @@ namespace SFCGAL {
      */
     template < typename K >
     using Geometry = typename boost::make_recursive_variant<
-        Point<K>,                              // Point
-        LineString<K>,                         // LineString
-        Polygon<K>,                            // Polygon
-        Triangle<K>,                           // Triangle
-        std::vector<boost::recursive_variant_> // GeometryCollection
+        // primitive types
+        Point<K>,                                // Point
+        LineString<K>,                           // LineString
+        Polygon<K>,                              // Polygon
+        Triangle<K>,                             // Triangle
+
+        // homonegous collections
+        MultiPoint<K>,                           // MultiPoint
+        MultiLineString<K>,                      // MultiLineString
+        MultiPolygon<K>,                         // MultiPolygon        
+        TriangulatedSurface<K>,                  // TriangulatedSurface
+
+        // heterogenous GeometryCollection
+        Collection< boost::recursive_variant_ >  // GeometryCollection
     >::type ;
     
     /**
-     * A GeometryCollection
+     * A collection of geometry with differents types
      */
     template < typename K >
-    using GeometryCollection = std::vector< Geometry<K> > ;
-    
+    using GeometryCollection = Collection< Geometry<K> > ;
+
 
 } // SFCGAL
 
