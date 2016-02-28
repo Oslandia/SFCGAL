@@ -17,16 +17,33 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef _SFCGAL_IO_WKT_H_
 #define _SFCGAL_IO_WKT_H_
 
+#include <SFCGAL/config.h>
+
+#include <sstream>
+#include <string>
+
+#include <SFCGAL/Geometry.h>
+
 namespace SFCGAL {
 namespace io {
+/**
+ * Read a WKT geometry from an input stream
+ */
+SFCGAL_API Geometry<Epeck> readWkt( std::istream& s ) ;
+/**
+ * Read a WKT geometry from a string
+ */
+SFCGAL_API Geometry<Epeck> readWkt( const std::string& s ) ;
+/**
+ * Read a WKT geometry from a char*
+ */
+SFCGAL_API Geometry<Epeck> readWkt( const char*, size_t );
 
-    // TODO restore
-    Geometry readWKT( const std::string & wkt ) ;
-
-} // namespace io
-} // namespace SFCGAL
+} // io
+} // SFCGAL
 
 #endif

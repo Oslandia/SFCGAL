@@ -17,19 +17,20 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_MULTIPOLYGON_H_
-#define _SFCGAL_MULTIPOLYGON_H_
+#ifndef _SFCGAL_SOLID_H_
+#define _SFCGAL_SOLID_H_
 
 #include <SFCGAL/Collection.h>
-#include <SFCGAL/Polygon.h>
+#include <SFCGAL/MultiPolygon.h>
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using MultiPolygon = Collection< Polygon<K> > ;
     
+    /**
+     * A solid where shells are represented by MultiPolygon (PolyhedralSurface)
+     * The first one is the exterior shell, the other are interior shells
+     */
     template < typename K >
-    using PolyhedralSurface = MultiPolygon<K>;
+    using Solid = std::vector< MultiPolygon<K> > ;
 
 } // SFCGAL
 

@@ -24,17 +24,25 @@
 #include <boost/variant.hpp>
 
 #include <SFCGAL/kernels.h>
+
+#include <SFCGAL/CoordinateType.h>
+#include <SFCGAL/GeometryType.h>
+
 #include <SFCGAL/Point.h>
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/Triangle.h>
+#include <SFCGAL/Solid.h>
 
 #include <SFCGAL/MultiPoint.h>
 #include <SFCGAL/MultiLineString.h>
 #include <SFCGAL/MultiPolygon.h>
 #include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/MultiSolid.h>
 
 namespace SFCGAL {
+    
+    typedef int srid_t ;
     
     /**
      * A geometry is variant.
@@ -48,12 +56,14 @@ namespace SFCGAL {
         LineString<K>,                           // LineString
         Polygon<K>,                              // Polygon
         Triangle<K>,                             // Triangle
+        Solid<K>,                                // Solid
 
         // homonegous collections
         MultiPoint<K>,                           // MultiPoint
         MultiLineString<K>,                      // MultiLineString
         MultiPolygon<K>,                         // MultiPolygon        
         TriangulatedSurface<K>,                  // TriangulatedSurface
+        MultiSolid<K>,                           // MultiSolid
 
         // heterogenous GeometryCollection
         Collection< boost::recursive_variant_ >  // GeometryCollection

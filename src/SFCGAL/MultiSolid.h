@@ -17,19 +17,16 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_MULTIPOLYGON_H_
-#define _SFCGAL_MULTIPOLYGON_H_
+#ifndef _SFCGAL_MULTISOLID_H_
+#define _SFCGAL_MULTISOLID_H_
 
 #include <SFCGAL/Collection.h>
-#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Solid.h>
 
 namespace SFCGAL {
         
     template < typename K >
-    using MultiPolygon = Collection< Polygon<K> > ;
-    
-    template < typename K >
-    using PolyhedralSurface = MultiPolygon<K>;
+    using MultiSolid = Collection< Solid<K> > ;
 
 } // SFCGAL
 

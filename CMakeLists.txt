@@ -111,12 +111,11 @@ message( STATUS "CGAL ${CGAL_VERSION} found" )
 find_package(MPFR REQUIRED)
 find_package(GMP REQUIRED)
 
-
 #--------------------------------------------------
 #-- generate library headers
 #--------------------------------------------------
-configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/config.h.cmake ${CMAKE_BINARY_DIR}/src/SFCGAL/config.h )
-configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/version.h.cmake ${CMAKE_BINARY_DIR}/src/SFCGAL/version.h )
+configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR}/src/SFCGAL/config.h )
+configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/src/SFCGAL/version.h )
 
 #--------------------------------------------------
 #-- set include directories

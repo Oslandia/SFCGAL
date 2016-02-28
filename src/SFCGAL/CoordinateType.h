@@ -17,19 +17,22 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_MULTIPOLYGON_H_
-#define _SFCGAL_MULTIPOLYGON_H_
-
-#include <SFCGAL/Collection.h>
-#include <SFCGAL/Polygon.h>
+#ifndef _SFCGAL_COORDINATETYPE_H_
+#define _SFCGAL_COORDINATETYPE_H_
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using MultiPolygon = Collection< Polygon<K> > ;
-    
-    template < typename K >
-    using PolyhedralSurface = MultiPolygon<K>;
+
+/**
+ * @brief coordinate types (XY, XYZ, XYM, etc.)
+ * @see SFA 2.8.3 LineStringZ = 1003 ( coordinateType + geometryType)
+ * @ingroup public_api
+ */
+typedef enum {
+    COORDINATE_XY   = 0 ,
+    COORDINATE_XYZ  = 1000,
+    COORDINATE_XYM  = 2000,
+    COORDINATE_XYZM = 3000
+} CoordinateType ;
 
 } // SFCGAL
 
