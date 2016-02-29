@@ -1,3 +1,5 @@
+1.3.1 (201?-MM-DD):
+    * Fix Doxygen script
 1.3.0 (2016-02-29):
     * Add a validity flag to geometries
     * Add an option to straight skeleton to return the distance to borders
