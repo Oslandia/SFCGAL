@@ -24,14 +24,14 @@
 #include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using MultiPolygon = Collection< Polygon<K> > ;
-    
-    template < typename K >
-    using PolyhedralSurface = MultiPolygon<K>;
+
+    template < typename K, int N >
+    using MultiPolygon = Collection< Polygon<K,N> > ;
+
+    // TODO remove
+    template < typename K, int N >
+    using PolyhedralSurface = MultiPolygon<K,N> ;
 
 } // SFCGAL
 
 #endif
-

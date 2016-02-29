@@ -24,11 +24,10 @@
 #include <SFCGAL/Collection.h>
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using TriangulatedSurface = Collection< Triangle<K> > ;
+
+    template < typename K, int N >
+    using TriangulatedSurface = Collection< Triangle<K,N> > ;
 
 } // SFCGAL
 
 #endif
-

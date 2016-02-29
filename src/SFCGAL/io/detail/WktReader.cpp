@@ -56,7 +56,7 @@ srid_t WktReader::readSRID()
 
 ///
 ///
-Geometry<Epeck>   WktReader::readGeometry()
+Geometry<Epeck,3>   WktReader::readGeometry()
 {
     GeometryType   geometryType   = readGeometryType() ;
     _is3D       = _reader.imatch( "Z" );
@@ -64,73 +64,73 @@ Geometry<Epeck>   WktReader::readGeometry()
 
     switch ( geometryType ) {
     case TYPE_POINT : {
-        Point<Epeck> g;
+        Point<Epeck,3> g;
         readInnerPoint( g );
         return g ;
     }
 
     case TYPE_LINESTRING: {
-        LineString<Epeck> g;
+        LineString<Epeck,3> g;
         readInnerLineString( g );
         return g ;
     }
 
     case TYPE_TRIANGLE: {
-        Triangle<Epeck> g;
+        Triangle<Epeck,3> g;
         readInnerTriangle( g );
         return g ;
     }
 
     case TYPE_POLYGON: {
-        Polygon<Epeck> g;
+        Polygon<Epeck,3> g;
         readInnerPolygon( g );
         return g ;
     }
 
     case TYPE_MULTIPOINT : {
-        MultiPoint<Epeck> g;
+        MultiPoint<Epeck,3> g;
         readInnerMultiPoint( g );
         return g;
     }
 
     case TYPE_MULTILINESTRING : {
-        MultiLineString<Epeck> g;
+        MultiLineString<Epeck,3> g;
         readInnerMultiLineString( g );
         return g ;
     }
 
     case TYPE_MULTIPOLYGON : {
-        MultiPolygon<Epeck> g;
+        MultiPolygon<Epeck,3> g;
         readInnerMultiPolygon( g );
         return g ;
     }
 
     case TYPE_GEOMETRYCOLLECTION : {
-        GeometryCollection<Epeck> g;
+        GeometryCollection<Epeck,3> g;
         readInnerGeometryCollection( g );
         return g ;
     }
 
     case TYPE_TRIANGULATEDSURFACE : {
-        TriangulatedSurface<Epeck> g;
+        TriangulatedSurface<Epeck,3> g;
         readInnerTriangulatedSurface( g );
         return g ;
     }
 
     case TYPE_POLYHEDRALSURFACE : {
-        PolyhedralSurface<Epeck> g ;
+        PolyhedralSurface<Epeck,3> g ;
         readInnerPolyhedralSurface( g );
         return g ;
     }
 
     case TYPE_SOLID : {
-        Solid<Epeck> g;
+        Solid<Epeck,3> g;
         readInnerSolid( g );
         return g ;
     }
 
     case TYPE_MULTISOLID : {
-        MultiSolid<Epeck> g;
+        MultiSolid<Epeck,3> g;
         readInnerMultiSolid( g );
         return g ;
     }
@@ -193,7 +193,7 @@ GeometryType WktReader::readGeometryType()
 ///
 ///
 ///
-void   WktReader::readInnerPoint( Point<Epeck>& g )
+void   WktReader::readInnerPoint( Point<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -213,7 +213,7 @@ void   WktReader::readInnerPoint( Point<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerLineString( LineString<Epeck>& g )
+void   WktReader::readInnerLineString( LineString<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -225,7 +225,7 @@ void   WktReader::readInnerLineString( LineString<Epeck>& g )
 
     while ( ! _reader.eof() ) {
 
-        Point<Epeck> p;
+        Point<Epeck,3> p;
         if ( readPointCoordinate( p ) ) {
             g.push_back(p);
         }
@@ -254,7 +254,7 @@ void   WktReader::readInnerLineString( LineString<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerPolygon( Polygon<Epeck>& g )
+void   WktReader::readInnerPolygon( Polygon<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -266,12 +266,12 @@ void   WktReader::readInnerPolygon( Polygon<Epeck>& g )
 
     for( int i = 0; ! _reader.eof() ; i++ ) {
         if ( i == 0 ) {
-            LineString<Epeck> exteriorRing ;
+            LineString<Epeck,3> exteriorRing ;
             readInnerLineString( exteriorRing ) ;
             g.push_back(exteriorRing);
         }
         else {
-            LineString<Epeck> interiorRing;
+            LineString<Epeck,3> interiorRing;
             readInnerLineString( interiorRing ) ;
             g.push_back( interiorRing ) ;
         }
@@ -291,7 +291,7 @@ void   WktReader::readInnerPolygon( Polygon<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerTriangle( Triangle<Epeck>& g )
+void   WktReader::readInnerTriangle( Triangle<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -306,10 +306,10 @@ void   WktReader::readInnerTriangle( Triangle<Epeck>& g )
     }
 
     // 4 points to read
-    std::vector< Point<Epeck> > points ;
+    std::vector< Point<Epeck,3> > points ;
 
     while ( ! _reader.eof() ) {
-        points.push_back( Point<Epeck>() ) ;
+        points.push_back( Point<Epeck,3>() ) ;
         readPointCoordinate( points.back() );
 
         if ( ! _reader.match( "," ) ) {
@@ -325,7 +325,7 @@ void   WktReader::readInnerTriangle( Triangle<Epeck>& g )
         BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, first point different of the last point for triangle" ) );
     }
 
-    g = Triangle<Epeck>( points[0], points[1], points[2] );
+    g = Triangle<Epeck,3>( points[0], points[1], points[2] );
 
     if ( ! _reader.match( ')' ) ) {
         BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
@@ -339,7 +339,7 @@ void   WktReader::readInnerTriangle( Triangle<Epeck>& g )
 ///
 ///
 ///
-void    WktReader::readInnerMultiPoint( MultiPoint<Epeck>& g )
+void    WktReader::readInnerMultiPoint( MultiPoint<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -350,7 +350,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint<Epeck>& g )
     }
 
     while( ! _reader.eof() ) {
-        Point<Epeck> p ;
+        Point<Epeck,3> p ;
 
         if ( !_reader.imatch( "EMPTY" ) ) {
             // optional open/close parenthesis
@@ -369,7 +369,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint<Epeck>& g )
 
         //if ( !p->isEmpty() ) g.addGeometry( p.release() );
         g.push_back(p);
-        
+
         //break if not followed by another points
         if ( ! _reader.match( ',' ) ) {
             break ;
@@ -385,7 +385,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerMultiLineString( MultiLineString<Epeck>& g )
+void   WktReader::readInnerMultiLineString( MultiLineString<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -397,7 +397,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString<Epeck>& g )
 
     while( ! _reader.eof() ) {
 
-        LineString<Epeck> lineString ;
+        LineString<Epeck,3> lineString ;
         readInnerLineString( lineString );
         if ( ! lineString.empty() ){
             g.push_back(lineString);
@@ -417,7 +417,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerMultiPolygon( MultiPolygon<Epeck>& g )
+void   WktReader::readInnerMultiPolygon( MultiPolygon<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -429,7 +429,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon<Epeck>& g )
 
     while( ! _reader.eof() ) {
 
-        Polygon<Epeck> polygon;
+        Polygon<Epeck,3> polygon;
         readInnerPolygon( polygon );
         if ( ! polygon.empty() ){
             g.push_back(polygon);
@@ -449,7 +449,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon<Epeck>& g )
 ///
 ///
 ///
-void   WktReader::readInnerGeometryCollection( GeometryCollection<Epeck>& g )
+void   WktReader::readInnerGeometryCollection( GeometryCollection<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -462,7 +462,7 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection<Epeck>& g )
     while( ! _reader.eof() ) {
 
         //read a full wkt geometry ex : POINT(2.0 6.0)
-        Geometry<Epeck> gg = readGeometry();
+        Geometry<Epeck,3> gg = readGeometry();
         // TODO restore???
         //if ( !gg->isEmpty() )
         //    g.addGeometry( gg );
@@ -482,7 +482,7 @@ void   WktReader::readInnerGeometryCollection( GeometryCollection<Epeck>& g )
 ///
 ///
 ///
-void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface<Epeck>& g )
+void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -493,7 +493,7 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface<Epeck>& g )
     }
 
     while( ! _reader.eof() ) {
-        Triangle<Epeck> triangle ;
+        Triangle<Epeck,3> triangle ;
         readInnerTriangle( triangle );
         g.push_back( triangle ) ;
 
@@ -512,7 +512,7 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface<Epeck>& g )
 ///
 ///
 ///
-void WktReader::readInnerPolyhedralSurface( PolyhedralSurface<Epeck>& g )
+void WktReader::readInnerPolyhedralSurface( PolyhedralSurface<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -523,7 +523,7 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface<Epeck>& g )
     }
 
     while( ! _reader.eof() ) {
-        Polygon<Epeck> polygon ;
+        Polygon<Epeck,3> polygon ;
         readInnerPolygon( polygon );
         g.push_back( polygon );
 
@@ -542,7 +542,7 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface<Epeck>& g )
 ///
 ///
 ///
-void WktReader::readInnerSolid( Solid<Epeck>& g )
+void WktReader::readInnerSolid( Solid<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -554,7 +554,7 @@ void WktReader::readInnerSolid( Solid<Epeck>& g )
     }
 
     for ( int i = 0; ! _reader.eof(); i++ ) {
-        PolyhedralSurface<Epeck> shell ;
+        PolyhedralSurface<Epeck,3> shell ;
         readInnerPolyhedralSurface( shell );
         g.push_back(shell);
 
@@ -573,7 +573,7 @@ void WktReader::readInnerSolid( Solid<Epeck>& g )
 ///
 ///
 ///
-void WktReader::readInnerMultiSolid( MultiSolid<Epeck>& g )
+void WktReader::readInnerMultiSolid( MultiSolid<Epeck,3>& g )
 {
     if ( _reader.imatch( "EMPTY" ) ) {
         return ;
@@ -585,7 +585,7 @@ void WktReader::readInnerMultiSolid( MultiSolid<Epeck>& g )
 
     while( ! _reader.eof() ) {
 
-        Solid<Epeck> solid ;
+        Solid<Epeck,3> solid ;
         readInnerSolid( solid );
         if ( ! solid.empty() ){
             g.push_back(solid);
@@ -606,7 +606,7 @@ void WktReader::readInnerMultiSolid( MultiSolid<Epeck>& g )
 ///
 ///
 ///
-bool WktReader::readPointCoordinate( Point<Epeck>& p )
+bool WktReader::readPointCoordinate( Point<Epeck,3>& p )
 {
     //std::vector< Epeck::Exact_kernel::FT > coordinates ;
     //Epeck::Exact_kernel::FT d;
@@ -614,7 +614,7 @@ bool WktReader::readPointCoordinate( Point<Epeck>& p )
     Epeck::FT d;
 
     if ( _reader.imatch( "EMPTY" ) ) {
-        p = Point<Epeck>();
+        p = Point<Epeck,3>();
         return false;
     }
 
@@ -638,7 +638,7 @@ bool WktReader::readPointCoordinate( Point<Epeck>& p )
             BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension" ) );
         }
 
-        p = Point<Epeck>( coordinates[0], coordinates[1], coordinates[2] );
+        p = Point<Epeck,3>( coordinates[0], coordinates[1], coordinates[2] );
         //p.setM( coordinates[3].to_double() );
     }
     else if ( _isMeasured && ! _is3D ) {
@@ -647,16 +647,16 @@ bool WktReader::readPointCoordinate( Point<Epeck>& p )
             BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension (expecting XYM coordinates)" ) );
         }
 
-        p = Point<Epeck>( coordinates[0], coordinates[1], 0 ); // TO 3D
+        p = Point<Epeck,3>( coordinates[0], coordinates[1], 0 ); // TO 3D
         //p.setM( coordinates[2].to_double() );
     }
     else if ( coordinates.size() == 3 ) {
         // XYZ
-        p = Point<Epeck>( coordinates[0], coordinates[1], coordinates[2] );
+        p = Point<Epeck,3>( coordinates[0], coordinates[1], coordinates[2] );
     }
     else {
         // XY
-        p = Point<Epeck>( coordinates[0], coordinates[1], 0 ); // TO 3D
+        p = Point<Epeck,3>( coordinates[0], coordinates[1], 0 ); // TO 3D
     }
 
     return true ;
@@ -681,4 +681,3 @@ std::string WktReader::parseErrorMessage()
 }//detail
 }//io
 }//SFCGAL
-

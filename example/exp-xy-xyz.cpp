@@ -1,39 +1,13 @@
 #include <iostream>
 
 #include <SFCGAL/kernels.h>
-#include <SFCGAL/CoordinateType.h>
+#include <SFCGAL/Point.h>
 
 using namespace SFCGAL ;
 
-template < typename K, typename CT >
-struct CoordinateTraits {
-    
-} ;
-
-struct XY {} ;
-template <typename K>
-struct CoordinateTraits<K,XY> {
-    static const int dimension = 2 ;
-    
-    typedef CGAL::Point_2<K> Point ;
-} ;
-
-struct XYZ {} ;
-template <typename K>
-struct CoordinateTraits<K,XYZ> {
-    static const int dimension = 2 ;
-    
-    typedef CGAL::Point_3<K> Point ;
-} ;
-
-
-template < typename K, typename CT >
-using Point = typename CoordinateTraits<K,CT>::Point ;
-
-
 namespace wkt {
-    template < typename K, typename CT >
-    std::string encode( const Point<K,CT> & g ){
+    template < typename K, int N >
+    std::string encode( const Point<K,N> & g ){
         std::ostringstream oss ;
         oss << "POINT(";
         oss << g ;
@@ -44,15 +18,14 @@ namespace wkt {
 
 
 int main( int argc, char* argv[] ){
-    typedef Point<Epeck,XY>  PointXY ;
-    typedef Point<Epeck,XYZ> PointXYZ ;
-    
+    typedef Point<Epeck,2>  PointXY ;
+    typedef Point<Epeck,3> PointXYZ ;
+
     PointXY a(3.0,4.0);
-    std::cout << wkt::encode<Epeck,XY>(a) << std::endl;
+    std::cout << wkt::encode<Epeck,2>(a) << std::endl;
 
     PointXYZ b(3.0,4.0,5.0);
-    std::cout << wkt::encode<Epeck,XYZ>(b) << std::endl;
+    std::cout << wkt::encode<Epeck,3>(b) << std::endl;
 
     return 0 ;
 }
-

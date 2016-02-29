@@ -4,18 +4,22 @@
 
 using namespace SFCGAL ;
 
+typedef Point<Epeck,3>    Point_3 ;
+typedef Triangle<Epeck,3> Triangle_3 ;
+
+typedef CGAL::Plane_3<Epeck> Plane_3 ;
+
 int main( int argc, char* argv[] ){
-    Point<Epeck> a(0.0,0.0,1.0);
-    Point<Epeck> b(1.0,0.0,0.5);
-    Point<Epeck> c(0.0,1.0,0.0);
-    
-    Triangle<Epeck> triangle(a,b,c) ;
+    Point_3 a(0.0,0.0,1.0);
+    Point_3 b(1.0,0.0,0.5);
+    Point_3 c(0.0,1.0,0.0);
+
+    Triangle_3 triangle(a,b,c) ;
     std::cout << CGAL::to_double( triangle.squared_area() ) << std::endl ;
     std::cout << CGAL::to_double( triangle.squared_area() ) << std::endl ;
-    
-    CGAL::Plane_3<Epeck> plane = triangle.supporting_plane() ;
-    Point<Epeck> projection = plane.projection( Point<Epeck>(5.0,5.0,5.0) );
+
+    Plane_3 plane = triangle.supporting_plane() ;
+    Point_3 projection = plane.projection( Point_3(5.0,5.0,5.0) );
     std::cout << projection << std::endl;
     return 0 ;
 }
-

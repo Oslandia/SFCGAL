@@ -24,11 +24,10 @@
 #include <SFCGAL/Solid.h>
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using MultiSolid = Collection< Solid<K> > ;
+
+    template < typename K, int N >
+    using MultiSolid = Collection< Solid<K,N> > ;
 
 } // SFCGAL
 
 #endif
-

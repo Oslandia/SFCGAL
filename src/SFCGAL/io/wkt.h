@@ -33,15 +33,15 @@ namespace io {
 /**
  * Read a WKT geometry from an input stream
  */
-SFCGAL_API Geometry<Epeck> readWkt( std::istream& s ) ;
+SFCGAL_API Geometry<Epeck,3> readWkt( std::istream& s ) ;
 /**
  * Read a WKT geometry from a string
  */
-SFCGAL_API Geometry<Epeck> readWkt( const std::string& s ) ;
+SFCGAL_API Geometry<Epeck,3> readWkt( const std::string& s ) ;
 /**
  * Read a WKT geometry from a char*
  */
-SFCGAL_API Geometry<Epeck> readWkt( const char*, size_t );
+SFCGAL_API Geometry<Epeck,3> readWkt( const char*, size_t );
 
 } // io
 } // SFCGAL

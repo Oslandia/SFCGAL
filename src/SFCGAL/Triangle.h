@@ -24,12 +24,30 @@
 
 namespace SFCGAL {
 
-    /**
-     * A 3D Triangle
-     */
-    template < typename K > 
-    using Triangle = CGAL::Triangle_3<K> ;
+    namespace detail {
+        template < typename K, int N >
+        struct TriangleTraits {
 
-}
+        } ;
+
+        template < typename K>
+        struct TriangleTraits<K,2> {
+            typedef CGAL::Triangle_2< K > Type ;
+        } ;
+
+        template < typename K>
+        struct TriangleTraits<K,3> {
+            typedef CGAL::Triangle_3< K > Type ;
+        } ;
+    } // namespace
+
+    /**
+     * SFCGAL Triangle with a generic dimension
+     */
+    template < typename K, int N >
+    using Triangle = typename detail::TriangleTraits<K,N>::Type ;
+
+
+} // namespace SFCGAL
 
 #endif

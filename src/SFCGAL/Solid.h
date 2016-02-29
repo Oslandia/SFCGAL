@@ -24,15 +24,18 @@
 #include <SFCGAL/MultiPolygon.h>
 
 namespace SFCGAL {
-    
+
     /**
      * A solid where shells are represented by MultiPolygon (PolyhedralSurface)
      * The first one is the exterior shell, the other are interior shells
+     *
+     * @warning A 2D solid is an artefact to provide the same type list
+     *  in the Geometry variant for 2D and 3D
      */
-    template < typename K >
-    using Solid = std::vector< MultiPolygon<K> > ;
+    template < typename K, int N >
+    using Solid = std::vector< MultiPolygon<K,N> > ;
+
 
 } // SFCGAL
 
 #endif
-

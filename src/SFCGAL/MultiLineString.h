@@ -24,11 +24,10 @@
 #include <SFCGAL/LineString.h>
 
 namespace SFCGAL {
-        
-    template < typename K >
-    using MultiLineString = Collection< LineString<K> > ;
+
+    template < typename K, int N >
+    using MultiLineString = Collection< LineString<K,N> > ;
 
 } // SFCGAL
 
 #endif
-

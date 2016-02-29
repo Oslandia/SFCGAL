@@ -57,7 +57,7 @@ public:
      *
      * @warning returns new instance
      */
-    Geometry<Epeck> readGeometry() ;
+    Geometry<Epeck,3> readGeometry() ;
 
     /**
      * read geometry type
@@ -73,70 +73,70 @@ public:
      *
      * ex : (1.0 2.0 14.0)
      */
-    void  readInnerPoint( Point<Epeck>& g ) ;
+    void  readInnerPoint( Point<Epeck,3>& g ) ;
     /**
      * Read LineString content from wkt
      *
      * ex : (1.0 2.0,1.0,6.0)
      */
-    void  readInnerLineString( LineString<Epeck>& g ) ;
+    void  readInnerLineString( LineString<Epeck,3>& g ) ;
     /**
      * Read Polygon content from wkt
      *
      * ex : ((30 10, 10 20, 20 40, 40 40, 30 10))
      */
-    void  readInnerPolygon( Polygon<Epeck>& g ) ;
+    void  readInnerPolygon( Polygon<Epeck,3>& g ) ;
     /**
      * Read Triangle content from wkt
      */
-    void  readInnerTriangle( Triangle<Epeck>& g ) ;
+    void  readInnerTriangle( Triangle<Epeck,3>& g ) ;
 
     /**
      * Read MultiPoint content from wkt
      *
      * ex : (0.0 1.0,5.0 6.0) or ((0.0 4.0),(5.0 6.0))
      */
-    void  readInnerMultiPoint( MultiPoint<Epeck>& g ) ;
+    void  readInnerMultiPoint( MultiPoint<Epeck,3>& g ) ;
     /**
      * Read MultiLineString content from wkt
      */
-    void  readInnerMultiLineString( MultiLineString<Epeck>& g ) ;
+    void  readInnerMultiLineString( MultiLineString<Epeck,3>& g ) ;
     /**
      * Read MultiPolygon content from wkt
      */
-    void  readInnerMultiPolygon( MultiPolygon<Epeck>& g ) ;
+    void  readInnerMultiPolygon( MultiPolygon<Epeck,3>& g ) ;
 
     /**
      * Read GeometryCollection content from wkt
      */
-    void  readInnerGeometryCollection( GeometryCollection<Epeck>& g ) ;
+    void  readInnerGeometryCollection( GeometryCollection<Epeck,3>& g ) ;
 
     /**
      * Read TriangulatedSurface content from wkt
      */
-    void  readInnerTriangulatedSurface( TriangulatedSurface<Epeck>& g ) ;
+    void  readInnerTriangulatedSurface( TriangulatedSurface<Epeck,3>& g ) ;
 
     /**
      * Read PolyhedralSurface content from wkt
      */
-    void  readInnerPolyhedralSurface( PolyhedralSurface<Epeck>& g ) ;
+    void  readInnerPolyhedralSurface( PolyhedralSurface<Epeck,3>& g ) ;
 
 
     /**
      * Read Solid content from wkt
      */
-    void  readInnerSolid( Solid<Epeck>& g ) ;
+    void  readInnerSolid( Solid<Epeck,3>& g ) ;
 
     /**
      * Read MultiSolid content from wkt
      */
-    void  readInnerMultiSolid( MultiSolid<Epeck>& g ) ;
+    void  readInnerMultiSolid( MultiSolid<Epeck,3>& g ) ;
 
     /**
      * Read coordinate from WKT
      * @todo ZM management
      */
-    bool  readPointCoordinate( Point<Epeck>& p ) ;
+    bool  readPointCoordinate( Point<Epeck,3>& p ) ;
 
 private:
     /**

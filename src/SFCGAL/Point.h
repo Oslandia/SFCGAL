@@ -23,14 +23,33 @@
 #include <SFCGAL/kernels.h>
 
 namespace SFCGAL {
-        
+
+    namespace detail {
+        template < typename K, int N >
+        struct PointTraits {
+
+        } ;
+
+        template < typename K>
+        struct PointTraits<K,2> {
+            typedef CGAL::Point_2< K > Type ;
+        } ;
+
+        template < typename K>
+        struct PointTraits<K,3> {
+            typedef CGAL::Point_3< K > Type ;
+        } ;
+    } // detail
+
     /**
      * SFCGAL Point is simplify defined as a typedef
-     *  on a CGAL::Point_3
+     * on a CGAL::Point_2 or CGAL::Point_3.
+     *
+     * Note that "M" could be managed with decorated kernel points
      */
-    template < typename K > 
-    using Point = CGAL::Point_3< K > ;
+    template < typename K, int N >
+    using Point = typename detail::PointTraits<K,N>::Type ;
 
-}
+} // namespace SFCGAL
 
 #endif

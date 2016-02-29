@@ -33,7 +33,7 @@ namespace io {
 ///
 ///
 ///
-Geometry<Epeck> readWkt( std::istream& s )
+Geometry<Epeck,3> readWkt( std::istream& s )
 {
     WktReader wktReader( s );
     return wktReader.readGeometry();
@@ -42,11 +42,11 @@ Geometry<Epeck> readWkt( std::istream& s )
 ///
 ///
 ///
-Geometry<Epeck> readWkt( const std::string& s )
+Geometry<Epeck,3> readWkt( const std::string& s )
 {
     std::istringstream iss( s );
     WktReader wktReader( iss );
-    Geometry<Epeck> geom = wktReader.readGeometry() ;
+    Geometry<Epeck,3> geom = wktReader.readGeometry() ;
 
     char extra;
     if ( iss >> extra ) {
@@ -59,12 +59,12 @@ Geometry<Epeck> readWkt( const std::string& s )
 ///
 ///
 ///
-Geometry<Epeck> readWkt( const char* str, size_t len )
+Geometry<Epeck,3> readWkt( const char* str, size_t len )
 {
     CharArrayBuffer buf( str, str + len );
     std::istream istr( &buf );
     WktReader wktReader( istr );
-    Geometry<Epeck> geom( wktReader.readGeometry() );
+    Geometry<Epeck,3> geom( wktReader.readGeometry() );
     char extra;
     if ( istr >> extra ) {
         std::string remaining( str + int(istr.tellg()) - 1, str + len );
@@ -75,5 +75,3 @@ Geometry<Epeck> readWkt( const char* str, size_t len )
 
 }//io
 }//SFCGAL
-
-

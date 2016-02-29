@@ -25,22 +25,22 @@
 
 namespace SFCGAL {
 namespace detail {
-    
+
     /**
      * Collect Points and Constraints from a geometry.
      *
      * @warning this methods does not ensure unicity
      */
-    template < typename K >
+    template < typename K, int N >
     void collectPointsAndConstraints(
-        const Geometry<K> & geometry,
-        std::vector< Point<K> > & points,
+        const Geometry<K,N> & geometry,
+        std::vector< Point<K,N> > & points,
         std::vector< std::pair< size_t, size_t > > & constraints
     ){
-        detail::PointsAndConstraintsVisitor<K> visitor(points,constraints);
+        detail::PointsAndConstraintsVisitor<K,N> visitor(points,constraints);
         boost::apply_visitor(visitor,geometry);
     }
-        
+
 } // detail
 } // SFCGAL
 
