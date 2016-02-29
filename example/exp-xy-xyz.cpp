@@ -30,34 +30,28 @@ struct CoordinateTraits<K,XYZ> {
 template < typename K, typename CT >
 using Point = typename CoordinateTraits<K,CT>::Point ;
 
-template < typename K >
-struct Encoder {
 
-    template < typename CT >
+namespace wkt {
+    template < typename K, typename CT >
     std::string encode( const Point<K,CT> & g ){
         std::ostringstream oss ;
         oss << "POINT(";
         oss << g ;
         oss << ")";
         return oss.str();
-    }    
-        
-} ;
-
-
+    }
+}
 
 
 int main( int argc, char* argv[] ){
     typedef Point<Epeck,XY>  PointXY ;
     typedef Point<Epeck,XYZ> PointXYZ ;
     
-    Encoder<Epeck> encoder ;
-    
     PointXY a(3.0,4.0);
-    std::cout << encoder.encode<XY>(a) << std::endl;
+    std::cout << wkt::encode<Epeck,XY>(a) << std::endl;
 
     PointXYZ b(3.0,4.0,5.0);
-    std::cout << encoder.encode<XYZ>(b) << std::endl;
+    std::cout << wkt::encode<Epeck,XYZ>(b) << std::endl;
 
     return 0 ;
 }
