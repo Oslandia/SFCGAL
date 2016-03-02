@@ -1,14 +1,14 @@
-add_subdirectory( CGAL-basic_manip )
-add_subdirectory( CGAL-cartesian_kernel )
-add_subdirectory( CGAL-point_generator )
-add_subdirectory( CGAL-triangulation2 )
-add_subdirectory( CGAL-polygon_triangulation2 )
-add_subdirectory( SFCGAL-offset )
-
-if ( SFCGAL_WITH_OSG )
-	add_subdirectory( SFCGAL-export-osg )
-	add_subdirectory( SFCGAL-asc2osg )
-	add_subdirectory( SFCGAL-building )
-endif()
-
-
+file(GLOB_RECURSE EXAMPLE_SOURCES "${CMAKE_SOURCE_DIR}/example/*.cpp")
+foreach(EXAMPLE_SOURCE ${EXAMPLE_SOURCES})
+    get_filename_component(EXAMPLE_NAME ${EXAMPLE_SOURCE} NAME_WE)
+    add_executable(${EXAMPLE_NAME}
+        ${EXAMPLE_SOURCE}
+    )
+    target_link_libraries(${EXAMPLE_NAME}
+        SFCGAL
+        ${CGAL_LIBRARIES}
+        ${Boost_LIBRARIES}
+        ${MPFR_LIBRARIES}
+        ${GMP_LIBRARIES}
+    )
+endforeach()

@@ -1,0 +1,10 @@
+# generated headers
+/src/SFCGAL/config.h
+/src/SFCGAL/version.h
+
+# build directories
+/Release/
+/Debug/
+
+
+
