@@ -21,9 +21,13 @@
 #define _SFCGAL_LINESTRING_H_
 
 #include <SFCGAL/kernels.h>
+#include <SFCGAL/Point.h>
 
 namespace SFCGAL {
-
+    
+    /**
+     * A polyline defined by a list of points
+     */
     template < typename K, int N >
     using LineString = std::vector< Point<K,N> > ;
 

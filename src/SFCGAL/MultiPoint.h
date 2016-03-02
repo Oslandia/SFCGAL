@@ -24,7 +24,10 @@
 #include <SFCGAL/Collection.h>
 
 namespace SFCGAL {
-
+    
+    /**
+     * A collection of Points
+     */
     template < typename K, int N >
     using MultiPoint = Collection< Point<K,N> > ;
 

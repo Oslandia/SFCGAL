@@ -23,7 +23,7 @@
 #include <SFCGAL/kernels.h>
 
 namespace SFCGAL {
-
+    
     namespace detail {
         template < typename K, int N >
         struct PointTraits {
@@ -32,12 +32,12 @@ namespace SFCGAL {
 
         template < typename K>
         struct PointTraits<K,2> {
-            typedef CGAL::Point_2< K > Type ;
+            using Type = CGAL::Point_2< K > ;
         } ;
 
         template < typename K>
         struct PointTraits<K,3> {
-            typedef CGAL::Point_3< K > Type ;
+            using Type = CGAL::Point_3< K > ;
         } ;
     } // detail
 

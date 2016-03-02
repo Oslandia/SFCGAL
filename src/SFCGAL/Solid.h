@@ -35,7 +35,6 @@ namespace SFCGAL {
     template < typename K, int N >
     using Solid = std::vector< MultiPolygon<K,N> > ;
 
-
 } // SFCGAL
 
 #endif

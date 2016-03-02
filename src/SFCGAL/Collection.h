@@ -49,6 +49,10 @@ namespace SFCGAL {
         
         ~Collection(){}
         
+        bool empty() const {
+            return _geometries.empty();
+        }
+        
         size_t size() const {
             return _geometries.size() ;
         }
@@ -60,14 +64,13 @@ namespace SFCGAL {
         void push_back( const value_type & geometry ){
             _geometries.push_back(geometry);
         }
-        
+
         value_type & geometry( const size_t & n ) {
             return _geometries[n] ;
         }
         const value_type & geometry( const size_t & n ) const {
             return _geometries[n] ;
         }
-        
         
         const_iterator begin() const { return _geometries.begin() ; }
         const_iterator end() const { return _geometries.end() ; }
