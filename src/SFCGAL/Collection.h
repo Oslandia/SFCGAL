@@ -29,57 +29,21 @@ namespace SFCGAL {
      * A wrapper to provide strong typing on geometry collections
      */
     template < typename GeometryType > 
-    class Collection {
+    class Collection : public std::vector< GeometryType > {
     public:
-        typedef GeometryType                                       value_type ;
-        typedef std::vector< value_type >                          container_t ;
-        typedef typename std::vector< value_type >::iterator       iterator ;
-        typedef typename std::vector< value_type >::const_iterator const_iterator ;
+        using Base = std::vector< GeometryType > ;
+        using value_type = GeometryType ;
 
-        Collection() = default ;
-        
-        template < typename Iterator >
-        Collection( Iterator & begin, Iterator & end ):
-            _geometries(begin,end)
-        {
-            
-        }
-        
-        Collection( const Collection & other ) = default;
-        
-        ~Collection(){}
-        
-        bool empty() const {
-            return _geometries.empty();
-        }
-        
-        size_t size() const {
-            return _geometries.size() ;
-        }
-        
-        void reserve( size_t n ){
-            _geometries.reserve(n);
-        }
-        
-        void push_back( const value_type & geometry ){
-            _geometries.push_back(geometry);
-        }
+        // forward base constructor
+        using Base::Base;
 
         value_type & geometry( const size_t & n ) {
-            return _geometries[n] ;
+            return (*this)[n] ;
         }
         const value_type & geometry( const size_t & n ) const {
-            return _geometries[n] ;
+            return (*this)[n] ;
         }
-        
-        const_iterator begin() const { return _geometries.begin() ; }
-        const_iterator end() const { return _geometries.end() ; }
 
-        iterator       begin() { return _geometries.begin() ; }
-        iterator       end() { return _geometries.end() ; }
-                
-    private:
-        container_t _geometries ;
     } ;
 
 }
