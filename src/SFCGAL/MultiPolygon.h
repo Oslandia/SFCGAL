@@ -28,12 +28,12 @@ namespace SFCGAL {
     /**
      * A collection of polygons
      */
-    template < typename K, int N >
-    using MultiPolygon = Collection< Polygon<K,N> > ;
+    template < typename K >
+    using MultiPolygon = Collection< Polygon<K> > ;
     
     // TODO remove
-    template < typename K, int N >
-    using PolyhedralSurface = MultiPolygon<K,N> ;
+    template < typename K >
+    using PolyhedralSurface = MultiPolygon<K> ;
 
 } // SFCGAL
 

@@ -28,8 +28,8 @@ namespace SFCGAL {
     /**
      * A collection of solid
      */
-    template < typename K, int N >
-    using MultiSolid = Collection< Solid<K,N> > ;
+    template < typename K >
+    using MultiSolid = Collection< Solid<K> > ;
 
 } // SFCGAL
 

@@ -28,8 +28,8 @@ namespace SFCGAL {
      * A polygon with holes
      * @TODO see if it's interesting to traits to use CGAL::Polygon_with_holes_2
      */
-    template < typename K, int N >
-    using Polygon = std::vector< LineString<K,N> > ;
+    template < typename K >
+    using Polygon = std::vector< LineString<K> > ;
 
 } // SFCGAL
 

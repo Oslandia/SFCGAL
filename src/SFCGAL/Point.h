@@ -24,31 +24,14 @@
 
 namespace SFCGAL {
     
-    namespace detail {
-        template < typename K, int N >
-        struct PointTraits {
-
-        } ;
-
-        template < typename K>
-        struct PointTraits<K,2> {
-            using Type = CGAL::Point_2< K > ;
-        } ;
-
-        template < typename K>
-        struct PointTraits<K,3> {
-            using Type = CGAL::Point_3< K > ;
-        } ;
-    } // detail
-
     /**
      * SFCGAL Point is simplify defined as a typedef
      * on a CGAL::Point_2 or CGAL::Point_3.
      *
      * Note that "M" could be managed with decorated kernel points
      */
-    template < typename K, int N >
-    using Point = typename detail::PointTraits<K,N>::Type ;
+    template < typename K >
+    using Point = CGAL::Point_3< K > ;
 
 } // namespace SFCGAL
 

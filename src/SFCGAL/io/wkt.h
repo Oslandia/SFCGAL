@@ -36,36 +36,36 @@ namespace io {
     
     
     
-    template < typename K, int N >
-    void toWkt( std::ostream& s, const Geometry<K,N> & g ){
-        detail::WktWriter<K,N> writer(s);
+    template < typename K >
+    void toWkt( std::ostream& s, const Geometry<K> & g ){
+        detail::WktWriter<K> writer(s);
         boost::apply_visitor(writer,g);
     }
     
-    template < typename K, int N >
-    std::string toWkt( const Geometry<K,N> & g ){
+    template < typename K >
+    std::string toWkt( const Geometry<K> & g ){
         std::ostringstream oss;
-        toWkt<K,N>(oss,g);
+        toWkt<K>(oss,g);
         return oss.str();
     }
 
     /**
      * Read a WKT geometry from an input stream
      */
-    template < typename K, int N >
-    Geometry<K,N> readWkt( std::istream& s ) {
-        detail::WktReader<K,N> wktReader( s );
+    template < typename K >
+    Geometry<K> readWkt( std::istream& s ) {
+        detail::WktReader<K> wktReader( s );
         return wktReader.readGeometry();
     }
 
     /**
      * Read a WKT geometry from a string
      */
-    template < typename K, int N >
-    Geometry<K,N> readWkt( const std::string& s ) {
+    template < typename K >
+    Geometry<K> readWkt( const std::string& s ) {
         std::istringstream iss( s );
-        detail::WktReader<K,N> wktReader( iss );
-        Geometry<K,N> result = wktReader.read() ;
+        detail::WktReader<K> wktReader( iss );
+        Geometry<K> result = wktReader.read() ;
         char extra;
         if ( iss >> extra ) {
             std::string remaining( s.substr( int(iss.tellg()) - 1 ) );
@@ -77,13 +77,13 @@ namespace io {
     /**
      * Read a WKT geometry from a char*
      */
-    template < typename K, int N >
-    Geometry<K,N> readWkt( const char* str, size_t len)
+    template < typename K >
+    Geometry<K> readWkt( const char* str, size_t len)
     {
         CharArrayBuffer buf( str, str + len );
         std::istream istr( &buf );
-        detail::WktReader<K,N> wktReader( istr );
-        Geometry<K,N> result = wktReader.read() ;
+        detail::WktReader<K> wktReader( istr );
+        Geometry<K> result = wktReader.read() ;
         char extra;
         if ( istr >> extra ) {
             std::string remaining( str + int(istr.tellg()) - 1, str + len );

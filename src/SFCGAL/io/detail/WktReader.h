@@ -43,7 +43,7 @@ namespace detail {
      * @warning POLYHEDRALSURFACE are converted to MULTIPOLYGON, some Geometry
      * types are extensions of the standard.
      */
-    template < typename K, int N >
+    template < typename K >
     class WktReader {
     public:
         
@@ -56,24 +56,24 @@ namespace detail {
         /**
          * Read a geometry of unknown type
          */
-        Geometry<K,N> read(){
+        Geometry<K> read(){
             // POINT
             {
-                Point<K,N> candidate ;
+                Point<K> candidate ;
                 if ( read(candidate) ){
                     return candidate;
                 }
             }
             // LINESTRING
             {
-                LineString<K,N> candidate ;
+                LineString<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
             }
             // POLYGON
             {
-                Polygon<K,N> candidate ;
+                Polygon<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -81,21 +81,21 @@ namespace detail {
             
             // MULTIPOINT
             {
-                MultiPoint<K,N> candidate ;
+                MultiPoint<K> candidate ;
                 if ( read(candidate) ){
                     return candidate;
                 }
             }
             // MULTILINESTRING
             {
-                MultiLineString<K,N> candidate ;
+                MultiLineString<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
             }
             // MULTIPOLYGON (and POLYHEDRALSURFACE)
             {
-                MultiPolygon<K,N> candidate ;
+                MultiPolygon<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -104,7 +104,7 @@ namespace detail {
             
             // TRIANGLE
             {
-                Triangle<K,N> candidate ;
+                Triangle<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -112,7 +112,7 @@ namespace detail {
 
             // TIN
             {
-                TriangulatedSurface<K,N> candidate ;
+                TriangulatedSurface<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -120,7 +120,7 @@ namespace detail {
             
             // SOLID
             {
-                Solid<K,N> candidate ;
+                Solid<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -128,7 +128,7 @@ namespace detail {
             
             // MULTISOLID
             {
-                MultiSolid<K,N> candidate ;
+                MultiSolid<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -136,7 +136,7 @@ namespace detail {
             
             // GEOMETRYCOLLECTION
             {
-                GeometryCollection<K,N> candidate ;
+                GeometryCollection<K> candidate ;
                 if ( read(candidate) ){
                     return candidate ;
                 }
@@ -167,14 +167,14 @@ namespace detail {
         /**
          * Read a WKT point
          */
-        bool read( Point<K,N> & g ){
+        bool read( Point<K> & g ){
             if ( ! _reader.imatch( "POINT" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Point<K,N>(CGAL::ORIGIN);
+                g = Point<K>(CGAL::ORIGIN);
                 return true ;
             }
             readInner(g);
@@ -184,7 +184,7 @@ namespace detail {
         /**
          * Read inner Point
          */
-        void readInner(Point<K,N> & g){
+        void readInner(Point<K> & g){
             if ( ! _reader.match('(') ){
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
@@ -199,14 +199,14 @@ namespace detail {
         /**
          * Read a WKT LineString
          */
-        bool read(LineString<K,N>& g){
+        bool read(LineString<K>& g){
             if ( ! _reader.imatch( "LINESTRING" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = LineString<K,N>();
+                g = LineString<K>();
                 return true ;
             }
             readInner(g);
@@ -216,12 +216,12 @@ namespace detail {
         /**
          * Read inner LineString
          */ 
-        void readInner(LineString<K,N>& g){
+        void readInner(LineString<K>& g){
             if ( ! _reader.match('(') ){
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
             while ( ! _reader.eof() ){
-                Point<K,N> p;
+                Point<K> p;
                 readCoordinate(p);
                 g.push_back(p);
                 if ( _reader.match(',') ){
@@ -239,17 +239,17 @@ namespace detail {
         /**
          * Read a WKT Triangle
          */
-        bool read(Triangle<K,N>& g){
+        bool read(Triangle<K>& g){
             if ( ! _reader.imatch( "TRIANGLE" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Triangle<K,N>(
-                    Point<K,N>(CGAL::ORIGIN),
-                    Point<K,N>(CGAL::ORIGIN),
-                    Point<K,N>(CGAL::ORIGIN)
+                g = Triangle<K>(
+                    Point<K>(CGAL::ORIGIN),
+                    Point<K>(CGAL::ORIGIN),
+                    Point<K>(CGAL::ORIGIN)
                 );
                 return true ;
             }
@@ -259,7 +259,7 @@ namespace detail {
         /**
          * Read inner Triangle
          */
-        void readInner(Triangle<K,N>& g){
+        void readInner(Triangle<K>& g){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
@@ -269,10 +269,10 @@ namespace detail {
             }
 
             // 4 points to read
-            std::vector< Point<K,N> > points ;
+            std::vector< Point<K> > points ;
 
             while ( ! _reader.eof() ) {
-                points.push_back( Point<K,N>() ) ;
+                points.push_back( Point<K>() ) ;
                 readCoordinate( points.back() );
 
                 if ( ! _reader.match( "," ) ) {
@@ -288,7 +288,7 @@ namespace detail {
                 BOOST_THROW_EXCEPTION( WktParseException( "WKT parse error, first point different of the last point for triangle" ) );
             }
 
-            g = Triangle<K,N>( points[0], points[1], points[2] );
+            g = Triangle<K>( points[0], points[1], points[2] );
 
             if ( ! _reader.match( ')' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
@@ -305,14 +305,14 @@ namespace detail {
         /**
          * Read a WKT Polygon
          */
-        bool read(Polygon<K,N>& g){
+        bool read(Polygon<K>& g){
             if ( ! _reader.imatch( "POLYGON" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Polygon<K,N>();
+                g = Polygon<K>();
                 return true ;
             }
             readInner(g);
@@ -322,12 +322,12 @@ namespace detail {
         /**
          * Read inner Polygon
          */ 
-        void readInner(Polygon<K,N>& g){
+        void readInner(Polygon<K>& g){
             if ( ! _reader.match('(') ){
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
             while ( ! _reader.eof() ){
-                LineString<K,N> ring;
+                LineString<K> ring;
                 readInner(ring);
                 g.emplace_back(ring);
                 if ( _reader.match(',') ){
@@ -345,14 +345,14 @@ namespace detail {
         /**
          * Read a WKT MULTIPOINT
          */
-        bool read( MultiPoint<K,N> & g ){
+        bool read( MultiPoint<K> & g ){
             if ( ! _reader.imatch( "MULTIPOINT" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = MultiPoint<K,N>();
+                g = MultiPoint<K>();
                 return true ;
             }
             readInner(g);
@@ -361,13 +361,13 @@ namespace detail {
         /**
          * Read inner MultiPoint
          */
-        void readInner(MultiPoint<K,N> & g){
+        void readInner(MultiPoint<K> & g){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                Point<K,N> p ;
+                Point<K> p ;
 
                 // optional open/close parenthesis
                 bool parenthesisOpen = false ;
@@ -400,14 +400,14 @@ namespace detail {
         /**
          * Read a WKT MULTILINESTRING
          */
-        bool read( MultiLineString<K,N> & g ){
+        bool read( MultiLineString<K> & g ){
             if ( ! _reader.imatch( "MULTILINESTRING" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = MultiLineString<K,N>();
+                g = MultiLineString<K>();
                 return true ;
             }
             readInner(g);
@@ -417,13 +417,13 @@ namespace detail {
         /**
          * Read Inner MultiLineString
          */
-        void readInner(MultiLineString<K,N> & g){
+        void readInner(MultiLineString<K> & g){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                LineString<K,N> lineString ;
+                LineString<K> lineString ;
                 readInner( lineString );
                 if ( ! lineString.empty() ){
                     g.push_back(lineString);
@@ -443,14 +443,14 @@ namespace detail {
         /**
          * Read a WKT MULTIPOLYGON and POLYHEDRALSURFACE
          */
-        bool read( MultiPolygon<K,N> & g ){
+        bool read( MultiPolygon<K> & g ){
             if ( ! _reader.imatch( "MULTIPOLYGON" ) && ! _reader.imatch("POLYHEDRALSURFACE") ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = MultiPolygon<K,N>();
+                g = MultiPolygon<K>();
                 return true ;
             }
             readInner(g);
@@ -460,13 +460,13 @@ namespace detail {
         /**
          * Read inner multipolygon
          */
-        void readInner(MultiPolygon<K,N> & g){
+        void readInner(MultiPolygon<K> & g){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                Polygon<K,N> polygon;
+                Polygon<K> polygon;
                 readInner( polygon );
                 if ( ! polygon.empty() ){
                     g.push_back(polygon);
@@ -487,14 +487,14 @@ namespace detail {
         /**
          * Read a WKT TRIANGULATEDSURFACE
          */
-        bool read( TriangulatedSurface<K,N> & g ){
+        bool read( TriangulatedSurface<K> & g ){
             if ( ! _reader.imatch( "TIN" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = TriangulatedSurface<K,N>();
+                g = TriangulatedSurface<K>();
                 return true ;
             }
             readInner(g);
@@ -504,13 +504,13 @@ namespace detail {
         /**
          * Read inner TriangulatedSurface
          */
-        void readInner( TriangulatedSurface<K,N> & g ){
+        void readInner( TriangulatedSurface<K> & g ){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                Triangle<K,N> triangle ;
+                Triangle<K> triangle ;
                 readInner( triangle );
                 g.push_back( triangle ) ;
 
@@ -532,14 +532,14 @@ namespace detail {
         /**
          * Read a WKT SOLID
          */
-        bool read( Solid<K,N> & g ){
+        bool read( Solid<K> & g ){
             if ( ! _reader.imatch( "SOLID" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Solid<K,N>();
+                g = Solid<K>();
                 return true ;
             }
             readInner(g);
@@ -549,14 +549,14 @@ namespace detail {
         /**
          * Read inner TriangulatedSurface
          */
-        void readInner( Solid<K,N> & g ){
+        void readInner( Solid<K> & g ){
             //solid begin
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while ( ! _reader.eof() ){
-                PolyhedralSurface<K,N> shell ;
+                PolyhedralSurface<K> shell ;
                 readInner( shell );
                 g.push_back(shell);
 
@@ -578,14 +578,14 @@ namespace detail {
         /**
          * Read a WKT MULTISOLID
          */
-        bool read( MultiSolid<K,N> & g ){
+        bool read( MultiSolid<K> & g ){
             if ( ! _reader.imatch( "MULTISOLID" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = MultiSolid<K,N>();
+                g = MultiSolid<K>();
                 return true ;
             }
             readInner(g);
@@ -595,13 +595,13 @@ namespace detail {
         /**
          * Read inner MultiSolid
          */
-        void readInner( MultiSolid<K,N> & g ){
+        void readInner( MultiSolid<K> & g ){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                Solid<K,N> solid ;
+                Solid<K> solid ;
                 readInner( solid );
                 g.push_back(solid);
                 //break if not followed by another points
@@ -622,14 +622,14 @@ namespace detail {
         /**
          * Read a WKT GEOMETRYCOLLECTION
          */
-        bool read( GeometryCollection<K,N> & g ){
+        bool read( GeometryCollection<K> & g ){
             if ( ! _reader.imatch( "GEOMETRYCOLLECTION" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = GeometryCollection<K,N>();
+                g = GeometryCollection<K>();
                 return true ;
             }
             readInner(g);
@@ -639,13 +639,13 @@ namespace detail {
         /**
          * Read geometries in a GeometryCollection
          */
-        void readInner(GeometryCollection<K,N> & g){
+        void readInner(GeometryCollection<K> & g){
             if ( ! _reader.match( '(' ) ) {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
 
             while( ! _reader.eof() ) {
-                Geometry<K,N> geometry = read() ;
+                Geometry<K> geometry = read() ;
                 g.push_back(geometry);
                 //break if not followed by another geometry
                 if ( ! _reader.match( ',' ) ) {
@@ -663,16 +663,6 @@ namespace detail {
         bool _is3D ;
         bool _isMeasured ;
         
-        /**
-         * Read a coordinate
-         */
-        bool readCoordinate( CGAL::Point_2<K> & g ){
-            typename K::FT x = 0 ,y = 0 ,z = 0 ;
-            double m = std::numeric_limits<double>::quiet_NaN() ;
-            readXYZM(x,y,z,m);
-            g = CGAL::Point_2<K>(x,y);
-            //TODO g.data() = m;
-        }
         /**
          * Read a Point_3 coordinate
          */

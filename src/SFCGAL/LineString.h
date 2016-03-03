@@ -28,8 +28,8 @@ namespace SFCGAL {
     /**
      * A polyline defined by a list of points
      */
-    template < typename K, int N >
-    using LineString = std::vector< Point<K,N> > ;
+    template < typename K >
+    using LineString = std::vector< Point<K> > ;
 
 } // SFCGAL
 

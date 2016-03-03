@@ -25,8 +25,8 @@
 
 namespace SFCGAL {
 
-    template < typename K, int N >
-    using TriangulatedSurface = Collection< Triangle<K,N> > ;
+    template < typename K >
+    using TriangulatedSurface = Collection< Triangle<K> > ;
 
 } // SFCGAL
 

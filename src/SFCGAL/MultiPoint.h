@@ -28,8 +28,8 @@ namespace SFCGAL {
     /**
      * A collection of Points
      */
-    template < typename K, int N >
-    using MultiPoint = Collection< Point<K,N> > ;
+    template < typename K >
+    using MultiPoint = Collection< Point<K> > ;
 
 } // SFCGAL
 

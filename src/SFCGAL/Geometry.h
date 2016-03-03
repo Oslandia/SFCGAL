@@ -49,21 +49,21 @@ namespace SFCGAL {
      *
      * @warning An empty geometry is a empty GeometryCollection
      */
-    template < typename K, int N >
+    template < typename K >
     using Geometry = typename boost::make_recursive_variant<
         // primitive types
-        Point<K,N>,                              // Point
-        LineString<K,N>,                         // LineString
-        Polygon<K,N>,                            // Polygon
-        Triangle<K,N>,                           // Triangle
-        Solid<K,N>,                              // Solid
+        Point<K>,                              // Point
+        LineString<K>,                         // LineString
+        Polygon<K>,                            // Polygon
+        Triangle<K>,                           // Triangle
+        Solid<K>,                              // Solid
 
         // homonegous collections
-        MultiPoint<K,N>,                         // MultiPoint
-        MultiLineString<K,N>,                    // MultiLineString
-        MultiPolygon<K,N>,                       // MultiPolygon
-        TriangulatedSurface<K,N>,                // TriangulatedSurface
-        MultiSolid<K,N>,                         // MultiSolid
+        MultiPoint<K>,                         // MultiPoint
+        MultiLineString<K>,                    // MultiLineString
+        MultiPolygon<K>,                       // MultiPolygon
+        TriangulatedSurface<K>,                // TriangulatedSurface
+        MultiSolid<K>,                         // MultiSolid
 
         // heterogenous GeometryCollection
         Collection< boost::recursive_variant_ >  // GeometryCollection
@@ -71,9 +71,12 @@ namespace SFCGAL {
 
     /**
      * A collection of geometry with differents types
+     *
+     * Note that the GeometryCollection is the equivalent of the
+     *  recursive variant. 
      */
-    template < typename K, int N >
-    using GeometryCollection = Collection< Geometry<K,N> > ;
+    template < typename K >
+    using GeometryCollection = Collection< Geometry<K> > ;
 
 
 } // SFCGAL

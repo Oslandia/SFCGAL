@@ -31,43 +31,26 @@
 namespace SFCGAL {
 namespace algorithm {
 
-    namespace detail {
-        template < typename K, int N >
-        struct Triangulate2DZTraits {
-
-        } ;
-
-        template <typename K>
-        struct Triangulate2DZTraits<K,2> {
-            typedef CGAL::Constrained_Delaunay_triangulation_2<K> CDT ;
-        } ;
-
-        template <typename K>
-        struct Triangulate2DZTraits<K,3> {
-            typedef CGAL::Projection_traits_xy_3<K>                Gt;
-            typedef CGAL::Constrained_Delaunay_triangulation_2<Gt> CDT ;
-        } ;
-    }
-
     /**
      * 2DZ triangulation of geometries
      * @warning this implements forbids constraints intersections.
      */
-    template < typename K, int N >
-    TriangulatedSurface<K,N> triangulate2DZ( const Geometry<K,N> & geometry ){
+    template < typename K >
+    TriangulatedSurface<K> triangulate2DZ( const Geometry<K> & geometry ){
         BOOST_LOG_TRIVIAL(info) << "triangulate2DZ...";
 
         // Get vertex and constraints
         BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - collect points and constraints...";
-        std::vector< Point<K,N> > points ;
+        std::vector< Point<K> > points ;
         std::vector< std::pair< size_t, size_t > > constraints ;
-        SFCGAL::detail::collectPointsAndConstraints<K,N>(geometry,points,constraints);
+        SFCGAL::detail::collectPointsAndConstraints(geometry,points,constraints);
         BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - "<< points.size() << " point(s)," << constraints.size() << " containt(s) found";
 
         // Build triangulation
         // Note that it is more efficient to batch insert vertices
-        typedef typename detail::Triangulate2DZTraits<K,N>::CDT CDT ;
-        typedef typename CDT::Finite_faces_iterator             Finite_faces_iterator ;
+        typedef CGAL::Projection_traits_xy_3<K>                Gt;
+        typedef CGAL::Constrained_Delaunay_triangulation_2<Gt> CDT ;
+        typedef typename CDT::Finite_faces_iterator            Finite_faces_iterator ;
         CDT cdt ;
         cdt.insert_constraints(
             points.begin(), points.end(),
@@ -76,10 +59,10 @@ namespace algorithm {
 
         // Retrieve results
         BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - retrieve " << cdt.number_of_faces() << " triangles " ;
-        TriangulatedSurface<K,N> triangulatedSurface ;
+        TriangulatedSurface<K> triangulatedSurface ;
         triangulatedSurface.reserve( cdt.number_of_faces() );
         for ( Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it ) {
-            triangulatedSurface.push_back(Triangle<K,N>(
+            triangulatedSurface.push_back(Triangle<K>(
                 it->vertex( 0 )->point(),
                 it->vertex( 1 )->point(),
                 it->vertex( 2 )->point()

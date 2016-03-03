@@ -35,7 +35,7 @@ namespace detail {
      * Write WKT to output stream
      * @warning there are no empty point or triangle in SFCGAL
      */
-    template < typename K, int N >
+    template < typename K >
     class WktWriter : public boost::static_visitor<> {
     public:
         WktWriter( std::ostream & s ):
@@ -44,13 +44,13 @@ namespace detail {
             
         }
         
-        void operator () ( const Point<K,N> & g ){
+        void operator () ( const Point<K> & g ){
             _s << "POINT" ;
             // WARNING : Can't be empty
             writeInner( g );
         }
 
-        void operator () ( const LineString<K,N> & g ){
+        void operator () ( const LineString<K> & g ){
             _s << "LINESTRING" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -59,7 +59,7 @@ namespace detail {
             writeInner(g);
         }
 
-        void operator () ( const Polygon<K,N> & g ){
+        void operator () ( const Polygon<K> & g ){
             _s << "POLYGON" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -68,7 +68,7 @@ namespace detail {
             writeInner(g);
         }
         
-        void operator () ( const MultiPoint<K,N> & g ){
+        void operator () ( const MultiPoint<K> & g ){
             _s << "MULTIPOINT" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -79,7 +79,7 @@ namespace detail {
             _s << ")" ;
         }
 
-        void operator () ( const MultiLineString<K,N> & g ){
+        void operator () ( const MultiLineString<K> & g ){
             _s << "MULTILINESTRING" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -90,7 +90,7 @@ namespace detail {
             _s << ")" ;
         }
 
-        void operator () ( const MultiPolygon<K,N> & g ){
+        void operator () ( const MultiPolygon<K> & g ){
             _s << "MULTIPOLYGON" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -101,7 +101,7 @@ namespace detail {
             _s << ")" ;
         }
         
-        void operator () ( const GeometryCollection<K,N> & g ){
+        void operator () ( const GeometryCollection<K> & g ){
             _s << "GEOMETRYCOLLECTION" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -117,13 +117,13 @@ namespace detail {
             _s << ")" ;
         }
         
-        void operator () ( const Triangle<K,N> & g ){
+        void operator () ( const Triangle<K> & g ){
             _s << "TRIANGLE" ;
             // WARNING : Can't be empty
             writeInner(g);
         }
         
-        void operator () ( const TriangulatedSurface<K,N> & g ){
+        void operator () ( const TriangulatedSurface<K> & g ){
             _s << "TRIANGULATEDSURFACE" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -133,7 +133,7 @@ namespace detail {
         }
         
         
-        void operator () ( const Solid<K,N> & g ){
+        void operator () ( const Solid<K> & g ){
             _s << "SOLID" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -142,7 +142,7 @@ namespace detail {
             
         }
         
-        void operator () ( const MultiSolid<K,N> & g ){
+        void operator () ( const MultiSolid<K> & g ){
             _s << "MULTISOLID" ;
             if ( g.empty() ){
                 _s << " EMPTY";
@@ -162,13 +162,13 @@ namespace detail {
     private:
         std::ostream & _s ;
         
-        void writeInner( const Point<K,N> & g ){
+        void writeInner( const Point<K> & g ){
             _s << "(";
             _s << g ;
             _s << ")";
         }
         
-        void writeInner( const LineString<K,N> & g ){
+        void writeInner( const LineString<K> & g ){
             _s << "(";
             for ( int i = 0; i < g.size(); i++ ){
                 if ( i != 0 ){
@@ -179,7 +179,7 @@ namespace detail {
             _s << ")" ;
         }
         
-        void writeInner( const Polygon<K,N> & g ){
+        void writeInner( const Polygon<K> & g ){
             _s << "(";
             for ( int i = 0; i < g.size(); i++ ){
                 if ( i != 0 ){
@@ -190,7 +190,7 @@ namespace detail {
             _s << ")" ;
         }
         
-        void writeInner( const Triangle<K,N> & g ){
+        void writeInner( const Triangle<K> & g ){
             _s << "(";
             for ( int i = 0; i < 4; i++ ){
                 if ( i != 0 ){
@@ -201,7 +201,7 @@ namespace detail {
             _s << ")" ;
         }
         
-        void writeInner( const Solid<K,N> & g ){
+        void writeInner( const Solid<K> & g ){
             _s << "(";
             for ( int i = 0; i < g.size(); i++ ){
                 if ( i != 0 ){

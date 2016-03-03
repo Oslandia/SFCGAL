@@ -28,8 +28,8 @@ namespace SFCGAL {
     /**
      * A collection of LineStrings
      */
-    template < typename K, int N >
-    using MultiLineString = Collection< LineString<K,N> > ;
+    template < typename K >
+    using MultiLineString = Collection< LineString<K> > ;
 
 } // SFCGAL
 

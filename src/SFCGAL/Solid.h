@@ -32,8 +32,8 @@ namespace SFCGAL {
      * @warning A 2D solid is an artefact to provide the same type list
      *  in the Geometry variant for 2D and 3D
      */
-    template < typename K, int N >
-    using Solid = std::vector< MultiPolygon<K,N> > ;
+    template < typename K >
+    using Solid = std::vector< MultiPolygon<K> > ;
 
 } // SFCGAL
 

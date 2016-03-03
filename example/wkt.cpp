@@ -22,14 +22,10 @@ int main( int argc, char* argv[] ){
         "TRIANGLE EMPTY"
     };
     for ( const std::string & wkt : wkts ){
-        BOOST_LOG_TRIVIAL(info) << "parse as 2D geometry : " << wkt ;
-        Geometry<Epick,2> geometry = io::readWkt<Epick,2>(wkt);
-        std::cout << io::toWkt<Epick,2>(geometry) << std::endl ;
+        BOOST_LOG_TRIVIAL(info) << "parse " << wkt ;
+        Geometry<Epick> geometry = io::readWkt<Epick>(wkt);
+        std::cout << io::toWkt<Epick>(geometry) << std::endl ;
     }
-    for ( const std::string & wkt : wkts ){
-        BOOST_LOG_TRIVIAL(info) << "parse as 3D geometry : " << wkt ;
-        Geometry<Epick,3> geometry = io::readWkt<Epick,3>(wkt);
-        std::cout << io::toWkt<Epick,3>(geometry) << std::endl ;
-    }
+    
     return 0 ;
 }
