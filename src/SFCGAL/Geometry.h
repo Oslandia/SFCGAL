@@ -43,7 +43,7 @@
 namespace SFCGAL {
 
     typedef int srid_t ;
-
+    
     /**
      * A geometry is variant.
      *

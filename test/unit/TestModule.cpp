@@ -17,20 +17,24 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_TRIANGLE_H_
-#define _SFCGAL_TRIANGLE_H_
+#define BOOST_TEST_MODULE UnitTestSFCGAL
 
-#include <SFCGAL/kernels.h>
+#define BOOST_TEST_ALTERNATIVE_INIT_API
 
-namespace SFCGAL {
+#include <boost/test/unit_test.hpp>
+using namespace boost::unit_test ;
 
-    /**
-     * SFCGAL Triangle defined as CGAL::Triangle_3
-     */
-    template < typename K >
-    using Triangle = CGAL::Triangle_3< K > ;
+//#include <SFCGAL/detail/tools/Log.h>
+
+test_suite* init_unit_test_suite( int, char** const )
+{
+    //SFCGAL::Logger::get()->setLogLevel( SFCGAL::Logger::Info );
+    return 0;
+}
 
 
-} // namespace SFCGAL
 
-#endif
+
+
+
+

@@ -15,6 +15,21 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
+#----------------------------------------------------------------------------
+# build options
+#----------------------------------------------------------------------------
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'Release' as none was specified.")
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
+endif()
+
+option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
+option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
+option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
+
 #--------------------------------------------------
 # define library version
 #--------------------------------------------------
@@ -102,7 +117,6 @@ endif()
 if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND (${Boost_SUBMINOR_VERSION} EQUAL 0))
   include_directories( patches/boost-1.60.0 )
 endif()
-find_package(Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED)
 
 #-- find CGAL and it's dependencies
 find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
@@ -118,6 +132,11 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/config.h.cmake ${CMAKE_SOURCE_DIR
 configure_file( ${CMAKE_SOURCE_DIR}/src/SFCGAL/version.h.cmake ${CMAKE_SOURCE_DIR}/src/SFCGAL/version.h )
 
 #--------------------------------------------------
+#-- enable testing system (usefull if test are disabled?)
+#--------------------------------------------------
+enable_testing()
+
+#--------------------------------------------------
 #-- set include directories
 #--------------------------------------------------
 include_directories(
@@ -125,9 +144,16 @@ include_directories(
     ${CMAKE_BINARY_DIR}/src   # generated headers
 )
 
-
 add_subdirectory(src)
-add_subdirectory(example)
+
+if(SFCGAL_BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()
+
+if(SFCGAL_BUILD_TESTS)
+    add_subdirectory(test)
+endif()
+
 #add_directory(bench)
 
 

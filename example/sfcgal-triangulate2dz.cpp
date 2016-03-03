@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/algorithm/triangulate2DZ.h>
+#include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/log.h>
 
 #include <CGAL/point_generators_2.h>
@@ -31,7 +31,7 @@ int main( int argc, char* argv[] ){
         BOOST_LOG_TRIVIAL(info) << "generate " << n << " points..." ;
         MultiPoint<Epick> g = generateMultiPoint<Epick>(n);
         BOOST_LOG_TRIVIAL(info) << "algorithm::triangulate2DZ..." ;
-        TriangulatedSurface<Epick> tin = algorithm::triangulate2DZ<Epick>( g );
+        TriangulatedSurface<Epick> tin = triangulate::triangulate2DZ<Epick>( g );
         BOOST_LOG_TRIVIAL(info) << "TIN : " << tin.size() ;
     }
 

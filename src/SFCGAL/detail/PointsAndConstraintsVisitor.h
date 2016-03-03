@@ -71,8 +71,14 @@ namespace detail {
         }
 
         void operator () ( const Polygon<K> & g ){
-            for ( const LineString<K> & lineString : g ){
-                (*this)(g);
+            for ( const LineString<K> & ring : g ){
+                (*this)(ring);
+            }
+        }
+        
+        void operator () ( const Solid<K> & g ){
+            for ( const MultiPolygon<K> & shell : g ){
+                (*this)(shell);
             }
         }
 
@@ -82,9 +88,11 @@ namespace detail {
                 (*this)(geometry);
             }
         }
-
-        void operator () ( const Geometry<K> & geometry ){
-            boost::apply_visitor((*this),geometry);
+        
+        void operator () ( const GeometryCollection<K> & geometries ){
+            for ( const Geometry<K> & geometry : geometries ){
+                boost::apply_visitor(*this,geometry);
+            }
         }
 
     private:

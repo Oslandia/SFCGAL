@@ -25,8 +25,7 @@
 namespace SFCGAL {
     
     /**
-     * SFCGAL Point is simplify defined as a typedef
-     * on a CGAL::Point_2 or CGAL::Point_3.
+     * SFCGAL Point is simplify defined as a CGAL::Point_3.
      *
      * Note that "M" could be managed with decorated kernel points
      */

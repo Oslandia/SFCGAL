@@ -17,8 +17,8 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_ALGORITHM_TRIANGULATE2DZ_H_
-#define _SFCGAL_ALGORITHM_TRIANGULATE2DZ_H_
+#ifndef _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
+#define _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
 
 #include <SFCGAL/log.h>
 
@@ -29,7 +29,7 @@
 #include <CGAL/Projection_traits_xy_3.h>
 
 namespace SFCGAL {
-namespace algorithm {
+namespace triangulate {
 
     /**
      * 2DZ triangulation of geometries
@@ -71,7 +71,7 @@ namespace algorithm {
         return triangulatedSurface ;
     }
 
-} // algorithm
+} // triangulate
 } // SFCGAL
 
 #endif

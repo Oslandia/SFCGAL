@@ -19,22 +19,7 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
-
-#include <cmath>
-
-#include <SFCGAL/GeometryVisitor.h>
+#include <SFCGAL/Geometry.h>
 
 
 using namespace SFCGAL ;
@@ -45,60 +30,70 @@ using namespace boost::unit_test ;
 /**
  * get type from Geometry
  */
-class DemoVisitorGetType : public ConstGeometryVisitor {
+template < typename K >
+class DemoVisitorGetType : public boost::static_visitor<> {
 public:
-
-    virtual void visit( const Point& ) {
+    
+    void operator () ( const Point<K>& ) {
         type = "Point";
     }
-    virtual void visit( const LineString& ) {
+    
+    void operator () ( const LineString<K>& ) {
         type = "LineString";
     }
-    virtual void visit( const Polygon& ) {
+    
+    void operator () ( const Polygon<K>& ) {
         type = "Polygon";
     }
-    virtual void visit( const Triangle& ) {
+    
+    void operator () ( const Triangle<K>& ) {
         type = "Triangle";
     }
-    virtual void visit( const Solid& ) {
+
+    void operator () ( const Solid<K>& ) {
         type = "Solid";
     }
-    virtual void visit( const MultiPoint& ) {
+    
+    void operator () ( const MultiPoint<K>& ) {
         type = "MultiPoint";
     }
-    virtual void visit( const MultiLineString& ) {
+    
+    void operator () ( const MultiLineString<K>& ) {
         type = "MultiLineString";
     }
-    virtual void visit( const MultiPolygon& ) {
+    
+    void operator () ( const MultiPolygon<K>& ) {
         type = "MultiPolygon";
     }
-    virtual void visit( const MultiSolid& ) {
+    
+    void operator () ( const MultiSolid<K>& ) {
         type = "MultiSolid";
     }
 
-    virtual void visit( const GeometryCollection& ) {
+    void operator () ( const GeometryCollection<K>& ) {
         type = "GeometryCollection";
     }
-
-    virtual void visit( const PolyhedralSurface& ) {
+    /*
+    void operator () ( const PolyhedralSurface<K>& ) {
         type = "PolyhedralSurface";
     }
-
-    virtual void visit( const TriangulatedSurface& ) {
+    */
+    
+    void operator () ( const TriangulatedSurface<K>& ) {
         type = "TriangulatedSurface";
     }
+
 
 public:
     std::string type ;
 };
 
 
-template < typename T >
-std::string getTypeWithVisitor()
+template < typename K >
+std::string getTypeWithVisitor(const Geometry<K>& g)
 {
-    std::auto_ptr< Geometry > geometry( new T() );
-    DemoVisitorGetType visitor;
-    geometry->accept( visitor );
+    DemoVisitorGetType<K> visitor;
+    boost::apply_visitor(visitor,g);
     return visitor.type ;
 }
 
@@ -111,55 +106,57 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_GeometryVisitorTest )
 
 BOOST_AUTO_TEST_CASE( testVisitPoint )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< Point >(), "Point" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(Point<Epeck>()), "Point" );
 }
 BOOST_AUTO_TEST_CASE( testVisitLineString )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< LineString >(), "LineString" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(LineString<Epeck>()), "LineString" );
 }
 BOOST_AUTO_TEST_CASE( testVisitPolygon )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< Polygon >(), "Polygon" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(Polygon<Epeck>()), "Polygon" );
 }
 BOOST_AUTO_TEST_CASE( testVisitTriangle )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< Triangle >(), "Triangle" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(Triangle<Epeck>()), "Triangle" );
 }
 
 BOOST_AUTO_TEST_CASE( testVisitMultiPoint )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiPoint >(), "MultiPoint" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(MultiPoint<Epeck>()), "MultiPoint" );
 }
 BOOST_AUTO_TEST_CASE( testVisitMultiLineString )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiLineString >(), "MultiLineString" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(MultiLineString<Epeck>()), "MultiLineString" );
 }
 BOOST_AUTO_TEST_CASE( testVisitMultiPolygon )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiPolygon >(), "MultiPolygon" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(MultiPolygon<Epeck>()), "MultiPolygon" );
 }
 BOOST_AUTO_TEST_CASE( testVisitMultiSolid )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< MultiSolid >(), "MultiSolid" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(MultiSolid<Epeck>()), "MultiSolid" );
 }
 BOOST_AUTO_TEST_CASE( testVisitGeometryCollection )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< GeometryCollection >(), "GeometryCollection" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(GeometryCollection<Epeck>()), "GeometryCollection" );
 }
 
 BOOST_AUTO_TEST_CASE( testVisitTriangulatedSurface )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< TriangulatedSurface >(), "TriangulatedSurface" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(TriangulatedSurface<Epeck>()), "TriangulatedSurface" );
 }
 
+/*
 BOOST_AUTO_TEST_CASE( testVisitPolyhedralSurface )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< PolyhedralSurface >(), "PolyhedralSurface" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(PolyhedralSurface<Epeck>()), "PolyhedralSurface" );
 }
+*/
 
 BOOST_AUTO_TEST_CASE( testVisitSolid )
 {
-    BOOST_CHECK_EQUAL( getTypeWithVisitor< Solid >(), "Solid" );
+    BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(Solid<Epeck>()), "Solid" );
 }
 
 
