@@ -124,7 +124,7 @@ namespace detail {
         }
         
         void operator () ( const TriangulatedSurface<K> & g ){
-            _s << "TRIANGULATEDSURFACE" ;
+            _s << "TIN" ;
             if ( g.empty() ){
                 _s << " EMPTY";
                 return;
