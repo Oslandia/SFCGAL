@@ -77,6 +77,9 @@ BOOST_AUTO_TEST_CASE( testPolygonWithHole )
     std::vector< Point<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
     detail::collectPointsAndConstraints(g,points,constraints);
+    
+    BOOST_CHECK_EQUAL( points.size(), 10U );
+    BOOST_CHECK_EQUAL( constraints.size(), 8U );
 }
 
 
