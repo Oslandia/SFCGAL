@@ -19,19 +19,7 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
+#include <SFCGAL/Geometry.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/normal.h>
 
@@ -42,8 +30,8 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_NormalTest )
 
 BOOST_AUTO_TEST_CASE( testNormal1 )
 {
-    typedef CGAL::Vector_3< Kernel > Vector_3 ;
-    typedef CGAL::Point_3< Kernel > Point_3 ;
+    typedef CGAL::Vector_3<Epeck> Vector_3 ;
+    typedef CGAL::Point_3<Epeck> Point_3 ;
 
     Point_3 a( 0.0, 0.0, 0.0 );
     Point_3 b( 1.0, 0.0, 0.0 );
@@ -58,29 +46,35 @@ BOOST_AUTO_TEST_CASE( testNormal1 )
 BOOST_AUTO_TEST_CASE( testNormal2 )
 {
     // a square ccw
-    std::auto_ptr<Geometry> gA( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
+    Geometry<Epeck> gA = io::readWkt<Epeck>( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) ;
     // a square cw oriented
-    std::auto_ptr<Geometry> gB( io::readWkt( "POLYGON((0 0,0 1,1 1,1 0,0 0))" ) );
+    Geometry<Epeck> gB = io::readWkt<Epeck>( "POLYGON((0 0,0 1,1 1,1 0,0 0))" );
 
     // a pseudo-square ccw oriented, with a concave part
-    std::auto_ptr<Geometry> gC( io::readWkt( "POLYGON((0 0,0.5 0.5,1 0,1 1,0 1,0 0))" ) );
+    Geometry<Epeck> gC = io::readWkt<Epeck>( "POLYGON((0 0,0.5 0.5,1 0,1 1,0 1,0 0))" );
 
     {
-        CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>() );
+        CGAL::Vector_3<Epeck> normal = algorithm::normal3D<Epeck>( 
+            boost::get< Polygon<Epeck> >(gA) 
+        );
         BOOST_CHECK_EQUAL( normal.x(), 0.0 );
         BOOST_CHECK_EQUAL( normal.y(), 0.0 );
         BOOST_CHECK_EQUAL( normal.z(), 2.0 );
     }
 
     {
-        CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gB->as<Polygon>() );
+        CGAL::Vector_3<Epeck> normal = algorithm::normal3D<Epeck>( 
+            boost::get< Polygon<Epeck> >(gB) 
+        );
         BOOST_CHECK_EQUAL( normal.x(), 0.0 );
         BOOST_CHECK_EQUAL( normal.y(), 0.0 );
         BOOST_CHECK_EQUAL( normal.z(), -2.0 );
     }
 
     {
-        CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gC->as<Polygon>() );
+        CGAL::Vector_3<Epeck> normal = algorithm::normal3D<Epeck>( 
+            boost::get< Polygon<Epeck> >(gC) 
+        );
         BOOST_CHECK_EQUAL( normal.x(), 0.0 );
         BOOST_CHECK_EQUAL( normal.y(), 0.0 );
         // ok, the normal is pointing up (z > 0)
@@ -91,20 +85,20 @@ BOOST_AUTO_TEST_CASE( testNormal2 )
 
 BOOST_AUTO_TEST_CASE( testNormal3 )
 {
-    std::auto_ptr<Geometry> gA( io::readWkt( "POLYGON((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))" ) );
+    Geometry<Epeck> gA( io::readWkt<Epeck>( "POLYGON((0 1 0,0 1 1,1 1 1,1 1 0,0 1 0))" ) );
     // exact
     {
-        CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), true );
+        CGAL::Vector_3<Epeck> normal = algorithm::normal3D<Epeck>( boost::get<Polygon<Epeck>>(gA), true );
         //std::cout << CGAL::exact(normal) << std::endl;
-        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+        CGAL::Plane_3<Epeck> plane( startPoint(exteriorRing(boost::get< Polygon<Epeck> >(gA))), normal );
         //std::cout << CGAL::exact(plane) << std::endl;
         BOOST_CHECK( ! plane.is_degenerate() );
     }
     // round
     {
-        CGAL::Vector_3<Kernel> normal = algorithm::normal3D<Kernel>( gA->as<Polygon>(), false );
+        CGAL::Vector_3<Epeck> normal = algorithm::normal3D<Epeck>( boost::get<Polygon<Epeck>>(gA), false );
         //std::cout << CGAL::exact(normal) << std::endl;
-        CGAL::Plane_3<Kernel> plane( gA->as<Polygon>().exteriorRing().startPoint().toPoint_3(), normal );
+        CGAL::Plane_3<Epeck> plane( startPoint(exteriorRing(boost::get< Polygon<Epeck> >(gA))), normal );
         //std::cout << CGAL::exact(plane) << std::endl;
         BOOST_CHECK( ! plane.is_degenerate() );
     }

@@ -30,7 +30,15 @@ namespace SFCGAL {
      * Note that "M" could be managed with decorated kernel points
      */
     template < typename K >
-    using Point = CGAL::Point_3< K > ;
+    using Point = CGAL::Point_3<K> ;
+
+    /**
+     * Convert point to Vector_3 from CGAL::ORIGIN
+     */
+    template < typename K >
+    CGAL::Vector_3<K> toVector_3( const Point<K> & g ){
+        return g - CGAL::ORIGIN ;
+    }
 
 } // namespace SFCGAL
 

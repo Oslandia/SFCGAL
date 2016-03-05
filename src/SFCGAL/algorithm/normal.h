@@ -31,11 +31,11 @@ namespace algorithm {
 /**
  * Returns the 3D normal to 3 consecutive points.
  */
-template < typename Kernel >
-CGAL::Vector_3< Kernel > normal3D(
-    const CGAL::Point_3< Kernel >& a,
-    const CGAL::Point_3< Kernel >& b,
-    const CGAL::Point_3< Kernel >& c
+template < typename K >
+CGAL::Vector_3<K> normal3D(
+    const CGAL::Point_3<K>& a,
+    const CGAL::Point_3<K>& b,
+    const CGAL::Point_3<K>& c
 )
 {
     // bc ^ ba
@@ -45,30 +45,30 @@ CGAL::Vector_3< Kernel > normal3D(
 
 /**
  * Returns the 3D normal to a ring (supposed to be planar and closed).
-     * @warning exact allows to avoid double rounding at the end of the computation
-*/
-template < typename Kernel >
-CGAL::Vector_3< Kernel > normal3D( const LineString& ls, bool exact = true )
+ * @warning exact allows to avoid double rounding at the end of the computation
+ */
+template < typename K >
+CGAL::Vector_3<K> normal3D( const LineString<K>& ls, bool exact = true )
 {
     // Newell's formula
-    typename Kernel::FT nx, ny, nz;
+    typename K::FT nx, ny, nz;
     nx = ny = nz = 0.0;
 
-    for ( size_t i = 0; i < ls.numPoints(); ++i ) {
-        const Point& pi = ls.pointN( i );
-        const Point& pj = ls.pointN( ( i+1 ) % ls.numPoints() );
-        typename Kernel::FT zi = pi.z() ;
-        typename Kernel::FT zj = pj.z() ;
+    for ( size_t i = 0; i < ls.size(); ++i ) {
+        const Point<K>& pi = ls[i];
+        const Point<K>& pj = ls[ ( i+1 ) % ls.size() ];
+        typename K::FT zi = pi.z() ;
+        typename K::FT zj = pj.z() ;
         nx += ( pi.y() - pj.y() ) * ( zi + zj );
         ny += ( zi - zj ) * ( pi.x() + pj.x() );
         nz += ( pi.x() - pj.x() ) * ( pi.y() + pj.y() );
     }
 
     if ( exact ) {
-        return CGAL::Vector_3<Kernel>( nx, ny, nz );
+        return CGAL::Vector_3<K>( nx, ny, nz );
     }
     else {
-        return CGAL::Vector_3<Kernel>( CGAL::to_double( nx ), CGAL::to_double( ny ), CGAL::to_double( nz ) );
+        return CGAL::Vector_3<K>( CGAL::to_double( nx ), CGAL::to_double( ny ), CGAL::to_double( nz ) );
     }
 }
 
@@ -76,10 +76,10 @@ CGAL::Vector_3< Kernel > normal3D( const LineString& ls, bool exact = true )
  * Returns the 3D normal to a polygon (supposed to be planar).
      * @warning exact allows to avoid double rounding at the end of the computation
  */
-template < typename Kernel >
-CGAL::Vector_3< Kernel > normal3D( const Polygon& polygon, bool exact = true )
+template < typename K >
+CGAL::Vector_3<K> normal3D( const Polygon<K>& polygon, bool exact = true )
 {
-    return normal3D< Kernel >( polygon.exteriorRing(), exact );
+    return normal3D<K>( exteriorRing(polygon), exact );
 }
 
 }//algorithm

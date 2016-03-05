@@ -30,6 +30,11 @@ namespace SFCGAL {
      */
     template < typename K >
     using Polygon = std::vector< LineString<K> > ;
+    
+    template < typename K >
+    const LineString<K> & exteriorRing( const Polygon<K> & g){
+        return g.front();
+    }
 
 } // SFCGAL
 

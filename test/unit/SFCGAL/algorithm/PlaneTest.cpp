@@ -19,19 +19,7 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Kernel.h>
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
+#include <SFCGAL/Geometry.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/plane.h>
 
@@ -42,9 +30,9 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_PlaneTest )
 
 BOOST_AUTO_TEST_CASE( testPlane1 )
 {
-    std::auto_ptr<Geometry> gA( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
+    Geometry<Epeck> gA = io::readWkt<Epeck>( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) ;
 
-    CGAL::Plane_3<Kernel> plane = algorithm::plane3D<Kernel>( gA->as<Polygon>() );
+    CGAL::Plane_3<Epeck> plane = algorithm::plane3D<Epeck>( boost::get<Polygon<Epeck>>(gA) );
     BOOST_CHECK_EQUAL( plane.a(), 0.0 );
     BOOST_CHECK_EQUAL( plane.b(), 0.0 );
     BOOST_CHECK_EQUAL( plane.c(), 2.0 );
@@ -69,10 +57,10 @@ BOOST_AUTO_TEST_CASE( testPlane )
 
     for ( size_t t=0; t != numTest; ++t ) {
         //std::cout << "test = " << t << "\n";
-        std::auto_ptr<Geometry> g( io::readWkt( test[t]._wkt ) );
-        const LineString* l = dynamic_cast<LineString*>( g.get() );
+        Geometry<Epeck>g = io::readWkt<Epeck>( test[t]._wkt ) ;
+        const LineString<Epeck> l = boost::get<LineString<Epeck>>(g);
         BOOST_CHECK_MESSAGE(
-            algorithm::isPlane3D< Kernel >( *l, 1.e-9 ) == test[t]._isPlane,
+            algorithm::isPlane3D< Epeck >( l, 1.e-9 ) == test[t]._isPlane,
             ( boost::format( "LineString %d: %s %s" ) % t % test[t]._wkt % ( test[t]._isPlane ? "is plane" : "isn't plane" ) )
         );
     }

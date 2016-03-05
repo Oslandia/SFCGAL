@@ -30,6 +30,18 @@ namespace SFCGAL {
      */
     template < typename K >
     using LineString = std::vector< Point<K> > ;
+    
+    template < typename K >
+    const Point<K> & startPoint( const LineString<K> & g ){
+        BOOST_ASSERT( ! g.empty() );
+        return g.front();
+    }
+
+    template < typename K >
+    const Point<K> & endPoint( const LineString<K> & g ){
+        BOOST_ASSERT( ! g.empty() );    
+        return g.back();
+    }
 
 } // SFCGAL
 

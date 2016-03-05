@@ -28,7 +28,7 @@
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/Polygon.h>
 #include <SFCGAL/algorithm/normal.h>
-#include <SFCGAL/detail/GetPointsVisitor.h>
+#include <SFCGAL/detail/collectPoints.h>
 
 namespace SFCGAL {
 namespace algorithm {
@@ -37,23 +37,25 @@ namespace algorithm {
  * @brief Test if a 3D plane can be extracted from a Polygon
  * @ingroup public_api
  */
-template < typename Kernel >
-bool hasPlane3D( const Polygon& polygon,
-                 CGAL::Point_3< Kernel >& a,
-                 CGAL::Point_3< Kernel >& b,
-                 CGAL::Point_3< Kernel >& c )
+template < typename K >
+bool hasPlane3D( 
+    const Polygon<K>& polygon,
+    CGAL::Point_3<K>& a,
+    CGAL::Point_3<K>& b,
+    CGAL::Point_3<K>& c 
+)
 {
-    typedef CGAL::Point_3< Kernel > Point_3 ;
+    typedef CGAL::Point_3<K> Point_3 ;
 
-    const LineString& exteriorRing = polygon.exteriorRing() ;
+    const LineString<K>& exteriorRing = exteriorRing(polygon) ;
 
     /*
      * look for 3 non collinear points
      */
     size_t  n = 0 ;
 
-    for ( size_t i = 0; i < exteriorRing.numPoints(); i++ ) {
-        Point_3 p = exteriorRing.pointN( i ).toPoint_3() ;
+    for ( size_t i = 0; i < exteriorRing.size(); i++ ) {
+        const Point_3 & p = exteriorRing[ i ] ;
 
         if ( n == 0 ) {
             a = p ;
@@ -77,23 +79,23 @@ bool hasPlane3D( const Polygon& polygon,
 /**
  * Test if a 3D plane can be extracted from a Polygon
  */
-template < typename Kernel >
-bool hasPlane3D( const Polygon& polygon )
+template < typename K >
+bool hasPlane3D( const Polygon<K>& polygon )
 {
     // temporary arguments
-    CGAL::Point_3< Kernel > a, b, c;
+    CGAL::Point_3<K> a, b, c;
     return hasPlane3D( polygon, a, b, c );
 }
 
 /**
  * Get 3 non collinear points from a Polygon
  */
-template < typename Kernel >
+template < typename K >
 void plane3D(
-    const Polygon& polygon,
-    CGAL::Point_3< Kernel >& a,
-    CGAL::Point_3< Kernel >& b,
-    CGAL::Point_3< Kernel >& c
+    const Polygon<K>& polygon,
+    CGAL::Point_3<K>& a,
+    CGAL::Point_3<K>& b,
+    CGAL::Point_3<K>& c
 )
 {
     if ( ! hasPlane3D( polygon, a, b, c ) ) {
@@ -109,37 +111,35 @@ void plane3D(
  * Returns the oriented 3D plane of a polygon (supposed to be planar).
  * @warning result is rounded to double if exact is false (avoid huge expression tree)
  */
-template < typename Kernel >
-CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact = true )
+template < typename K >
+CGAL::Plane_3<K> plane3D( const Polygon<K>& polygon, bool exact = true )
 {
-    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, exact );
+    CGAL::Vector_3<K> nrml = normal3D<K>( polygon, exact );
 
     if ( !exact ) {
         const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
-        nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
+        nrml = CGAL::Vector_3<K>( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
     }
 
-    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
+    return CGAL::Plane_3<K>( exteriorRing(polygon).at( 0 ), nrml );
 }
 
 
 
 /**
  * Test if all points of a geometry lie in the same plane
+ 
+ * TODO review this algorithm (Epeck for the barycenter)
+ * 
  * @ingroup detail
  */
-template < typename Kernel >
-bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
+template < typename K >
+bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
 {
-    if ( geom.isEmpty() ) {
-        return true;
-    }
+    std::vector< Point<K> > points ;
+    detail::collectPoints(geom,points);
 
-    using namespace SFCGAL::detail;
-    GetPointsVisitor v;
-    const_cast< Geometry& >( geom ).accept( v );
-
-    if ( v.points.size() == 0 ) {
+    if ( points.empty() ) {
         return true;
     }
 
@@ -153,16 +153,14 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     // note that we could compute the covarence matrix of the points and use SVD
     // but we would need a lib for that, and it may be overkill
 
-    typedef CGAL::Vector_3< Kernel > Vector_3 ;
-
-    const GetPointsVisitor::const_iterator end = v.points.end();
+    typedef CGAL::Vector_3<K> Vector_3 ;
 
     // centroid
     Vector_3 c( 0,0,0 );
     int numPoint = 0;
 
-    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        c = c + ( *x )->toVector_3() ;
+    for ( auto x = points.begin(); x != points.end(); ++x ) {
+        c = c + toVector_3( *x ) ;
         ++numPoint;
     }
 
@@ -171,14 +169,14 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
 
     // farest point from centroid
     Vector_3 f = c ;
-    typename Kernel::FT maxDistanceSq = 0;
+    typename K::FT maxDistanceSq = 0;
 
-    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
-        const typename Kernel::FT dSq = cx * cx ;
+    for ( auto x = points.begin(); x != points.end(); ++x ) {
+        const Vector_3 cx = toVector_3( *x ) - c ;
+        const typename K::FT dSq = cx * cx ;
 
         if ( dSq > maxDistanceSq ) {
-            f = ( *x )->toVector_3() ;
+            f = toVector_3( *x ) ;
             maxDistanceSq = dSq ;
         }
     }
@@ -193,13 +191,13 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
     const Vector_3 cf = f - c ; // direction of (CF)
     maxDistanceSq = 0; // watch out, we reuse the variable
 
-    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+    for ( auto x = points.begin(); x != points.end(); ++x ) {
+        const Vector_3 cx = toVector_3( *x ) - c ;
         const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line (CF)
-        const typename Kernel::FT dSq = ( cx - cp ).squared_length() ;
+        const typename K::FT dSq = ( cx - cp ).squared_length() ;
 
         if ( dSq > maxDistanceSq ) {
-            g = ( *x )->toVector_3() ;
+            g = toVector_3( *x ) ;
             maxDistanceSq = dSq ;
         }
     }
@@ -213,8 +211,8 @@ bool isPlane3D( const Geometry& geom,const double& toleranceAbs )
 
     const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
 
-    for ( GetPointsVisitor::const_iterator x = v.points.begin(); x != end; ++x ) {
-        const Vector_3 cx = ( *x )->toVector_3() - c ;
+    for ( auto x = points.begin(); x != points.end(); ++x ) {
+        const Vector_3 cx = toVector_3( *x ) - c ;
 
         if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
             // std::cout << "point out of plane\n";
