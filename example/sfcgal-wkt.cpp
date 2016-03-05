@@ -27,6 +27,5 @@ int main( int argc, char* argv[] ){
         Geometry<Epick> geometry = io::readWkt<Epick>(wkt);
         std::cout << io::toWkt<Epick>(geometry) << std::endl ;
     }
-    
     return 0 ;
 }
