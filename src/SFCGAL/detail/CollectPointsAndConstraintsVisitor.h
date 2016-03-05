@@ -17,8 +17,8 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_DETAIL_POINTSANDCONSTRAINTSVISITOR_H_
-#define _SFCGAL_DETAIL_POINTSANDCONSTRAINTSVISITOR_H_
+#ifndef _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTSVISITOR_H_
+#define _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTSVISITOR_H_
 
 #include <vector>
 #include <SFCGAL/Exception.h>
@@ -30,9 +30,9 @@ namespace detail {
      * Visitor that extract vertices and edges from a Geometry
      */
     template < typename K >
-    class PointsAndConstraintsVisitor : public boost::static_visitor<> {
+    class CollectPointsAndConstraintsVisitor : public boost::static_visitor<> {
     public:
-        PointsAndConstraintsVisitor(
+        CollectPointsAndConstraintsVisitor(
             std::vector< Point<K> > & points,
             std::vector< std::pair< size_t, size_t > > & constraints
         ):

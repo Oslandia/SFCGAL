@@ -17,11 +17,11 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
-#define _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
+#ifndef _SFCGAL_DETAIL_COLLECTPOINTS_H_
+#define _SFCGAL_DETAIL_COLLECTPOINTS_H_
 
 #include <SFCGAL/Geometry.h>
-#include <SFCGAL/detail/CollectPointsAndConstraintsVisitor.h>
+#include <SFCGAL/detail/CollectPointsVisitor.h>
 
 namespace SFCGAL {
 namespace detail {
@@ -32,12 +32,11 @@ namespace detail {
      * @warning this methods does not ensure unicity
      */
     template < typename K >
-    void collectPointsAndConstraints(
+    void collectPoints(
         const Geometry<K> & geometry,
-        std::vector< Point<K> > & points,
-        std::vector< std::pair< size_t, size_t > > & constraints
+        std::vector< Point<K> > & points
     ){
-        detail::CollectPointsAndConstraintsVisitor<K> visitor(points,constraints);
+        detail::CollectPointsVisitor<K> visitor(points);
         boost::apply_visitor(visitor,geometry);
     }
 
