@@ -24,8 +24,10 @@
 #include <SFCGAL/config.h>
 
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/triangulate/triangulatePolygon3D.h>
 
 #include <osg/Geometry>
+
 
 namespace SFCGAL {
 namespace io {
@@ -110,13 +112,12 @@ public:
 
     /**
      * add a Polygon to the osg::Geometry
-     * TODO : restore
+     */
     void operator() ( const Polygon<K>& g ){
-        TriangulatedSurface surf;
+        TriangulatedSurface<K> surf;
         triangulate::triangulatePolygon3D( g, surf );
-        (*this)( geometry, surf );
+        (*this)( surf );
     }
-    */
      
     /**
      * add a TIN to the osg::Geometry
@@ -162,17 +163,17 @@ public:
 
     /**
      * add a Solid to a osg::Geometry
-     * TODO restore
-    vvoid operator() ( const Solid<K>& g){
-        TriangulatedSurface triangulatedSurface ;
+     */
+    void operator() ( const Solid<K>& g){
+        TriangulatedSurface<K> triangulatedSurface ;
 
-        for ( size_t i = 0; i < g.numShells(); i++ ) {
-            triangulate::triangulatePolygon3D( g.shellN( i ), triangulatedSurface );
+        for ( size_t i = 0; i < g.size(); i++ ) {
+            triangulate::triangulatePolygon3D( g[i], triangulatedSurface );
         }
 
         (*this)( triangulatedSurface );
     }
-    */
+    
      
     /**
      * add a GeometryCollection to a osg::Geometry

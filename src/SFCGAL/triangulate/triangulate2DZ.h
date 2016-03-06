@@ -20,6 +20,7 @@
 #ifndef _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
 #define _SFCGAL_TRIANGULATE_TRIANGULATE2DZ_H_
 
+#include <SFCGAL/config.h>
 #include <SFCGAL/log.h>
 
 #include <SFCGAL/Geometry.h>

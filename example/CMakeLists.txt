@@ -3,7 +3,7 @@
 # note : SFCGAL_WITH_OSG is defined when OSG 
 # is found and examples should take it in account.
 #-------------------------------------------------------------
-find_package(OpenSceneGraph 3.2.0 COMPONENTS osgDB osgUtil)
+find_package(OpenSceneGraph 3.2.0 COMPONENTS osgViewer osgGA osgDB osgUtil)
 if(OPENSCENEGRAPH_FOUND)
     add_definitions("-DSFCGAL_WITH_OSG")
     include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
