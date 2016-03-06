@@ -1,6 +1,19 @@
 #-- build unit tests
 #-- TODO replace by an exhaustive list if absolute path is not enougth
-file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/unit/*.cpp" )
+#file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES "${CMAKE_SOURCE_DIR}/test/unit/*.cpp" )
+
+set( SFCGAL_UNIT_TEST_SOURCES
+    "TestModule.cpp"
+    
+    "SFCGAL/PointTest.cpp"
+    "SFCGAL/LineStringTest.cpp"
+    "SFCGAL/PolygonTest.cpp"
+    "SFCGAL/MultiPointTest.cpp"
+    "SFCGAL/GeometryCollectionTest.cpp"
+    "SFCGAL/GeometryVisitorTest.cpp"
+    
+    "SFCGAL/io/WktReaderTest.cpp"
+)
 
 add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
 target_link_libraries( unit-test-SFCGAL 

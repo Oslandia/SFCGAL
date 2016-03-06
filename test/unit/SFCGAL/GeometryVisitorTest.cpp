@@ -19,8 +19,8 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Geometry.h>
-
+#include <SFCGAL/types.h>
+#include <SFCGAL/visitor.h>
 
 using namespace SFCGAL ;
 
@@ -73,11 +73,10 @@ public:
     void operator () ( const GeometryCollection<K>& ) {
         type = "GeometryCollection";
     }
-    /*
+
     void operator () ( const PolyhedralSurface<K>& ) {
         type = "PolyhedralSurface";
     }
-    */
     
     void operator () ( const TriangulatedSurface<K>& ) {
         type = "TriangulatedSurface";
@@ -93,7 +92,7 @@ template < typename K >
 std::string getTypeWithVisitor(const Geometry<K>& g)
 {
     DemoVisitorGetType<K> visitor;
-    boost::apply_visitor(visitor,g);
+    SFCGAL::apply_visitor(visitor,g);
     return visitor.type ;
 }
 
@@ -147,12 +146,11 @@ BOOST_AUTO_TEST_CASE( testVisitTriangulatedSurface )
     BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(TriangulatedSurface<Epeck>()), "TriangulatedSurface" );
 }
 
-/*
 BOOST_AUTO_TEST_CASE( testVisitPolyhedralSurface )
 {
     BOOST_CHECK_EQUAL( getTypeWithVisitor<Epeck>(PolyhedralSurface<Epeck>()), "PolyhedralSurface" );
 }
-*/
+
 
 BOOST_AUTO_TEST_CASE( testVisitSolid )
 {

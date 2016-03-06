@@ -29,7 +29,23 @@ namespace SFCGAL {
      * A collection of LineStrings
      */
     template < typename K >
-    using MultiLineString = Collection< LineString<K> > ;
+    class MultiLineString : public Collection< LineString<K> > {
+        using Base = Collection< LineString<K> >;
+    public:
+        using Kernel = K ;
+    
+        //-- forward Collection's ctor
+        using Base::Base;
+        
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_MULTILINESTRING ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() {
+            return "MultiLineString";
+        }
+    };
 
 } // SFCGAL
 

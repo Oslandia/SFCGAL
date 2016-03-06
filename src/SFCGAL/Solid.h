@@ -31,9 +31,41 @@ namespace SFCGAL {
      *
      * @warning A 2D solid is an artefact to provide the same type list
      *  in the Geometry variant for 2D and 3D
+     *
+     * TODO check if exteriorShell was initialized in 1.3.*, restore 
+     *   deprecated accessors if needed by algorithms
      */
     template < typename K >
-    using Solid = std::vector< MultiPolygon<K> > ;
+    class Solid : public Geometry<K>, public std::vector< MultiPolygon<K> > {
+        using Container = std::vector< MultiPolygon<K> >;
+    public:
+        using Kernel = K ;
+    
+        // forward Container's ctor
+        using Container::Container;
+        
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_SOLID ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() {
+            return "Solid";
+        }
+        //--- IGeometry
+        bool isEmpty() const {
+            return this->empty() ;
+        }
+        //--- IGeometry
+        bool is3D() const {
+            return ( ! isEmpty() ) && this->front().is3D() ;
+        }
+        //--- IGeometry
+        bool isMeasured() const {
+            return ( ! isEmpty() ) && this->front().isMeasured() ;
+        }
+
+    } ;
 
 } // SFCGAL
 

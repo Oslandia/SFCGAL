@@ -346,57 +346,80 @@ BOOST_AUTO_TEST_CASE( asText3d )
     );
     BOOST_CHECK_EQUAL( g.asText( 3 ), "LINESTRING(2.000 3.000 7.000,4.000 5.000 8.000)" );
 }
+*/
 
 //virtual std::string  Geometry::geometryType() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryType )
 {
-    LineString g;
+    LineString<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryType(), "LineString" );
 }
 
 //virtual GeometryType Geometry::geometryTypeId() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryTypeId )
 {
-    LineString g;
+    LineString<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_LINESTRING );
 }
 
+/*
 //virtual int          Geometry::dimension() const = 0 ;
 //virtual int          Geometry::coordinateDimension() const = 0 ;
+*/
 
 //virtual bool         Geometry::isEmpty() const = 0 ;
 BOOST_AUTO_TEST_CASE( testIsEmpty_true )
 {
-    LineString g;
+    LineString<Epeck> g;
     BOOST_CHECK( g.isEmpty() );
 }
 BOOST_AUTO_TEST_CASE( testIsEmpty_false )
 {
-    LineString g( Point( 0.0,0.0 ), Point( 1.0,1.0 ) );
+    LineString<Epeck> g{
+        Point<Epeck>( 0.0,0.0 ), 
+        Point<Epeck>( 1.0,1.0 )
+    } ;
     BOOST_CHECK( ! g.isEmpty() );
 }
 
 //virtual bool         Geometry::is3D() const = 0 ;
 BOOST_AUTO_TEST_CASE( testIs3D_false )
 {
-    LineString g( Point( 0.0,0.0 ), Point( 1.0,1.0 ) );
+    LineString<Epeck> g{
+        Point<Epeck>( 0.0,0.0 ), 
+        Point<Epeck>( 1.0,1.0 )
+    } ;
     BOOST_CHECK( ! g.is3D() );
 }
 BOOST_AUTO_TEST_CASE( testIs3D_true )
 {
-    LineString g( Point( 0.0,0.0,0.0 ), Point( 1.0,1.0,1.0 ) );
+    LineString<Epeck> g{
+        Point<Epeck>( 0.0, 0.0, 0.0 ), 
+        Point<Epeck>( 1.0, 1.0, 0.0 )
+    } ;
     BOOST_CHECK( g.is3D() );
 }
 
+/*
 //virtual bool         Geometry::isMeasured() const = 0 ;
 //virtual bool         Geometry::isSimple() const = 0 ;
+*/
+
 
 //template < typename Derived > inline bool Geometry::is() const
 BOOST_AUTO_TEST_CASE( isLineString )
 {
-    LineString g;
-    BOOST_CHECK( g.is< LineString >() );
+    {
+        Point<Epeck> g;
+        BOOST_CHECK( ! g.is< LineString<Epeck> >() );
+    }
+    {
+        LineString<Epeck> g;
+        BOOST_CHECK( g.is< LineString<Epeck> >() );
+    }
 }
+
+/*
 //template < typename Derived > inline const Derived &  Geometry::as() const
 //template < typename Derived > inline Derived &        Geometry::as()
 */

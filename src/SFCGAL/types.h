@@ -17,36 +17,25 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_MULTIPOINT_H_
-#define _SFCGAL_MULTIPOINT_H_
+#ifndef _SFCGAL_TYPES_H_
+#define _SFCGAL_TYPES_H_
 
 #include <SFCGAL/Point.h>
-#include <SFCGAL/Collection.h>
+#include <SFCGAL/LineString.h>
+#include <SFCGAL/Triangle.h>
+#include <SFCGAL/Polygon.h>
+#include <SFCGAL/Solid.h>
 
-namespace SFCGAL {
-    
-    /**
-     * A collection of Point
-     */
-    template < typename K >
-    class MultiPoint : public Collection< Point<K> > {
-        using Base = Collection< Point<K> >;
-    public:
-        using Kernel = K ;
+#include <SFCGAL/MultiPoint.h>
+#include <SFCGAL/MultiLineString.h>
+#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/MultiSolid.h>
 
-        //-- forward Collection's ctor
-        using Base::Base;
-        
-        //--- IGeometry
-        virtual GeometryType geometryTypeId() const {
-            return TYPE_MULTIPOINT ;
-        }
-        //--- IGeometry
-        virtual std::string geometryType() {
-            return "MultiPoint";
-        }
-    };
+#include <SFCGAL/TriangulatedSurface.h>
+#include <SFCGAL/PolyhedralSurface.h>
 
-} // SFCGAL
+#include <SFCGAL/GeometryCollection.h>
 
 #endif
+
+

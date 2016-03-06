@@ -26,14 +26,27 @@
 namespace SFCGAL {
     
     /**
-     * A collection of polygons
-     */
+    * A collection of Polygon
+    */
     template < typename K >
-    using MultiPolygon = Collection< Polygon<K> > ;
-    
-    // TODO remove
-    template < typename K >
-    using PolyhedralSurface = MultiPolygon<K> ;
+    class MultiPolygon : public Collection< Polygon<K> > {
+    using Base = Collection< Polygon<K> >;
+    public:
+        using Kernel = K ;
+
+        //-- forward Collection's ctor
+        using Base::Base;
+
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_MULTIPOLYGON ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() {
+            return "MultiPolygon";
+        }
+    };
+
 
 } // SFCGAL
 

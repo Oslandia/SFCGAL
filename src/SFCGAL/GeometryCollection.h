@@ -17,27 +17,27 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_COLLECTION_H_
-#define _SFCGAL_COLLECTION_H_
+#ifndef _SFCGAL_GEOMETRYCOLLECTION_H_
+#define _SFCGAL_GEOMETRYCOLLECTION_H_
 
-#include <vector>
-#include <SFCGAL/Point.h>
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
         
     /**
      * A geometry collection
      */
-    template < typename GeometryType > 
-    class Collection : public Geometry<typename GeometryType::Kernel>, public std::vector< GeometryType > {
-        using Container = std::vector< GeometryType > ;
+    template < typename K > 
+    class GeometryCollection : public Geometry<K>, public boost::ptr_vector< Geometry<K> > {
+        using Container = boost::ptr_vector< Geometry<K> > ;
     public:
-        using Kernel = typename GeometryType::Kernel ;
+        using Kernel = K ;
 
         // forward Container's ctor's
         using Container::Container;
 
-        virtual ~Collection(){}
+        virtual ~GeometryCollection(){}
 
         /**
          * Get n'th geometry
@@ -50,7 +50,7 @@ namespace SFCGAL {
          * Get n'th geometry
          * @deprecated use g[i] or g.at(i)
          */
-        GeometryType & geometryN( const size_t & n ) {
+        Geometry<K> & geometryN( const size_t & n ) {
             BOOST_ASSERT( n < this->size() );
             return (*this)[n] ;
         }
@@ -58,7 +58,7 @@ namespace SFCGAL {
          * Get n'th geometry
          * @deprecated use g[i] or g.at(i)
          */
-        const GeometryType & geometryN( const size_t & n ) const {
+        const Geometry<K> & geometryN( const size_t & n ) const {
             BOOST_ASSERT( n < this->size() );
             return (*this)[n] ;
         }
@@ -75,7 +75,14 @@ namespace SFCGAL {
         virtual bool isMeasured() const {
             return (! isEmpty()) && this->front().isMeasured();
         }
-
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_GEOMETRYCOLLECTION ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() {
+            return "GeometryCollection";
+        }
     } ;
 
 }
