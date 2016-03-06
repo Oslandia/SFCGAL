@@ -21,24 +21,204 @@
 #define _SFCGAL_POINT_H_
 
 #include <SFCGAL/kernels.h>
+#include <SFCGAL/numeric.h>
+#include <SFCGAL/Coordinate.h>
 
 namespace SFCGAL {
     
     /**
-     * SFCGAL Point is simplify defined as a CGAL::Point_3.
-     *
-     * Note that "M" could be managed with decorated kernel points
+     * 
+     * SFCGAL's Point add metadata to a CGAL::Point_3 that should be considered as
+     * it's coordinate. It's implicitely castable to CGAL::Point_3 and CGAL::Point_2.
+     * 
+     * Simple Feature points can be Empty, 2D or 3D. They are
+     * converted to 3D and tagged with their dimension.
      */
     template < typename K >
-    using Point = CGAL::Point_3<K> ;
+    class Point {
+    public:
+        using FT = typename K::FT ;
 
-    /**
-     * Convert point to Vector_3 from CGAL::ORIGIN
-     */
-    template < typename K >
-    CGAL::Vector_3<K> toVector_3( const Point<K> & g ){
-        return g - CGAL::ORIGIN ;
-    }
+        /**
+         * Empty point constructor
+         */
+        Point():
+            _coordinate(CGAL::ORIGIN),
+            _empty(true),
+            _3d(false),
+            _m(SFCGAL::NaN())
+        {
+            
+        }
+        
+        /**
+         * Empty point constructor
+         */
+        Point( const FT & x, const FT & y ):
+            _coordinate(x,y,FT(0)),
+            _empty(false),
+            _3d(false),
+            _m(SFCGAL::NaN())
+        {
+            
+        }
+        
+        /**
+         * 2D point constructor
+         */
+        Point( const CGAL::Point_2<K> & other ):
+            _coordinate(other.x(),other.y(),FT(0)),
+            _empty(false),
+            _3d(false),
+            _m(SFCGAL::NaN())
+        {
+            
+        }
+        
+        /**
+         * 3D point constructor
+         */
+        Point( const FT & x, const FT & y, const FT & z ):
+            _coordinate(x,y,z),
+            _empty(false),
+            _3d(true),
+            _m(SFCGAL::NaN())
+        {
+            
+        }
+
+        /**
+         * 3D point constructor
+         */
+        Point( const CGAL::Point_3<K> & other ):
+            _coordinate(other),
+            _empty(false),
+            _3d(true),
+            _m(SFCGAL::NaN())
+        {
+            
+        }
+
+        Point( const Point<K> & ) = default;
+        Point( Point<K>&& ) = default;
+        
+        Point<K> & operator = ( const Point<K> & ) = default;
+        Point<K> & operator = ( Point<K>&& ) = default;        
+        
+        ~Point() = default;
+        
+        /**
+         * Indicate if the point is Empty
+         */
+        bool isEmpty() const {
+            return _empty ;
+        }
+        
+        /**
+         * Indicate if the point is 3D
+         */
+        bool is3D() const {
+            return _3d ;
+        }
+        
+        bool isMeasured() const {
+            return ! SFCGAL::isNaN(_m);
+        }
+        
+        double & m() { return _m ; }
+        const double & m() const { return _m ; }
+                
+        /**
+         * Get the 2D point coordinate
+         */
+        CGAL::Point_2<K> toPoint_2() const {
+            return CGAL::Point_2<K>(_coordinate.x(),_coordinate.y());
+        }
+
+        /**
+         * Get the 3D point coordinate
+         */
+        const CGAL::Point_3<K>& toPoint_3() const {
+            return _coordinate;
+        }
+
+        /**
+         * Get the 2D vector from ORIGIN
+         */
+        CGAL::Vector_2<K> toVector_2() const {
+            return toPoint_2() - CGAL::ORIGIN ;
+        }
+        
+        /**
+         * Get the 3D vector from ORIGIN
+         */
+        CGAL::Vector_3<K> toVector_3() const {
+            return toPoint_3() - CGAL::ORIGIN ;
+        }
+        
+        /**
+         *
+         * @deprecated use CGAL data structures to perform operations
+         */
+        FT x() const {
+            return _coordinate.x();
+        }
+        /**
+         *
+         * @deprecated use CGAL data structures to perform operations
+         */
+        FT y() const {
+            return _coordinate.y();
+        }
+        /**
+         *
+         * @deprecated use CGAL data structures to perform operations
+         */
+        FT z() const {
+            return _coordinate.z();
+        }
+
+        
+        /**
+         *  Compare point (based on 3D coordinate comparison)
+         *
+         * @deprecated performs comparison on CGAL data structures
+         */
+        bool operator < ( const Point<K> & other ) const {
+            return _coordinate < other._coordinate ;
+        }
+        /**
+         * Compare point (based on 3D coordinate comparison)
+         * @deprecated performs comparison on CGAL data structures
+         */
+        bool operator != ( const Point<K> & other ) const {
+            return _coordinate != other._coordinate ;
+        }
+        /**
+         * Compare point (based on 3D coordinate comparison)
+         * @deprecated performs comparison on CGAL data structures
+         */
+        bool operator == ( const Point<K> & other ) const {
+            return _coordinate == other._coordinate ;
+        }
+        
+    private:
+        Coordinate<K> _coordinate;
+        /**
+         * measure attached to the point
+         * TODO customize a kernel so that the measure persists throw CGAL algorithm
+         *   invocation.
+         */
+        double _m ;
+        /**
+         * Tag for empty coordinates
+         */
+        bool _empty ;
+        /**
+         * Tag for 3D coordinate
+         */
+        bool _3d ;
+    } ;
 
 } // namespace SFCGAL
 

@@ -28,10 +28,10 @@ namespace SFCGAL {
  * @ingroup public_api
  */
 typedef enum {
-    COORDINATE_XY   = 0 ,
-    COORDINATE_XYZ  = 1000,
-    COORDINATE_XYM  = 2000,
-    COORDINATE_XYZM = 3000
+    COORDINATE_XY    = 0 ,
+    COORDINATE_XYZ   = 1000,
+    COORDINATE_XYM   = 2000,
+    COORDINATE_XYZM  = 3000
 } CoordinateType ;
 
 } // SFCGAL

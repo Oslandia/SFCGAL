@@ -33,7 +33,7 @@ namespace detail {
     class CollectPointsAndConstraintsVisitor : public boost::static_visitor<> {
     public:
         CollectPointsAndConstraintsVisitor(
-            std::vector< Point<K> > & points,
+            std::vector< Coordinate<K> > & points,
             std::vector< std::pair< size_t, size_t > > & constraints
         ):
             _points(points),
@@ -43,14 +43,14 @@ namespace detail {
         }
 
         void operator () ( const Point<K> & g ){
-            _points.push_back(g) ;
+            _points.push_back(g.toPoint_3()) ;
         }
 
         void operator () ( const LineString<K> & g ){
             size_t last = 0 ;
             for ( int i = 0; i < g.size(); i++ ){
                 size_t index = _points.size() ;
-                _points.push_back(g[i]);
+                _points.push_back(g[i].toPoint_3());
                 if ( i != 0 ){
                     _constraints.push_back(std::make_pair(last,index));
                 }
@@ -62,7 +62,7 @@ namespace detail {
             size_t last = 0 ;
             for ( int i = 0; i < 3; i++ ){
                 size_t index = _points.size() ;
-                _points.push_back(g.vertex(i));
+                _points.push_back(g.vertex(i).toPoint_3());
                 if ( i != 0 ){
                     _constraints.push_back(std::make_pair(last,index));
                 }
@@ -96,7 +96,7 @@ namespace detail {
         }
 
     private:
-        std::vector< Point<K> > & _points ;
+        std::vector< Coordinate<K> > & _points ;
         std::vector< std::pair< size_t, size_t > > & _constraints ;
     } ;
 

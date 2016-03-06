@@ -27,6 +27,7 @@
 #include <boost/format.hpp>
 
 #include <SFCGAL/config.h>
+#include <SFCGAL/numeric.h>
 #include <SFCGAL/Geometry.h>
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/io/detail/InputStreamReader.h>
@@ -174,7 +175,7 @@ namespace detail {
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Point<K>(CGAL::ORIGIN);
+                g = Point<K>();
                 return true ;
             }
             readInner(g);
@@ -246,11 +247,7 @@ namespace detail {
             _is3D       = _reader.imatch( "Z" );
             _isMeasured = _reader.imatch( "M" );
             if ( _reader.match("EMPTY") ){
-                g = Triangle<K>(
-                    Point<K>(CGAL::ORIGIN),
-                    Point<K>(CGAL::ORIGIN),
-                    Point<K>(CGAL::ORIGIN)
-                );
+                g = Triangle<K>();
                 return true ;
             }
             readInner(g);
@@ -664,16 +661,22 @@ namespace detail {
         bool _isMeasured ;
         
         /**
-         * Read a Point_3 coordinate
+         * Read a point coordinate
          */
-        bool readCoordinate( CGAL::Point_3<K> & g ){
+        bool readCoordinate( Point<K> & g ){
             typename K::FT x = 0 ,y = 0 ,z = 0 ;
-            double m = std::numeric_limits<double>::quiet_NaN() ;
+            double m = SFCGAL::NaN() ;
             readXYZM(x,y,z,m);
-            g = CGAL::Point_3<K>(x,y,z);
-            //TODO g.data() = m;
+            
+            if ( _is3D ){
+                g = Point<K>(x,y,z);
+            }else{
+                g = Point<K>(x,y);
+            }
+            // NaN if not measured (no need to test _isMeasured)
+            g.m() = m ;
         }
-    
+
         /**
          * provides a generic message
          */
@@ -709,7 +712,10 @@ namespace detail {
                 }
             }else{
                 //optional Z
-                _reader.read(z);
+                if ( _reader.read(z) ){
+                    // force metadata
+                    _is3D = true ;
+                }
             }
             
             FT dummy;

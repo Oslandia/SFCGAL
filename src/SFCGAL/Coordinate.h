@@ -17,31 +17,30 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
-#define _SFCGAL_DETAIL_COLLECTPOINTSANDCONSTRAINTS_H_
+#ifndef _SFCGAL_COORDINATE_H_
+#define _SFCGAL_COORDINATE_H_
 
-#include <SFCGAL/Geometry.h>
-#include <SFCGAL/detail/CollectPointsAndConstraintsVisitor.h>
+#include <SFCGAL/kernels.h>
 
 namespace SFCGAL {
-namespace detail {
-
+    
     /**
-     * Collect Points and Constraints from a geometry.
-     *
-     * @warning this methods does not ensure unicity
+     * The coordinate of a Point in a geometry, defined as
+     * a CGAL::Point_3.
      */
     template < typename K >
-    void collectPointsAndConstraints(
-        const Geometry<K> & geometry,
-        std::vector< Coordinate<K> > & points,
-        std::vector< std::pair< size_t, size_t > > & constraints
-    ){
-        detail::CollectPointsAndConstraintsVisitor<K> visitor(points,constraints);
-        boost::apply_visitor(visitor,geometry);
+    using Coordinate = CGAL::Point_3<K> ;
+    
+    /**
+     * Shortcut to convert Coordinate to Vector_3
+     */
+    template < typename K >
+    CGAL::Vector_3<K> toVector_3( const Coordinate<K> & c ){
+        return c - CGAL::ORIGIN ;
     }
 
-} // detail
 } // SFCGAL
 
 #endif
+
+

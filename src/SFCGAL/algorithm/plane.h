@@ -37,25 +37,23 @@ namespace algorithm {
  * @brief Test if a 3D plane can be extracted from a Polygon
  * @ingroup public_api
  */
-template < typename K >
-bool hasPlane3D( 
-    const Polygon<K>& polygon,
-    CGAL::Point_3<K>& a,
-    CGAL::Point_3<K>& b,
-    CGAL::Point_3<K>& c 
-)
+template < typename Kernel >
+bool hasPlane3D( const Polygon<Kernel>& polygon,
+                 CGAL::Point_3< Kernel >& a,
+                 CGAL::Point_3< Kernel >& b,
+                 CGAL::Point_3< Kernel >& c )
 {
-    typedef CGAL::Point_3<K> Point_3 ;
+    typedef CGAL::Point_3< Kernel > Point_3 ;
 
-    const LineString<K>& exteriorRing = exteriorRing(polygon) ;
+    const LineString<Kernel>& exteriorRing = polygon.exteriorRing() ;
 
     /*
      * look for 3 non collinear points
      */
     size_t  n = 0 ;
 
-    for ( size_t i = 0; i < exteriorRing.size(); i++ ) {
-        const Point_3 & p = exteriorRing[ i ] ;
+    for ( size_t i = 0; i < exteriorRing.numPoints(); i++ ) {
+        Point_3 p = exteriorRing.pointN( i ).toPoint_3() ;
 
         if ( n == 0 ) {
             a = p ;
@@ -79,23 +77,23 @@ bool hasPlane3D(
 /**
  * Test if a 3D plane can be extracted from a Polygon
  */
-template < typename K >
-bool hasPlane3D( const Polygon<K>& polygon )
+template < typename Kernel >
+bool hasPlane3D( const Polygon<Kernel>& polygon )
 {
     // temporary arguments
-    CGAL::Point_3<K> a, b, c;
+    CGAL::Point_3< Kernel > a, b, c;
     return hasPlane3D( polygon, a, b, c );
 }
 
 /**
  * Get 3 non collinear points from a Polygon
  */
-template < typename K >
+template < typename Kernel >
 void plane3D(
-    const Polygon<K>& polygon,
-    CGAL::Point_3<K>& a,
-    CGAL::Point_3<K>& b,
-    CGAL::Point_3<K>& c
+    const Polygon<Kernel>& polygon,
+    CGAL::Point_3< Kernel >& a,
+    CGAL::Point_3< Kernel >& b,
+    CGAL::Point_3< Kernel >& c
 )
 {
     if ( ! hasPlane3D( polygon, a, b, c ) ) {
@@ -111,35 +109,31 @@ void plane3D(
  * Returns the oriented 3D plane of a polygon (supposed to be planar).
  * @warning result is rounded to double if exact is false (avoid huge expression tree)
  */
-template < typename K >
-CGAL::Plane_3<K> plane3D( const Polygon<K>& polygon, bool exact = true )
+template < typename Kernel >
+CGAL::Plane_3< Kernel > plane3D( const Polygon<Kernel>& polygon, bool exact = true )
 {
-    CGAL::Vector_3<K> nrml = normal3D<K>( polygon, exact );
+    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, exact );
 
     if ( !exact ) {
         const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
-        nrml = CGAL::Vector_3<K>( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
+        nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
     }
 
-    return CGAL::Plane_3<K>( exteriorRing(polygon).at( 0 ), nrml );
+    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
 }
 
 
 
 /**
  * Test if all points of a geometry lie in the same plane
- 
- * TODO review this algorithm (Epeck for the barycenter)
- * 
  * @ingroup detail
  */
-template < typename K >
-bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
+template < typename Kernel >
+bool isPlane3D( const Geometry<Kernel>& geom,const double& toleranceAbs )
 {
-    std::vector< Point<K> > points ;
+    std::vector<Coordinate<Kernel>> points;
     detail::collectPoints(geom,points);
-
-    if ( points.empty() ) {
+    if ( points.size() == 0 ) {
         return true;
     }
 
@@ -153,14 +147,14 @@ bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
     // note that we could compute the covarence matrix of the points and use SVD
     // but we would need a lib for that, and it may be overkill
 
-    typedef CGAL::Vector_3<K> Vector_3 ;
+    typedef CGAL::Vector_3< Kernel > Vector_3 ;
 
     // centroid
     Vector_3 c( 0,0,0 );
     int numPoint = 0;
 
     for ( auto x = points.begin(); x != points.end(); ++x ) {
-        c = c + toVector_3( *x ) ;
+        c = c + toVector_3(*x) ;
         ++numPoint;
     }
 
@@ -169,14 +163,14 @@ bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
 
     // farest point from centroid
     Vector_3 f = c ;
-    typename K::FT maxDistanceSq = 0;
+    typename Kernel::FT maxDistanceSq = 0;
 
     for ( auto x = points.begin(); x != points.end(); ++x ) {
-        const Vector_3 cx = toVector_3( *x ) - c ;
-        const typename K::FT dSq = cx * cx ;
+        const Vector_3 cx = toVector_3(*x) - c ;
+        const typename Kernel::FT dSq = cx * cx ;
 
         if ( dSq > maxDistanceSq ) {
-            f = toVector_3( *x ) ;
+            f = toVector_3(*x) ;
             maxDistanceSq = dSq ;
         }
     }
@@ -192,12 +186,12 @@ bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
     maxDistanceSq = 0; // watch out, we reuse the variable
 
     for ( auto x = points.begin(); x != points.end(); ++x ) {
-        const Vector_3 cx = toVector_3( *x ) - c ;
+        const Vector_3 cx = toVector_3(*x) - c ;
         const Vector_3 cp = ( cx * cf ) * cf / cf.squared_length() ; // projection of x on line (CF)
-        const typename K::FT dSq = ( cx - cp ).squared_length() ;
+        const typename Kernel::FT dSq = ( cx - cp ).squared_length() ;
 
         if ( dSq > maxDistanceSq ) {
-            g = toVector_3( *x ) ;
+            g = toVector_3(*x) ;
             maxDistanceSq = dSq ;
         }
     }
@@ -212,7 +206,7 @@ bool isPlane3D( const Geometry<K>& geom,const double& toleranceAbs )
     const Vector_3 nNormed = n / std::sqrt( CGAL::to_double( n.squared_length() ) );
 
     for ( auto x = points.begin(); x != points.end(); ++x ) {
-        const Vector_3 cx = toVector_3( *x ) - c ;
+        const Vector_3 cx = toVector_3(*x) - c ;
 
         if ( std::abs( CGAL::to_double( cx * n ) ) > toleranceAbs ) {
             // std::cout << "point out of plane\n";

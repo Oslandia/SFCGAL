@@ -35,16 +35,16 @@ Finally :
 
 * Geometry (variant type for primitive and collection types)
 * Primitive types
-    * [x] Point
-    * [x] LineString
-    * [x] Triangle
-    * [x] Polygon (with holes)
+    * [x] Point
+    * [x] LineString
+    * [x] Triangle
+    * [x] Polygon (with holes)
     * [x] Solid
 * Collection
-    * [x] MultiPoint
-    * [x] MultiLineString
-    * [x] TriangulatedSurface
-    * [x] MultiPolygon
+    * [x] MultiPoint
+    * [x] MultiLineString
+    * [x] TriangulatedSurface
+    * [x] MultiPolygon
     * [x] PolyhedralSurface (considered as a MultiPolygon)
     * [x] GeometryCollection
 
@@ -53,16 +53,16 @@ Note that :
 * A MultiPolygon is implicity a closed PolyhedralSurface with correct orientation when it is a shell in a solid.
 
 
-# Features to add in 2.0
+# Features to add in 2.0
 
 ## IO
 
-- [ ] HEXA-WKB reader/writer
+- [ ] HEXA-WKB reader/writer
 
 ## Algorithms
 
-- [ ] Alpha shapes 2D/3D
-- [ ] Hole filling (usefull to transform dirty buildings to Solid)
+- [ ] Alpha shapes 2D/3D
+- [ ] Hole filling (usefull to transform dirty buildings to Solid)
 
 
 

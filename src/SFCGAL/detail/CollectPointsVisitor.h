@@ -33,7 +33,7 @@ namespace detail {
     class CollectPointsVisitor : public boost::static_visitor<> {
     public:
         CollectPointsVisitor(
-            std::vector< Point<K> > & points
+            std::vector< Coordinate<K> > & points
         ):
             _points(points)
         {
@@ -41,18 +41,18 @@ namespace detail {
         }
 
         void operator () ( const Point<K> & g ){
-            _points.push_back(g) ;
+            _points.push_back(g.toPoint_3()) ;
         }
 
         void operator () ( const LineString<K> & g ){
             for ( int i = 0; i < g.size(); i++ ){
-                _points.push_back(g[i]);
+                (*this)(g[i]);
             }
         }
 
         void operator () ( const Triangle<K> & g ){
             for ( int i = 0; i < 3; i++ ){
-                _points.push_back(g.vertex(i));
+                (*this)(g.vertex(i));
             }
         }
 
@@ -82,7 +82,7 @@ namespace detail {
         }
 
     private:
-        std::vector< Point<K> > & _points ;
+        std::vector< Coordinate<K> > & _points ;
     } ;
 
 } // namespace detail

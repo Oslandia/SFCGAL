@@ -46,7 +46,10 @@ namespace detail {
         
         void operator () ( const Point<K> & g ){
             _s << "POINT" ;
-            // WARNING : Can't be empty
+            if ( g.isEmpty() ){
+                _s << " EMPTY";
+                return;
+            }
             writeInner( g );
         }
 
@@ -119,7 +122,10 @@ namespace detail {
         
         void operator () ( const Triangle<K> & g ){
             _s << "TRIANGLE" ;
-            // WARNING : Can't be empty
+            if ( g.isEmpty() ){
+                _s << " EMPTY";
+                return;
+            }
             writeInner(g);
         }
         
@@ -162,9 +168,17 @@ namespace detail {
     private:
         std::ostream & _s ;
         
+        void writeCoordinate( const Point<K> & g ){
+            if ( g.is3D() ){
+                _s << g.toPoint_3() ;
+            }else{
+                _s << g.toPoint_2() ;
+            }
+        }
+        
         void writeInner( const Point<K> & g ){
             _s << "(";
-            _s << g ;
+            writeCoordinate(g);
             _s << ")";
         }
         
@@ -174,7 +188,7 @@ namespace detail {
                 if ( i != 0 ){
                     _s << ",";
                 }
-                _s << g[i] ;
+                writeCoordinate( g[i] ) ;
             }
             _s << ")" ;
         }

@@ -26,7 +26,7 @@
 
 #include <SFCGAL/export.h>
 
-#include <SFCGAL/Kernel.h>
+#include <SFCGAL/kernels.h>
 
 namespace SFCGAL {
 /**

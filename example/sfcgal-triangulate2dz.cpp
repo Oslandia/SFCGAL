@@ -4,7 +4,7 @@
 #include <SFCGAL/triangulate/triangulate2DZ.h>
 #include <SFCGAL/log.h>
 
-#include <CGAL/point_generators_3.h>
+#include <CGAL/point_generators_2.h>
 
 #ifdef SFCGAL_WITH_OSG
 #include <SFCGAL/io/osg.h>
@@ -16,15 +16,11 @@ using namespace SFCGAL ;
 template < typename K >
 MultiPoint<K> generateMultiPoint(const int & n){
     CGAL::default_random = CGAL::Random(0);
-    typedef CGAL::Creator_uniform_3< double, Point<K> > Creator ;
-    CGAL::Random_points_in_sphere_3< Point<K>, Creator > g( 150.0 );
+    typedef CGAL::Creator_uniform_2< double, CGAL::Point_2<K> > Creator ;
+    CGAL::Random_points_in_disc_2< CGAL::Point_2<K>, Creator > g( 150.0 );
     MultiPoint<K> points;
     points.reserve(n);
     CGAL::cpp11::copy_n( g, n, std::back_inserter(points));
-    // squeeze Z
-    for ( Point<K> & p : points ){
-        p = Point<K>(p.x(),p.y(),p.z()/100.0);
-    }
     return points ;
 }
 

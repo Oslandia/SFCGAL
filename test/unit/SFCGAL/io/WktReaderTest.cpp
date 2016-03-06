@@ -20,18 +20,7 @@
 #include <memory>
 #include <string>
 
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
+#include <SFCGAL/Geometry.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <boost/test/unit_test.hpp>
@@ -47,12 +36,13 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktReaderTest )
 
 BOOST_AUTO_TEST_CASE( pointEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT EMPTY" ) );
-    BOOST_CHECK( g->is< Point >() );
-    BOOST_CHECK( g->isEmpty() );
+    Geometry<Epeck> g( readWkt<Epeck>( "POINT EMPTY" ) );
+    BOOST_CHECK( boost::get< Point<Epeck> >(g).isEmpty() );
 }
 
+//TODO with custom "variant"
 
+/*
 BOOST_AUTO_TEST_CASE( pointXY )
 {
     std::auto_ptr< Geometry > g( readWkt( "POINT(4.0 6.0)" ) );
@@ -290,6 +280,7 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     }
     BOOST_CHECK( threw );
 }
+*/
 
 
 BOOST_AUTO_TEST_SUITE_END()

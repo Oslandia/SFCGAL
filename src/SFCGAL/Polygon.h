@@ -20,21 +20,139 @@
 #ifndef _SFCGAL_POLYGON_H_
 #define _SFCGAL_POLYGON_H_
 
+#include <SFCGAL/log.h>
 #include <SFCGAL/kernels.h>
+#include <SFCGAL/LineString.h>
 
 namespace SFCGAL {
 
     /**
      * A polygon with holes
-     * @TODO see if it's interesting to traits to use CGAL::Polygon_with_holes_2
+     * 
+     * note : v1.3.* rely on the fact that the internal vector is never empty. This 
+     *  behavior change in v2 : Polygon is no more initialized to size 1. Instead, 
+     *  a warning hack that using exteriorRing create an empty exteriorRing if missing.
      */
     template < typename K >
-    using Polygon = std::vector< LineString<K> > ;
+    class Polygon : public std::vector< LineString<K> > {
+        using Base = std::vector< LineString<K> > ;
+    public:
+        /**
+         * forward vector ctor
+         */
+        using Base::Base ;
+
+        /**
+         * Test if the Polygon is empty
+         */
+        bool isEmpty() const {
+            return this->empty() || this->front().isEmpty() ;            
+        }
+
+        /**
+         * Test if the Polygon is 3D
+         */
+        bool is3D() const {
+            return (! isEmpty()) && this->front().is3D();
+        }
+        
+        /**
+         * [OGC/SFA]returns the exterior ring
+         */
+        const LineString<K>&     exteriorRing() const {
+            ensureExteriorRingExists();
+            return this->front();
+        }
+        /**
+         * [OGC/SFA]returns the exterior ring
+         */
+        LineString<K>&   exteriorRing() {
+            ensureExteriorRingExists();
+            return this->front();
+        }
+        /**
+         * Sets the exterior ring
+         */
+        void  setExteriorRing( const LineString<K>& ring ) {
+            if ( this->empty() ){
+                this->push_back(ring);
+            }else{
+                this->front() = ring ;
+            }
+        }
+
+        /**
+         * Test if the polygon has interior rings
+         */
+        bool  hasInteriorRings() const {
+            return this->size() > 1 ;
+        }
+
+        /**
+         * [OGC/SFA]returns the exterior ring
+         */
+        size_t numInteriorRings() const {
+            return std::max( 0, numRings() - 1 ) ;
+        }
+        /**
+         * [OGC/SFA]returns the n'th interior ring
+         */
+        const LineString<K>&     interiorRingN( const int& n ) const {
+            BOOST_ASSERT( n+1 < this->size() );
+            return (*this)[n+1];
+        }
+        /**
+         * [OGC/SFA]returns the n'th interior ring
+         */
+        LineString<K>&  interiorRingN( const int& n ) {
+            BOOST_ASSERT( n+1 < this->size() );
+            return (*this)[n+1];
+        }
+
+        /**
+         * Returns the number of rings
+         *
+         * @deprecated use polygon.size()
+         */
+        int  numRings() const {
+            return static_cast< int >( this->size() ) ;
+        }
+        /**
+         * Returns the n-th ring, 0 is exteriorRing
+         * @warning not standard, avoid conditionnal to access rings
+         * 
+         * @deprecated use polygon[n] or polygon.at(n)
+         */
+        const LineString<K>&     ringN( const size_t& n ) const {
+            BOOST_ASSERT( n < this->size() );
+            return (*this)[n];
+        }
+        /**
+         * Returns the n-th ring, 0 is exteriorRing
+         * @warning not standard, avoid conditionnal to access rings
+         *
+         * @deprecated use polygon[n] or polygon.at(n)
+         */
+        LineString<K>&           ringN( const size_t& n ) {
+            BOOST_ASSERT( n < this->size() );
+            return (*this)[n];
+        }
+
+    private:
+        /**
+         * This method is a hack invoked by exteriorRing accessors. It simplify
+         * the port of algorithm relying on the initialization of the exteriorRing
+         * in 1.3.* Polygon constructor's. 
+         */
+        void ensureExteriorRingExists() const {
+            if ( this->empty() ){
+                BOOST_LOG_TRIVIAL(warning) << "automatic creation of exteriorRing (remove acess to exteriorRing on empty polygon)";
+                const_cast< Polygon<K> * >(this)->resize(1);
+            }
+        }
+        
+    };
     
-    template < typename K >
-    const LineString<K> & exteriorRing( const Polygon<K> & g){
-        return g.front();
-    }
 
 } // SFCGAL
 

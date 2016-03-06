@@ -32,12 +32,12 @@ BOOST_AUTO_TEST_CASE( testPoint )
 {
     Geometry<Epeck> g = Point<Epeck>(1.0, 2.0, 3.0) ;
     
-    std::vector< Point<Epeck> > points ;
+    std::vector< Coordinate<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
     detail::collectPointsAndConstraints(g,points,constraints);
     
     BOOST_CHECK_EQUAL( points.size(), 1U );
-    BOOST_CHECK_EQUAL( points[0], Point<Epeck>(1.0, 2.0, 3.0) );
+    BOOST_CHECK_EQUAL( points[0], CGAL::Point_3<Epeck>(1.0,2.0,3.0) );
     BOOST_CHECK_EQUAL( constraints.size(), 0U );
 }
 
@@ -50,13 +50,13 @@ BOOST_AUTO_TEST_CASE( testLineString )
         Point<Epeck>(2.0,1.0,0.0)
     } ;
     
-    std::vector< Point<Epeck> > points ;
+    std::vector< Coordinate<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
     detail::collectPointsAndConstraints(g,points,constraints);
     
     BOOST_CHECK_EQUAL( points.size(), 4U );
     for ( size_t i = 0; i < points.size(); i++ ){
-        BOOST_CHECK_EQUAL( points[i], g[i] );
+        BOOST_CHECK_EQUAL( points[i], g[i].toPoint_3() );
     }
     
     BOOST_CHECK_EQUAL( constraints.size(), 3U );
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( testLineString )
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
     Geometry<Epeck> g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
-    std::vector< Point<Epeck> > points ;
+    std::vector< Coordinate<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
     detail::collectPointsAndConstraints(g,points,constraints);
     

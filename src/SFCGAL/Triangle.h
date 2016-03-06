@@ -21,14 +21,95 @@
 #define _SFCGAL_TRIANGLE_H_
 
 #include <SFCGAL/kernels.h>
+#include <SFCGAL/Point.h>
 
 namespace SFCGAL {
 
     /**
-     * SFCGAL Triangle defined as CGAL::Triangle_3
+     * SFCGAL's Triangle is defined with 3 points
      */
     template < typename K >
-    using Triangle = CGAL::Triangle_3< K > ;
+    class Triangle {
+    public:
+        /**
+         * Empty triangle constructor
+         */
+        Triangle(){}
+        
+        /**
+         * Constructor with 3 points
+         */
+        Triangle( const Point<K> & a, const Point<K> & b, const Point<K> & c ){
+            _vertices[0] = a ;
+            _vertices[1] = b ;
+            _vertices[2] = c ;       
+        }
+        
+        /**
+         * Constructor from CGAL::Triangle_2
+         */
+        Triangle(const CGAL::Triangle_2<K> & g ){
+            for ( int i = 0; i < 3; i++ ){
+                _vertices[i] = Point<K>(g.vertex(i));
+            }
+        }
+        
+        /**
+         * Constructor from CGAL::Triangle_3
+         */
+        Triangle(const CGAL::Triangle_3<K> & g ){
+            for ( int i = 0; i < 3; i++ ){
+                _vertices[i] = Point<K>(g.vertex(i));
+            }
+        }
+        
+        Triangle( const Triangle & ) = default ;
+        Triangle( Triangle && ) = default ;
+        
+        Triangle & operator = ( const Triangle & ) = default ;
+        Triangle & operator = ( Triangle && ) = default ;
+        
+        ~Triangle() = default;
+        
+        /**
+         * Test emptyness
+         */
+        bool isEmpty() const {
+            return _vertices[0].isEmpty() ;
+        }
+        
+        Point<K> & vertex(const int & n) {
+            return _vertices[n%3];
+        }
+        const Point<K> & vertex(const int & n) const {
+            return _vertices[n%3];
+        }
+        
+        /**
+         * Get the 2D triangle
+         */
+        CGAL::Triangle_2<K> toTriangle_2() const {
+            return CGAL::Triangle_2<K>(
+                _vertices[0].toPoint_2(),
+                _vertices[1].toPoint_2(),            
+                _vertices[2].toPoint_2()                                
+            ) ;
+        }
+        
+        /**
+         * Get the 3D triangle
+         */
+        CGAL::Triangle_3<K> toTriangle_3() const {
+            return CGAL::Triangle_3<K>(
+                _vertices[0].toPoint_3(),
+                _vertices[1].toPoint_3(),            
+                _vertices[2].toPoint_3()                                
+            ) ;
+        }
+        
+    private:
+        Point<K> _vertices[3] ;
+    } ;
 
 
 } // namespace SFCGAL

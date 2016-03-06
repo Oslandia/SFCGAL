@@ -207,10 +207,11 @@ private:
      * create a osg::Vec3 from a Point
      */
     osg::Vec3 createVec3( const Point<K>& g ) const {
+        CGAL::Point_3<K> p = g.toPoint_3();
         return osg::Vec3(
-            CGAL::to_double( g.x() ),
-            CGAL::to_double( g.y() ),
-            CGAL::to_double( g.z() )
+            CGAL::to_double( p.x() ),
+            CGAL::to_double( p.y() ),
+            CGAL::to_double( p.z() )
         ) ;
     }
 

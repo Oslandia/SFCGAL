@@ -25,10 +25,16 @@
 using namespace boost::unit_test ;
 
 //#include <SFCGAL/detail/tools/Log.h>
+#include <SFCGAL/log.h>
+
+namespace logging = boost::log;
 
 test_suite* init_unit_test_suite( int, char** const )
 {
-    //SFCGAL::Logger::get()->setLogLevel( SFCGAL::Logger::Info );
+    logging::core::get()->set_filter
+    (
+        logging::trivial::severity >= logging::trivial::info
+    );
     return 0;
 }
 
