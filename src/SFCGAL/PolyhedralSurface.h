@@ -45,6 +45,10 @@ namespace SFCGAL {
         virtual std::string geometryType() {
             return "PolyhedralSurface";
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new PolyhedralSurface<K>(*this);
+        }
     };
 
 } // SFCGAL

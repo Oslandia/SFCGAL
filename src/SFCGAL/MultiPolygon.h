@@ -45,6 +45,10 @@ namespace SFCGAL {
         virtual std::string geometryType() {
             return "MultiPolygon";
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new MultiPolygon<K>(*this);
+        }
     };
 
 

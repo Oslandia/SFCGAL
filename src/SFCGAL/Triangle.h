@@ -93,6 +93,10 @@ namespace SFCGAL {
         bool isMeasured() const {
             return _vertices[0].isMeasured() ;
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Triangle<K>(*this);
+        }
 
         
         Point<K> & vertex(const int & n) {

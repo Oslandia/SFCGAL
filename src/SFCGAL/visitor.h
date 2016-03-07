@@ -26,7 +26,7 @@
 namespace SFCGAL {
     
     /**
-     * Static visitor on geometries
+     * Const static visitor on geometries
      */
     template < typename GT, typename Visitor >
     typename Visitor::result_type apply_visitor(
@@ -60,6 +60,46 @@ namespace SFCGAL {
             return visitor( static_cast< const Solid<K>& >(g) );
         case TYPE_MULTISOLID:
             return visitor( static_cast< const MultiSolid<K>& >(g) );
+        }
+        BOOST_ASSERT(false); // missing case in visitor!
+    }
+    
+    
+    /**
+     * Static visitor on geometries
+     */
+    template < typename GT, typename Visitor >
+    typename Visitor::result_type apply_visitor(
+        Visitor & visitor,
+        GT & g
+    ){
+        using K = typename GT::Kernel ;
+
+        switch(g.geometryTypeId()){
+        case TYPE_POINT:
+            return visitor( static_cast< Point<K>& >(g) );
+        case TYPE_LINESTRING:
+            return visitor( static_cast< LineString<K>& >(g) );
+        case TYPE_POLYGON:
+            return visitor( static_cast< Polygon<K>& >(g) );
+        case TYPE_MULTIPOINT:
+            return visitor( static_cast< MultiPoint<K>& >(g) );
+        case TYPE_MULTILINESTRING:
+            return visitor( static_cast< MultiLineString<K>& >(g) );
+        case TYPE_MULTIPOLYGON:
+            return visitor( static_cast< MultiPolygon<K>& >(g) );
+        case TYPE_GEOMETRYCOLLECTION:
+            return visitor( static_cast< GeometryCollection<K>& >(g) );
+        case TYPE_POLYHEDRALSURFACE:
+            return visitor( static_cast< PolyhedralSurface<K>& >(g) );
+        case TYPE_TRIANGULATEDSURFACE:
+            return visitor( static_cast< TriangulatedSurface<K>& >(g) );
+        case TYPE_TRIANGLE:
+            return visitor( static_cast< Triangle<K>& >(g) );
+        case TYPE_SOLID:
+            return visitor( static_cast< Solid<K>& >(g) );
+        case TYPE_MULTISOLID:
+            return visitor( static_cast< MultiSolid<K>& >(g) );
         }
         BOOST_ASSERT(false); // missing case in visitor!
     }

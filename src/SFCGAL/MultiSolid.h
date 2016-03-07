@@ -45,6 +45,10 @@ namespace SFCGAL {
          virtual std::string geometryType() {
              return "MultiSolid";
          }
+         //--- Geometry<K>
+         virtual Geometry<K>* clone() const {
+             return new MultiSolid<K>(*this);
+         }
      };
 
 } // SFCGAL

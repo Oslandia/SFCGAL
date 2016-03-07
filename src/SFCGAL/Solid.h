@@ -21,7 +21,7 @@
 #define _SFCGAL_SOLID_H_
 
 #include <SFCGAL/Collection.h>
-#include <SFCGAL/MultiPolygon.h>
+#include <SFCGAL/PolyhedralSurface.h>
 
 namespace SFCGAL {
 
@@ -36,8 +36,8 @@ namespace SFCGAL {
      *   deprecated accessors if needed by algorithms
      */
     template < typename K >
-    class Solid : public Geometry<K>, public std::vector< MultiPolygon<K> > {
-        using Container = std::vector< MultiPolygon<K> >;
+    class Solid : public Geometry<K>, public std::vector< PolyhedralSurface<K> > {
+        using Container = std::vector< PolyhedralSurface<K> >;
     public:
         using Kernel = K ;
     
@@ -63,6 +63,10 @@ namespace SFCGAL {
         //--- IGeometry
         bool isMeasured() const {
             return ( ! isEmpty() ) && this->front().isMeasured() ;
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Solid<K>(*this);
         }
 
     } ;

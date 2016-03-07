@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_detail_CollectPointsTest )
 
 BOOST_AUTO_TEST_CASE( testPoint )
 {
-    Geometry<Epeck> g = Point<Epeck>(1.0, 2.0, 3.0) ;
+    Point<Epeck> g(1.0, 2.0, 3.0) ;
     
     std::vector< Coordinate<Epeck> > points ;
     detail::collectPoints(g,points);
@@ -58,18 +58,18 @@ BOOST_AUTO_TEST_CASE( testLineString )
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
     std::vector< Coordinate<Epeck> > points ;
-    detail::collectPoints(g,points);
+    detail::collectPoints(*g,points);
     BOOST_CHECK_EQUAL( points.size(), 10U );
 }
 
 
 BOOST_AUTO_TEST_CASE( testMultiPoint )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( "MULTIPOINT((1.0 2.0 3.0),(2.0 3.0 6.0),(8.0 6.0 7.0),(2.0 1.0 6.0))" ) ;
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "MULTIPOINT((1.0 2.0 3.0),(2.0 3.0 6.0),(8.0 6.0 7.0),(2.0 1.0 6.0))" ) ;
     std::vector< Coordinate<Epeck> > points ;
-    detail::collectPoints(g,points);
+    detail::collectPoints(*g,points);
     BOOST_CHECK_EQUAL( points.size(), 4U );
 }
 

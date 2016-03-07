@@ -62,6 +62,10 @@ namespace SFCGAL {
         virtual bool isMeasured() const {
             return (! isEmpty()) && this->front().isMeasured();
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Polygon<K>(*this);
+        }
 
         /**
          * [OGC/SFA]returns the exterior ring

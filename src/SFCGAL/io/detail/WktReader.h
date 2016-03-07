@@ -28,7 +28,7 @@
 
 #include <SFCGAL/config.h>
 #include <SFCGAL/numeric.h>
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/types.h>
 #include <SFCGAL/Exception.h>
 #include <SFCGAL/io/detail/InputStreamReader.h>
 
@@ -56,27 +56,28 @@ namespace detail {
         
         /**
          * Read a geometry of unknown type
+         * TODO unique_ptr
          */
-        Geometry<K> read(){
+        Geometry<K>* read(){
             // POINT
             {
                 Point<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate;
+                    return candidate.clone();
                 }
             }
             // LINESTRING
             {
                 LineString<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             // POLYGON
             {
                 Polygon<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             
@@ -84,30 +85,35 @@ namespace detail {
             {
                 MultiPoint<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate;
+                    return candidate.clone();
                 }
             }
             // MULTILINESTRING
             {
                 MultiLineString<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             // MULTIPOLYGON (and POLYHEDRALSURFACE)
             {
                 MultiPolygon<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
-            // POLYHEDRALSURFACE (see MultiPolygon)
-            
+            // POLYHEDRALSURFACE
+            {
+                PolyhedralSurface<K> candidate ;
+                if ( read(candidate) ){
+                    return candidate.clone();
+                }
+            }
             // TRIANGLE
             {
                 Triangle<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
 
@@ -115,7 +121,7 @@ namespace detail {
             {
                 TriangulatedSurface<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             
@@ -123,7 +129,7 @@ namespace detail {
             {
                 Solid<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             
@@ -131,7 +137,7 @@ namespace detail {
             {
                 MultiSolid<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
             
@@ -139,7 +145,7 @@ namespace detail {
             {
                 GeometryCollection<K> candidate ;
                 if ( read(candidate) ){
-                    return candidate ;
+                    return candidate.clone();
                 }
             }
                         
@@ -222,9 +228,11 @@ namespace detail {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
             while ( ! _reader.eof() ){
-                Point<K> p;
-                readCoordinate(p);
-                g.push_back(p);
+                if ( ! _reader.match("EMPTY") ){
+                    Point<K> p;
+                    readCoordinate(p);
+                    g.push_back(p);
+                }
                 if ( _reader.match(',') ){
                     continue;
                 }
@@ -324,9 +332,11 @@ namespace detail {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
             while ( ! _reader.eof() ){
-                LineString<K> ring;
-                readInner(ring);
-                g.emplace_back(ring);
+                if ( ! _reader.match("EMPTY") ){
+                    LineString<K> ring;
+                    readInner(ring);
+                    g.emplace_back(ring);
+                }
                 if ( _reader.match(',') ){
                     continue;
                 }
@@ -364,7 +374,6 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                Point<K> p ;
 
                 // optional open/close parenthesis
                 bool parenthesisOpen = false ;
@@ -372,14 +381,14 @@ namespace detail {
                 if ( _reader.match( '(' ) ) {
                     parenthesisOpen = true ;
                 }
-
-                readCoordinate( p );
-
+                if ( ! _reader.match("EMPTY") ){
+                    Point<K> p ;
+                    readCoordinate( p );
+                    g.push_back(p);
+                }
                 if ( parenthesisOpen && ! _reader.match( ')' ) ) {
                     BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
                 }
-
-                g.push_back(p);
 
                 //break if not followed by another point
                 if ( ! _reader.match( ',' ) ) {
@@ -420,10 +429,12 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                LineString<K> lineString ;
-                readInner( lineString );
-                if ( ! lineString.empty() ){
-                    g.push_back(lineString);
+                if ( ! _reader.match("EMPTY") ){
+                    LineString<K> lineString ;
+                    readInner( lineString );
+                    if ( ! lineString.empty() ){
+                        g.push_back(lineString);
+                    }
                 }
                 //break if not followed by another linestring
                 if ( ! _reader.match( ',' ) ) {
@@ -441,7 +452,7 @@ namespace detail {
          * Read a WKT MULTIPOLYGON and POLYHEDRALSURFACE
          */
         bool read( MultiPolygon<K> & g ){
-            if ( ! _reader.imatch( "MULTIPOLYGON" ) && ! _reader.imatch("POLYHEDRALSURFACE") ){
+            if ( ! _reader.imatch( "MULTIPOLYGON" ) ){
                 return false;
             }
             _is3D       = _reader.imatch( "Z" );
@@ -463,10 +474,12 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                Polygon<K> polygon;
-                readInner( polygon );
-                if ( ! polygon.empty() ){
-                    g.push_back(polygon);
+                if ( ! _reader.match("EMPTY") ){
+                    Polygon<K> polygon;
+                    readInner( polygon );
+                    if ( ! polygon.empty() ){
+                        g.push_back(polygon);
+                    }
                 }
                 //break if not followed by another polygon
                 if ( ! _reader.match( ',' ) ) {
@@ -478,6 +491,53 @@ namespace detail {
                 BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
             }
         }
+        
+        //--- POLYHEDRALSURFACE ------------------------------------------------
+        
+        /**
+         * Read a WKT POLYHEDRALSURFACE
+         */
+        bool read( PolyhedralSurface<K> & g ){
+            if ( ! _reader.imatch("POLYHEDRALSURFACE") ){
+                return false;
+            }
+            _is3D       = _reader.imatch( "Z" );
+            _isMeasured = _reader.imatch( "M" );
+            if ( _reader.match("EMPTY") ){
+                g = PolyhedralSurface<K>();
+                return true ;
+            }
+            readInner(g);
+            return true ;
+        }
+        
+        /**
+         * Read inner multipolygon
+         */
+        void readInner(PolyhedralSurface<K> & g){
+            if ( ! _reader.match( '(' ) ) {
+                BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
+            }
+
+            while( ! _reader.eof() ) {
+                if ( ! _reader.match("EMPTY") ){
+                    Polygon<K> polygon;
+                    readInner( polygon );
+                    if ( ! polygon.empty() ){
+                        g.push_back(polygon);
+                    }
+                }
+                //break if not followed by another polygon
+                if ( ! _reader.match( ',' ) ) {
+                    break ;
+                }
+            }
+
+            if ( ! _reader.match( ')' ) ) {
+                BOOST_THROW_EXCEPTION( WktParseException( parseErrorMessage() ) );
+            }
+        }
+
         
         //--- TRIANGULATEDSURFACE-----------------------------------------------
         
@@ -507,10 +567,11 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                Triangle<K> triangle ;
-                readInner( triangle );
-                g.push_back( triangle ) ;
-
+                if ( ! _reader.match("EMPTY") ){
+                    Triangle<K> triangle ;
+                    readInner( triangle );
+                    g.push_back( triangle ) ;
+                }
                 //break if not Oui tout à fait, le Z n'est pas pris en compte dans ce cas là.followed by another points
                 if ( ! _reader.match( ',' ) ) {
                     break ;
@@ -553,10 +614,11 @@ namespace detail {
             }
 
             while ( ! _reader.eof() ){
-                PolyhedralSurface<K> shell ;
-                readInner( shell );
-                g.push_back(shell);
-
+                if ( ! _reader.match("EMPTY") ){
+                    PolyhedralSurface<K> shell ;
+                    readInner( shell );
+                    g.push_back(shell);
+                }
                 //break if not followed by another points
                 if ( ! _reader.match( ',' ) ) {
                     break ;
@@ -598,9 +660,11 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                Solid<K> solid ;
-                readInner( solid );
-                g.push_back(solid);
+                if ( ! _reader.match("EMPTY") ){
+                    Solid<K> solid ;
+                    readInner( solid );
+                    g.push_back(solid);
+                }
                 //break if not followed by another points
                 if ( ! _reader.match( ',' ) ) {
                     break ;
@@ -642,8 +706,10 @@ namespace detail {
             }
 
             while( ! _reader.eof() ) {
-                Geometry<K> geometry = read() ;
-                g.push_back(geometry);
+                if ( ! _reader.match("EMPTY") ){
+                    // read geometry
+                    g.push_back( read() );
+                }
                 //break if not followed by another geometry
                 if ( ! _reader.match( ',' ) ) {
                     break ;
@@ -693,6 +759,13 @@ namespace detail {
          */
         template < typename FT >
         void readXYZM( FT & x, FT & y, FT & z, double & m){
+            // EMPTY in coordinate sequence
+            if ( _reader.match("EMPTY") ){
+                BOOST_THROW_EXCEPTION( WktParseException(
+                    ( boost::format( "EMPTY is not allowed in coordinate sequence (%s)" ) % _reader.context() ).str()
+                ) );
+            }
+
             if ( ! ( _reader.read(x) && _reader.read(y) ) ){
                 BOOST_THROW_EXCEPTION( WktParseException(
                     ( boost::format( "WKT parse error, Coordinate dimension < 2 (%s)" ) % _reader.context() ).str()

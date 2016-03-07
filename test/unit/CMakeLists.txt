@@ -12,7 +12,19 @@ set( SFCGAL_UNIT_TEST_SOURCES
     "SFCGAL/GeometryCollectionTest.cpp"
     "SFCGAL/GeometryVisitorTest.cpp"
     
+    # algorithm
+    #"SFCGAL/algorithm/NormalTest.cpp"
+    #"SFCGAL/algorithm/PlaneTest.cpp"
+
+    # detail
+    "SFCGAL/detail/CollectPointsTest.cpp"
+    "SFCGAL/detail/CollectPointsAndConstraintsTest.cpp"    
+    # io
     "SFCGAL/io/WktReaderTest.cpp"
+    
+    # triangulate
+    "SFCGAL/triangulate/Triangulate2DZTest.cpp"
+    "SFCGAL/triangulate/TriangulatePolygon3DTest.cpp"    
 )
 
 add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )

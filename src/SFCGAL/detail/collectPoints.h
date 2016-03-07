@@ -20,7 +20,7 @@
 #ifndef _SFCGAL_DETAIL_COLLECTPOINTS_H_
 #define _SFCGAL_DETAIL_COLLECTPOINTS_H_
 
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/visitor.h>
 #include <SFCGAL/detail/CollectPointsVisitor.h>
 
 namespace SFCGAL {
@@ -37,7 +37,7 @@ namespace detail {
         std::vector< Coordinate<K> > & points
     ){
         detail::CollectPointsVisitor<K> visitor(points);
-        boost::apply_visitor(visitor,geometry);
+        SFCGAL::apply_visitor(visitor,geometry);
     }
 
 } // detail

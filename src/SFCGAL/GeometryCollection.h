@@ -24,13 +24,31 @@
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
+    
+    namespace detail {
+        struct geometry_clone_allocator
+        {
+            template< class U >
+            static U* allocate_clone( const U& r )
+            {
+                return r.clone();
+            }
+
+            template< class U >
+            static void deallocate_clone( const U* r )
+            {
+                delete r;
+            }
+        };
         
+    }
+
     /**
      * A geometry collection
      */
     template < typename K > 
-    class GeometryCollection : public Geometry<K>, public boost::ptr_vector< Geometry<K> > {
-        using Container = boost::ptr_vector< Geometry<K> > ;
+    class GeometryCollection : public Geometry<K>, public boost::ptr_vector< Geometry<K>, detail::geometry_clone_allocator > {
+        using Container = boost::ptr_vector< Geometry<K>, detail::geometry_clone_allocator > ;
     public:
         using Kernel = K ;
 
@@ -82,6 +100,10 @@ namespace SFCGAL {
         //--- IGeometry
         virtual std::string geometryType() {
             return "GeometryCollection";
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new GeometryCollection<K>(*this);
         }
     } ;
 

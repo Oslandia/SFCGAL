@@ -57,6 +57,10 @@ namespace SFCGAL {
         virtual bool isMeasured() const {
             return (! isEmpty()) && startPoint().isMeasured();
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new LineString<K>(*this);
+        }
         
         /**
          * Test if LineString is closed

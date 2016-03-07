@@ -36,64 +36,61 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktReaderTest )
 
 BOOST_AUTO_TEST_CASE( pointEmpty )
 {
-    Geometry<Epeck> g( readWkt<Epeck>( "POINT EMPTY" ) );
-    BOOST_CHECK( boost::get< Point<Epeck> >(g).isEmpty() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT EMPTY" ) );
+    BOOST_CHECK( g->isEmpty() );
 }
 
-//TODO with custom "variant"
-
-/*
 BOOST_AUTO_TEST_CASE( pointXY )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT(4.0 6.0)" ) );
-    BOOST_CHECK( g->is< Point >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT(4.0 6.0)" ) );
+    BOOST_CHECK( g->is< Point<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
 
-    BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().y(), 6.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().x(), 4.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().y(), 6.0 );
 }
 
 BOOST_AUTO_TEST_CASE( pointXYZ_implicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT(4.0 5.0 6.0)" ) );
-    BOOST_CHECK( g->is< Point >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT(4.0 5.0 6.0)" ) );
+    BOOST_CHECK( g->is< Point<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
 
     BOOST_CHECK( g->is3D() );
     BOOST_CHECK( ! g->isMeasured() );
 
-    BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().z(), 6.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().x(), 4.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().y(), 5.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().z(), 6.0 );
 }
 
 BOOST_AUTO_TEST_CASE( pointXYZ_explicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT Z(4.0 5.0 6.0)" ) );
-    BOOST_CHECK( g->is< Point >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT Z(4.0 5.0 6.0)" ) );
+    BOOST_CHECK( g->is< Point<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
 
     BOOST_CHECK( g->is3D() );
     BOOST_CHECK( ! g->isMeasured() );
 
-    BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().z(), 6.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().x(), 4.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().y(), 5.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().z(), 6.0 );
 }
 
 
 BOOST_AUTO_TEST_CASE( pointXYM_explicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT M(4.0 5.0 6.0)" ) );
-    BOOST_CHECK( g->is< Point >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT M(4.0 5.0 6.0)" ) );
+    BOOST_CHECK( g->is< Point<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
 
     BOOST_CHECK( ! g->is3D() );
     BOOST_CHECK( g->isMeasured() );
 
-    BOOST_CHECK_EQUAL( g->as< Point >().x(), 4.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().y(), 5.0 );
-    BOOST_CHECK_EQUAL( g->as< Point >().m(), 6.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().x(), 4.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().y(), 5.0 );
+    BOOST_CHECK_EQUAL( g->as< Point<Epeck> >().m(), 6.0 );
 }
 
 //-- WKT LINESTRING
@@ -101,27 +98,27 @@ BOOST_AUTO_TEST_CASE( pointXYM_explicit )
 
 BOOST_AUTO_TEST_CASE( lineStringEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING EMPTY" ) );
-    BOOST_CHECK( g->is< LineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "LINESTRING EMPTY" ) );
+    BOOST_CHECK( g->is< LineString<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
 BOOST_AUTO_TEST_CASE( lineString_twoPoints )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0,1.0 1.0)" ) );
-    BOOST_CHECK( g->is< LineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "LINESTRING(0.0 0.0,1.0 1.0)" ) );
+    BOOST_CHECK( g->is< LineString<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
-    BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
+    BOOST_CHECK_EQUAL( g->as< LineString<Epeck> >().numPoints(), 2U );
 }
 
 BOOST_AUTO_TEST_CASE( lineString_twoPoints3D )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0 0.0,1.0 1.0 1.0)" ) );
-    BOOST_CHECK( g->is< LineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "LINESTRING(0.0 0.0 0.0,1.0 1.0 1.0)" ) );
+    BOOST_CHECK( g->is< LineString<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
-    BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
-    BOOST_CHECK( g->as< LineString >().pointN( 0 ).is3D() );
-    BOOST_CHECK( g->as< LineString >().pointN( 1 ).is3D() );
+    BOOST_REQUIRE_EQUAL( g->as< LineString<Epeck> >().numPoints(), 2U );
+    BOOST_CHECK( g->as< LineString<Epeck> >().pointN( 0 ).is3D() );
+    BOOST_CHECK( g->as< LineString<Epeck> >().pointN( 1 ).is3D() );
 }
 
 //-- WKT POLYGON
@@ -129,8 +126,8 @@ BOOST_AUTO_TEST_CASE( lineString_twoPoints3D )
 
 BOOST_AUTO_TEST_CASE( polygonEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POLYGON EMPTY" ) );
-    BOOST_CHECK( g->is< Polygon >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POLYGON EMPTY" ) );
+    BOOST_CHECK( g->is< Polygon<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -138,10 +135,10 @@ BOOST_AUTO_TEST_CASE( polygonEmpty )
 // 4 points polygon (triangle)
 BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POLYGON((0 0,1 0,1 1,0 0))" ) );
-    BOOST_CHECK( g->is< Polygon >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POLYGON((0 0,1 0,1 1,0 0))" ) );
+    BOOST_CHECK( g->is< Polygon<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
-    BOOST_CHECK_EQUAL( g->as< Polygon >().exteriorRing().numPoints(), 4U );
+    BOOST_CHECK_EQUAL( g->as< Polygon<Epeck> >().exteriorRing().numPoints(), 4U );
 }
 
 
@@ -151,24 +148,24 @@ BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT EMPTY" ) );
-    BOOST_CHECK( g->is< MultiPoint >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "MULTIPOINT EMPTY" ) );
+    BOOST_CHECK( g->is< MultiPoint<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty2 )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT(0 0,1 1,EMPTY)" ) );
-    BOOST_CHECK( g->asText() == "MULTIPOINT((0/1 0/1),(1/1 1/1))" );
-    BOOST_CHECK( g->is< MultiPoint >() );
-    BOOST_CHECK( g->numGeometries() == 2 );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "MULTIPOINT(0 0,1 1,EMPTY)" ) );
+    //BOOST_CHECK( g->asText() == "MULTIPOINT((0/1 0/1),(1/1 1/1))" );
+    BOOST_CHECK( g->is< MultiPoint<Epeck> >() );
+    BOOST_CHECK( g->as< MultiPoint<Epeck> >().numGeometries() == 2 );
 }
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty3 )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT(EMPTY,EMPTY)" ) );
-    BOOST_CHECK( g->asText() == "MULTIPOINT EMPTY" );
-    BOOST_CHECK( g->is< MultiPoint >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "MULTIPOINT(EMPTY,EMPTY)" ) );
+//    BOOST_CHECK( g->asText() == "MULTIPOINT EMPTY" );
+    BOOST_CHECK( g->is< MultiPoint<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -176,8 +173,8 @@ BOOST_AUTO_TEST_CASE( multiPointEmpty3 )
 
 BOOST_AUTO_TEST_CASE( multiLineStringEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTILINESTRING EMPTY" ) );
-    BOOST_CHECK( g->is< MultiLineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "MULTILINESTRING EMPTY" ) );
+    BOOST_CHECK( g->is< MultiLineString<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -186,8 +183,8 @@ BOOST_AUTO_TEST_CASE( multiLineStringEmpty )
 
 BOOST_AUTO_TEST_CASE( multiPolygonEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOLYGON EMPTY" ) );
-    BOOST_CHECK( g->is< MultiPolygon >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "MULTIPOLYGON EMPTY" ) );
+    BOOST_CHECK( g->is< MultiPolygon<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -197,8 +194,8 @@ BOOST_AUTO_TEST_CASE( multiPolygonEmpty )
 
 BOOST_AUTO_TEST_CASE( geometryCollectionEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
-    BOOST_CHECK( g->is< GeometryCollection >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "GEOMETRYCOLLECTION EMPTY" ) );
+    BOOST_CHECK( g->is< GeometryCollection<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -208,8 +205,8 @@ BOOST_AUTO_TEST_CASE( geometryCollectionEmpty )
 
 BOOST_AUTO_TEST_CASE( triangulatedSurface_Empty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "TIN EMPTY" ) );
-    BOOST_CHECK( g->is< TriangulatedSurface >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "TIN EMPTY" ) );
+    BOOST_CHECK( g->is< TriangulatedSurface<Epeck> >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
@@ -221,21 +218,21 @@ BOOST_AUTO_TEST_CASE( triangulatedSurface_fourTriangles )
                       "((0 0 0, 1 0 0, 0 0 1, 0 0 0)),"
                       "((1 0 0, 0 1 0, 0 0 1, 1 0 0))"
                       ")";
-    std::auto_ptr< Geometry > g( readWkt( wkt ) );
-    BOOST_CHECK( g->is< TriangulatedSurface >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( wkt ) );
+    BOOST_CHECK( g->is< TriangulatedSurface<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
 
-    BOOST_CHECK_EQUAL( g->as< TriangulatedSurface >().numGeometries(), 4U );
+    BOOST_CHECK_EQUAL( g->as< TriangulatedSurface<Epeck> >().numGeometries(), 4U );
 }
 
 BOOST_AUTO_TEST_CASE( wkt_exactTest )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(2/3 3/2,5/4 2/3)" ) );
-    BOOST_CHECK( g->is< LineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "LINESTRING(2/3 3/2,5/4 2/3)" ) );
+    BOOST_CHECK( g->is< LineString<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
-    BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
-    Kernel::Exact_kernel::FT x = CGAL::exact( g->as<LineString>().pointN( 0 ).x() );
-    Kernel::Exact_kernel::FT y = CGAL::exact( g->as<LineString>().pointN( 0 ).y() );
+    BOOST_REQUIRE_EQUAL( g->as< LineString<Epeck> >().numPoints(), 2U );
+    Epeck::Exact_kernel::FT x = CGAL::exact( g->as<LineString<Epeck>>().pointN( 0 ).x() );
+    Epeck::Exact_kernel::FT y = CGAL::exact( g->as<LineString<Epeck>>().pointN( 0 ).y() );
     BOOST_CHECK_EQUAL( x.numerator(), 2 );
     BOOST_CHECK_EQUAL( x.denominator(), 3 );
     BOOST_CHECK_EQUAL( y.numerator(), 3 );
@@ -245,10 +242,10 @@ BOOST_AUTO_TEST_CASE( wkt_exactTest )
 BOOST_AUTO_TEST_CASE( charArrayRead )
 {
     char str[] = "LINESTRING(0.0 0.0,1.0 1.0)";
-    std::auto_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
-    BOOST_CHECK( g->is< LineString >() );
+    std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( str, strlen( str ) ) );
+    BOOST_CHECK( g->is< LineString<Epeck> >() );
     BOOST_CHECK( ! g->isEmpty() );
-    BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
+    BOOST_CHECK_EQUAL( g->as< LineString<Epeck> >().numPoints(), 2U );
 }
 
 BOOST_AUTO_TEST_CASE( wktExtraCharacters )
@@ -256,7 +253,7 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     bool threw = false;
     try
     {
-        std::auto_ptr< Geometry > g( readWkt( "POINT(0 0)POINT(1 0)" ) );
+        std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( "POINT(0 0)POINT(1 0)" ) );
     }
     catch ( WktParseException& e )
     {
@@ -270,7 +267,7 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     try
     {
         char str[] = "POINT(0 0)POINT(1 0)";
-        std::auto_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
+        std::unique_ptr< Geometry<Epeck> > g( readWkt<Epeck>( str, strlen( str ) ) );
     }
     catch ( WktParseException& e )
     {
@@ -280,7 +277,6 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     }
     BOOST_CHECK( threw );
 }
-*/
 
 
 BOOST_AUTO_TEST_SUITE_END()

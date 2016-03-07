@@ -63,7 +63,7 @@ namespace detail {
         }
         
         void operator () ( const Solid<K> & g ){
-            for ( const MultiPolygon<K> & shell : g ){
+            for ( const PolyhedralSurface<K> & shell : g ){
                 (*this)(shell);
             }
         }
@@ -77,7 +77,7 @@ namespace detail {
         
         void operator () ( const GeometryCollection<K> & geometries ){
             for ( const Geometry<K> & geometry : geometries ){
-                boost::apply_visitor(*this,geometry);
+                SFCGAL::apply_visitor(*this,geometry);
             }
         }
 

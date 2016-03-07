@@ -45,6 +45,10 @@ namespace SFCGAL {
         virtual std::string geometryType() {
             return "MultiPoint";
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new MultiPoint<K>(*this);
+        }
     };
 
 } // SFCGAL

@@ -42,6 +42,10 @@ namespace SFCGAL {
         virtual std::string geometryType() {
             return "TIN";
         }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new TriangulatedSurface<K>(*this);
+        }
     };
 
 } // SFCGAL

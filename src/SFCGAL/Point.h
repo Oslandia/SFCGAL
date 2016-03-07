@@ -130,6 +130,11 @@ namespace SFCGAL {
             return ! SFCGAL::isNaN(_m);
         }
         
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Point<K>(*this);
+        }
+        
         /**
          * Get M coordinate
          */
@@ -229,6 +234,7 @@ namespace SFCGAL {
          */
         bool _3d ;
     } ;
+
 
 } // namespace SFCGAL
 

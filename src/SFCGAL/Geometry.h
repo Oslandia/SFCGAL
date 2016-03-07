@@ -21,8 +21,7 @@
 #define _SFCGAL_GEOMETRY_H_
 
 #include <SFCGAL/kernels.h>
-
-#include <SFCGAL/IGeometry.h>
+#include <SFCGAL/GeometryType.h>
 
 namespace SFCGAL {
 
@@ -32,24 +31,71 @@ namespace SFCGAL {
      * Base class for geometries with static kernel
      */
     template < typename K >
-    class Geometry : public IGeometry {
+    class Geometry {
     public:
         using Kernel = K ;
 
         virtual ~Geometry(){}
+        
+        /**
+         * Clone the geometry
+         */
+        virtual Geometry<K>* clone() const = 0 ;
+        
+        /**
+         * Test if geometry is instance of T
+         */
+        template < typename T >
+        bool is() const { 
+            return dynamic_cast<const T*>(this) != nullptr; 
+        }
+
+        /**
+         * Downcast to T&
+         */
+        template < typename T >
+        T & as() { 
+            T* result = dynamic_cast<T*>(this) ;
+            BOOST_ASSERT(result != nullptr);
+            return *result ;  
+        }
+        /**
+         * Downcast to const T&
+         */
+        template < typename T >
+        const T & as() const { 
+            const T* result = dynamic_cast<const T*>(this) ;
+            BOOST_ASSERT(result != nullptr);
+            return *result ;  
+        }
+        
+        /**
+         * Get GeometryType identifier
+         */
+        virtual GeometryType geometryTypeId() const = 0 ;
+        /**
+         * Get GeometryType name
+         */
+        virtual std::string geometryType() = 0 ;
+        
+        /**
+         * Indicates if the geometry is empty
+         */
+        virtual bool isEmpty() const = 0 ;
+        /**
+         * Indicates if the geometry is 3D
+         */
+        virtual bool is3D() const = 0 ;
+        /**
+         * Indicates if the geometry has M coordinates
+         */
+        virtual bool isMeasured() const = 0 ;
 
     protected:
-        Geometry():
-            IGeometry()
-        {
-            
-        }
-        Geometry( const IGeometry& other ):
-            IGeometry(other)
-        {
-            
-        }
+        Geometry() = default ;
+        Geometry( const Geometry& other ) = default;
     } ;
+
 
 } // SFCGAL
 

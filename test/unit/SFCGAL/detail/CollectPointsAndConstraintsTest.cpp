@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_detail_CollectPointAndConstraintsTest )
 
 BOOST_AUTO_TEST_CASE( testPoint )
 {
-    Geometry<Epeck> g = Point<Epeck>(1.0, 2.0, 3.0) ;
+    Point<Epeck> g(1.0, 2.0, 3.0) ;
     
     std::vector< Coordinate<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
@@ -73,10 +73,12 @@ BOOST_AUTO_TEST_CASE( testLineString )
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
+    std::unique_ptr< Geometry<Epeck> > g(
+        io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" )
+    ) ;
     std::vector< Coordinate<Epeck> > points ;
     std::vector< std::pair<size_t,size_t> > constraints ;
-    detail::collectPointsAndConstraints(g,points,constraints);
+    detail::collectPointsAndConstraints(*g,points,constraints);
     
     BOOST_CHECK_EQUAL( points.size(), 10U );
     BOOST_CHECK_EQUAL( constraints.size(), 8U );
