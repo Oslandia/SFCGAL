@@ -77,9 +77,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            _s << "(";
             writeInner( g );
-            _s << ")" ;
         }
 
         void operator () ( const MultiLineString<K> & g ){

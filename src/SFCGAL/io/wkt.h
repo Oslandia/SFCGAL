@@ -42,9 +42,17 @@ namespace io {
         SFCGAL::apply_visitor(writer,g);
     }
     
+    /**
+     * Convert Geometry to a WKT string
+     * @param g the geom
+     * @param precision number of decimals to render number
+     */
     template < typename K >
-    std::string toWkt( const Geometry<K> & g ){
+    std::string toWkt( const Geometry<K> & g, const int & precision = -1 ){
         std::ostringstream oss;
+        if ( precision >= 0 ){
+            oss << std::setprecision(precision) << std::fixed ;
+        }
         toWkt<K>(oss,g);
         return oss.str();
     }

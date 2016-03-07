@@ -323,29 +323,6 @@ BOOST_AUTO_TEST_CASE( testEnvelope_3D )
     BOOST_CHECK_EQUAL( box.zMin(), 11.0 );
     BOOST_CHECK_EQUAL( box.zMax(), 17.0 );
 }
-
-//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
-BOOST_AUTO_TEST_CASE( asTextEmpty )
-{
-    LineString g;
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "LINESTRING EMPTY" );
-}
-BOOST_AUTO_TEST_CASE( asText2d )
-{
-    LineString g(
-        Point( 2.0,3.0 ),
-        Point( 4.0,5.0 )
-    );
-    BOOST_CHECK_EQUAL( g.asText( 3 ), "LINESTRING(2.000 3.000,4.000 5.000)" );
-}
-BOOST_AUTO_TEST_CASE( asText3d )
-{
-    LineString g(
-        Point( 2.0,3.0,7.0 ),
-        Point( 4.0,5.0,8.0 )
-    );
-    BOOST_CHECK_EQUAL( g.asText( 3 ), "LINESTRING(2.000 3.000 7.000,4.000 5.000 8.000)" );
-}
 */
 
 //virtual std::string  Geometry::geometryType() const = 0 ;

@@ -20,7 +20,7 @@
 #include <memory>
 #include <string>
 
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/types.h>
 #include <SFCGAL/io/wkt.h>
 
 #include <boost/test/unit_test.hpp>
@@ -32,41 +32,122 @@ using namespace SFCGAL::io ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktWriterTest )
 
-//-- WKT POINT
-
+//TYPE_POINT               = 1,
 BOOST_AUTO_TEST_CASE( pointAsTextEmpty )
 {
     Point<Epeck> g;
     BOOST_CHECK_EQUAL( toWkt<Epeck>( g ), "POINT EMPTY" );
 }
+BOOST_AUTO_TEST_CASE( pointAsTextWithoutPrecision )
+{
+    Point<Epeck> g( 2.0,3.0 );
+    BOOST_CHECK_EQUAL( toWkt<Epeck>( g ), "POINT(2 3)" );
+}
 BOOST_AUTO_TEST_CASE( pointAsText2d )
 {
     Point<Epeck> g( 2.0,3.0 );
-    BOOST_CHECK_EQUAL( toWkt<Epeck>( g ), "POINT(2.000 3.000)" );
+    BOOST_CHECK_EQUAL( toWkt<Epeck>( g, 3 ), "POINT(2.000 3.000)" );
 }
 BOOST_AUTO_TEST_CASE( pointAsText3d )
 {
     Point<Epeck> g( 2.0,3.0,4.0 );
-    BOOST_CHECK_EQUAL( toWkt<Epeck>( g ), "POINT(2.000 3.000 4.000)" );
+    BOOST_CHECK_EQUAL( toWkt<Epeck>( g, 3 ), "POINT(2.000 3.000 4.000)" );
+}
+
+//TYPE_LINESTRING          = 2,
+//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
+BOOST_AUTO_TEST_CASE( lineStringAsTextEmpty )
+{
+    LineString<Epeck> g;
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g), "LINESTRING EMPTY" );
+}
+BOOST_AUTO_TEST_CASE( lineStringAsText2d )
+{
+    LineString<Epeck> g{
+        Point<Epeck>( 2.0,3.0 ),
+        Point<Epeck>( 4.0,5.0 )
+    };
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g,3), "LINESTRING(2.000 3.000,4.000 5.000)" );
+}
+BOOST_AUTO_TEST_CASE( lineStringAsText3d )
+{
+    LineString<Epeck> g{
+        Point<Epeck>( 2.0,3.0,7.0 ),
+        Point<Epeck>( 4.0,5.0,8.0 )
+    };
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g,3), "LINESTRING(2.000 3.000 7.000,4.000 5.000 8.000)" );
 }
 
 
-//-- WKT MultiPoint
+//TYPE_POLYGON             = 3,
+BOOST_AUTO_TEST_CASE( polygonAsTextEmpty )
+{
+    Polygon<Epeck> g;
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g,1), "POLYGON EMPTY" );
+}
+BOOST_AUTO_TEST_CASE( polygonAsText2d )
+{
+    Polygon<Epeck> g;
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,0.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 1.0,0.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 1.0,1.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,1.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,0.0 ) );
 
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g,1), "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" );
+}
+BOOST_AUTO_TEST_CASE( polygonAsText3d )
+{
+    Polygon<Epeck> g;
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,0.0,2.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 1.0,0.0,2.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 1.0,1.0,2.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,1.0,2.0 ) );
+    g.exteriorRing().push_back( Point<Epeck>( 0.0,0.0,2.0 ) );
 
-BOOST_AUTO_TEST_CASE( asTextEmpty )
+    BOOST_CHECK_EQUAL( toWkt<Epeck>(g,1), "POLYGON((0.0 0.0 2.0,1.0 0.0 2.0,1.0 1.0 2.0,0.0 1.0 2.0,0.0 0.0 2.0))" );
+}
+
+//TYPE_MULTIPOINT          = 4,
+BOOST_AUTO_TEST_CASE( multiPointAsTextEmpty )
 {
     MultiPoint<Epeck> g;
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "MULTIPOINT EMPTY" );
+    BOOST_CHECK_EQUAL( toWkt<Epeck>( g ), "MULTIPOINT EMPTY" );
 }
 
-BOOST_AUTO_TEST_CASE( asText2d )
+BOOST_AUTO_TEST_CASE( multiPointAsText2d )
 {
-    MultiPoint<Epeck> g;
-    g.addGeometry( Point( 2.0,3.0 ) );
-    g.addGeometry( Point( 3.0,4.0 ) );
-    BOOST_CHECK_EQUAL( g.asText( 3 ), "MULTIPOINT((2.000 3.000),(3.000 4.000))" );
+    MultiPoint<Epeck> g{
+        Point<Epeck>( 2.0,3.0 ),
+        Point<Epeck>( 3.0,4.0 )
+    };
+    BOOST_CHECK_EQUAL( toWkt<Epeck>( g, 3 ), "MULTIPOINT((2.000 3.000),(3.000 4.000))" );
 }
+
+//TYPE_MULTILINESTRING     = 5,
+//TODO 
+
+//TYPE_MULTIPOLYGON        = 6,
+//TODO 
+
+//TYPE_GEOMETRYCOLLECTION  = 7,
+//TODO 
+
+//TYPE_POLYHEDRALSURFACE   = 15,
+//TODO 
+
+//TYPE_TRIANGULATEDSURFACE = 16,
+//TODO 
+
+//TYPE_TRIANGLE            = 100, //17 in Wikipedia???
+//TODO 
+
+//TYPE_SOLID               = 101,
+//TODO 
+
+//TYPE_MULTISOLID          = 102
+//TODO 
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

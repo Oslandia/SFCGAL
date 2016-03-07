@@ -195,34 +195,6 @@ BOOST_AUTO_TEST_CASE( testBoundaryWithHoles )
 
 /*
 
-//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
-BOOST_AUTO_TEST_CASE( asTextEmpty )
-{
-    Polygon<Epeck> g;
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "POLYGON EMPTY" );
-}
-BOOST_AUTO_TEST_CASE( asText2d )
-{
-    Polygon<Epeck> g;
-    g.exteriorRing().push_back( Point( 0.0,0.0 ) );
-    g.exteriorRing().push_back( Point( 1.0,0.0 ) );
-    g.exteriorRing().push_back( Point( 1.0,1.0 ) );
-    g.exteriorRing().push_back( Point( 0.0,1.0 ) );
-    g.exteriorRing().push_back( Point( 0.0,0.0 ) );
-
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" );
-}
-BOOST_AUTO_TEST_CASE( asText3d )
-{
-    Polygon<Epeck> g;
-    g.exteriorRing().push_back( Point( 0.0,0.0,2.0 ) );
-    g.exteriorRing().push_back( Point( 1.0,0.0,2.0 ) );
-    g.exteriorRing().push_back( Point( 1.0,1.0,2.0 ) );
-    g.exteriorRing().push_back( Point( 0.0,1.0,2.0 ) );
-    g.exteriorRing().push_back( Point( 0.0,0.0,2.0 ) );
-
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "POLYGON((0.0 0.0 2.0,1.0 0.0 2.0,1.0 1.0 2.0,0.0 1.0 2.0,0.0 0.0 2.0))" );
-}
 
 //virtual std::string  Geometry::geometryType() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryType )
