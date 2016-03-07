@@ -63,7 +63,7 @@ public:
      * create a osg::Geometry from a Point
      */
     void addGeometry( const Geometry<K>& g ) {
-        boost::apply_visitor(*this,g);
+        SFCGAL::apply_visitor(*this,g);
     }
     
     /**
@@ -191,7 +191,7 @@ public:
      */
     void operator() ( const Geometry<K> & g ){
         BOOST_THROW_EXCEPTION( Exception(
-            ( boost::format( "can't convert %1% to osg::Geometry" ) % g.which() ).str()
+            ( boost::format( "can't convert %1% to osg::Geometry" ) % g.geometryType() ).str()
         ) );
     }
 

@@ -49,7 +49,7 @@ namespace SFCGAL {
             return TYPE_SOLID ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "Solid";
         }
         //--- IGeometry

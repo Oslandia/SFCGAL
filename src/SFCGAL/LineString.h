@@ -42,7 +42,7 @@ namespace SFCGAL {
             return TYPE_LINESTRING ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "LineString";
         }
         //-- IGeometry

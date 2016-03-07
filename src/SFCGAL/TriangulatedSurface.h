@@ -39,7 +39,7 @@ namespace SFCGAL {
             return TYPE_TRIANGULATEDSURFACE ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "TIN";
         }
         //--- Geometry<K>

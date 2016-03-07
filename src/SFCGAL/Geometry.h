@@ -76,7 +76,7 @@ namespace SFCGAL {
         /**
          * Get GeometryType name
          */
-        virtual std::string geometryType() = 0 ;
+        virtual std::string geometryType() const = 0 ;
         
         /**
          * Indicates if the geometry is empty

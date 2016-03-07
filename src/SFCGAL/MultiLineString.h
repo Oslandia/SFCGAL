@@ -42,7 +42,7 @@ namespace SFCGAL {
             return TYPE_MULTILINESTRING ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "MultiLineString";
         }
         //--- Geometry<K>

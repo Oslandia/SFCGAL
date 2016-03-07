@@ -42,7 +42,7 @@ namespace SFCGAL {
             return TYPE_MULTIPOLYGON ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "MultiPolygon";
         }
         //--- Geometry<K>

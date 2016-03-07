@@ -42,7 +42,7 @@ namespace SFCGAL {
             return TYPE_MULTIPOINT ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "MultiPoint";
         }
         //--- Geometry<K>

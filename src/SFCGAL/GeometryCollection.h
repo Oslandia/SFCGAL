@@ -98,7 +98,7 @@ namespace SFCGAL {
             return TYPE_GEOMETRYCOLLECTION ;
         }
         //--- IGeometry
-        virtual std::string geometryType() {
+        virtual std::string geometryType() const {
             return "GeometryCollection";
         }
         //--- Geometry<K>

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/visitor.h>
 
 using namespace SFCGAL ;
 
@@ -31,14 +31,15 @@ int main( int argc, char* argv[] ){
     Triangle<Epeck> triangle(a,b,c) ;
     Polygon<Epeck> polygon ;
 
-    std::vector< Geometry<Epeck> > geometries ;
-    geometries.push_back(a);
-    geometries.push_back(b);
-    geometries.push_back(triangle);
-    geometries.push_back(polygon);
+    GeometryCollection<Epeck> geometries ;
+    geometries.push_back(a.clone());
+    geometries.push_back(b.clone());
+    geometries.push_back(triangle.clone());
+    geometries.push_back(polygon.clone());
 
     for ( const Geometry<Epeck> & geometry : geometries ){
-        std::cout << boost::apply_visitor(GeometryTypeVisitor(),geometry) << std::endl;
+        GeometryTypeVisitor visitor;
+        std::cout << SFCGAL::apply_visitor(visitor,geometry) << std::endl;
     }
 
     return 0 ;

@@ -19,10 +19,10 @@ int main( int argc, char* argv[] ){
     if ( argc > 1 ){
         wkt = argv[1];
     }
-    Geometry<Epeck> g = io::readWkt<Epeck>(wkt);
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>(wkt);
 
 #ifdef SFCGAL_WITH_OSG
-    osg::ref_ptr< osg::Geometry > osgGeometry = io::toOsgGeometry<Epeck>(g) ;
+    osg::ref_ptr< osg::Geometry > osgGeometry = io::toOsgGeometry<Epeck>(*g) ;
     osg::ref_ptr< osg::Geode > geode = new osg::Geode;
     geode->setName("WKT");
     geode->addDrawable( osgGeometry );
