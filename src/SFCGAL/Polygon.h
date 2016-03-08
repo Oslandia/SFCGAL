@@ -34,28 +34,39 @@ namespace SFCGAL {
      *  a warning hack that using exteriorRing create an empty exteriorRing if missing.
      */
     template < typename K >
-    class Polygon : public std::vector< LineString<K> > {
+    class Polygon : public Geometry<K>, public std::vector< LineString<K> > {
         using Base = std::vector< LineString<K> > ;
     public:
-        /**
-         * forward vector ctor
-         */
+        using Kernel = K ;
+    
+        // forward ctor from std::vector<LineString<K>>
         using Base::Base ;
 
-        /**
-         * Test if the Polygon is empty
-         */
-        bool isEmpty() const {
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_POLYGON ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "Polygon";
+        }
+        //--- IGeometry
+        virtual bool isEmpty() const {
             return this->empty() || this->front().isEmpty() ;            
         }
-
-        /**
-         * Test if the Polygon is 3D
-         */
-        bool is3D() const {
+        //--- IGeometry
+        virtual bool is3D() const {
             return (! isEmpty()) && this->front().is3D();
         }
-        
+        //--- IGeometry
+        virtual bool isMeasured() const {
+            return (! isEmpty()) && this->front().isMeasured();
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Polygon<K>(*this);
+        }
+
         /**
          * [OGC/SFA]returns the exterior ring
          */

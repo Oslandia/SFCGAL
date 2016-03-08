@@ -17,37 +17,37 @@
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef _SFCGAL_MULTILINESTRING_H_
-#define _SFCGAL_MULTILINESTRING_H_
+#ifndef _SFCGAL_POLYHEDRALSURFACE_H_
+#define _SFCGAL_POLYHEDRALSURFACE_H_
 
 #include <SFCGAL/Collection.h>
-#include <SFCGAL/LineString.h>
+#include <SFCGAL/Polygon.h>
 
 namespace SFCGAL {
     
     /**
-     * A collection of LineStrings
-     */
+    * A collection of Polygon
+    */
     template < typename K >
-    class MultiLineString : public Collection< LineString<K> > {
-        using Base = Collection< LineString<K> >;
+    class PolyhedralSurface : public Collection< Polygon<K> > {
+        using Base = Collection< Polygon<K> >;
     public:
         using Kernel = K ;
-    
+
         //-- forward Collection's ctor
         using Base::Base;
-        
+
         //--- IGeometry
         virtual GeometryType geometryTypeId() const {
-            return TYPE_MULTILINESTRING ;
+            return TYPE_POLYHEDRALSURFACE ;
         }
         //--- IGeometry
         virtual std::string geometryType() const {
-            return "MultiLineString";
+            return "PolyhedralSurface";
         }
         //--- Geometry<K>
         virtual Geometry<K>* clone() const {
-            return new MultiLineString<K>(*this);
+            return new PolyhedralSurface<K>(*this);
         }
     };
 

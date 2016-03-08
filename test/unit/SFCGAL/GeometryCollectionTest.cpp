@@ -21,18 +21,7 @@
 
 #include <exception>
 
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
+#include <SFCGAL/types.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
@@ -42,7 +31,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_GeometryCollectionTest )
 //GeometryCollection() ;
 BOOST_AUTO_TEST_CASE( defaultConstructor )
 {
-    GeometryCollection g ;
+    GeometryCollection<Epeck> g ;
     BOOST_CHECK( g.isEmpty() );
 }
 
@@ -57,18 +46,25 @@ BOOST_AUTO_TEST_CASE( defaultConstructor )
 //void                      addGeometry( Geometry const& geometry ) ;
 BOOST_AUTO_TEST_CASE( testAccessors )
 {
-    GeometryCollection g ;
+    GeometryCollection<Epeck> g ;
 
-    g.addGeometry( new Point( 2.0,3.0 ) ) ;
+    g.push_back( new Point<Epeck>( 2.0,3.0 ) ) ;
     BOOST_CHECK_EQUAL( g.numGeometries(), 1U );
-    g.addGeometry( new LineString( Point( 0.0,0.0 ),Point( 1.0,1.0 ) ) ) ;
+    g.push_back( new LineString<Epeck>{ 
+        Point<Epeck>( 0.0,0.0 ),
+        Point<Epeck>( 1.0,1.0 ) 
+    } ) ;
     BOOST_CHECK_EQUAL( g.numGeometries(), 2U );
-    g.addGeometry( new Triangle( Point( 0.0,0.0 ),Point( 1.0,0.0 ),Point( 1.0,1.0 ) ) ) ;
+    g.push_back( new Triangle<Epeck>{
+        Point<Epeck>( 0.0,0.0 ),
+        Point<Epeck>( 1.0,0.0 ),
+        Point<Epeck>( 1.0,1.0 ) 
+    } ) ;
     BOOST_CHECK_EQUAL( g.numGeometries(), 3U );
 
-    BOOST_CHECK_EQUAL( g.geometryN( 0 ).asText( 0 ), "POINT(2 3)"  ) ;
-    BOOST_CHECK_EQUAL( g.geometryN( 1 ).asText( 0 ), "LINESTRING(0 0,1 1)"  ) ;
-    BOOST_CHECK_EQUAL( g.geometryN( 2 ).asText( 0 ), "TRIANGLE((0 0,1 0,1 1,0 0))"  ) ;
+//    BOOST_CHECK_EQUAL( g.geometryN( 0 ).asText( 0 ), "POINT(2 3)"  ) ;
+//    BOOST_CHECK_EQUAL( g.geometryN( 1 ).asText( 0 ), "LINESTRING(0 0,1 1)"  ) ;
+//    BOOST_CHECK_EQUAL( g.geometryN( 2 ).asText( 0 ), "TRIANGLE((0 0,1 0,1 1,0 0))"  ) ;
 }
 
 
@@ -80,15 +76,15 @@ BOOST_AUTO_TEST_CASE( testAccessors )
 //inline const_iterator end() const
 BOOST_AUTO_TEST_CASE( testIterators )
 {
-    GeometryCollection g ;
-    g.addGeometry( Point( 0.0,0.0 ) );
-    g.addGeometry( Point( 1.0,1.0 ) );
+    GeometryCollection<Epeck> g ;
+    g.push_back( new Point<Epeck>( 0.0,0.0 ) );
+    g.push_back( new Point<Epeck>( 1.0,1.0 ) );
 
-    GeometryCollection::const_iterator it = g.begin() ;
+    GeometryCollection<Epeck>::const_iterator it = g.begin() ;
 
-    BOOST_CHECK_EQUAL( it->asText( 0 ), "POINT(0 0)" );
+    BOOST_CHECK( it->as<Point<Epeck>>() == Point<Epeck>( 0.0,0.0 ) );
     ++it ;
-    BOOST_CHECK_EQUAL( it->asText( 0 ), "POINT(1 1)" );
+    BOOST_CHECK( it->as<Point<Epeck>>() == Point<Epeck>( 1.0,1.0 ) );
     ++it ;
     BOOST_CHECK( it == g.end() );
 }
@@ -101,6 +97,7 @@ BOOST_AUTO_TEST_CASE( testIterators )
 //Envelope             Geometry::envelope() const ;
 
 //std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
+/*
 BOOST_AUTO_TEST_CASE( asTextEmpty )
 {
     GeometryCollection g;
@@ -120,17 +117,18 @@ BOOST_AUTO_TEST_CASE( asText3d )
     g.addGeometry( Triangle( Point( 0.0,0.0,6.0 ), Point( 1.0,0.0,6.0 ), Point( 1.0,1.0,6.0 ) ) );
     BOOST_CHECK_EQUAL( g.asText( 1 ), "GEOMETRYCOLLECTION(POINT(2.0 3.0 5.0),TRIANGLE((0.0 0.0 6.0,1.0 0.0 6.0,1.0 1.0 6.0,0.0 0.0 6.0)))" );
 }
+*/
 
 //virtual std::string  Geometry::geometryType() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryType )
 {
-    GeometryCollection g;
+    GeometryCollection<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryType(), "GeometryCollection" );
 }
 //virtual GeometryType Geometry::geometryTypeId() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryTypeId )
 {
-    GeometryCollection g;
+    GeometryCollection<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_GEOMETRYCOLLECTION );
 }
 
@@ -144,11 +142,13 @@ BOOST_AUTO_TEST_CASE( testGeometryTypeId )
 //template < typename Derived > inline bool Geometry::is() const
 BOOST_AUTO_TEST_CASE( testIsGeometryCollection )
 {
-    BOOST_CHECK( GeometryCollection().is< GeometryCollection >() );
-    BOOST_CHECK( MultiPoint().is< GeometryCollection >() );
-    BOOST_CHECK( MultiLineString().is< GeometryCollection >() );
-    BOOST_CHECK( MultiPolygon().is< GeometryCollection >() );
-    BOOST_CHECK( MultiSolid().is< GeometryCollection >() );
+    BOOST_CHECK( GeometryCollection<Epeck>().is< GeometryCollection<Epeck> >() );
+    
+    // change in 2.0
+    BOOST_CHECK( ! MultiPoint<Epeck>().is< GeometryCollection<Epeck> >() );
+    BOOST_CHECK( ! MultiLineString<Epeck>().is< GeometryCollection<Epeck> >() );
+    BOOST_CHECK( ! MultiPolygon<Epeck>().is< GeometryCollection<Epeck> >() );
+    BOOST_CHECK( ! MultiSolid<Epeck>().is< GeometryCollection<Epeck> >() );
 }
 
 //template < typename Derived > inline const Derived &  Geometry::as() const

@@ -29,33 +29,37 @@ namespace SFCGAL {
      * A polyline defined by a list of points
      */
     template < typename K >
-    class LineString : public std::vector< Point<K> > {
+    class LineString : public Geometry<K>, public std::vector< Point<K> > {
         using Base = std::vector< Point<K> > ;
     public:
+        using Kernel = K ;
+
         // forward std::vector constructors
         using Base::Base;
         
-        /**
-         * Test if the LineString is empty
-         */
-        bool isEmpty() const {
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_LINESTRING ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "LineString";
+        }
+        //-- IGeometry
+        virtual bool isEmpty() const {
             return this->empty() ;
         }
-        
-        /**
-         * Test if the Polygon is 3D
-         * @warning based on the first point of the LineString
-         */
-        bool is3D() const {
+        //-- IGeometry
+        virtual bool is3D() const {
             return (! isEmpty()) && startPoint().is3D();
         }
-        
-        /**
-         * Test if the Polygon is Measured
-         * @warning based on the first point of the LineString
-         */
-        bool isMeasured() const {
+        //-- IGeometry
+        virtual bool isMeasured() const {
             return (! isEmpty()) && startPoint().isMeasured();
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new LineString<K>(*this);
         }
         
         /**

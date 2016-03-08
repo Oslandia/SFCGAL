@@ -26,7 +26,27 @@
 namespace SFCGAL {
 
     template < typename K >
-    using TriangulatedSurface = Collection< Triangle<K> > ;
+    class TriangulatedSurface : public Collection< Triangle<K> > {
+        using Base = Collection< Triangle<K> >;
+    public:
+        using Kernel = K ;        
+        
+        //-- forward Collection's ctor
+        using Base::Base;
+
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_TRIANGULATEDSURFACE ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "TIN";
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new TriangulatedSurface<K>(*this);
+        }
+    };
 
 } // SFCGAL
 

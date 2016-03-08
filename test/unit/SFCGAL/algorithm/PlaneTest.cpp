@@ -30,9 +30,9 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_PlaneTest )
 
 BOOST_AUTO_TEST_CASE( testPlane1 )
 {
-    Geometry<Epeck> gA( io::readWkt<Epeck>( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
+    std::unique_ptr< Geometry<Epeck> > gA( io::readWkt<Epeck>( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
 
-    CGAL::Plane_3<Epeck> plane = algorithm::plane3D<Epeck>( boost::get<Polygon<Epeck>>(gA) );
+    CGAL::Plane_3<Epeck> plane = algorithm::plane3D<Epeck>( gA->as<Polygon<Epeck>>() );
     BOOST_CHECK_EQUAL( plane.a(), 0.0 );
     BOOST_CHECK_EQUAL( plane.b(), 0.0 );
     BOOST_CHECK_EQUAL( plane.c(), 2.0 );
@@ -57,8 +57,8 @@ BOOST_AUTO_TEST_CASE( testPlane )
 
     for ( size_t t=0; t != numTest; ++t ) {
         //std::cout << "test = " << t << "\n";
-        Geometry<Epeck> g( io::readWkt<Epeck>( test[t]._wkt ) );
-        const LineString<Epeck>& l = boost::get<LineString<Epeck>>(g);
+        std::unique_ptr< Geometry<Epeck> > g( io::readWkt<Epeck>( test[t]._wkt ) );
+        const LineString<Epeck>& l = g->as<LineString<Epeck>>();
         BOOST_CHECK_MESSAGE(
             algorithm::isPlane3D< Epeck >( l, 1.e-9 ) == test[t]._isPlane,
             ( boost::format( "LineString %d: %s %s" ) % t % test[t]._wkt % ( test[t]._isPlane ? "is plane" : "isn't plane" ) )

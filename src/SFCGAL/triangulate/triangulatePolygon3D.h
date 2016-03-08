@@ -145,6 +145,20 @@ namespace triangulate {
         }
     }
 
+    /**
+     * Triangulate a PolyhedralSurface
+     * @warning Could produce a TriangulatedSurface with an inconsistent 
+     *  orientation.
+     */
+    template < typename K >
+    void triangulatePolygon3D(
+        const PolyhedralSurface<K> & g,
+        TriangulatedSurface<K> & triangulatedSurface
+    ){
+        for ( const Polygon<K> & part : g ){
+            triangulatePolygon3D(part,triangulatedSurface);
+        }
+    }
     
 } // triangulate
 } // SFCGAL

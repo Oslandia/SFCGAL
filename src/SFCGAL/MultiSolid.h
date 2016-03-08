@@ -28,8 +28,28 @@ namespace SFCGAL {
     /**
      * A collection of solid
      */
-    template < typename K >
-    using MultiSolid = Collection< Solid<K> > ;
+     template < typename K >
+     class MultiSolid : public Collection< Solid<K> > {
+         using Base = Collection< Solid<K> >;
+     public:
+         using Kernel = K ;
+         
+         //-- forward Collection's ctor
+         using Base::Base;
+
+         //--- IGeometry
+         virtual GeometryType geometryTypeId() const {
+             return TYPE_MULTISOLID ;
+         }
+         //--- IGeometry
+         virtual std::string geometryType() const {
+             return "MultiSolid";
+         }
+         //--- Geometry<K>
+         virtual Geometry<K>* clone() const {
+             return new MultiSolid<K>(*this);
+         }
+     };
 
 } // SFCGAL
 

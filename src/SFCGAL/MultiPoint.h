@@ -26,10 +26,30 @@
 namespace SFCGAL {
     
     /**
-     * A collection of Points
+     * A collection of Point
      */
     template < typename K >
-    using MultiPoint = Collection< Point<K> > ;
+    class MultiPoint : public Collection< Point<K> > {
+        using Base = Collection< Point<K> >;
+    public:
+        using Kernel = K ;
+
+        //-- forward Collection's ctor
+        using Base::Base;
+        
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_MULTIPOINT ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "MultiPoint";
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new MultiPoint<K>(*this);
+        }
+    };
 
 } // SFCGAL
 

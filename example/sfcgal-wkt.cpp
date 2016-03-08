@@ -24,8 +24,8 @@ int main( int argc, char* argv[] ){
     };
     for ( const std::string & wkt : wkts ){
         BOOST_LOG_TRIVIAL(info) << "parse " << wkt ;
-        Geometry<Epick> geometry = io::readWkt<Epick>(wkt);
-        std::cout << io::toWkt<Epick>(geometry) << std::endl ;
+        std::unique_ptr< Geometry<Epick> > geometry = io::readWkt<Epick>(wkt);
+        std::cout << io::toWkt<Epick>(*geometry) << std::endl ;
     }
     return 0 ;
 }

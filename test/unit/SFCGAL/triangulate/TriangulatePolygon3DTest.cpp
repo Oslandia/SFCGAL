@@ -31,10 +31,10 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_triangulate_TriangulatePolygon3DTest )
 
 BOOST_AUTO_TEST_CASE( testPolygon )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" ) ;
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0))" ) ;
     TriangulatedSurface<Epeck> tin;
     triangulatePolygon3D<Epeck>(
-        boost::get<Polygon<Epeck>>(g),
+        g->as<Polygon<Epeck>>(),
         tin
     );
     BOOST_CHECK_EQUAL(tin.size(),2U);
@@ -44,10 +44,10 @@ BOOST_AUTO_TEST_CASE( testPolygon )
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
     TriangulatedSurface<Epeck> tin;
     triangulatePolygon3D<Epeck>(
-        boost::get<Polygon<Epeck>>(g),
+        g->as<Polygon<Epeck>>(),
         tin
     );
     BOOST_CHECK_EQUAL(tin.size(),8U);
@@ -57,12 +57,12 @@ BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 // test behavior with constraint intersections (here invalid polygon)
 BOOST_AUTO_TEST_CASE( testPolygonWithHoleTouching )
 {
-    Geometry<Epeck> g = io::readWkt<Epeck>( 
+    std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( 
         "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.5 0.0,1.0 0.5,0.3 0.7,0.5 0.0))" 
     ) ;
     TriangulatedSurface<Epeck> tin;
     triangulatePolygon3D<Epeck>(
-        boost::get<Polygon<Epeck>>(g),
+        g->as<Polygon<Epeck>>(),
         tin
     );
     BOOST_CHECK_EQUAL(tin.size(),5U);

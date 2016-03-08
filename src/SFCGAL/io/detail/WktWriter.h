@@ -77,9 +77,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            _s << "(";
             writeInner( g );
-            _s << ")" ;
         }
 
         void operator () ( const MultiLineString<K> & g ){
@@ -104,6 +102,17 @@ namespace detail {
             _s << ")" ;
         }
         
+        void operator () ( const PolyhedralSurface<K> & g ){
+            _s << "POLYHEDRALSURFACE" ;
+            if ( g.empty() ){
+                _s << " EMPTY";
+                return;
+            }
+            _s << "(";
+            writeInner( g );
+            _s << ")" ;
+        }
+        
         void operator () ( const GeometryCollection<K> & g ){
             _s << "GEOMETRYCOLLECTION" ;
             if ( g.empty() ){
@@ -115,7 +124,7 @@ namespace detail {
                 if ( i != 0 ){
                     _s << ",";
                 }
-                boost::apply_visitor(*this,g.geometry(i));
+                SFCGAL::apply_visitor(*this,g.geometryN(i));
             }
             _s << ")" ;
         }
@@ -234,7 +243,7 @@ namespace detail {
                 if ( i != 0 ){
                     _s << ",";
                 }
-                writeInner(g.geometry(i)) ;
+                writeInner(g.geometryN(i)) ;
             }
             _s << ")" ;
         }

@@ -194,38 +194,21 @@ BOOST_AUTO_TEST_CASE( testEnvelope_3D )
 */
 }
 
-//TODO
-/*
-//std::string          Geometry::asText( const int & numDecimals = -1 ) const ;
-BOOST_AUTO_TEST_CASE( asTextEmpty )
-{
-    Point g;
-    BOOST_CHECK_EQUAL( g.asText( 1 ), "POINT EMPTY" );
-}
-BOOST_AUTO_TEST_CASE( asText2d )
-{
-    Point g( 2.0,3.0 );
-    BOOST_CHECK_EQUAL( g.asText( 3 ), "POINT(2.000 3.000)" );
-}
-BOOST_AUTO_TEST_CASE( asText3d )
-{
-    Point g( 2.0,3.0,4.0 );
-    BOOST_CHECK_EQUAL( g.asText( 3 ), "POINT(2.000 3.000 4.000)" );
-}
-
 //virtual std::string  Geometry::geometryType() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryType )
 {
-    Point g;
+    Point<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryType(), "Point" );
 }
 //virtual GeometryType Geometry::geometryTypeId() const = 0 ;
 BOOST_AUTO_TEST_CASE( testGeometryTypeId )
 {
-    Point g;
+    Point<Epeck> g;
     BOOST_CHECK_EQUAL( g.geometryTypeId(), TYPE_POINT );
 }
 
+
+/*
 //virtual int          Geometry::dimension() const = 0 ;
 BOOST_AUTO_TEST_CASE( testDimension )
 {

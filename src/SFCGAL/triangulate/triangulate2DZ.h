@@ -34,7 +34,7 @@ namespace triangulate {
 
     /**
      * 2DZ triangulation of geometries
-     * @warning this implements forbids constraints intersections.
+     * @warning this implementation forbids constraints intersections.
      */
     template < typename K >
     TriangulatedSurface<K> triangulate2DZ( const Geometry<K> & geometry ){

@@ -29,8 +29,10 @@ namespace SFCGAL {
      * SFCGAL's Triangle is defined with 3 points
      */
     template < typename K >
-    class Triangle {
+    class Triangle : public Geometry<K> {
     public:
+        using Kernel = K ;
+
         /**
          * Empty triangle constructor
          */
@@ -71,12 +73,31 @@ namespace SFCGAL {
         
         ~Triangle() = default;
         
-        /**
-         * Test emptyness
-         */
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_TRIANGLE ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "Triangle";
+        }
+        //--- IGeometry
         bool isEmpty() const {
             return _vertices[0].isEmpty() ;
         }
+        //--- IGeometry
+        bool is3D() const {
+            return _vertices[0].is3D() ;
+        }
+        //--- IGeometry
+        bool isMeasured() const {
+            return _vertices[0].isMeasured() ;
+        }
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Triangle<K>(*this);
+        }
+
         
         Point<K> & vertex(const int & n) {
             return _vertices[n%3];

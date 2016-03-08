@@ -23,6 +23,7 @@
 #include <SFCGAL/kernels.h>
 #include <SFCGAL/numeric.h>
 #include <SFCGAL/Coordinate.h>
+#include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
     
@@ -35,8 +36,9 @@ namespace SFCGAL {
      * converted to 3D and tagged with their dimension.
      */
     template < typename K >
-    class Point {
+    class Point : public Geometry<K> {
     public:
+        using Kernel = K ;
         using FT = typename K::FT ;
 
         /**
@@ -107,25 +109,39 @@ namespace SFCGAL {
         
         ~Point() = default;
         
-        /**
-         * Indicate if the point is Empty
-         */
-        bool isEmpty() const {
+        //--- IGeometry
+        virtual GeometryType geometryTypeId() const {
+            return TYPE_POINT ;
+        }
+        //--- IGeometry
+        virtual std::string geometryType() const {
+            return "Point";
+        }
+        //--- IGeometry
+        virtual bool isEmpty() const {
             return _empty ;
         }
-        
-        /**
-         * Indicate if the point is 3D
-         */
-        bool is3D() const {
+        //--- IGeometry
+        virtual bool is3D() const {
             return _3d ;
         }
-        
-        bool isMeasured() const {
+        //--- IGeometry
+        virtual bool isMeasured() const {
             return ! SFCGAL::isNaN(_m);
         }
         
+        //--- Geometry<K>
+        virtual Geometry<K>* clone() const {
+            return new Point<K>(*this);
+        }
+        
+        /**
+         * Get M coordinate
+         */
         double & m() { return _m ; }
+        /**
+         * Get M coordinate
+         */
         const double & m() const { return _m ; }
                 
         /**
@@ -177,7 +193,6 @@ namespace SFCGAL {
         FT z() const {
             return _coordinate.z();
         }
-
         
         /**
          *  Compare point (based on 3D coordinate comparison)
@@ -219,6 +234,7 @@ namespace SFCGAL {
          */
         bool _3d ;
     } ;
+
 
 } // namespace SFCGAL
 

@@ -26,7 +26,7 @@
 #include <sstream>
 #include <string>
 
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/visitor.h>
 #include <SFCGAL/io/detail/WktReader.h>
 #include <SFCGAL/io/detail/WktWriter.h>
 #include <SFCGAL/io/detail/CharArrayBuffer.h>
@@ -39,12 +39,20 @@ namespace io {
     template < typename K >
     void toWkt( std::ostream& s, const Geometry<K> & g ){
         detail::WktWriter<K> writer(s);
-        boost::apply_visitor(writer,g);
+        SFCGAL::apply_visitor(writer,g);
     }
     
+    /**
+     * Convert Geometry to a WKT string
+     * @param g the geom
+     * @param precision number of decimals to render number
+     */
     template < typename K >
-    std::string toWkt( const Geometry<K> & g ){
+    std::string toWkt( const Geometry<K> & g, const int & precision = -1 ){
         std::ostringstream oss;
+        if ( precision >= 0 ){
+            oss << std::setprecision(precision) << std::fixed ;
+        }
         toWkt<K>(oss,g);
         return oss.str();
     }
@@ -53,23 +61,23 @@ namespace io {
      * Read a WKT geometry from an input stream
      */
     template < typename K >
-    Geometry<K> readWkt( std::istream& s ) {
+    std::unique_ptr< Geometry<K> > readWkt( std::istream& s ) {
         detail::WktReader<K> wktReader( s );
-        return wktReader.readGeometry();
+        return std::unique_ptr< Geometry<K> >( wktReader.readGeometry() ) ;
     }
 
     /**
      * Read a WKT geometry from a string
      */
     template < typename K >
-    Geometry<K> readWkt( const std::string& s ) {
+    std::unique_ptr< Geometry<K> > readWkt( const std::string& s ) {
         std::istringstream iss( s );
         detail::WktReader<K> wktReader( iss );
-        Geometry<K> result = wktReader.read() ;
+        std::unique_ptr< Geometry<K> > result( wktReader.read() );
         char extra;
         if ( iss >> extra ) {
             std::string remaining( s.substr( int(iss.tellg()) - 1 ) );
-            throw WktParseException( "Extra characters in WKT : " + remaining );
+            throw WktParseException( "Extra characters in WKT: " + remaining );
         }
         return result;
     }
@@ -78,12 +86,12 @@ namespace io {
      * Read a WKT geometry from a char*
      */
     template < typename K >
-    Geometry<K> readWkt( const char* str, size_t len)
+    std::unique_ptr< Geometry<K> > readWkt( const char* str, size_t len)
     {
         CharArrayBuffer buf( str, str + len );
         std::istream istr( &buf );
         detail::WktReader<K> wktReader( istr );
-        Geometry<K> result = wktReader.read() ;
+        std::unique_ptr< Geometry<K> > result( wktReader.read() );
         char extra;
         if ( istr >> extra ) {
             std::string remaining( str + int(istr.tellg()) - 1, str + len );
