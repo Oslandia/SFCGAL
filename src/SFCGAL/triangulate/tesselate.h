@@ -18,35 +18,33 @@
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _SFCGAL_ALGORITHM_TESSELATE_H_
-#define _SFCGAL_ALGORITHM_TESSELATE_H_
+#ifndef _SFCGAL_TRIANGULATE_TESSELATE_H_
+#define _SFCGAL_TRIANGULATE_TESSELATE_H_
 
 #include <SFCGAL/config.h>
 
-#include <SFCGAL/Geometry.h>
+#include <SFCGAL/types.h>
+#include <SFCGAL/triangulate/detail/TesselateVisitor.h>
 
 namespace SFCGAL {
-namespace algorithm {
-struct NoValidityCheck;
+namespace triangulate {
 
-/**
- * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
- * points, lines, etc.
- * @pre g is a valid geometry
- * @ingroup public_api
- */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
+    /**
+     * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
+     * points, lines, etc.
+     * @pre g is a valid geometry
+     * @ingroup public_api
+     */
+    template < typename K >
+    std::unique_ptr<Geometry<K>> tesselate3D( const Geometry<K>& g ){
+        if ( g.isEmpty() ){
+            return std::unique_ptr<Geometry<K>>( g.clone() ) ;
+        }
+        detail::TesselateVisitor<K> visitor;
+        return SFCGAL::apply_visitor(visitor,g);
+    }
 
-/**
- * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
- * points, lines, etc.
- * @pre g is a valid geometry
- * @ingroup detail
- * @warning No actual validity check is done.
- */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry&, NoValidityCheck );
-
-}//algorithm
+}//triangulate
 }//SFCGAL
 
 

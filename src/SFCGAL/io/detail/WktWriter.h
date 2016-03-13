@@ -86,9 +86,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            _s << "(";
             writeInner( g );
-            _s << ")" ;
         }
 
         void operator () ( const MultiPolygon<K> & g ){
@@ -97,9 +95,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            _s << "(";
             writeInner( g );
-            _s << ")" ;
         }
         
         void operator () ( const PolyhedralSurface<K> & g ){
@@ -108,9 +104,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            _s << "(";
             writeInner( g );
-            _s << ")" ;
         }
         
         void operator () ( const GeometryCollection<K> & g ){
@@ -166,14 +160,6 @@ namespace detail {
             writeInner(g);
         }
         
-        
-        /*
-        template < typename T >
-        void operator () ( const T & g ){
-            BOOST_THROW_EXCEPTION(NotImplementedException("not supported geometry type")); 
-        }
-        */
-
     private:
         std::ostream & _s ;
         
@@ -214,13 +200,17 @@ namespace detail {
         }
         
         void writeInner( const Triangle<K> & g ){
+            // note : a triangle is a polygon according to SFA
             _s << "(";
+            _s << "(";
+            // note : first vertex is repeated
             for ( int i = 0; i < 4; i++ ){
                 if ( i != 0 ){
                     _s << ",";
                 }
-                writeInner( g.vertex(i) );
+                writeCoordinate( g.vertex(i) );
             }
+            _s << ")" ;
             _s << ")" ;
         }
         

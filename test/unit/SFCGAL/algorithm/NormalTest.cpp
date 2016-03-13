@@ -28,6 +28,22 @@ using namespace boost::unit_test ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_NormalTest )
 
+
+BOOST_AUTO_TEST_CASE( testNormalDummy )
+{
+    typedef CGAL::Vector_3< Epeck > Vector_3 ;
+    typedef CGAL::Point_3< Epeck > Point_3 ;
+
+    Point_3 a( 0.0, 0.0, 0.0 );
+    Point_3 b( 0.0, 0.0, 0.0 );
+    Point_3 c( 0.0, 0.0, 0.0 );
+
+    Vector_3 normal = algorithm::normal3D( a, b, c );
+    BOOST_CHECK_EQUAL( normal.x(), 0.0 );
+    BOOST_CHECK_EQUAL( normal.y(), 0.0 );
+    BOOST_CHECK_EQUAL( normal.z(), 0.0 );
+}
+
 BOOST_AUTO_TEST_CASE( testNormal1 )
 {
     typedef CGAL::Vector_3< Epeck > Vector_3 ;

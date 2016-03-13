@@ -72,7 +72,7 @@ namespace triangulate {
          * TODO find plane from point set? only requires an approximative normal
          */
         BOOST_LOG_TRIVIAL(trace) << "triangulatePolygon3D - find polygon plane...";
-        CGAL::Plane_3<K> polygonPlane = algorithm::plane3D<K>( g, false ) ;
+        CGAL::Plane_3<K> polygonPlane = algorithm::plane3D<K>(points) ;
         if ( polygonPlane.is_degenerate() ) {
             BOOST_THROW_EXCEPTION( Exception(
                 ( boost::format( "can't find plane for polygon %s" ) % io::toWkt<K>(g) ).str()
@@ -121,7 +121,6 @@ namespace triangulate {
                 BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - skip triangle in hole." ;
                 continue ;
             }
-
             triangulatedSurface.push_back(Triangle<K>(
                 it->vertex( 0 )->point(),
                 it->vertex( 1 )->point(),

@@ -35,7 +35,9 @@ BOOST_AUTO_TEST_CASE( testPlane1 )
     CGAL::Plane_3<Epeck> plane = algorithm::plane3D<Epeck>( gA->as<Polygon<Epeck>>() );
     BOOST_CHECK_EQUAL( plane.a(), 0.0 );
     BOOST_CHECK_EQUAL( plane.b(), 0.0 );
-    BOOST_CHECK_EQUAL( plane.c(), 2.0 );
+    BOOST_CHECK_EQUAL( plane.c(), 1.0 ); // note : 2.0 in version 1.3
+    
+    BOOST_CHECK_EQUAL( plane.orthogonal_vector(), CGAL::Vector_3<Epeck>(0.0,0.0,1.0) ) ;
 }
 
 BOOST_AUTO_TEST_CASE( testPlane )
