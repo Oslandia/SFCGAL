@@ -42,7 +42,7 @@ namespace algorithm {
  */
 template < typename K >
 CGAL::Plane_3<K> plane3D( 
-    const std::vector<Coordinate<K>> & points
+    const std::vector<CGAL::Point_3<K>> & points
 ){
     /*
      * This special case allows exact computation of normals for non degenerated triangles.
@@ -80,7 +80,7 @@ CGAL::Plane_3<K> plane3D(
     const Geometry<K> & g
 ){
     // get points from the geometry
-    std::vector<Coordinate<K>> points;
+    std::vector<CGAL::Point_3<K>> points;
     detail::collectPoints(g,points);
     // find best fitting plane for the point set
     return plane3D<K>(points);
@@ -99,7 +99,7 @@ template < typename K >
 bool isPlane3D( const Geometry<K>& g, const double& toleranceAbs )
 {
     // get points from the geometry
-    std::vector<Coordinate<K>> points;
+    std::vector<CGAL::Point_3<K>> points;
     detail::collectPoints(g,points);
     // TODO check if this behavior is wanted for empty geometries
     if ( points.empty() ) {
@@ -115,7 +115,7 @@ bool isPlane3D( const Geometry<K>& g, const double& toleranceAbs )
     
     // check max distance to plane
     double squaredTol = toleranceAbs * toleranceAbs ;
-    for ( const Coordinate<K> & p : points ){
+    for ( const CGAL::Point_3<K> & p : points ){
         typename K::FT squaredDistance = CGAL::squared_distance(p, plane.projection(p)) ;
         if ( squaredDistance > squaredTol ){
             return false;

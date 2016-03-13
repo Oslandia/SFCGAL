@@ -33,7 +33,7 @@ namespace detail {
     class CollectPointsAndConstraintsVisitor : public boost::static_visitor<> {
     public:
         CollectPointsAndConstraintsVisitor(
-            std::vector< Coordinate<K> > & points,
+            std::vector< CGAL::Point_3<K> > & points,
             std::vector< std::pair< size_t, size_t > > & constraints
         ):
             _points(points),
@@ -96,7 +96,7 @@ namespace detail {
         }
 
     private:
-        std::vector< Coordinate<K> > & _points ;
+        std::vector< CGAL::Point_3<K> > & _points ;
         std::vector< std::pair< size_t, size_t > > & _constraints ;
     } ;
 

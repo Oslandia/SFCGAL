@@ -34,7 +34,7 @@ namespace detail {
     template < typename K >
     void collectPointsAndConstraints(
         const Geometry<K> & geometry,
-        std::vector< Coordinate<K> > & points,
+        std::vector< CGAL::Point_3<K> > & points,
         std::vector< std::pair< size_t, size_t > > & constraints
     ){
         detail::CollectPointsAndConstraintsVisitor<K> visitor(points,constraints);

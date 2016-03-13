@@ -22,7 +22,6 @@
 
 #include <SFCGAL/kernels.h>
 #include <SFCGAL/numeric.h>
-#include <SFCGAL/Coordinate.h>
 #include <SFCGAL/Geometry.h>
 
 namespace SFCGAL {
@@ -218,7 +217,7 @@ namespace SFCGAL {
         }
         
     private:
-        Coordinate<K> _coordinate;
+        CGAL::Point_3<K> _coordinate;
         /**
          * measure attached to the point
          * TODO customize a kernel so that the measure persists throw CGAL algorithm

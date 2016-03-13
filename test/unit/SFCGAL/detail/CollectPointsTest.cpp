@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE( testPoint )
 {
     Point<Epeck> g(1.0, 2.0, 3.0) ;
     
-    std::vector< Coordinate<Epeck> > points ;
+    std::vector< CGAL::Point_3<Epeck> > points ;
     detail::collectPoints(g,points);
     
     BOOST_CHECK_EQUAL( points.size(), 1U );
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( testLineString )
         Point<Epeck>(2.0,1.0,0.0)
     } ;
     
-    std::vector< Coordinate<Epeck> > points ;
+    std::vector< CGAL::Point_3<Epeck> > points ;
     detail::collectPoints(g,points);
     
     BOOST_CHECK_EQUAL( points.size(), 4U );
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( testLineString )
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
     std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "POLYGON((0.0 0.0,1.0 0.0,1.0 1.0,0.0 1.0,0.0 0.0),(0.2 0.2,0.2 0.8,0.8 0.8,0.8 0.2,0.2 0.2))" ) ;
-    std::vector< Coordinate<Epeck> > points ;
+    std::vector< CGAL::Point_3<Epeck> > points ;
     detail::collectPoints(*g,points);
     BOOST_CHECK_EQUAL( points.size(), 10U );
 }
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 BOOST_AUTO_TEST_CASE( testMultiPoint )
 {
     std::unique_ptr< Geometry<Epeck> > g = io::readWkt<Epeck>( "MULTIPOINT((1.0 2.0 3.0),(2.0 3.0 6.0),(8.0 6.0 7.0),(2.0 1.0 6.0))" ) ;
-    std::vector< Coordinate<Epeck> > points ;
+    std::vector< CGAL::Point_3<Epeck> > points ;
     detail::collectPoints(*g,points);
     BOOST_CHECK_EQUAL( points.size(), 4U );
 }

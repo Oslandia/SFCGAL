@@ -33,7 +33,7 @@ namespace detail {
     class CollectPointsVisitor : public boost::static_visitor<> {
     public:
         CollectPointsVisitor(
-            std::vector< Coordinate<K> > & points
+            std::vector< CGAL::Point_3<K> > & points
         ):
             _points(points)
         {
@@ -82,7 +82,7 @@ namespace detail {
         }
 
     private:
-        std::vector< Coordinate<K> > & _points ;
+        std::vector< CGAL::Point_3<K> > & _points ;
     } ;
 
 } // namespace detail

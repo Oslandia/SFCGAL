@@ -57,7 +57,7 @@ namespace triangulate {
          * collect points and constraints
          */
         BOOST_LOG_TRIVIAL(info) << "triangulatePolygon3D - collect points and constraints...";
-        std::vector< Coordinate<K> > points ;
+        std::vector< CGAL::Point_3<K> > points ;
         std::vector< std::pair<size_t,size_t> > constraints;
         SFCGAL::detail::collectPointsAndConstraints(g,points,constraints);
         if ( points.empty() ){

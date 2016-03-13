@@ -42,7 +42,7 @@ namespace triangulate {
 
         // Get vertex and constraints
         BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - collect points and constraints...";
-        std::vector< Coordinate<K> > points ;
+        std::vector< CGAL::Point_3<K> > points ;
         std::vector< std::pair< size_t, size_t > > constraints ;
         SFCGAL::detail::collectPointsAndConstraints(geometry,points,constraints);
         BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - "<< points.size() << " point(s)," << constraints.size() << " containt(s) found";

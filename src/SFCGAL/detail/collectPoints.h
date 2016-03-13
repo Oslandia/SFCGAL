@@ -34,7 +34,7 @@ namespace detail {
     template < typename K >
     void collectPoints(
         const Geometry<K> & geometry,
-        std::vector< Coordinate<K> > & points
+        std::vector< CGAL::Point_3<K> > & points
     ){
         detail::CollectPointsVisitor<K> visitor(points);
         SFCGAL::apply_visitor(visitor,geometry);
