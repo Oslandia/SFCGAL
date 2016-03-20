@@ -40,9 +40,9 @@ namespace SFCGAL {
 namespace triangulate {
     
     /**
-     * Triangulate a 3D polygon with holes and
-     * output triangles in a TIN. The triangulation is 
-     * performed in 2D in the polygon plane.
+     * Triangulate a 3D polygon with holes and output triangles to a triangulatedSurface.
+     * Note that multiple invocation may produce a TIN with inconsistent orientation or with
+     * multiple part
      * 
      * @warning Epeck is required as this implementation create points 
      *  on constraints intersections. Counting points could allow this 
@@ -110,24 +110,26 @@ namespace triangulate {
             cdt.insert_constraint( points[it->first], points[it->second] );
         }
 
-        BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - markDomains (" << cdt.number_of_faces() << " triangles) " ;
+        BOOST_LOG_TRIVIAL(trace) << "triangulatePolygon3D - markDomains (" << cdt.number_of_faces() << " triangles) " ;
         detail::markDomains(cdt);
         
-        BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - retrieve triangles according to nested level..." ;        
+        BOOST_LOG_TRIVIAL(trace) << "triangulatePolygon3D - retrieve triangles according to nested level..." ;        
         triangulatedSurface.reserve( triangulatedSurface.size() + cdt.number_of_faces() );
         
         for ( Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it ) {
             if ( it->info().nestingLevel % 2 == 0 ) {
-                BOOST_LOG_TRIVIAL(trace) << "triangulate2DZ - skip triangle in hole." ;
+                BOOST_LOG_TRIVIAL(trace) << "triangulatePolygon3D - skip triangle in hole." ;
                 continue ;
             }
-            triangulatedSurface.push_back(Triangle<K>(
+            // output triangle
+            triangulatedSurface.push_back( CGAL::Triangle_3<K>(
                 it->vertex( 0 )->point(),
                 it->vertex( 1 )->point(),
                 it->vertex( 2 )->point()
-            ));
+            ) ) ;
         }
     }
+    
     
     /**
      * Triangulate a MultiPolygon

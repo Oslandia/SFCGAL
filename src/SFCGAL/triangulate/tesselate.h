@@ -32,6 +32,10 @@ namespace triangulate {
     /**
      * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
      * points, lines, etc.
+     *
+     * Note that Solid/MultiSolid remains Solid/MultiSolid where PolyhedralSurface forming shells are composed of Polygon representing triangles. Also, as PolyhedralSurface and TIN must be connected according to SFA, MULTIPOLYGON 
+     * tesselation can produce either TIN or GEOMETRYCOLLECTION of TIN. 
+     * 
      * @pre g is a valid geometry
      * @ingroup public_api
      */

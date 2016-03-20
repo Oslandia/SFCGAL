@@ -230,6 +230,7 @@ namespace SFCGAL {
         bool _empty ;
         /**
          * Tag for 3D coordinate
+         * TODO move to Geometry<K>
          */
         bool _3d ;
     } ;

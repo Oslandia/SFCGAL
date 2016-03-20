@@ -148,7 +148,7 @@ namespace detail {
                 _s << " EMPTY";
                 return;
             }
-            
+            writeInner(g);
         }
         
         void operator () ( const MultiSolid<K> & g ){

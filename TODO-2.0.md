@@ -21,9 +21,9 @@
 ## Refactoring method
 
 * [x] Restore types as typedef on CGAL structures with a variant to manage dynamism on geometry
-* [ ] Restore IO for tests
-    * [x] WKT
-    * [ ] WKB (hexa)
+* [x] Restore IO for tests
+    * [x] Read WKT
+    * [x] Write WKT    
 * [ ] Restore progressively algorithm (Port sources from /src-legacy and /test-legacy to /src and /test with the new style)
 * [ ] Restore the garden test
 
@@ -45,12 +45,11 @@ Finally :
     * [x] MultiLineString
     * [x] TriangulatedSurface
     * [x] MultiPolygon
-    * [x] PolyhedralSurface (considered as a MultiPolygon)
+    * [x] PolyhedralSurface
     * [x] GeometryCollection
 
-Note that :
-* A LineString is implicitly a LinearRing when it is a ring in a Polygon (with startPoint = endPoint).
-* A MultiPolygon is implicity a closed PolyhedralSurface with correct orientation when it is a shell in a solid.
+Note that a LineString is implicitly a LinearRing when it is a ring in a Polygon (with startPoint = endPoint).
+
 
 
 # Features to add in 2.0

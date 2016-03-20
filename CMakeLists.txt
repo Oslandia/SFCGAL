@@ -119,7 +119,7 @@ if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND ($
 endif()
 
 #-- find CGAL and it's dependencies
-find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
+find_package( CGAL 4.8 COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
 find_package(MPFR REQUIRED)

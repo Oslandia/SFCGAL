@@ -22,13 +22,22 @@
 #define _SFCGAL_TRIANGULATE_DETAIL_TESSELATEVISITOR_H_
 
 #include <SFCGAL/types.h>
-#include <SFCGAL/triangulate/triangulatePolygon3D.h>
 
+#include <SFCGAL/mesh/SurfaceMesh.h>
+#include <SFCGAL/mesh/detail/ConnectedComponentsExtractor.h>
+
+#include <SFCGAL/triangulate/triangulatePolygon3D.h>
+#include <SFCGAL/triangulate/TriangulatedMeshBuilder.h>
+
+#include <CGAL/Polygon_mesh_processing/orientation.h>
 
 namespace SFCGAL {
 namespace triangulate {
 namespace detail {
 
+    /**
+     * Ensure that geometries are exclusively composed of triangles.     * 
+     */
     template < typename K >
     class TesselateVisitor : public boost::static_visitor< std::unique_ptr<Geometry<K>> > {
     public:
@@ -42,28 +51,80 @@ namespace detail {
 
         //TYPE_MULTIPOLYGON
         std::unique_ptr<Geometry<K>> operator() ( const MultiPolygon<K> & g){
-            std::unique_ptr<TriangulatedSurface<K>> triSurf( new TriangulatedSurface<K>() ) ;
-            triangulate::triangulatePolygon3D( g, *triSurf );
-            return std::unique_ptr<Geometry<K>>( triSurf.release() );
+            typedef mesh::SurfaceMesh<K> Mesh ;
+            typedef TriangulatedMeshBuilder<K> MeshBuilder;
+            typedef mesh::detail::ConnectedComponentsExtractor< Mesh > ConnectedComponentsExtractor;
+            
+            // create a triangulated mesh
+            Mesh mesh;
+            MeshBuilder meshBuilder ;
+            meshBuilder.addPolygons( g.cbegin(), g.cend() ) ;
+            meshBuilder.getMesh(mesh);
+
+            // extract connected components as TIN
+            ConnectedComponentsExtractor extractor(mesh) ;
+            if ( extractor.numConnectedComponents() > 1 ){
+                std::unique_ptr<GeometryCollection<K>> collection( new GeometryCollection<K>() ) ;
+                for ( size_t i = 0; i < extractor.numConnectedComponents(); i++ ){
+                    std::unique_ptr<TriangulatedSurface<K>> triSurf( new TriangulatedSurface<K>() ) ;
+                    extractor.extractTriangles(i,std::back_inserter(*triSurf)) ;
+                    collection->push_back( triSurf.release() );
+                }
+                return std::unique_ptr<Geometry<K>>( collection.release() );
+            }else{
+                std::unique_ptr<TriangulatedSurface<K>> triSurf( new TriangulatedSurface<K>() ) ;
+                extractor.extractTriangles(0,std::back_inserter(*triSurf)) ;
+                return std::unique_ptr<Geometry<K>>( triSurf.release() );
+            }
         }
 
         //TYPE_POLYHEDRALSURFACE
         std::unique_ptr<Geometry<K>> operator() ( const PolyhedralSurface<K> & g){
-            //TODO keep POLYHEDRALSURFACE as triangulated POLYHEDRALSURFACE
+            typedef mesh::SurfaceMesh<K> Mesh ;
+            typedef TriangulatedMeshBuilder<K> MeshBuilder;
+            
+            // create a triangulated mesh
+            Mesh mesh;
+            MeshBuilder meshBuilder ;
+            meshBuilder.addPolygons( g.cbegin(), g.cend() ) ;
+            meshBuilder.getMesh(mesh);
+            
             std::unique_ptr<TriangulatedSurface<K>> triSurf( new TriangulatedSurface<K>() ) ;
-            triangulate::triangulatePolygon3D( g, *triSurf );
+            mesh::extractTriangles(mesh,std::back_inserter(*triSurf));
             return std::unique_ptr<Geometry<K>>( triSurf.release() );
         }
 
         //TYPE_SOLID
         std::unique_ptr<Geometry<K>> operator() ( const Solid<K> & g ){
-            //TODO keep SOLID as SOLID
-            std::unique_ptr<GeometryCollection<K>> ret( new GeometryCollection<K>() );
+            typedef mesh::SurfaceMesh<K> Mesh ;
+            typedef TriangulatedMeshBuilder<K> MeshBuilder;
+            
+            std::unique_ptr<Solid<K>> ret( new Solid<K>() );
 
-            for ( const PolyhedralSurface<K>& shellN : g ) {
-                if ( ! shellN.isEmpty() ) {
-                    ret->push_back( (*this)( shellN ).release() );
+            for ( size_t i = 0; i < g.size(); i++ ){
+                const PolyhedralSurface<K> & shellN = g[i];
+                
+                Mesh mesh;
+                MeshBuilder meshBuilder ;
+                meshBuilder.addPolygons( shellN.cbegin(), shellN.cend() ) ;
+                meshBuilder.getMesh(mesh);
+                
+                if ( CGAL::is_closed(mesh) ){
+                    if ( CGAL::Polygon_mesh_processing::is_outward_oriented(mesh) ){
+                        if ( i != 0 ){
+                            CGAL::Polygon_mesh_processing::reverse_face_orientations(mesh);
+                        }
+                    }else{
+                        if ( i == 0 ){
+                            CGAL::Polygon_mesh_processing::reverse_face_orientations(mesh);
+                        }
+                    }
                 }
+
+                //TODO check close and manage orientation
+                PolyhedralSurface<K> triShellN;
+                mesh::extractPolygons( mesh, std::back_inserter(triShellN) );
+                ret->push_back(triShellN);
             }
 
             return std::unique_ptr<Geometry<K>>( ret.release() );

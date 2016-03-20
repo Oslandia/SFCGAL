@@ -19,30 +19,22 @@
  */
 #include <boost/test/unit_test.hpp>
 
-#include <SFCGAL/Point.h>
-#include <SFCGAL/LineString.h>
-#include <SFCGAL/Polygon.h>
-#include <SFCGAL/Triangle.h>
-#include <SFCGAL/PolyhedralSurface.h>
-#include <SFCGAL/TriangulatedSurface.h>
-#include <SFCGAL/Solid.h>
-#include <SFCGAL/GeometryCollection.h>
-#include <SFCGAL/MultiPoint.h>
-#include <SFCGAL/MultiLineString.h>
-#include <SFCGAL/MultiPolygon.h>
-#include <SFCGAL/MultiSolid.h>
+#include <SFCGAL/types.h>
 #include <SFCGAL/io/wkt.h>
-#include <SFCGAL/algorithm/connection.h>
+#include <SFCGAL/mesh/SurfaceMesh.h>
+#include <SFCGAL/mesh/connection.h>
+#include <SFCGAL/triangulate/TriangulatedMeshBuilder.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
-using namespace SFCGAL::algorithm ;
+using namespace SFCGAL::mesh ;
+using namespace SFCGAL::triangulate ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_Connected )
 
 BOOST_AUTO_TEST_CASE( allFine )
 {
-    std::auto_ptr< Geometry > geom ( io::readWkt(
+    std::unique_ptr< Geometry<Epeck> > geom( io::readWkt<Epeck>(
                                          "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
@@ -50,14 +42,22 @@ BOOST_AUTO_TEST_CASE( allFine )
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
                                    ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))" ) );
 
-    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
-    BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
-    BOOST_CHECK_MESSAGE( isClosed( graph ) , "not closed" );
+    SurfaceMesh<Epeck> mesh;
+    TriangulatedMeshBuilder<Epeck> meshBuilder;
+    meshBuilder.addPolygons(
+        geom->as< PolyhedralSurface<Epeck> >().begin(),
+        geom->as< PolyhedralSurface<Epeck> >().end()
+    );
+    meshBuilder.getMesh(mesh);
+
+    BOOST_CHECK_MESSAGE( isConnected( mesh ) , "not connected" );
+    BOOST_CHECK_MESSAGE( isClosed( mesh ) , "not closed" );
 }
+
 
 BOOST_AUTO_TEST_CASE( notConnected )
 {
-    std::auto_ptr< Geometry > geom ( io::readWkt(
+    std::unique_ptr< Geometry<Epeck> > geom ( io::readWkt<Epeck>(
                                          "POLYHEDRALSURFACE(((0 0 -1, 0 1 -1, 1 1 -1, 1 0 -1, 0 0 -1)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
@@ -65,24 +65,39 @@ BOOST_AUTO_TEST_CASE( notConnected )
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)),\
                                    ((1 1 1, 1 1 0, 0 1 0, 0 1 1, 1 1 1)))" ) );
 
-    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
-    BOOST_CHECK_MESSAGE( !isConnected( graph ) , "connected" );
-    BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
+    SurfaceMesh<Epeck> mesh;
+    TriangulatedMeshBuilder<Epeck> meshBuilder;
+    meshBuilder.addPolygons(
+       geom->as< PolyhedralSurface<Epeck> >().begin(),
+       geom->as< PolyhedralSurface<Epeck> >().end()
+    );
+    meshBuilder.getMesh(mesh);
+
+    BOOST_CHECK_MESSAGE( !isConnected( mesh ) , "connected" );
+    BOOST_CHECK_MESSAGE( !isClosed( mesh ) , "closed" );
 }
 
 BOOST_AUTO_TEST_CASE( notClosed )
 {
-    std::auto_ptr< Geometry > geom ( io::readWkt(
+    std::unique_ptr< Geometry<Epeck> > geom ( io::readWkt<Epeck>(
                                          "POLYHEDRALSURFACE(((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0)),\
                                    ((0 0 0, 0 0 1, 0 1 1, 0 1 0, 0 0 0)),\
                                    ((0 0 0, 1 0 0, 1 0 1, 0 0 1, 0 0 0)),\
                                    ((1 1 1, 0 1 1, 0 0 1, 1 0 1, 1 1 1)),\
                                    ((1 1 1, 1 0 1, 1 0 0, 1 1 0, 1 1 1)))" ) );
 
-    SurfaceGraph graph( geom->as< PolyhedralSurface >() );
-    BOOST_CHECK_MESSAGE( isConnected( graph ) , "not connected" );
-    BOOST_CHECK_MESSAGE( !isClosed( graph ) , "closed" );
+   SurfaceMesh<Epeck> mesh;
+   TriangulatedMeshBuilder<Epeck> meshBuilder;
+   meshBuilder.addPolygons(
+      geom->as< PolyhedralSurface<Epeck> >().begin(),
+      geom->as< PolyhedralSurface<Epeck> >().end()
+   );
+   meshBuilder.getMesh(mesh);
+   
+    BOOST_CHECK_MESSAGE( isConnected( mesh ) , "not connected" );
+    BOOST_CHECK_MESSAGE( !isClosed( mesh ) , "closed" );
 
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()
