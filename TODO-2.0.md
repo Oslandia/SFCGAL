@@ -43,7 +43,7 @@ Also, some types that doesn't belong to the Geometry hierarchy are defined :
     * [x] SurfaceMesh<K> (CGAL::SurfaceMesh<CGAL::Point_3<K>>)
     * [ ] MarkedPolyhedron<K>
 * Graph (might be removed)
-    * [ ] GeometryGraph
+    * [ ] GeometryGraph
     * [ ] SurfaceGraph
 
 ## Refactoring method
@@ -69,7 +69,7 @@ Finally :
 
 # Features (roadmap)
 
-* [x] Find plane/normal for point set (used to triangulate 3D polygon)
+* [x] Find plane/normal for point set (used to triangulate 3D polygon)
 * [x] Test if a geometry is planar with a given tolerance
 * [x] Triangulate polygon 3D
 * [x] Convert geometries to triangulated Mesh (CGAL::SurfaceMesh/CGAL::Polyhedron)
@@ -78,43 +78,43 @@ Finally :
 * [x] Test if Mesh is closed
 * [ ] Enveloppe 2D/3D (bounding box)
 * [ ] Generators
-    * [ ] Disc
-    * [ ] Hoch fractal
+    * [ ] Disc
+    * [ ] Hoch fractal
     * [ ] Sierpinski fractal
-    * [ ] Building (rely on straight skeleton)
-* [ ] Force 2D/3D
+    * [ ] Building (rely on straight skeleton)
+* [ ] Force 2D/3D
 * [ ] Length 2D/3D
 * [ ] Area 2D/3D
 * [ ] Volume
-* [ ] Distance 2D/3D
+* [ ] Distance 2D/3D
 * [ ] Extrude
 * [ ] Translate
 * [ ] Boundary 
 * [ ] Homogenize geometry collection
 * [ ] convexHull 2D/3D
-* [ ] Boolean operations 2D/3D
+* [ ] Boolean operations 2D/3D
     * [ ] covers 2D/3D
-    * [ ] difference 2D/3D
+    * [ ] difference 2D/3D
     * [ ] intersection 2D/3D
     * [ ] union 2D/3D
-* [ ] Validity checking 2D/3D
-* [ ] Minkowski sum and offset
-* [ ] Surface orientation 2D/3D
-* [ ] Straight skeleton
+* [ ] Validity checking 2D/3D
+* [ ] Minkowski sum and offset
+* [ ] Surface orientation 2D/3D
+* [ ] Straight skeleton
 
 
 # Support features (detail)
 
 * [x] SFCGAL::apply_visitor : Static visitor that simplify implementation on dynamic geometry type 
-* [x] Collect points from a geometry (usefull to find plane for a geometry)
-* [x] Collect points and constraints from a geometry (mainly for constraints triangulation purpose)
+* [x] Collect points from a geometry (usefull to find plane for a geometry)
+* [x] Collect points and constraints from a geometry (mainly for constraints triangulation purpose)
 
 * [x] VertexArrayBuilder (build a vector of CGAL::Point_3 to index geometry points)
 * [x] TriangulatedMeshBuilder : Create a CGAL Mesh (SurfaceMesh/Polyhedron) with a consistent orientation from polygons
 
 * [ ] Transform : Visit geometry points to apply a transform
 
-* [ ] GeometrySet (a collection of CGAL primitive usefull for boolean ops)
+* [ ] GeometrySet (a collection of CGAL primitive usefull for boolean ops)
 * [ ] Graph view for geometries and isHalfEdge test (should this be restored?)
 
 
