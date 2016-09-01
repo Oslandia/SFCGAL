@@ -106,6 +106,17 @@ if( NOT ${GMP_FOUND} OR NOT ${MPFR_FOUND} )
 endif()
 
 
+#-- OpenScenegraph -----------------------------------------
+find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
+if( ${OPENSCENEGRAPH_FOUND} )
+	message( STATUS "OPENSCENEGRAPH_INCLUDE_DIRS = ${OPENSCENEGRAPH_INCLUDE_DIRS}" )
+	message( STATUS "OPENSCENEGRAPH_LIBRARIES = ${OPENSCENEGRAPH_LIBRARIES}" )
+	set( SFCGAL_WITH_OSG ON )
+
+	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} )
+endif()
+
+
 #-- find CGAL  ---------------------------------------------
 option( CGAL_USE_AUTOLINK "disable CGAL autolink" OFF )
 if( ${CGAL_USE_AUTOLINK} )
