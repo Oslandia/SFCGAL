@@ -18,6 +18,8 @@ option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
 option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
 
+option( SFCGAL_WITH_OSG "Compile with OpenSceneGraph support" OFF )
+
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
@@ -107,15 +109,15 @@ endif()
 
 
 #-- OpenScenegraph -----------------------------------------
-find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
-if( ${OPENSCENEGRAPH_FOUND} )
-	message( STATUS "OPENSCENEGRAPH_INCLUDE_DIRS = ${OPENSCENEGRAPH_INCLUDE_DIRS}" )
-	message( STATUS "OPENSCENEGRAPH_LIBRARIES = ${OPENSCENEGRAPH_LIBRARIES}" )
-	set( SFCGAL_WITH_OSG ON )
+if ( SFCGAL_WITH_OSG )
+  find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
+  if( ${OPENSCENEGRAPH_FOUND} )
+    message( STATUS "OPENSCENEGRAPH_INCLUDE_DIRS = ${OPENSCENEGRAPH_INCLUDE_DIRS}" )
+    message( STATUS "OPENSCENEGRAPH_LIBRARIES = ${OPENSCENEGRAPH_LIBRARIES}" )
 
-	include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} )
+    include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} )
+  endif()
 endif()
-
 
 #-- find CGAL  ---------------------------------------------
 option( CGAL_USE_AUTOLINK "disable CGAL autolink" OFF )
