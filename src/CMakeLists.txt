@@ -8,11 +8,15 @@ foreach (header ${SFCGAL_HEADERS_COPIED})
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/src/${header} ${CMAKE_BINARY_DIR}/include/SFCGAL/${header} DEPENDS ${CMAKE_SOURCE_DIR}/src/${header})
 endforeach()
 
-if ( NOT SFCGAL_WITH_OSG )
-    message( STATUS "removing ${CMAKE_SOURCE_DIR}/src/io/osg.h and ${CMAKE_SOURCE_DIR}/src/SFCGAL/io/osg.cpp from the library")
-    list(REMOVE_ITEM SFCGAL_HEADERS "${CMAKE_SOURCE_DIR}/src/io/osg.h")
-    list(REMOVE_ITEM SFCGAL_SOURCES "${CMAKE_SOURCE_DIR}/src/io/osg.cpp")
-endif()
+set( SFCGAL_OSG_HEADERS
+  ${CMAKE_SOURCE_DIR}/src/io/osg.h
+  ${CMAKE_SOURCE_DIR}/src/detail/io/OsgFactory.h )
+set( SFCGAL_OSG_SOURCES
+  ${CMAKE_SOURCE_DIR}/src/io/osg.cpp
+  ${CMAKE_SOURCE_DIR}/src/detail/io/OsgFactory.cpp )
+message( STATUS "removing OSG dependencies from the library")
+list(REMOVE_ITEM SFCGAL_HEADERS ${SFCGAL_OSG_HEADERS})
+list(REMOVE_ITEM SFCGAL_SOURCES ${SFCGAL_OSG_SOURCES})
 
 if( SFCGAL_USE_STATIC_LIBS )
   add_definitions( "-fPIC" )
@@ -46,9 +50,6 @@ if( ${SFCGAL_WITH_GMP} )
 	target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
 endif( ${SFCGAL_WITH_GMP} )
 
-if( ${SFCGAL_WITH_OSG} )
-	 target_link_libraries( SFCGAL ${OPENSCENEGRAPH_LIBRARIES} )
-endif()
 target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
 
 if ( ${Use_precompiled_headers} )
@@ -76,3 +77,36 @@ install(
 	BUNDLE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
+# SFCGAL-osg
+if ( SFCGAL_WITH_OSG )
+  if( SFCGAL_USE_STATIC_LIBS )
+    add_definitions( "-fPIC" )
+    add_library(
+      SFCGAL-osg
+      ${SFCGAL_OSG_HEADERS}
+      ${SFCGAL_OSG_SOURCES}
+      )
+
+  else()
+    add_definitions( "-DSFCGAL_BUILD_SHARED" )
+    add_library(
+      SFCGAL-osg SHARED
+      ${SFCGAL_OSG_HEADERS}
+      ${SFCGAL_OSG_SOURCES}
+      )
+  endif()
+  target_link_libraries( SFCGAL-osg
+    SFCGAL
+    ${OPENSCENEGRAPH_LIBRARIES}
+  )
+  set_target_properties( SFCGAL-osg PROPERTIES VERSION ${SFCGAL_VERSION}
+                                         SOVERSION ${SFCGAL_VERSION_MAJOR} )
+  install(
+	TARGETS
+	SFCGAL-osg
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	BUNDLE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   )
+endif()
