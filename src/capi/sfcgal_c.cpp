@@ -813,7 +813,7 @@ extern "C" int sfcgal_geometry_is_planar( const sfcgal_geometry_t* ga )
     bool r;
 
     try {
-        r = SFCGAL::algorithm::hasPlane3D< SFCGAL::Kernel >( g->as< const SFCGAL::Polygon >() );
+        r = SFCGAL::algorithm::isPlane3D< SFCGAL::Kernel >( g->as<const SFCGAL::Polygon >(), 1e-9 );
     }
     catch ( std::exception& e ) {
         SFCGAL_WARNING( "During is_planar(A) :" );
