@@ -183,7 +183,7 @@ const Validity isValid( const Polygon& p, const double& toleranceAbs )
 
     for ( size_t r=0; r != numRings; ++r ) {
         if ( p.ringN( r ).numPoints() < 4 ) {
-            return Validity::invalid( ( boost::format( "not enought points in ring %d" ) % r ).str() );
+            return Validity::invalid( ( boost::format( "not enough points in ring %d" ) % r ).str() );
         }
 
 //        const Validity v = isValid( p.ringN(r) );
