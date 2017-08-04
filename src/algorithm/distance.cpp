@@ -496,7 +496,7 @@ double distanceGeometryCollectionToGeometry( const Geometry& gA, const Geometry&
     // point of BS(gAi) there is no need to compute the distance(gAj, gB)
     // since it will be greater than distance(gAi, gB)
     //
-    // The aim is not to find the minimal bounding sphere, but a good enought sphere than
+    // The aim is not to find the minimal bounding sphere, but a good enough sphere than
     // encloses all points
     std::set<size_t> noTest;
 
