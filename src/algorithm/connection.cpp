@@ -28,8 +28,12 @@
 #include <SFCGAL/PolyhedralSurface.h>
 #include <SFCGAL/TriangulatedSurface.h>
 
+#include <limits>
+
 namespace SFCGAL {
 namespace algorithm {
+
+const size_t SurfaceGraph::INVALID_INDEX = std::numeric_limits< size_t >::max();
 
 void SurfaceGraph::addRing( const LineString& ring, FaceIndex faceIndex )
 {
