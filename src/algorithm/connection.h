@@ -44,7 +44,7 @@ public:
     typedef size_t VertexIndex;
     typedef size_t FaceIndex;
     typedef std::map< Coordinate, VertexIndex >  CoordinateMap ;
-    static const size_t INVALID_INDEX = size_t( -1 ) ; // would use std::numeric_limits< size_t >::max() if it were constant, or SIZE_MAX if it were easier to find.
+    static const size_t INVALID_INDEX;
     // an edge is inserted with vtx ordered by the first polygon we treat,
     // we search the edge with reverse ordered vtx indexes.
     // as a result, an inconsistent orientation between polygons can be spotted by
