@@ -682,6 +682,9 @@ squared_distance_t squaredDistancePointTriangle3D(
     const Triangle_3& abc
 )
 {
+#if  CGAL_VERSION_NR >= 1041001000 // >= 4.10
+    return CGAL::squared_distance(p, abc);
+#else
     Point_3 a = abc.vertex( 0 );
     Point_3 b = abc.vertex( 1 );
     Point_3 c = abc.vertex( 2 );
@@ -706,6 +709,7 @@ squared_distance_t squaredDistancePointTriangle3D(
     }
 
     return dMin ;
+#endif
 }
 
 ///
@@ -759,7 +763,7 @@ squared_distance_t squaredDistanceSegmentTriangle3D(
     /*
      * If [sAsB] intersects the triangle (tA,tB,tC), distance is 0.0
      */
-    if ( ! CGAL::intersection( sAB, tABC ).empty() ) {
+    if ( boost::none != CGAL::intersection( sAB, tABC ) ) {
         return 0.0 ;
     }
 
@@ -817,7 +821,7 @@ squared_distance_t squaredDistanceTriangleTriangle3D(
     const Triangle_3& triangleB
 )
 {
-    if ( ! CGAL::intersection( triangleA, triangleB ).empty() ) {
+    if ( boost::none != CGAL::intersection( triangleA, triangleB ) ) {
         return squared_distance_t( 0 );
     }
 
