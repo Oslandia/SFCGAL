@@ -196,7 +196,7 @@ int main( int argc, char* argv[] )
         TriangulatedSurface triangulatedSurface ;
 
         try {
-            std::auto_ptr< Geometry > g( io::readWkt( wkt ) );
+            std::unique_ptr< Geometry > g( io::readWkt( wkt ) );
 
             //io::vtk( *g, (boost::format("/tmp/polygon_%s.vtk") % id ).str() );
 

@@ -106,8 +106,8 @@ BOOST_AUTO_TEST_CASE( testFileDistanceTest )
         std::getline( iss, wktGB, '|' ) ;
         iss >> expectedDistance ;
 
-        std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
-        std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+        std::unique_ptr< Geometry > gA( io::readWkt( wktGA ) );
+        std::unique_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
         //if (43!=lineNo ) continue;
         //if (43==lineNo )

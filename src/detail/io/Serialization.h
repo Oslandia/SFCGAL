@@ -64,12 +64,12 @@ SFCGAL_API std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
 /**
  * Read a Geometry from a binary representation
  */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
+SFCGAL_API std::unique_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
 
 /**
  * Read a PreparedGeometry from a binary representation
  */
-SFCGAL_API std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
+SFCGAL_API std::unique_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
 }
 }
 

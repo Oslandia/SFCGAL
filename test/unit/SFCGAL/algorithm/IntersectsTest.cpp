@@ -85,8 +85,8 @@ BOOST_AUTO_TEST_CASE( testFileIntersectsTest )
 
         bool expected = ( trueOrFalse == "true" ) ? true : false ;
 
-        std::auto_ptr< Geometry > gA( io::readWkt( wktGA ) );
-        std::auto_ptr< Geometry > gB( io::readWkt( wktGB ) );
+        std::unique_ptr< Geometry > gA( io::readWkt( wktGA ) );
+        std::unique_ptr< Geometry > gB( io::readWkt( wktGB ) );
 
         try {
             if ( distanceDimension == "2" ) {

@@ -37,7 +37,7 @@ namespace generator {
  * Generate a discrete circle
  * @todo unittest
  */
-SFCGAL_API std::auto_ptr< Polygon > disc(
+SFCGAL_API std::unique_ptr< Polygon > disc(
     const Point& center,
     const double& radius,
     const unsigned int& nQuadrantSegments = 8U

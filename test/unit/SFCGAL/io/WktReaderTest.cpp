@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktReaderTest )
 
 BOOST_AUTO_TEST_CASE( pointEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POINT EMPTY" ) );
     BOOST_CHECK( g->is< Point >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( pointEmpty )
 
 BOOST_AUTO_TEST_CASE( pointXY )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT(4.0 6.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POINT(4.0 6.0)" ) );
     BOOST_CHECK( g->is< Point >() );
     BOOST_CHECK( ! g->isEmpty() );
 
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( pointXY )
 
 BOOST_AUTO_TEST_CASE( pointXYZ_implicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT(4.0 5.0 6.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POINT(4.0 5.0 6.0)" ) );
     BOOST_CHECK( g->is< Point >() );
     BOOST_CHECK( ! g->isEmpty() );
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( pointXYZ_implicit )
 
 BOOST_AUTO_TEST_CASE( pointXYZ_explicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT Z(4.0 5.0 6.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POINT Z(4.0 5.0 6.0)" ) );
     BOOST_CHECK( g->is< Point >() );
     BOOST_CHECK( ! g->isEmpty() );
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE( pointXYZ_explicit )
 
 BOOST_AUTO_TEST_CASE( pointXYM_explicit )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POINT M(4.0 5.0 6.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POINT M(4.0 5.0 6.0)" ) );
     BOOST_CHECK( g->is< Point >() );
     BOOST_CHECK( ! g->isEmpty() );
 
@@ -111,14 +111,14 @@ BOOST_AUTO_TEST_CASE( pointXYM_explicit )
 
 BOOST_AUTO_TEST_CASE( lineStringEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "LINESTRING EMPTY" ) );
     BOOST_CHECK( g->is< LineString >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
 BOOST_AUTO_TEST_CASE( lineString_twoPoints )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0,1.0 1.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0,1.0 1.0)" ) );
     BOOST_CHECK( g->is< LineString >() );
     BOOST_CHECK( ! g->isEmpty() );
     BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE( lineString_twoPoints )
 
 BOOST_AUTO_TEST_CASE( lineString_twoPoints3D )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0 0.0,1.0 1.0 1.0)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "LINESTRING(0.0 0.0 0.0,1.0 1.0 1.0)" ) );
     BOOST_CHECK( g->is< LineString >() );
     BOOST_CHECK( ! g->isEmpty() );
     BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( lineString_twoPoints3D )
 
 BOOST_AUTO_TEST_CASE( polygonEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POLYGON EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POLYGON EMPTY" ) );
     BOOST_CHECK( g->is< Polygon >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( polygonEmpty )
 // 4 points polygon (triangle)
 BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
 {
-    std::auto_ptr< Geometry > g( readWkt( "POLYGON((0 0,1 0,1 1,0 0))" ) );
+    std::unique_ptr< Geometry > g( readWkt( "POLYGON((0 0,1 0,1 1,0 0))" ) );
     BOOST_CHECK( g->is< Polygon >() );
     BOOST_CHECK( ! g->isEmpty() );
     BOOST_CHECK_EQUAL( g->as< Polygon >().exteriorRing().numPoints(), 4U );
@@ -161,14 +161,14 @@ BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "MULTIPOINT EMPTY" ) );
     BOOST_CHECK( g->is< MultiPoint >() );
     BOOST_CHECK( g->isEmpty() );
 }
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty2 )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT(0 0,1 1,EMPTY)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "MULTIPOINT(0 0,1 1,EMPTY)" ) );
     BOOST_CHECK( g->asText() == "MULTIPOINT((0/1 0/1),(1/1 1/1))" );
     BOOST_CHECK( g->is< MultiPoint >() );
     BOOST_CHECK( g->numGeometries() == 2 );
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( multiPointEmpty2 )
 
 BOOST_AUTO_TEST_CASE( multiPointEmpty3 )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOINT(EMPTY,EMPTY)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "MULTIPOINT(EMPTY,EMPTY)" ) );
     BOOST_CHECK( g->asText() == "MULTIPOINT EMPTY" );
     BOOST_CHECK( g->is< MultiPoint >() );
     BOOST_CHECK( g->isEmpty() );
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( multiPointEmpty3 )
 
 BOOST_AUTO_TEST_CASE( multiLineStringEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTILINESTRING EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "MULTILINESTRING EMPTY" ) );
     BOOST_CHECK( g->is< MultiLineString >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE( multiLineStringEmpty )
 
 BOOST_AUTO_TEST_CASE( multiPolygonEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "MULTIPOLYGON EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "MULTIPOLYGON EMPTY" ) );
     BOOST_CHECK( g->is< MultiPolygon >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE( multiPolygonEmpty )
 
 BOOST_AUTO_TEST_CASE( geometryCollectionEmpty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "GEOMETRYCOLLECTION EMPTY" ) );
     BOOST_CHECK( g->is< GeometryCollection >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE( geometryCollectionEmpty )
 
 BOOST_AUTO_TEST_CASE( triangulatedSurface_Empty )
 {
-    std::auto_ptr< Geometry > g( readWkt( "TIN EMPTY" ) );
+    std::unique_ptr< Geometry > g( readWkt( "TIN EMPTY" ) );
     BOOST_CHECK( g->is< TriangulatedSurface >() );
     BOOST_CHECK( g->isEmpty() );
 }
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE( triangulatedSurface_fourTriangles )
                       "((0 0 0, 1 0 0, 0 0 1, 0 0 0)),"
                       "((1 0 0, 0 1 0, 0 0 1, 1 0 0))"
                       ")";
-    std::auto_ptr< Geometry > g( readWkt( wkt ) );
+    std::unique_ptr< Geometry > g( readWkt( wkt ) );
     BOOST_CHECK( g->is< TriangulatedSurface >() );
     BOOST_CHECK( ! g->isEmpty() );
 
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE( triangulatedSurface_fourTriangles )
 
 BOOST_AUTO_TEST_CASE( wkt_exactTest )
 {
-    std::auto_ptr< Geometry > g( readWkt( "LINESTRING(2/3 3/2,5/4 2/3)" ) );
+    std::unique_ptr< Geometry > g( readWkt( "LINESTRING(2/3 3/2,5/4 2/3)" ) );
     BOOST_CHECK( g->is< LineString >() );
     BOOST_CHECK( ! g->isEmpty() );
     BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE( wkt_exactTest )
 BOOST_AUTO_TEST_CASE( charArrayRead )
 {
     char str[] = "LINESTRING(0.0 0.0,1.0 1.0)";
-    std::auto_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
+    std::unique_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
     BOOST_CHECK( g->is< LineString >() );
     BOOST_CHECK( ! g->isEmpty() );
     BOOST_CHECK_EQUAL( g->as< LineString >().numPoints(), 2U );
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     bool threw = false;
     try
     {
-        std::auto_ptr< Geometry > g( readWkt( "POINT(0 0)POINT(1 0)" ) );
+        std::unique_ptr< Geometry > g( readWkt( "POINT(0 0)POINT(1 0)" ) );
     }
     catch ( WktParseException& e )
     {
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     try
     {
         char str[] = "POINT(0 0)POINT(1 0)";
-        std::auto_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
+        std::unique_ptr< Geometry > g( readWkt( str, strlen( str ) ) );
     }
     catch ( WktParseException& e )
     {

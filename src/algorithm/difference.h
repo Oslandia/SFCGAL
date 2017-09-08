@@ -40,7 +40,7 @@ struct NoValidityCheck;
  * @pre ga and gb are valid geometries
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
+SFCGAL_API std::unique_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb );
 
 /**
  * Diffrence on 2D geometries. No validity check variant
@@ -48,14 +48,14 @@ SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometr
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb,NoValidityCheck );
+SFCGAL_API std::unique_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb,NoValidityCheck );
 
 /**
  * Difference on 3D geometries. Assume z = 0 if needed
  * @pre ga and gb are valid geometries
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb );
+SFCGAL_API std::unique_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb );
 
 /**
  * Difference on 3D geometries. Assume z = 0 if needed
@@ -63,7 +63,7 @@ SFCGAL_API std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geome
  * @ingroup detail
  * @warning@ No actual validity check is done
  */
-SFCGAL_API std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
+SFCGAL_API std::unique_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
 /**
  * @ingroup detail

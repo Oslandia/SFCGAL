@@ -181,9 +181,9 @@ bool Envelope::overlaps( const Envelope& a, const Envelope& b )
 ///
 ///
 ///
-std::auto_ptr< LineString > Envelope::toRing() const
+std::unique_ptr< LineString > Envelope::toRing() const
 {
-    std::auto_ptr< LineString > ring( new LineString() ) ;
+    std::unique_ptr< LineString > ring( new LineString() ) ;
 
     if ( isEmpty() ) {
         return ring ;
@@ -201,18 +201,18 @@ std::auto_ptr< LineString > Envelope::toRing() const
 ///
 ///
 ///
-std::auto_ptr< Polygon > Envelope::toPolygon() const
+std::unique_ptr< Polygon > Envelope::toPolygon() const
 {
-    return std::auto_ptr< Polygon >( new Polygon( toRing().release() ) ) ;
+    return std::unique_ptr< Polygon >( new Polygon( toRing().release() ) ) ;
 }
 
 
 ///
 ///
 ///
-std::auto_ptr< PolyhedralSurface >   Envelope::toShell() const
+std::unique_ptr< PolyhedralSurface >   Envelope::toShell() const
 {
-    std::auto_ptr< PolyhedralSurface > shell( new PolyhedralSurface() ) ;
+    std::unique_ptr< PolyhedralSurface > shell( new PolyhedralSurface() ) ;
 
     if ( ! is3D() ) {
         return shell ;
@@ -306,9 +306,9 @@ std::auto_ptr< PolyhedralSurface >   Envelope::toShell() const
 ///
 ///
 ///
-std::auto_ptr< Solid >  Envelope::toSolid() const
+std::unique_ptr< Solid >  Envelope::toSolid() const
 {
-    return std::auto_ptr< Solid >(
+    return std::unique_ptr< Solid >(
                new Solid( toShell().release() )
            );
 }

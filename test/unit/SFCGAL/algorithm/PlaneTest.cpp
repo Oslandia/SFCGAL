@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_PlaneTest )
 
 BOOST_AUTO_TEST_CASE( testPlane1 )
 {
-    std::auto_ptr<Geometry> gA( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
+    std::unique_ptr<Geometry> gA( io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" ) );
 
     CGAL::Plane_3<Kernel> plane = algorithm::plane3D<Kernel>( gA->as<Polygon>() );
     BOOST_CHECK_EQUAL( plane.a(), 0.0 );
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( testPlane )
 
     for ( size_t t=0; t != numTest; ++t ) {
         //std::cout << "test = " << t << "\n";
-        std::auto_ptr<Geometry> g( io::readWkt( test[t]._wkt ) );
+        std::unique_ptr<Geometry> g( io::readWkt( test[t]._wkt ) );
         const LineString* l = dynamic_cast<LineString*>( g.get() );
         BOOST_CHECK_MESSAGE(
             algorithm::isPlane3D< Kernel >( *l, 1.e-9 ) == test[t]._isPlane,

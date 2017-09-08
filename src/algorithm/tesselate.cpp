@@ -31,7 +31,7 @@ namespace algorithm {
 ///
 ///
 ///
-std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
+std::unique_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
 {
     switch ( g.geometryTypeId() ) {
     case TYPE_POINT:
@@ -39,17 +39,17 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
     case TYPE_TRIANGLE:
     case TYPE_MULTIPOINT:
     case TYPE_MULTILINESTRING:
-        return std::auto_ptr<Geometry>( g.clone() );
+        return std::unique_ptr<Geometry>( g.clone() );
 
     case TYPE_POLYGON:
     case TYPE_POLYHEDRALSURFACE: {
         TriangulatedSurface* triSurf = new TriangulatedSurface();
         triangulate::triangulatePolygon3D( g, *triSurf );
-        return std::auto_ptr<Geometry>( triSurf );
+        return std::unique_ptr<Geometry>( triSurf );
     }
 
     case TYPE_SOLID: {
-        std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
+        std::unique_ptr<GeometryCollection> ret( new GeometryCollection );
 
         for ( size_t i = 0; i < g.as<Solid>().numShells(); ++i ) {
             const PolyhedralSurface& shellN = g.as<Solid>().shellN( i ) ;
@@ -59,30 +59,30 @@ std::auto_ptr<Geometry> tesselate( const Geometry& g, NoValidityCheck )
             }
         }
 
-        return std::auto_ptr<Geometry>( ret.release() );
+        return std::unique_ptr<Geometry>( ret.release() );
     }
 
     // multipolygon and multisolid return a geometrycollection
     case TYPE_MULTIPOLYGON:
     case TYPE_MULTISOLID:
     case TYPE_GEOMETRYCOLLECTION: {
-        std::auto_ptr<GeometryCollection> ret( new GeometryCollection );
+        std::unique_ptr<GeometryCollection> ret( new GeometryCollection );
 
         for ( size_t i = 0; i < g.numGeometries(); ++i ) {
             ret->addGeometry( tesselate( g.geometryN( i ) ).release() );
         }
 
-        return std::auto_ptr<Geometry>( ret.release() );
+        return std::unique_ptr<Geometry>( ret.release() );
     }
 
     default:
         break;
     }
 
-    return std::auto_ptr<Geometry>( g.clone() );
+    return std::unique_ptr<Geometry>( g.clone() );
 }
 
-std::auto_ptr<Geometry> tesselate( const Geometry& g )
+std::unique_ptr<Geometry> tesselate( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );
 

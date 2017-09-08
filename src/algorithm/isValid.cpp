@@ -84,7 +84,7 @@ void SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( const Geometry& g )
     {
         using namespace SFCGAL;
         if ( (g).is3D() ) {
-            std::auto_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
+            std::unique_ptr<SFCGAL::Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
             algorithm::force2D( *sfcgalAssertGeometryValidityClone );
             SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 2D - " );
         }
@@ -100,7 +100,7 @@ void SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( const Geometry& g )
     {
         using namespace SFCGAL;
         if ( !(g).is3D() ) {
-            std::auto_ptr<Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
+            std::unique_ptr<Geometry> sfcgalAssertGeometryValidityClone( (g).clone() );
             algorithm::force3D( *sfcgalAssertGeometryValidityClone );
             SFCGAL_ASSERT_GEOMETRY_VALIDITY_( (*sfcgalAssertGeometryValidityClone), "When converting to 3D - " );
         }
@@ -254,9 +254,9 @@ const Validity isValid( const Polygon& p, const double& toleranceAbs )
 
         for ( size_t ri=0; ri < numRings; ++ri ) { // no need for numRings-1, the next loop won't be entered for the last ring
             for ( size_t rj=ri+1; rj < numRings; ++rj ) {
-                std::auto_ptr<Geometry> inter = p.is3D()
+                std::unique_ptr<Geometry> inter( p.is3D()
                                                 ? intersection3D( p.ringN( ri ), p.ringN( rj ) )
-                                                : intersection( p.ringN( ri ), p.ringN( rj ) );
+                                                : intersection( p.ringN( ri ), p.ringN( rj ) ) );
 
                 if ( ! inter->isEmpty() && ! inter->is< Point >() ) {
                     return Validity::invalid( ( boost::format( "intersection between ring %d and %d" ) % ri % rj ).str() );
@@ -355,9 +355,9 @@ const Validity isValid( const MultiPolygon& mp, const double& toleranceAbs )
 
     for ( size_t pi = 0; pi != numPolygons; ++pi ) {
         for ( size_t pj = pi+1; pj < numPolygons; ++pj ) {
-            std::auto_ptr< Geometry > inter = mp.is3D()
+            std::unique_ptr< Geometry > inter( mp.is3D()
                                               ? intersection3D( mp.polygonN( pi ), mp.polygonN( pj ) )
-                                              : intersection( mp.polygonN( pi ), mp.polygonN( pj ) ) ;
+                                              : intersection( mp.polygonN( pi ), mp.polygonN( pj ) ) );
 
             // intersection can be empty, a point, or a set of points
             if ( !inter->isEmpty() && inter->dimension() != 0 ) {

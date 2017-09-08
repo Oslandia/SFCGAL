@@ -150,7 +150,7 @@ void intersection( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, Geometr
 template void intersection<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );
 template void intersection<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
 
-std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     GeometrySet<2> gsa( ga ), gsb( gb ), output;
     algorithm::intersection( gsa, gsb, output );
@@ -160,7 +160,7 @@ std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb, No
     return filtered.recompose();
 }
 
-std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
@@ -168,7 +168,7 @@ std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb )
     return intersection( ga, gb, NoValidityCheck() );
 }
 
-std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     GeometrySet<3> gsa( ga ), gsb( gb ), output;
     algorithm::intersection( gsa, gsb, output );
@@ -179,7 +179,7 @@ std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, 
     return filtered.recompose();
 }
 
-std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );

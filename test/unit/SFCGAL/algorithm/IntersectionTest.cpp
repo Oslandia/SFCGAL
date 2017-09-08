@@ -145,9 +145,9 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
             }
         }
 
-        std::auto_ptr< Geometry > gA( 0 );
-        std::auto_ptr< Geometry > gB( 0 );
-        std::auto_ptr< Geometry > gOut( 0 );
+        std::unique_ptr< Geometry > gA;
+        std::unique_ptr< Geometry > gB;
+        std::unique_ptr< Geometry > gOut;
 
         std::getline( iss, wktGA, '|' ) ;
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
             gA.reset( found->second->clone() );
         }
         else {
-            gA = io::readWkt( wktGA );
+            gA.reset( io::readWkt( wktGA ).release() );
         }
 
         insertOrReplace( storedGeom, "A", gA->clone() );
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
             gB.reset( found->second->clone() );
         }
         else {
-            gB = io::readWkt( wktGB );
+            gB.reset( io::readWkt( wktGB ).release() );
         }
 
         insertOrReplace( storedGeom, "B", gB->clone() );
@@ -213,17 +213,17 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
             expectException = true;
         }
         else {
-            gOut = io::readWkt( wktOut );
+            gOut.reset( io::readWkt( wktOut ).release() );
         }
 
 
         try {
             if ( dimension == "2" ) {
-                std::auto_ptr<Geometry> result = algorithm::intersection( *gA,*gB );
+                std::unique_ptr<Geometry> result = algorithm::intersection( *gA,*gB );
                 BOOST_CHECK_MESSAGE( *result == *gOut, numLine << ": intersection(" << gA->asText() << ", " << gB->asText() << ") is " << result->asText() << " and should be " << gOut->asText() );
             }
             else if ( dimension == "3" ) {
-                std::auto_ptr<Geometry> result = algorithm::intersection3D( *gA,*gB );
+                std::unique_ptr<Geometry> result = algorithm::intersection3D( *gA,*gB );
                 BOOST_CHECK_MESSAGE( *result == *gOut, numLine << ": intersection3D(" << gA->asText() << ", " << gB->asText() << ") is " << result->asText() << " and should be " << gOut->asText() );
             }
             else {

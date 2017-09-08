@@ -169,7 +169,7 @@ void straightSkeletonToMedialAxis(
             if ( ang > maxTouchingAngle ) continue ;
         }
 
-        std::auto_ptr<LineString> ls ( new LineString(
+        std::unique_ptr<LineString> ls ( new LineString(
                                 Point( it->opposite()->vertex()->point() ),
                                 Point( it->vertex()->point() ) )
                          );
@@ -205,9 +205,9 @@ checkNoTouchingHoles( const Polygon& g )
 
     for ( size_t ri=0; ri < numRings-1; ++ri ) {
         for ( size_t rj=ri+1; rj < numRings; ++rj ) {
-            std::auto_ptr<Geometry> inter = g.is3D()
+            std::unique_ptr<Geometry> inter( g.is3D()
                                             ? intersection3D( g.ringN( ri ), g.ringN( rj ) )
-                                            : intersection( g.ringN( ri ), g.ringN( rj ) );
+                                            : intersection( g.ringN( ri ), g.ringN( rj ) ) );
 
             // @note this check would accept rings touching at
             //       more than a single point, which may be
@@ -229,7 +229,7 @@ preparePolygon( const Polygon& poly, Kernel::Vector_2& trans )
   trans = Kernel::Vector_2(-env.xMin(), -env.yMin());
 
   // @todo: avoid cloning !
-  std::auto_ptr<Polygon> cloned ( poly.clone() );
+  std::unique_ptr<Polygon> cloned ( poly.clone() );
   algorithm::translate( *cloned, trans );
   Polygon_with_holes_2 ret = cloned->toPolygon_with_holes_2();
   trans = -trans;
@@ -265,7 +265,7 @@ extractPolygons( const Geometry& g, std::vector< Polygon >& vect )
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly, bool outputDistanceInM )
+std::unique_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly, bool outputDistanceInM )
 {
     switch ( g.geometryTypeId() ) {
     case TYPE_TRIANGLE:
@@ -278,24 +278,24 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
         return straightSkeleton( g.as< MultiPolygon >(), autoOrientation, innerOnly, outputDistanceInM ) ;
 
     default:
-        return std::auto_ptr< MultiLineString >( new MultiLineString );
+        return std::unique_ptr< MultiLineString >( new MultiLineString );
     }
 }
 
-std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, bool innerOnly, bool outputDistanceInM )
+std::unique_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, bool innerOnly, bool outputDistanceInM )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    std::auto_ptr<MultiLineString> result( straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly, outputDistanceInM ) );
+    std::unique_ptr<MultiLineString> result( straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly, outputDistanceInM ) );
     propagateValidityFlag( *result, true );
     return result;
 }
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
+std::unique_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
 {
-    std::auto_ptr< MultiLineString > result( new MultiLineString );
+    std::unique_ptr< MultiLineString > result( new MultiLineString );
 
     if ( g.isEmpty() ) {
         return result ;
@@ -321,9 +321,9 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool /*auto
 ///
 ///
 ///
-std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
+std::unique_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /*autoOrientation*/, bool innerOnly, bool outputDistanceInM )
 {
-    std::auto_ptr< MultiLineString > result( new MultiLineString );
+    std::unique_ptr< MultiLineString > result( new MultiLineString );
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         Kernel::Vector_2 trans;
@@ -343,11 +343,11 @@ std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool /
     return result ;
 }
 
-std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
+std::unique_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
-    std::auto_ptr< MultiLineString > mx( new MultiLineString );
+    std::unique_ptr< MultiLineString > mx( new MultiLineString );
 
     std::vector< Polygon > polys;
     extractPolygons( g, polys );

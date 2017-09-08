@@ -89,7 +89,7 @@ protected:
     void getBoundaryFromPolygons( const graph::GeometryGraph& g );
 
 private:
-    std::auto_ptr< Geometry > _boundary ;
+    std::unique_ptr< Geometry > _boundary ;
 };
 
 

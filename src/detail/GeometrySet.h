@@ -323,7 +323,7 @@ public:
     /**
      * convert the set to a SFCGAL::Geometry
      */
-    std::auto_ptr<Geometry> recompose() const;
+    std::unique_ptr<Geometry> recompose() const;
 
     /**
      * Filter (remove) primitives that are already covered by others

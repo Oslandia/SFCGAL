@@ -44,7 +44,7 @@ typedef CGAL::Straight_skeleton_2<Kernel>  Straight_skeleton_2 ;
 /**
  * @brief Basic building generator relying on a straight skeleton
  */
-std::auto_ptr< Geometry > building(
+std::unique_ptr< Geometry > building(
     const Polygon& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope
@@ -52,7 +52,7 @@ std::auto_ptr< Geometry > building(
 /**
  * @brief Basic building generator relying on a straight skeleton
  */
-std::auto_ptr< Geometry > building(
+std::unique_ptr< Geometry > building(
     const MultiPolygon& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope
@@ -82,7 +82,7 @@ void _buildingWall( const Polygon_2& ring, const Kernel::FT& wallHeight, Polyhed
 ///
 ///
 ///
-std::auto_ptr< Geometry > building(
+std::unique_ptr< Geometry > building(
     const Polygon& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope
@@ -102,7 +102,7 @@ std::auto_ptr< Geometry > building(
 
     boost::shared_ptr< Straight_skeleton_2 > skeleton = CGAL::create_interior_straight_skeleton_2( polygon ) ;
 
-    std::auto_ptr< PolyhedralSurface > shell( new PolyhedralSurface );
+    std::unique_ptr< PolyhedralSurface > shell( new PolyhedralSurface );
     // bottom part
     {
         Polygon bottom( polygon );
@@ -149,32 +149,32 @@ std::auto_ptr< Geometry > building(
         }
     }
 
-    return std::auto_ptr< Geometry >( new Solid( shell.release() ) );
+    return std::unique_ptr< Geometry >( new Solid( shell.release() ) );
 }
 
 ///
 ///
 ///
-std::auto_ptr< Geometry > building(
+std::unique_ptr< Geometry > building(
     const MultiPolygon& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope
 )
 {
-    std::auto_ptr< MultiSolid > multiSolid( new MultiSolid );
+    std::unique_ptr< MultiSolid > multiSolid( new MultiSolid );
 
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         multiSolid->addGeometry( building( g.polygonN( i ), wallHeight, roofSlope ).release() );
     }
 
-    return std::auto_ptr< Geometry >( multiSolid.release() );
+    return std::unique_ptr< Geometry >( multiSolid.release() );
 }
 
 
 ///
 ///
 ///
-std::auto_ptr< Geometry > building(
+std::unique_ptr< Geometry > building(
     const Geometry& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope
@@ -191,7 +191,7 @@ std::auto_ptr< Geometry > building(
         BOOST_THROW_EXCEPTION( Exception(
                                    ( boost::format( "bad geometry type (%s) in generator::building" ) % g.geometryType() ).str()
                                ) );
-        return std::auto_ptr< Geometry >( new GeometryCollection() );
+        return std::unique_ptr< Geometry >( new GeometryCollection() );
     }
 }
 

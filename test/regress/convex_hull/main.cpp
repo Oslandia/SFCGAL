@@ -168,10 +168,10 @@ int main( int argc, char* argv[] )
 
         bool failed = true ;
 
-        std::auto_ptr< Geometry > hull, hull3D ;
+        std::unique_ptr< Geometry > hull, hull3D ;
 
         try {
-            std::auto_ptr< Geometry > g;
+            std::unique_ptr< Geometry > g;
             g = io::readWkt( wkt ) ;
             hull = algorithm::convexHull( *g ) ;
             hull3D = algorithm::convexHull3D( *g ) ;

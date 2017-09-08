@@ -289,7 +289,7 @@ struct Plane_from_facet {
 };
 
 template < typename K, typename Polyhedron >
-std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
+std::unique_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
 {
     Polyhedron* poly = new Polyhedron();
     Triangulated2Polyhedron<typename Polyhedron::HalfedgeDS> converter( *this );
@@ -298,11 +298,11 @@ std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
     // compute planes
     std::transform( poly->facets_begin(), poly->facets_end(), poly->planes_begin(), Plane_from_facet<Polyhedron>() );
 
-    return std::auto_ptr<Polyhedron>( poly );
+    return std::unique_ptr<Polyhedron>( poly );
 }
 
-template SFCGAL_API std::auto_ptr< detail::MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, detail::MarkedPolyhedron >() const;
-template SFCGAL_API std::auto_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
+template SFCGAL_API std::unique_ptr< detail::MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, detail::MarkedPolyhedron >() const;
+template SFCGAL_API std::unique_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
 
 }//SFCGAL
 

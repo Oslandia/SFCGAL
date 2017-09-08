@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE( testTriangulatePolygon )
         /*
          * parse wkt
          */
-        std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
+        std::unique_ptr< Geometry > g( io::readWkt( inputWkt ) );
 
         /*
          * check polygon

@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_ExtrudeTest )
 BOOST_AUTO_TEST_CASE( testExtrudePoint )
 {
     Point g( 0.0,0.0,0.0 );
-    std::auto_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< LineString >() );
     BOOST_CHECK( ext->as< LineString >().is3D() );
     BOOST_CHECK_EQUAL( ext->asText( 1 ), "LINESTRING(0.0 0.0 0.0,0.0 0.0 1.0)" );
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( testExtrudeLineString )
         Point( 0.0,0.0,0.0 ),
         Point( 1.0,0.0,0.0 )
     );
-    std::auto_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< PolyhedralSurface >() );
     BOOST_CHECK( ext->as< PolyhedralSurface >().is3D() );
     BOOST_CHECK_EQUAL( ext->asText( 1 ), "POLYHEDRALSURFACE(((0.0 0.0 0.0,1.0 0.0 0.0,1.0 0.0 1.0,0.0 0.0 1.0,0.0 0.0 0.0)))" );
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquare )
 
     LineString exteriorRing( points ) ;
     Polygon g( exteriorRing );
-    std::auto_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< Solid >() );
     BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
     BOOST_CHECK_EQUAL( ext->as< Solid >().exteriorShell().numPolygons(), 6U );
@@ -87,9 +87,9 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquare )
 
 BOOST_AUTO_TEST_CASE( testExtrudePolyhedral )
 {
-    std::auto_ptr<Geometry> g = io::readWkt( "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))" );
+    std::unique_ptr<Geometry> g( io::readWkt( "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)))" ) );
 
-    std::auto_ptr< Geometry > ext = algorithm::extrude( *g, 0.0, 0.0, 1.0 );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( *g, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< Solid >() );
     BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
 }
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( testExtrudeMultiPolygon )
     mp.addGeometry( g1 );
     mp.addGeometry( g2 );
 
-    std::auto_ptr< Geometry > ext( algorithm::extrude( mp, 0.0, 0.0, 1.0 ) );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( mp, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< MultiSolid >() );
     BOOST_CHECK_EQUAL( ext->as<MultiSolid>().numGeometries(), 2U );
 }
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquareWithHole )
     }
 
     Polygon g( rings );
-    std::auto_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
+    std::unique_ptr< Geometry > ext( algorithm::extrude( g, 0.0, 0.0, 1.0 ) );
     BOOST_CHECK( ext->is< Solid >() );
     BOOST_CHECK_EQUAL( ext->as< Solid >().numShells(), 1U );
     BOOST_CHECK_EQUAL( ext->as< Solid >().exteriorShell().numPolygons(), 10U );
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE( testExtrudeSquareWithHole )
 //SELECT ST_AsText(ST_Extrude(ST_Extrude(ST_Extrude('POINT(0 0)', 1, 0, 0), 0, 1, 0), 0, 0, 1));
 BOOST_AUTO_TEST_CASE( testChainingExtrude )
 {
-    std::auto_ptr< Geometry > g( new Point( 0.0,0.0 ) );
+    std::unique_ptr< Geometry > g( new Point( 0.0,0.0 ) );
     g = algorithm::extrude( *g, 1.0, 0.0, 0.0 ) ;
     BOOST_CHECK_EQUAL( g->asText( 0 ), "LINESTRING(0 0 0,1 0 0)" ) ;
     g =  algorithm::extrude( *g, 0.0, 1.0, 0.0 ) ;

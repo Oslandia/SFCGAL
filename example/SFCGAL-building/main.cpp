@@ -89,12 +89,12 @@ std::vector< InputData > readInputFile( const std::string & filename ){
 void processFile( const std::string & filename ){
 	std::vector< InputData > data = readInputFile(filename);
 
-	std::auto_ptr< GeometryCollection > result( new GeometryCollection() );
+	std::unique_ptr< GeometryCollection > result( new GeometryCollection() );
 
 	std::cout << "#" << data.size() << std::endl;
 	for ( size_t i = 0; i < data.size(); i++ ){
-		std::auto_ptr< Geometry > g( io::readWkt( data[i].wkt ) );
-		std::auto_ptr< Geometry > building( generator::building( *g, data[i].wallHeight, data[i].roofSlope ) ) ;
+		std::unique_ptr< Geometry > g( io::readWkt( data[i].wkt ) );
+		std::unique_ptr< Geometry > building( generator::building( *g, data[i].wallHeight, data[i].roofSlope ) ) ;
 		result->addGeometry( building.release() );
 	}
 

@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( constructorWithTriangles )
 
 //-- helpers
 
-//template < typename K, typename Polyhedron > std::auto_ptr<Polyhedron> toPolyhedron_3() const;
+//template < typename K, typename Polyhedron > std::unique_ptr<Polyhedron> toPolyhedron_3() const;
 // TODO
 
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( testClone )
 
     TriangulatedSurface g( triangles ) ;
 
-    std::auto_ptr< Geometry > copy( g.clone() );
+    std::unique_ptr< Geometry > copy( g.clone() );
     BOOST_REQUIRE( copy->is< TriangulatedSurface >() );
     BOOST_CHECK_EQUAL( copy->as< TriangulatedSurface >().numTriangles(), 2U );
 }
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( testBoundary )
     triangles.push_back( Triangle( Point( 0.0,0.0 ), Point( 1.0,1.0 ), Point( 0.0,1.0 ) ) ) ;
 
     TriangulatedSurface g( triangles ) ;
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     // TODO add algorithm::lineMerge and update
     BOOST_CHECK_EQUAL( boundary->asText( 0 ), "MULTILINESTRING((0 0,1 0),(1 0,1 1),(1 1,0 1),(0 1,0 0))" );
 }
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( testBoundaryClosed )
     triangles.push_back( Triangle( c, a, d ) ) ;
 
     TriangulatedSurface g( triangles ) ;
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     BOOST_CHECK( boundary->isEmpty() );
 }
 
@@ -203,12 +203,12 @@ BOOST_AUTO_TEST_CASE( polyhedronConversionTest )
                        "((1 0 0,1 1 0,2 1 0,2 0 0,1 0 0)))";
     // the following surface would generate an exception, since the two polygons have opposite orientations
     // "POLYHEDRALSURFACE(((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),((2 0 0,2 1 0,1 1 0,1 0 0,2 0 0)))";
-    std::auto_ptr<Geometry> g( io::readWkt( gstr ) );
+    std::unique_ptr<Geometry> g( io::readWkt( gstr ) );
 
     TriangulatedSurface tri;
     triangulate::triangulatePolygon3D( *g, tri );
 
-    std::auto_ptr<CGAL::Polyhedron_3<Kernel> > poly( tri.toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
+    std::unique_ptr<CGAL::Polyhedron_3<Kernel> > poly( tri.toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() );
     // we check the two squares share a common edge
     BOOST_CHECK_EQUAL( poly->size_of_facets(), 4U );
     BOOST_CHECK_EQUAL( poly->size_of_vertices(), 6U );

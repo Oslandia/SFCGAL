@@ -79,73 +79,73 @@ Geometry*    WktReader::readGeometry()
 
     switch ( geometryType ) {
     case TYPE_POINT : {
-        std::auto_ptr< Point > g( new Point() );
+        std::unique_ptr< Point > g( new Point() );
         readInnerPoint( *g );
         return g.release() ;
     }
 
     case TYPE_LINESTRING: {
-        std::auto_ptr< LineString > g( new LineString() );
+        std::unique_ptr< LineString > g( new LineString() );
         readInnerLineString( *g );
         return g.release() ;
     }
 
     case TYPE_TRIANGLE: {
-        std::auto_ptr< Triangle > g( new Triangle() );
+        std::unique_ptr< Triangle > g( new Triangle() );
         readInnerTriangle( *g );
         return g.release() ;
     }
 
     case TYPE_POLYGON: {
-        std::auto_ptr< Polygon > g( new Polygon() );
+        std::unique_ptr< Polygon > g( new Polygon() );
         readInnerPolygon( *g );
         return g.release() ;
     }
 
     case TYPE_MULTIPOINT : {
-        std::auto_ptr< MultiPoint > g( new MultiPoint() );
+        std::unique_ptr< MultiPoint > g( new MultiPoint() );
         readInnerMultiPoint( *g );
         return g.release() ;
     }
 
     case TYPE_MULTILINESTRING : {
-        std::auto_ptr< MultiLineString > g( new MultiLineString() );
+        std::unique_ptr< MultiLineString > g( new MultiLineString() );
         readInnerMultiLineString( *g );
         return g.release() ;
     }
 
     case TYPE_MULTIPOLYGON : {
-        std::auto_ptr< MultiPolygon > g( new MultiPolygon() );
+        std::unique_ptr< MultiPolygon > g( new MultiPolygon() );
         readInnerMultiPolygon( *g );
         return g.release() ;
     }
 
     case TYPE_GEOMETRYCOLLECTION : {
-        std::auto_ptr< GeometryCollection > g( new GeometryCollection() );
+        std::unique_ptr< GeometryCollection > g( new GeometryCollection() );
         readInnerGeometryCollection( *g );
         return g.release() ;
     }
 
     case TYPE_TRIANGULATEDSURFACE : {
-        std::auto_ptr< TriangulatedSurface > g( new TriangulatedSurface() );
+        std::unique_ptr< TriangulatedSurface > g( new TriangulatedSurface() );
         readInnerTriangulatedSurface( *g );
         return g.release() ;
     }
 
     case TYPE_POLYHEDRALSURFACE : {
-        std::auto_ptr< PolyhedralSurface > g( new PolyhedralSurface() );
+        std::unique_ptr< PolyhedralSurface > g( new PolyhedralSurface() );
         readInnerPolyhedralSurface( *g );
         return g.release() ;
     }
 
     case TYPE_SOLID : {
-        std::auto_ptr< Solid > g( new Solid() );
+        std::unique_ptr< Solid > g( new Solid() );
         readInnerSolid( *g );
         return g.release() ;
     }
 
     case TYPE_MULTISOLID : {
-        std::auto_ptr< MultiSolid > g( new MultiSolid() );
+        std::unique_ptr< MultiSolid > g( new MultiSolid() );
         readInnerMultiSolid( *g );
         return g.release() ;
     }
@@ -240,7 +240,7 @@ void   WktReader::readInnerLineString( LineString& g )
 
     while ( ! _reader.eof() ) {
 
-        std::auto_ptr< Point > p( new Point() ) ;
+        std::unique_ptr< Point > p( new Point() ) ;
 
         if ( readPointCoordinate( *p ) ) {
             g.addPoint( p.release() );
@@ -285,7 +285,7 @@ void   WktReader::readInnerPolygon( Polygon& g )
             readInnerLineString( g.exteriorRing() ) ;
         }
         else {
-            std::auto_ptr< LineString > interiorRing( new LineString );
+            std::unique_ptr< LineString > interiorRing( new LineString );
             readInnerLineString( *interiorRing ) ;
             g.addRing( interiorRing.release() ) ;
         }
@@ -364,7 +364,7 @@ void    WktReader::readInnerMultiPoint( MultiPoint& g )
     }
 
     while( ! _reader.eof() ) {
-        std::auto_ptr< Point > p( new Point() );
+        std::unique_ptr< Point > p( new Point() );
 
         if ( !_reader.imatch( "EMPTY" ) ) {
             // optional open/close parenthesis
@@ -410,7 +410,7 @@ void   WktReader::readInnerMultiLineString( MultiLineString& g )
 
     while( ! _reader.eof() ) {
 
-        std::auto_ptr< LineString > lineString( new LineString() );
+        std::unique_ptr< LineString > lineString( new LineString() );
         readInnerLineString( *lineString );
         if ( !lineString->isEmpty() ) g.addGeometry( lineString.release() );
 
@@ -440,7 +440,7 @@ void   WktReader::readInnerMultiPolygon( MultiPolygon& g )
 
     while( ! _reader.eof() ) {
 
-        std::auto_ptr< Polygon > polygon( new Polygon() );
+        std::unique_ptr< Polygon > polygon( new Polygon() );
         readInnerPolygon( *polygon );
         if ( !polygon->isEmpty() ) g.addGeometry( polygon.release() );
 
@@ -500,7 +500,7 @@ void  WktReader::readInnerTriangulatedSurface( TriangulatedSurface& g )
     }
 
     while( ! _reader.eof() ) {
-        std::auto_ptr< Triangle > triangle( new Triangle() ) ;
+        std::unique_ptr< Triangle > triangle( new Triangle() ) ;
         readInnerTriangle( *triangle );
         g.addTriangle( triangle.release() ) ;
 
@@ -530,7 +530,7 @@ void WktReader::readInnerPolyhedralSurface( PolyhedralSurface& g )
     }
 
     while( ! _reader.eof() ) {
-        std::auto_ptr< Polygon > polygon( new Polygon() ) ;
+        std::unique_ptr< Polygon > polygon( new Polygon() ) ;
         readInnerPolygon( *polygon );
         g.addPolygon( polygon.release() );
 
@@ -565,7 +565,7 @@ void WktReader::readInnerSolid( Solid& g )
             readInnerPolyhedralSurface( g.exteriorShell() );
         }
         else {
-            std::auto_ptr< PolyhedralSurface > shell( new PolyhedralSurface ) ;
+            std::unique_ptr< PolyhedralSurface > shell( new PolyhedralSurface ) ;
             readInnerPolyhedralSurface( *shell );
             g.addInteriorShell( shell.release() );
         }
@@ -597,7 +597,7 @@ void WktReader::readInnerMultiSolid( MultiSolid& g )
 
     while( ! _reader.eof() ) {
 
-        std::auto_ptr< Solid > solid( new Solid() );
+        std::unique_ptr< Solid > solid( new Solid() );
         readInnerSolid( *solid );
         if ( !solid->isEmpty() ) g.addGeometry( solid.release() );
 

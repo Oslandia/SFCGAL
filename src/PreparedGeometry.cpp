@@ -28,8 +28,8 @@ PreparedGeometry::PreparedGeometry() :
 {
 }
 
-PreparedGeometry::PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid ) :
-    _geometry( geometry ),
+PreparedGeometry::PreparedGeometry( std::unique_ptr<Geometry>&& geometry, srid_t srid ) :
+    _geometry( std::move(geometry) ),
     _srid( srid )
 {
 }

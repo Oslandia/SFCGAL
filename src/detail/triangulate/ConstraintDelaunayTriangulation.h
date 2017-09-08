@@ -145,7 +145,7 @@ public:
     /**
      * get the resulting TriangulatedSurface
      */
-    std::auto_ptr< TriangulatedSurface > getTriangulatedSurface() const ;
+    std::unique_ptr< TriangulatedSurface > getTriangulatedSurface() const ;
 
     /**
      * @brief get finite face iterator
