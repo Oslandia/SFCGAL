@@ -31,6 +31,7 @@
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
 #include <CGAL/IO/Polyhedron_iostream.h>
+#include <CGAL/Polygon_mesh_processing/corefinement.h>
 
 #include <SFCGAL/detail/Point_inside_polyhedron.h>
 
@@ -108,10 +109,13 @@ void _intersection_solid_segment( const PrimitiveHandle<3>& pa, const PrimitiveH
 }
 
 
-#if CGAL_VERSION_NR < 1040301000 // version 4.3
+#if CGAL_VERSION_NR < 1040301000  // 4.3
+
 // Before 4.3, we pass CGAL::Tag_true to mark boundary halfedges
 typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron, Kernel, CGAL::Tag_true> Split_visitor;
-#else
+
+#elif  CGAL_VERSION_NR < 1041001000 // < 4.10
+
 // Starting with 4.3, we must now pass a property_map
 template<class Polyhedron>
 struct Edge_mark_property_map {
@@ -128,6 +132,25 @@ struct Edge_mark_property_map {
     }
 };
 typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron,Kernel,Edge_mark_property_map<MarkedPolyhedron> > Split_visitor;
+
+#else
+
+template<class Polyhedron>
+struct Edge_mark_property_map {
+    typedef bool value_type;
+    typedef value_type reference;
+    typedef std::pair<typename Polyhedron::Halfedge_handle,Polyhedron*> key_type;
+    typedef boost::read_write_property_map_tag category;
+
+    friend reference get( Edge_mark_property_map,const key_type& key ) {
+        return key.first->mark;
+    }
+    friend void put( Edge_mark_property_map,key_type key,value_type v ) {
+        key.first->mark=v;
+    }
+};
+typedef CGAL::Node_visitor_refine_polyhedra<MarkedPolyhedron, CGAL::Default, CGAL::Default,Edge_mark_property_map<MarkedPolyhedron> > Split_visitor;
+
 #endif
 
 typedef std::vector<Kernel::Point_3> Polyline_3;
@@ -138,10 +161,11 @@ struct Is_not_marked {
     }
 };
 
+
 void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Triangle_3<Kernel>& tri, GeometrySet<3>& output )
 {
     BOOST_ASSERT( pa.is_closed() );
-    Split_visitor visitor( NULL, true );
+    Split_visitor visitor;
 
     MarkedPolyhedron polyb;
     polyb.make_triangle( tri.vertex( 0 ), tri.vertex( 1 ), tri.vertex( 2 ) );
@@ -258,7 +282,7 @@ void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Trian
                 output.addPrimitive( seg );
             }
         }
-    }
+}
 }
 
 void _intersection_solid_solid( const MarkedPolyhedron& pa, const MarkedPolyhedron& pb, GeometrySet<3>& output )

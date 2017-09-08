@@ -134,7 +134,7 @@ include_directories( ${CMAKE_BINARY_DIR}/include )
 # They will overwrite files from the CGAL installation
 if( "${CGAL_VERSION}" VERSION_LESS "4.3" )
   include_directories( patches/CGAL-4.2 )
-else()
+elseif( "${CGAL_VERSION}" VERSION_LESS "4.10")
   include_directories( patches/CGAL-4.3 )
   add_definitions( "-DCGAL_INTERSECTION_VERSION=1" )
 endif()
