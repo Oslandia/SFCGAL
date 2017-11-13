@@ -57,6 +57,20 @@ inline double round( const double& v )
     }
 }
 
+#ifdef CGAL_USE_GMPXX
+/**
+ * @brief floor a rational to an integer
+ */
+SFCGAL_API ::mpz_class floor( const ::mpq_class& v ) ;
+/**
+ * @brief ceil a rational to an integer
+ */
+SFCGAL_API ::mpz_class ceil( const ::mpq_class& v ) ;
+/**
+ * @brief round a rational to an integer
+ */
+SFCGAL_API ::mpz_class round( const ::mpq_class& v ) ;
+#endif
 
 /**
  * @brief floor a rational to an integer
