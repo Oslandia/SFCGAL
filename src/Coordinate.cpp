@@ -266,17 +266,16 @@ private:
 
 
     Kernel::FT _roundFT( const Kernel::FT& v ) const {
-        #ifdef CGAL_USE_GMPXX
-        return Kernel::FT( ::mpq_class(
-                               SFCGAL::round( v.exact() * _scaleFactor ),
-                               _scaleFactor
-                           ) ) ;
-        #else
-        return Kernel::FT( CGAL::Gmpq(
-                               SFCGAL::round( v.exact() * _scaleFactor ),
-                               _scaleFactor
-                           ) ) ;
-        #endif
+        return Kernel::FT(
+            #ifdef CGAL_USE_GMPXX
+            ::mpq_class
+            #else
+            CGAL::Gmpq
+            #endif
+            (
+                SFCGAL::round( v.exact() * _scaleFactor ),
+                _scaleFactor
+            ) ) ;
     }
 
 };

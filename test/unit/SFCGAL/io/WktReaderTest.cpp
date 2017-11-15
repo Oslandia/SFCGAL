@@ -44,7 +44,6 @@ using namespace SFCGAL::io ;
 BOOST_AUTO_TEST_SUITE( SFCGAL_io_WktReaderTest )
 
 //-- WKT POINT
-
 BOOST_AUTO_TEST_CASE( pointEmpty )
 {
     std::auto_ptr< Geometry > g( readWkt( "POINT EMPTY" ) );
@@ -144,7 +143,7 @@ BOOST_AUTO_TEST_CASE( polygonEmpty )
     BOOST_CHECK( g->isEmpty() );
 }
 
-
+//#if
 // 4 points polygon (triangle)
 BOOST_AUTO_TEST_CASE( polygonWithFourPoints )
 {
@@ -215,7 +214,6 @@ BOOST_AUTO_TEST_CASE( geometryCollectionEmpty )
 
 
 //-- WKT TRIANGULATEDSURFACE
-
 BOOST_AUTO_TEST_CASE( triangulatedSurface_Empty )
 {
     std::auto_ptr< Geometry > g( readWkt( "TIN EMPTY" ) );
@@ -246,10 +244,17 @@ BOOST_AUTO_TEST_CASE( wkt_exactTest )
     BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
     Kernel::Exact_kernel::FT x = CGAL::exact( g->as<LineString>().pointN( 0 ).x() );
     Kernel::Exact_kernel::FT y = CGAL::exact( g->as<LineString>().pointN( 0 ).y() );
+    #if CGAL_USE_GMPXX
+    BOOST_CHECK_EQUAL( x.get_num().get_d(), 2 );
+    BOOST_CHECK_EQUAL( x.get_den().get_d(), 3 );
+    BOOST_CHECK_EQUAL( y.get_num().get_d(), 3 );
+    BOOST_CHECK_EQUAL( y.get_den().get_d(), 2 );
+    #else
     BOOST_CHECK_EQUAL( x.numerator(), 2 );
     BOOST_CHECK_EQUAL( x.denominator(), 3 );
     BOOST_CHECK_EQUAL( y.numerator(), 3 );
     BOOST_CHECK_EQUAL( y.denominator(), 2 );
+    #endif
 }
 
 BOOST_AUTO_TEST_CASE( charArrayRead )
@@ -290,7 +295,6 @@ BOOST_AUTO_TEST_CASE( wktExtraCharacters )
     }
     BOOST_CHECK( threw );
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()
 

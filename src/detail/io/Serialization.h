@@ -80,6 +80,41 @@ namespace serialization {
  * Serialization of Gmpz for text archives
  */
 SFCGAL_API void save( boost::archive::text_oarchive& ar, const CGAL::Gmpz& z, const unsigned int version );
+#if CGAL_USE_GMPXX
+SFCGAL_API void save( boost::archive::text_oarchive& ar, const ::mpz_class& z, const unsigned int version );
+SFCGAL_API void save ( boost::archive::binary_oarchive& ar, const ::mpz_class& z, const unsigned int version );
+SFCGAL_API void load( boost::archive::text_iarchive& ar, ::mpz_class& z, const unsigned int version );
+SFCGAL_API void load( boost::archive::binary_iarchive& ar, ::mpz_class& z, const unsigned int version );
+
+template<class Archive>
+void serialize( Archive& ar, ::mpz_class& z, const unsigned int version )
+{
+    split_free( ar, z, version );
+}
+template<class Archive>
+void save( Archive& ar, const ::mpq_class& q, const unsigned int /*version*/ )
+{
+    ::mpz_class n = q.get_num();
+    ::mpz_class d = q.get_den();
+    ar& n;
+    ar& d;
+}
+template<class Archive>
+void load( Archive& ar, ::mpq_class& q, const unsigned int /*version*/ )
+{
+    ::mpz_class n;
+    ::mpz_class d;
+    ar& n;
+    ar& d;
+    q = ::mpq_class( n, d );
+}
+template<class Archive>
+void serialize( Archive& ar, ::mpq_class& q, const unsigned int version )
+{
+    split_free( ar, q, version );
+}
+
+#endif
 
 /**
  * Serialization of Gmpz for binary archives

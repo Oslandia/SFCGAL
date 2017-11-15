@@ -62,9 +62,19 @@ BOOST_AUTO_TEST_CASE( testSerializeDeserialize )
     a /= 3 ;
 
     std::ostringstream oss ;
-    oss << CGAL::exact( a ) ;
+    oss << CGAL::exact( a )
+    #if CGAL_USE_GMPXX
+    .get_str()
+    #endif
+    ;
 
-    Kernel::FT b( oss.str() );
+    Kernel::FT b(
+        #if CGAL_USE_GMPXX
+        ::mpz_class(oss.str())
+        #else
+        oss.str()
+        #endif
+         );
     BOOST_CHECK_EQUAL( a, b ) ;
 }
 

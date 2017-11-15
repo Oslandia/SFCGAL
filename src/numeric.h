@@ -85,6 +85,21 @@ SFCGAL_API CGAL::Gmpz ceil( const CGAL::Gmpq& v ) ;
  */
 SFCGAL_API CGAL::Gmpz round( const CGAL::Gmpq& v ) ;
 
+#if CGAL_USE_GMPXX
+/**
+ * @brief floor a rational to an integer
+ */
+SFCGAL_API ::mpz_class floor( const ::mpq_class& v ) ;
+/**
+ * @brief ceil a rational to an integer
+ */
+SFCGAL_API ::mpz_class ceil( const ::mpq_class& v ) ;
+/**
+ * @brief round a rational to an integer
+ */
+SFCGAL_API ::mpz_class round( const ::mpq_class& v ) ;
+#endif
+
 }//SFCGAL
 
 #endif

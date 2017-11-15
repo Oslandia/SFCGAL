@@ -42,7 +42,6 @@ typedef BasicInputStreamReader< char >    InputStreamReader ;
  */
 typedef BasicInputStreamReader< wchar_t > WInputStreamReader ;
 
-
 /**
  * Helper class to parse data from stream.
  */
@@ -145,7 +144,6 @@ public:
     template < typename T >
     bool read( T& value ) {
         begin();
-
         if ( _skipWhiteSpaces ) {
             skipWhiteSpaces();
         }

@@ -34,7 +34,11 @@ typedef CGAL::Exact_predicates_exact_constructions_kernel Kernel ;
 /**
  * Quotient type
  */
+#ifdef CGAL_USE_GMPXX
+typedef ::mpq_class QT;
+#else
 typedef CGAL::Gmpq QT;
+#endif
 
 }//namespace SFCGAL
 

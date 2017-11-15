@@ -58,6 +58,45 @@ CGAL::Gmpz round( const CGAL::Gmpq& v )
     }
 }
 
+#if CGAL_USE_GMPXX
+SFCGAL_API ::mpz_class myfloor( const ::mpq_class& v ) {
+    ::mpz_class q;
+    mpz_fdiv_q(q.get_mpz_t(), v.get_num().get_mpz_t(), v.get_den().get_mpz_t());
+    return q;
+}
+SFCGAL_API ::mpz_class floor( const ::mpq_class& v ) {
+    return myfloor(v);
+}
+
+/**
+ * @brief ceil a rational to an integer
+ */
+SFCGAL_API ::mpz_class myceil( const ::mpq_class& v ) {
+    ::mpz_class q;
+    mpz_cdiv_q(q.get_mpz_t(), v.get_num().get_mpz_t(), v.get_den().get_mpz_t());
+    return q;
+}
+SFCGAL_API ::mpz_class ceil( const ::mpq_class& v ) {
+    return myceil(v);
+}
+
+/**
+ * @brief round a rational to an integer
+ */
+SFCGAL_API ::mpz_class round( const ::mpq_class& v ) {
+    if ( v < 0 ) {
+        return myceil( v - ::mpq_class( 1,2 ) );
+    }
+    else if ( v == 0 ) {
+        return 0 ;
+    }
+    else {
+        return myfloor( v + ::mpq_class( 1,2 ) );
+    }
+}
+#endif
+
+
 }//SFCGAL
 
 
