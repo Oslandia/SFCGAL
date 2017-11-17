@@ -205,16 +205,16 @@ void load( boost::archive::binary_iarchive& ar, ::mpz_class& z, const unsigned i
 {
     int32_t size;
     uint32_t rsize;
-    // mpz_t& mpz = z.get_mpz_t();
-    // ar& size;
-    // rsize = size >= 0 ? size : -size;
-    // mpz->_mp_size = size;
-    // _mpz_realloc( mpz, rsize );
-    // uint32_t i;
-// 
-    // for ( i = 0; i < rsize; ++i ) {
-        // ar& mpz->_mp_d[i];
-    // }
+    mpz_ptr mpz = z.get_mpz_t();
+    ar& size;
+    rsize = size >= 0 ? size : -size;
+    mpz->_mp_size = size;
+    _mpz_realloc( mpz, rsize );
+    uint32_t i;
+
+    for ( i = 0; i < rsize; ++i ) {
+        ar& mpz->_mp_d[i];
+    }
 }
 #endif
 

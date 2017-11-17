@@ -28,6 +28,15 @@
 #include <sstream>
 #include <stack>
 
+inline std::istream & operator>>(std::istream &i, ::mpq_class &q)
+{
+    CGAL::Gmpq ahah;
+    i >> ahah;
+    q = ::mpq_class(ahah.to_double());
+    q.canonicalize();
+    return i;
+}
+
 namespace SFCGAL {
 namespace tools {
 
@@ -139,7 +148,7 @@ public:
         commit();
         return true ;
     }
-
+ 
     /// \brief try to read a value in the input stream, restore state if read fails
     template < typename T >
     bool read( T& value ) {

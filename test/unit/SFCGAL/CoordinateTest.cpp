@@ -141,15 +141,7 @@ BOOST_AUTO_TEST_CASE( testRoundOneDecimal )
 
 
     std::ostringstream oss;
-    oss << CGAL::exact( g.x() )
-    #if CGAL_USE_GMPXX
-    .get_str()
-    #endif
-     << " " << CGAL::exact( g.y() )
-    #if CGAL_USE_GMPXX
-    .get_str()
-    #endif
-    ;
+    oss << CGAL::exact( g.x() ) << " " << CGAL::exact( g.y() );
     BOOST_CHECK_EQUAL( oss.str(), "1/2 8/5" ); //16/10
 }
 

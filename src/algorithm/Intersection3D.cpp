@@ -172,7 +172,7 @@ void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Trian
 
     MarkedPolyhedron& polya = const_cast<MarkedPolyhedron&>( pa );
     std::list<Polyline_3> polylines;
-    CGAL::Intersection_of_Polyhedra_3<MarkedPolyhedron,SFCGAL::Kernel, Split_visitor> intersect_polys( visitor );
+    CGAL::Intersection_of_Polyhedra_3<MarkedPolyhedron,Kernel, Split_visitor> intersect_polys( visitor );
     intersect_polys( polya, polyb, std::back_inserter( polylines ) );
 
     Point_inside_polyhedron<MarkedPolyhedron, Kernel> point_inside_q( polya );

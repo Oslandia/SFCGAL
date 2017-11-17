@@ -612,7 +612,6 @@ void WktReader::readInnerMultiSolid( MultiSolid& g )
     }
 }
 
-
 ///
 ///
 ///
@@ -626,7 +625,9 @@ bool WktReader::readPointCoordinate( Point& p )
         return false;
     }
 
-    while ( _reader.read<::mpq_class>( d ) ) {
+    // printf("CONTEXT '%s'\n", _reader.context().c_str());
+    while ( _reader.read( d ) ) {
+        // printf("VALUE %s\n", d.get_str().c_str());
         coordinates.push_back( d );
     }
 
@@ -643,7 +644,7 @@ bool WktReader::readPointCoordinate( Point& p )
     if ( _isMeasured && _is3D ) {
         // XYZM
         if ( coordinates.size() != 4 ) {
-            BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension" ) );
+            BOOST_THROW_EXCEPTION( WktParseException( "bad coordinate dimension" ) );   
         }
 
         p = Point( coordinates[0], coordinates[1], coordinates[2] );
