@@ -34,6 +34,10 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
+#ifdef CGAL_USE_GMPXX
+#include <CGAL/mpz_class.h>
+#include <CGAL/mpq_class.h>
+#endif
 
 namespace SFCGAL {
 
@@ -132,6 +136,63 @@ void serialize( Archive& ar, CGAL::Gmpq& q, const unsigned int version )
     split_free( ar, q, version );
 }
 
+#ifdef CGAL_USE_GMPXX
+/**
+ * Serialization of mpz_class for text archives
+ */
+SFCGAL_API void save( boost::archive::text_oarchive& ar, const mpz_class& z, const unsigned int version );
+
+/**
+ * Serialization of mpz_class for binary archives
+ */
+SFCGAL_API void save ( boost::archive::binary_oarchive& ar, const mpz_class& z, const unsigned int version );
+
+/**
+ * Unserialization of mpz_class for text archives
+ */
+SFCGAL_API void load( boost::archive::text_iarchive& ar, mpz_class& z, const unsigned int version );
+
+/**
+ * Unserialization of mpz_class for binary archives
+ */
+SFCGAL_API void load( boost::archive::binary_iarchive& ar, mpz_class& z, const unsigned int version );
+
+template<class Archive>
+void serialize( Archive& ar, mpz_class& z, const unsigned int version )
+{
+    split_free( ar, z, version );
+}
+
+/**
+ * Serializer of mpq_class
+ */
+template<class Archive>
+void save( Archive& ar, const mpq_class& q, const unsigned int /*version*/ )
+{
+    mpz_class n = q.get_num();
+    mpz_class d = q.get_den();
+    ar& n;
+    ar& d;
+}
+
+/**
+ * Unserializer of mpq_class
+ */
+template<class Archive>
+void load( Archive& ar, mpq_class& q, const unsigned int /*version*/ )
+{
+    mpz_class n;
+    mpz_class d;
+    ar& n;
+    ar& d;
+    q = mpq_class( n, d );
+}
+template<class Archive>
+void serialize( Archive& ar, mpq_class& q, const unsigned int version )
+{
+    split_free( ar, q, version );
+}
+#endif
 
 /**
  * Serializer of Kernel::FT
