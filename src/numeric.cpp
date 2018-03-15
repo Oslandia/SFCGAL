@@ -58,6 +58,48 @@ CGAL::Gmpz round( const CGAL::Gmpq& v )
     }
 }
 
+#ifdef CGAL_USE_GMPXX
+///
+///
+///
+mpz_class floor( const mpq_class& v )
+{
+    return v.get_num() / v.get_den() ;
+}
+
+///
+///
+///
+mpz_class ceil( const mpq_class& v )
+{
+    mpz_class result( 0 ) ;
+    mpz_cdiv_q( result.get_mpz_t(), v.get_num().get_mpz_t(), v.get_den().get_mpz_t() ) ;
+    return result ;
+}
+
+///
+///
+///
+mpz_class round( const mpq_class& v )
+{
+    if ( v < 0 ) {
+        //ceil( v - 0.5 ) ;
+        mpq_class tmp = v - mpq_class( 1,2 );
+        return ceil( tmp );
+    }
+    else if ( v == 0 ) {
+        return 0 ;
+    }
+    else {
+        //floor( v + 0.5 ) ;
+        mpq_class tmp = v + mpq_class( 1,2 );
+        return floor( tmp );
+    }
+}
+#endif
+
+
+
 }//SFCGAL
 
 

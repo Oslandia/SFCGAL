@@ -246,10 +246,16 @@ BOOST_AUTO_TEST_CASE( wkt_exactTest )
     BOOST_REQUIRE_EQUAL( g->as< LineString >().numPoints(), 2U );
     Kernel::Exact_kernel::FT x = CGAL::exact( g->as<LineString>().pointN( 0 ).x() );
     Kernel::Exact_kernel::FT y = CGAL::exact( g->as<LineString>().pointN( 0 ).y() );
-    BOOST_CHECK_EQUAL( x.numerator(), 2 );
-    BOOST_CHECK_EQUAL( x.denominator(), 3 );
-    BOOST_CHECK_EQUAL( y.numerator(), 3 );
-    BOOST_CHECK_EQUAL( y.denominator(), 2 );
+
+    CGAL::Fraction_traits<Kernel::Exact_kernel::FT>::Numerator_type xn, xd, yn, yd;
+    CGAL::Fraction_traits<Kernel::Exact_kernel::FT>::Decompose decomp;
+    decomp(x, xn, xd);
+    decomp(y, yn, yd);
+
+    BOOST_CHECK_EQUAL( xn, 2 );
+    BOOST_CHECK_EQUAL( xd, 3 );
+    BOOST_CHECK_EQUAL( yn, 3 );
+    BOOST_CHECK_EQUAL( yd, 2 );
 }
 
 BOOST_AUTO_TEST_CASE( charArrayRead )
