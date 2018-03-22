@@ -40,6 +40,22 @@ namespace SFCGAL {
 namespace detail {
 namespace io {
 
+namespace impl {
+std::ostream& writeFT(std::ostream& s, const CGAL::Gmpq& ft)
+{
+  s << ft;
+  return s;
+}
+
+#ifdef CGAL_USE_GMPXX
+std::ostream& writeFT(std::ostream& s, const mpq_class& ft)
+{
+  s << ft.get_num() << "/" << ft.get_den();
+  return s;
+}
+#endif
+} //end of impl namespace
+
 ///
 ///
 ///
@@ -135,10 +151,12 @@ void WktWriter::writeCoordinateType( const Geometry& g )
 void WktWriter::writeCoordinate( const Point& g )
 {
     if ( _exactWrite ) {
-        _s << CGAL::exact( g.x() ) << " " << CGAL::exact( g.y() );
+        impl::writeFT(_s, CGAL::exact( g.x() )) << " ";
+        impl::writeFT(_s, CGAL::exact( g.y() ));
 
         if ( g.is3D() ) {
-            _s << " " << CGAL::exact( g.z() );
+            _s << " ";
+            impl::writeFT(_s, CGAL::exact( g.z() ));
         }
     }
     else {
