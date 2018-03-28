@@ -1,4 +1,6 @@
-language: cpp
+language: cpp 
+dist: trusty 
+sudo: required 
 
 # os:
 #  - linux
@@ -9,14 +11,14 @@ compiler:
   - clang
 
 env:
-  - CGAL_VERSION=4.3
-  - CGAL_VERSION=4.7
+  - CGAL_VERSION=4.10.2
+  - CGAL_VERSION=4.11
 
 before_install:
   - ./travis/${TRAVIS_OS_NAME}/before_install.sh $CGAL_VERSION
 
 before_script:
-  - cmake -DSFCGAL_BUILD_TESTS=ON
+  - CGAL_DIR=/usr/local/lib/CGAL cmake -DSFCGAL_BUILD_TESTS=ON
 
 script:
   - make
