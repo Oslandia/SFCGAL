@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE( testConvexHull3D_LineStringCoplanar )
     LineString lineString( points ) ;
     std::auto_ptr< Geometry > hull( algorithm::convexHull3D( lineString ) );
     BOOST_CHECK( hull->is< PolyhedralSurface >() );
-    BOOST_CHECK_EQUAL( hull->as< PolyhedralSurface >().numPolygons(), 1U );
+    BOOST_CHECK_EQUAL( hull->as< PolyhedralSurface >().numPolygons(), 2U );
 }
 
 
