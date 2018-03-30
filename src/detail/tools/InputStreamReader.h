@@ -150,7 +150,7 @@ public:
             skipWhiteSpaces();
         }
 
-        if ( CGAL::Input_rep<T>(value)(_s) ) {
+        if( _s >> CGAL::iformat(value) ) {
             commit();
             return true ;
         }
