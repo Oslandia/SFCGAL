@@ -22,6 +22,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <SFCGAL/Kernel.h>
+#include <CGAL/mpq_class.h>
 #include <SFCGAL/Coordinate.h>
 #include <SFCGAL/LineString.h>
 
@@ -61,10 +62,11 @@ BOOST_AUTO_TEST_CASE( testSerializeDeserialize )
     Kernel::FT a = 1 ;
     a /= 3 ;
 
-    std::ostringstream oss ;
-    oss << CGAL::exact( a ) ;
+    std::stringstream ss ;
+    ss << CGAL::exact( a ) ;
 
-    Kernel::FT b( oss.str() );
+    Kernel::FT b;
+    ss >> b;
     BOOST_CHECK_EQUAL( a, b ) ;
 }
 

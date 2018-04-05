@@ -4,12 +4,11 @@ add_executable( standalone-regress-test-SFCGAL ${SFCGAL_REGRESS_STANDALONE_TEST_
 
 target_link_libraries( standalone-regress-test-SFCGAL 
 	SFCGAL
-	${Boost_LIBRARIES}
-	${CGAL_LIBRARIES}
+        CGAL::CGAL
+        CGAL::CGAL_Core
 )
-if( ${SFCGAL_WITH_MPFR} )
-  target_link_libraries( standalone-regress-test-SFCGAL ${MPFR_LIBRARIES} )
-endif( ${SFCGAL_WITH_MPFR} )
+target_link_libraries( standalone-regress-test-SFCGAL ${CGAL_3RD_PARTY_LIBRARIES} )
+
 
 set_target_properties( standalone-regress-test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS standalone-regress-test-SFCGAL DESTINATION bin )

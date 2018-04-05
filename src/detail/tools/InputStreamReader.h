@@ -150,7 +150,7 @@ public:
             skipWhiteSpaces();
         }
 
-        if ( _s >> value ) {
+        if( _s >> CGAL::iformat(value) ) {
             commit();
             return true ;
         }
