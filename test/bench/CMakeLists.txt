@@ -1,10 +1,6 @@
 file( GLOB SFCGAL_BENCHS_SOURCES *.cpp )
 add_executable( bench-SFCGAL ${SFCGAL_BENCHS_SOURCES} )
-target_link_libraries( bench-SFCGAL
-       SFCGAL
-       ${Boost_LIBRARIES}
-       ${CGAL_LIBRARIES}
-)
+target_link_libraries( bench-SFCGAL SFCGAL)
 if( SFCGAL_WITH_MPFR )
 	target_link_libraries( bench-SFCGAL ${MPFR_LIBRARIES} ${GMP_LIBRARIES} )
 endif()

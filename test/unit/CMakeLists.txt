@@ -1,11 +1,7 @@
 #-- build unit tests
 file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES *.cpp )
 add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
-target_link_libraries( unit-test-SFCGAL 
-	SFCGAL
-        CGAL::CGAL
-        CGAL::CGAL_Core
-)
+target_link_libraries( unit-test-SFCGAL SFCGAL)
 target_link_libraries(unit-test-SFCGAL ${CGAL_3RD_PARTY_LIBRARIES})
 
 #include( PrecompiledHeader )

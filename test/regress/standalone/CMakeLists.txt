@@ -2,13 +2,7 @@
 file( GLOB_RECURSE SFCGAL_REGRESS_STANDALONE_TEST_SOURCES *.cpp )
 add_executable( standalone-regress-test-SFCGAL ${SFCGAL_REGRESS_STANDALONE_TEST_SOURCES} )
 
-target_link_libraries( standalone-regress-test-SFCGAL 
-	SFCGAL
-        CGAL::CGAL
-        CGAL::CGAL_Core
-)
-target_link_libraries( standalone-regress-test-SFCGAL ${CGAL_3RD_PARTY_LIBRARIES} )
-
+target_link_libraries( standalone-regress-test-SFCGAL SFCGAL)
 
 set_target_properties( standalone-regress-test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS standalone-regress-test-SFCGAL DESTINATION bin )

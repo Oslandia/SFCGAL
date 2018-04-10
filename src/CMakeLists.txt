@@ -41,14 +41,7 @@ add_dependencies( SFCGAL copy )
 set_target_properties( SFCGAL PROPERTIES VERSION ${SFCGAL_VERSION}
                                          SOVERSION ${SFCGAL_VERSION_MAJOR} )
 
-target_link_libraries( SFCGAL ${CGAL_LIBRARIES} )
-if( ${SFCGAL_WITH_MPFR} )
-	target_link_libraries( SFCGAL ${MPFR_LIBRARIES} )
-endif( ${SFCGAL_WITH_MPFR} )
-
-if( ${SFCGAL_WITH_GMP} )
-	target_link_libraries( SFCGAL ${GMP_LIBRARIES} )
-endif( ${SFCGAL_WITH_GMP} )
+target_link_libraries( SFCGAL CGAL::CGAL CGAL::CGAL_Core)
 
 target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
 
