@@ -25,7 +25,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" 
 
 set( SFCGAL_VERSION_MAJOR 1 )
 set( SFCGAL_VERSION_MINOR 3 )
-set( SFCGAL_VERSION_PATCH 4 )
+set( SFCGAL_VERSION_PATCH 5 )
 
 set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
 
@@ -82,32 +82,6 @@ if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND ($
   include_directories( patches/boost-1.60.0 )
 endif()
 
-#-- GMP (facultative)  -------------------------------------
-find_package( GMP )
-if( ${GMP_FOUND} )
-	message( STATUS "GMP_INCLUDE_DIRS = ${GMP_INCLUDE_DIRS}" )
-	message( STATUS "GMP_LIBRARIES = ${GMP_LIBRARIES}" )
-	set( SFCGAL_WITH_GMP ON )
-endif()
-
-
-
-#-- MPFR (needs GMP)  --------------------------------------
-if( ${GMP_FOUND} )
-	find_package( MPFR )
-	if( ${MPFR_FOUND} )
-		message( STATUS "MPFR_INCLUDE_DIRS = ${MPFR_INCLUDE_DIRS}" )
-		message( STATUS "MPFR_LIBRARIES = ${MPFR_LIBRARIES}" )
-		set( SFCGAL_WITH_MPFR ON )
-	endif()
-endif()
-
-if( NOT ${GMP_FOUND} OR NOT ${MPFR_FOUND} )
-	message( WARNING "can't find GMP and MPFR, using default kernel" ) 
-	set( EPLU_USE_CARTESIAN_KERNEL ON )
-endif()
-
-
 #-- OpenScenegraph -----------------------------------------
 if ( SFCGAL_WITH_OSG )
   find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
@@ -143,14 +117,10 @@ endif()
 include_directories( SYSTEM 
 	${CGAL_INCLUDE_DIRS}
 	${Boost_INCLUDE_DIRS}	
-	${MPFR_INCLUDE_DIRS}	
-	${GMP_INCLUDE_DIRS}	
 )
 link_directories(
 	${CGAL_LIBRARY_DIRS}
 	${Boost_LIBRARY_DIRS}	
-	${MPFR_LIBRARY_DIRS}	
-	${GMP_LIBRARY_DIRS}	
 )
 
 #-- Warnings, frounding-math and gprof  ------------------------------------------

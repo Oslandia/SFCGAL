@@ -4,11 +4,7 @@ file( GLOB_RECURSE SFCGAL_REGRESS_CONVEX_HULL_TEST_SOURCES *.cpp )
 set( REGRESS_NAME test-regress-convex_hull )
 add_executable( ${REGRESS_NAME} ${SFCGAL_REGRESS_CONVEX_HULL_TEST_SOURCES} )
 
-target_link_libraries( ${REGRESS_NAME}
-	SFCGAL
-        CGAL::CGAL
-        CGAL::CGAL_Core
-)
+target_link_libraries( ${REGRESS_NAME} SFCGAL)
 
 target_link_libraries( ${REGRESS_NAME} ${CGAL_3RD_PARTY_LIBRARIES} )
 
