@@ -39,6 +39,26 @@ include( Libtoolize )
 # dependencies
 #-----------------------------------------------------------
 
+#-- find CGAL  ---------------------------------------------
+option( CGAL_USE_AUTOLINK "disable CGAL autolink" OFF )
+if( ${CGAL_USE_AUTOLINK} )
+	add_definitions( "-DCGAL_NO_AUTOLINK" )
+endif()
+
+find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
+message( STATUS "CGAL ${CGAL_VERSION} found" )
+
+include_directories( ${CMAKE_BINARY_DIR}/include )
+
+# For CGAL versions < 4.3, we add a local directory that contains some tweaked include files from unreleased versions
+# They will overwrite files from the CGAL installation
+if( "${CGAL_VERSION}" VERSION_LESS "4.3" )
+  include_directories( patches/CGAL-4.2 )
+elseif( "${CGAL_VERSION}" VERSION_LESS "4.10")
+  include_directories( patches/CGAL-4.3 )
+  add_definitions( "-DCGAL_INTERSECTION_VERSION=1" )
+endif()
+
 #-- BOOST --------------------------------------------------
 option( Boost_USE_AUTO_LINK "boost use autolink" OFF )
 if( NOT ${Boost_USE_AUTO_LINK} )
@@ -91,26 +111,6 @@ if ( SFCGAL_WITH_OSG )
 
     include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} )
   endif()
-endif()
-
-#-- find CGAL  ---------------------------------------------
-option( CGAL_USE_AUTOLINK "disable CGAL autolink" OFF )
-if( ${CGAL_USE_AUTOLINK} )
-	add_definitions( "-DCGAL_NO_AUTOLINK" )
-endif()
-
-find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
-message( STATUS "CGAL ${CGAL_VERSION} found" )
-
-include_directories( ${CMAKE_BINARY_DIR}/include )
-
-# For CGAL versions < 4.3, we add a local directory that contains some tweaked include files from unreleased versions
-# They will overwrite files from the CGAL installation
-if( "${CGAL_VERSION}" VERSION_LESS "4.3" )
-  include_directories( patches/CGAL-4.2 )
-elseif( "${CGAL_VERSION}" VERSION_LESS "4.10")
-  include_directories( patches/CGAL-4.3 )
-  add_definitions( "-DCGAL_INTERSECTION_VERSION=1" )
 endif()
 
 #-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
