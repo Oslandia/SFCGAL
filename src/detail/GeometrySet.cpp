@@ -558,10 +558,10 @@ void recompose_points( const typename GeometrySet<Dim>::PointCollection& points,
 // compare less than
 struct ComparePoints {
     bool operator()( const CGAL::Point_2<Kernel>& lhs, const CGAL::Point_2<Kernel>& rhs ) const {
-        return lhs.x() < rhs.x() || lhs.y() < rhs.y();
+        return lhs.x() == rhs.x() ? lhs.y() < rhs.y() : lhs.x() < rhs.x();
     }
     bool operator()( const CGAL::Point_3<Kernel>& lhs, const CGAL::Point_3<Kernel>& rhs ) const {
-        return lhs.x() < rhs.x() || lhs.y() < rhs.y() || lhs.z() < rhs.z();
+        return lhs.x() == rhs.x() ? (lhs.y() == rhs.y() ? lhs.z() < rhs.z() : lhs.y() < rhs.y()) : lhs.x() < rhs.x();
     }
 };
 
