@@ -34,7 +34,7 @@ namespace transform {
  * Wrapper for CGAL::Aff_transform_3
  * @todo unittest
  */
-class SFCGAL_API AffineTransform3 : public Transform {
+class SFCGAL_CXX_API AffineTransform3 : public Transform {
 public:
     /**
      * Constructor with a transform

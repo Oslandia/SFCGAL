@@ -37,7 +37,7 @@ namespace triangulate {
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const Geometry& g,
     TriangulatedSurface& triangulatedSurface
 );
@@ -46,7 +46,7 @@ SFCGAL_API void triangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const Polygon& g,
     TriangulatedSurface& triangulatedSurface
 );
@@ -55,7 +55,7 @@ SFCGAL_API void triangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const Triangle& g,
     TriangulatedSurface& triangulatedSurface
 );
@@ -65,7 +65,7 @@ SFCGAL_API void triangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const TriangulatedSurface& g,
     TriangulatedSurface& triangulatedSurface
 );
@@ -74,7 +74,7 @@ SFCGAL_API void triangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void opentriangulatePolygon3D(
+SFCGAL_CXX_API void opentriangulatePolygon3D(
     const GeometryCollection& g,
     TriangulatedSurface& triangulatedSurface
 );
@@ -84,7 +84,7 @@ SFCGAL_API void opentriangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const PolyhedralSurface& polyhedralSurface,
     TriangulatedSurface& triangulatedSurface
 );
@@ -94,7 +94,7 @@ SFCGAL_API void triangulatePolygon3D(
  * @todo unittest
  * @ingroup detail
  */
-SFCGAL_API void triangulatePolygon3D(
+SFCGAL_CXX_API void triangulatePolygon3D(
     const Solid& g,
     TriangulatedSurface& triangulatedSurface
 );

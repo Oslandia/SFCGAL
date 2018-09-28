@@ -42,7 +42,7 @@ namespace SFCGAL {
  * @warning GM_Solid, from ISO 19107 is defined in CityGML, but not in SFA. Without Solid concept,
  * @note Volume concept is missing.
  */
-class SFCGAL_API Solid : public Geometry {
+class SFCGAL_CXX_API Solid : public Geometry {
 public:
     typedef boost::ptr_vector< PolyhedralSurface >::iterator       iterator ;
     typedef boost::ptr_vector< PolyhedralSurface >::const_iterator const_iterator ;

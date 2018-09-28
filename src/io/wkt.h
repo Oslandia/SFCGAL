@@ -36,15 +36,15 @@ namespace io {
 /**
  * Read a WKT geometry from an input stream
  */
-SFCGAL_API std::auto_ptr< Geometry > readWkt( std::istream& s ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > readWkt( std::istream& s ) ;
 /**
  * Read a WKT geometry from a string
  */
-SFCGAL_API std::auto_ptr< Geometry > readWkt( const std::string& s ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > readWkt( const std::string& s ) ;
 /**
  * Read a WKT geometry from a char*
  */
-SFCGAL_API std::auto_ptr< Geometry > readWkt( const char*, size_t );
+SFCGAL_CXX_API std::auto_ptr< Geometry > readWkt( const char*, size_t );
 }
 }
 

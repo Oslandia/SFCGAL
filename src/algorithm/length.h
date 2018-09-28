@@ -35,29 +35,29 @@ namespace algorithm {
 /**
  * @brief Compute the 2D length for a Geometry (0 for incompatible types)
  */
-SFCGAL_API double length( const Geometry& g ) ;
+SFCGAL_CXX_API double length( const Geometry& g ) ;
 /**
  * @brief Compute the 2D length for a LineString
  */
-SFCGAL_API double length( const LineString& g ) ;
+SFCGAL_CXX_API double length( const LineString& g ) ;
 /**
  * @brief Compute the 2D length for a GeometryCollection
  */
-SFCGAL_API double length( const GeometryCollection& g ) ;
+SFCGAL_CXX_API double length( const GeometryCollection& g ) ;
 
 /**
  * @brief Compute the 2D length for a geometry
  * @return the length of the Geometry, 0 for incompatible types
  */
-SFCGAL_API double length3D( const Geometry& g ) ;
+SFCGAL_CXX_API double length3D( const Geometry& g ) ;
 /**
  * @brief Compute the 3D length for a LineString
  */
-SFCGAL_API double length3D( const LineString& g ) ;
+SFCGAL_CXX_API double length3D( const LineString& g ) ;
 /**
  * @brief Compute the 3D length for a GeometryCollection
  */
-SFCGAL_API double length3D( const GeometryCollection& g ) ;
+SFCGAL_CXX_API double length3D( const GeometryCollection& g ) ;
 
 
 }//algorithm

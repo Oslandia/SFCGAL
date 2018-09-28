@@ -35,7 +35,7 @@ namespace SFCGAL {
  * A MultiLineString in SFA.
  * @ingroup public_api
  */
-class SFCGAL_API MultiLineString : public GeometryCollection {
+class SFCGAL_CXX_API MultiLineString : public GeometryCollection {
 public:
     /**
      * Empty MultiLineString constructor

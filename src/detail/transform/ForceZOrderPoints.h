@@ -36,7 +36,7 @@ namespace transform {
  * @todo unittest
  * @todo move outside (it's not a coordinate transform)?
  */
-class SFCGAL_API ForceZOrderPoints : public Transform {
+class SFCGAL_CXX_API ForceZOrderPoints : public Transform {
 public:
     /**
      * Constructor with a default Z value

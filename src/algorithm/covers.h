@@ -39,12 +39,12 @@ namespace algorithm {
  * Cover test on 2D geometries. Checks if gA covers gB. Force projection to z=0 if needed
  * @ingroup@ detail
  */
-SFCGAL_API bool covers( const Geometry& ga, const Geometry& gb );
+SFCGAL_CXX_API bool covers( const Geometry& ga, const Geometry& gb );
 
 /**
  * Cover test on 3D geometries. Checks if gA covers gB. Assume z = 0 if needed
  */
-SFCGAL_API bool covers3D( const Geometry& ga, const Geometry& gb );
+SFCGAL_CXX_API bool covers3D( const Geometry& ga, const Geometry& gb );
 
 /**
  * @ingroup@ detail

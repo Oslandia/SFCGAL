@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 3.0 )
 project( SFCGAL )
 
 set( CMAKE_DEBUG_POSTFIX "d" )
@@ -14,8 +14,8 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "RelWithDebInfo")
 endif()
 
-option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
-option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
+option( SFCGAL_BUILD_EXAMPLES "Build examples" OFF )
+option( SFCGAL_BUILD_TESTS "Build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
 
 option( SFCGAL_WITH_OSG "Compile with OpenSceneGraph support" OFF )
@@ -23,41 +23,36 @@ option( SFCGAL_WITH_OSG "Compile with OpenSceneGraph support" OFF )
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
-set( SFCGAL_VERSION_MAJOR 1 )
-set( SFCGAL_VERSION_MINOR 3 )
-set( SFCGAL_VERSION_PATCH 5 )
+set( SFCGAL_VERSION_MAJOR 2 )
+set( SFCGAL_VERSION_MINOR 0 )
+set( SFCGAL_VERSION_PATCH 0 )
 
 set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
 
-# disabled for 1.0
-#include( PrecompiledHeader )
-#option( Use_precompiled_headers "Use precompiled headers" OFF )
+#include( Libtoolize )
 
-include( Libtoolize )
+#-- C++ version --------------------------------------------
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions("-std=c++98")
+endif()
+
+#-- symbol export ------------------------------------------
+option( SFCGAL_EXPORT_C_API "Export symbols of the C API" ON )
+option( SFCGAL_EXPORT_CXX_API "Export symbols of the C++ API" OFF )
+
 
 #-----------------------------------------------------------
 # dependencies
 #-----------------------------------------------------------
 
 #-- find CGAL  ---------------------------------------------
-option( CGAL_USE_AUTOLINK "disable CGAL autolink" OFF )
-if( ${CGAL_USE_AUTOLINK} )
-	add_definitions( "-DCGAL_NO_AUTOLINK" )
-endif()
-
-find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
-message( STATUS "CGAL ${CGAL_VERSION} found" )
 
 include_directories( ${CMAKE_BINARY_DIR}/include )
 
-# For CGAL versions < 4.3, we add a local directory that contains some tweaked include files from unreleased versions
-# They will overwrite files from the CGAL installation
-if( "${CGAL_VERSION}" VERSION_LESS "4.3" )
-  include_directories( patches/CGAL-4.2 )
-elseif( "${CGAL_VERSION}" VERSION_LESS "4.10")
-  include_directories( patches/CGAL-4.3 )
-  add_definitions( "-DCGAL_INTERSECTION_VERSION=1" )
-endif()
+# Use the shipped version of CGAL
+include_directories( ext_include )
+add_definitions( "-DCGAL_DIR=${CMAKE_SOURCE_DIR}/ext_include" )
+add_definitions( "-DCGAL_HEADER_ONLY=1" )
 
 #-- BOOST --------------------------------------------------
 option( Boost_USE_AUTO_LINK "boost use autolink" OFF )
@@ -83,7 +78,7 @@ else()
 endif()
 
 #-- minimalist build allowed with boost version older than 1.48
-set( SFCGAL_Boost_COMPONENTS date_time thread system serialization )
+set( SFCGAL_Boost_COMPONENTS thread system serialization )
 #-- unit test
 if ( SFCGAL_BUILD_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework program_options ${SFCGAL_Boost_COMPONENTS} )
@@ -113,13 +108,10 @@ if ( SFCGAL_WITH_OSG )
   endif()
 endif()
 
-#-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost
-include_directories( SYSTEM 
-	${CGAL_INCLUDE_DIRS}
+include_directories(
 	${Boost_INCLUDE_DIRS}	
 )
 link_directories(
-	${CGAL_LIBRARY_DIRS}
 	${Boost_LIBRARY_DIRS}	
 )
 
@@ -182,9 +174,6 @@ configure_file( ${CMAKE_SOURCE_DIR}/src/version.h.cmake include/SFCGAL/version.h
 
 enable_testing()
 
-#note : not available on windows without export/import
-OPTION( SFCGAL_USE_STATIC_LIBS "define if SFCGAL is build as a static library" OFF )
-
 #-- build the library
 add_subdirectory( src )
 
@@ -204,7 +193,8 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/include DESTINATION .)
 
 
 #-- create a libtool file for SFCGAL (needed by PostGIS)
-create_libtool_file( SFCGAL /lib )
+# FIXME does not work. Is it really needed ?
+#create_libtool_file( SFCGAL /lib )
 
 #-- sfcgal-config
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )

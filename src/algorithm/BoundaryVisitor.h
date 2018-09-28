@@ -54,7 +54,7 @@ namespace algorithm {
  * @ingroup detail
  *
  */
-class SFCGAL_API BoundaryVisitor : public ConstGeometryVisitor {
+class SFCGAL_CXX_API BoundaryVisitor : public ConstGeometryVisitor {
 public:
 
     virtual void visit( const Point& g ) ;

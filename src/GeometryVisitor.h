@@ -28,7 +28,7 @@ namespace SFCGAL {
 /**
  * GeometryVisitor
  */
-class SFCGAL_API GeometryVisitor {
+class SFCGAL_CXX_API GeometryVisitor {
 public:
     virtual ~GeometryVisitor() ;
 
@@ -55,7 +55,7 @@ public:
 /**
  * Visitor for const geometries
  */
-class SFCGAL_API ConstGeometryVisitor {
+class SFCGAL_CXX_API ConstGeometryVisitor {
 public:
     virtual ~ConstGeometryVisitor() ;
 

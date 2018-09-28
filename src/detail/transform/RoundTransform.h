@@ -32,7 +32,7 @@ namespace transform {
 /**
  * Round the coordinates of a Geometry
  */
-class SFCGAL_API RoundTransform : public Transform {
+class SFCGAL_CXX_API RoundTransform : public Transform {
 public:
     /**
      * Constructor with a scale factor (default is nearest integer)

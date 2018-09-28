@@ -32,7 +32,7 @@ namespace transform {
 /**
  * Force Z definitions
  */
-class SFCGAL_API ForceZ : public Transform {
+class SFCGAL_CXX_API ForceZ : public Transform {
 public:
     /**
      * Constructor with a default Z value

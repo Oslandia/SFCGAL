@@ -36,7 +36,7 @@ namespace SFCGAL {
  * @ingroup public_api
  * @ŧodo add polygon() etc.
  */
-class SFCGAL_API MultiPolygon : public GeometryCollection {
+class SFCGAL_CXX_API MultiPolygon : public GeometryCollection {
 public:
     /**
      * Empty MultiPolygon constructor

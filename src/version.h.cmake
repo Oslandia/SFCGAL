@@ -30,7 +30,7 @@
 #define SFCGAL_VERSION "@SFCGAL_VERSION@"
 
 namespace SFCGAL {
-    SFCGAL_API const char* Version();
+    SFCGAL_CXX_API const char* Version();
 }
 
 #endif

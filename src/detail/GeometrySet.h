@@ -343,10 +343,10 @@ private:
 
 ///
 /// Display operator
-SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
+SFCGAL_CXX_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
 ///
 /// Display operator
-SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
+SFCGAL_CXX_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
 
 
 // bbox of a 'volume' for 2D, will never be called

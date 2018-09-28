@@ -35,7 +35,7 @@ namespace algorithm {
  * @warning Ownership is taken from the parameter
  * @ingroup
  */
-SFCGAL_API std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> coll );
+SFCGAL_CXX_API std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> coll );
 }
 }
 

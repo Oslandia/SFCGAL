@@ -40,7 +40,7 @@ namespace io {
  * @warning M is ignored
  * @ŧodo take M in account?
  */
-class SFCGAL_API WktReader {
+class SFCGAL_CXX_API WktReader {
 public:
     /**
      * read WKT from input stream

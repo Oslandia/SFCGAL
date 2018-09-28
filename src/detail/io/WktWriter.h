@@ -35,7 +35,7 @@ namespace io {
  *
  * @warning Triangles are transformed into polygons
  */
-class SFCGAL_API WktWriter {
+class SFCGAL_CXX_API WktWriter {
 public:
     WktWriter( std::ostream& s ) ;
 

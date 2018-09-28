@@ -44,7 +44,7 @@ namespace SFCGAL {
  *
  * @warning An empty triangle has empty points
  */
-class SFCGAL_API Triangle : public Surface {
+class SFCGAL_CXX_API Triangle : public Surface {
 public:
     /**
      * empty Triangle constructor

@@ -41,7 +41,7 @@ namespace triangulate {
 /**
  * @brief 2DZ constraint Delaunay triangulation
  */
-class SFCGAL_API ConstraintDelaunayTriangulation {
+class SFCGAL_CXX_API ConstraintDelaunayTriangulation {
 public:
     /**
      * @brief vertex info in triangulation

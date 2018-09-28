@@ -1,0 +1,11 @@
+#!/bin/bash
+SRC="@SFCGAL_SOURCES@"
+echo>includes.lst
+IFS=';'
+for file in $SRC; do
+    echo $file
+    g++ -DCGAL_DIR=@CMAKE_SOURCE_DIR@/ext_include -DCGAL_HEADER_ONLY=1 -I@CMAKE_SOURCE_DIR@/ext_include -I@CMAKE_BINARY_DIR@/include -DNDEBUG -std=c++98 -M $file >> includes.lst
+done
+echo "Sorting ..."
+grep -v "^[[:alpha:]]" includes.lst | tr ' \\' '\n' | sort | uniq > includes.txt
+

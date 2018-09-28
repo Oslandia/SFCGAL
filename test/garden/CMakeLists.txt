@@ -6,7 +6,7 @@ find_package(Boost REQUIRED COMPONENTS program_options serialization)
 set( REGRESS_NAME garden-test-SFCGAL )
 add_executable( ${REGRESS_NAME} ${SFCGAL_REGRESS_GARDEN_TEST_SOURCES} )
 
-target_link_libraries( ${REGRESS_NAME} SFCGAL)
+target_link_libraries( ${REGRESS_NAME} SFCGAL_static )
 target_link_libraries( ${REGRESS_NAME} ${CGAL_3RD_PARTY_LIBRARIES} ${Boost_LIBRARIES})
 
 set_target_properties( ${REGRESS_NAME} PROPERTIES DEBUG_POSTFIX "d" )

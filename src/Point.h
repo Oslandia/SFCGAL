@@ -37,7 +37,7 @@ namespace SFCGAL {
  * from examples/Kernel_23/MyPointC2.h
  * @todo strong typing on coordinate dimension?
  */
-class SFCGAL_API Point : public Geometry {
+class SFCGAL_CXX_API Point : public Geometry {
 public:
     /**
      * Empty point constructor

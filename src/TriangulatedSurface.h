@@ -44,7 +44,7 @@ namespace SFCGAL {
  * @ingroup public_api
  * @todo do better than a "triangle soup" or add topological view?
  */
-class SFCGAL_API TriangulatedSurface : public Surface {
+class SFCGAL_CXX_API TriangulatedSurface : public Surface {
 public:
     typedef boost::ptr_vector< Triangle >::iterator       iterator ;
     typedef boost::ptr_vector< Triangle >::const_iterator const_iterator ;

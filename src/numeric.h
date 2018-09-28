@@ -61,29 +61,29 @@ inline double round( const double& v )
 /**
  * @brief floor a rational to an integer
  */
-SFCGAL_API ::mpz_class floor( const ::mpq_class& v ) ;
+SFCGAL_CXX_API ::mpz_class floor( const ::mpq_class& v ) ;
 /**
  * @brief ceil a rational to an integer
  */
-SFCGAL_API ::mpz_class ceil( const ::mpq_class& v ) ;
+SFCGAL_CXX_API ::mpz_class ceil( const ::mpq_class& v ) ;
 /**
  * @brief round a rational to an integer
  */
-SFCGAL_API ::mpz_class round( const ::mpq_class& v ) ;
+SFCGAL_CXX_API ::mpz_class round( const ::mpq_class& v ) ;
 #endif
 
 /**
  * @brief floor a rational to an integer
  */
-SFCGAL_API CGAL::Gmpz floor( const CGAL::Gmpq& v ) ;
+SFCGAL_CXX_API CGAL::Gmpz floor( const CGAL::Gmpq& v ) ;
 /**
  * @brief ceil a rational to an integer
  */
-SFCGAL_API CGAL::Gmpz ceil( const CGAL::Gmpq& v ) ;
+SFCGAL_CXX_API CGAL::Gmpz ceil( const CGAL::Gmpq& v ) ;
 /**
  * @brief round a rational to an integer
  */
-SFCGAL_API CGAL::Gmpz round( const CGAL::Gmpq& v ) ;
+SFCGAL_CXX_API CGAL::Gmpz round( const CGAL::Gmpq& v ) ;
 
 }//SFCGAL
 

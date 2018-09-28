@@ -32,7 +32,7 @@ namespace transform {
 /**
  * Force 2D definitions
  */
-class SFCGAL_API Force2D : public Transform {
+class SFCGAL_CXX_API Force2D : public Transform {
 public:
     /*
      * [SFCGAL::Transform]

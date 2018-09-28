@@ -19,7 +19,6 @@
  */
 
 #include <iostream>
-#include <boost/date_time.hpp>
 
 #include <SFCGAL/detail/tools/Log.h>
 
@@ -65,14 +64,9 @@ void Logger::log(
     const int& lineNumber
 )
 {
-    using namespace boost::posix_time;
-
     if ( level < _logLevel ) {
         return ;
     }
-
-    //ptime now = second_clock::local_time();
-    //_out << to_iso_string(now) << ":" ;
 
     if ( _displayFilePosition && ! filename.empty() ) {
         _out << filename << ":" ;

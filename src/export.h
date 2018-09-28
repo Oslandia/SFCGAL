@@ -24,34 +24,26 @@
 //----- DLL MANAGEMENT ------------------
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || defined( __BCPLUSPLUS__)  || defined( __MWERKS__)
-#define SFCGAL_API_IMPORT __declspec(dllimport)
-#define SFCGAL_API_EXPORT __declspec(dllexport)
-
-#define SFCGAL_API_TEMPLATE_EXPORT extern
-#define SFCGAL_API_TEMPLATE_IMPORT
+#  define SFCGAL_API_IMPORT __declspec(dllimport)
+#  define SFCGAL_API_EXPORT __declspec(dllexport)
+#  define SFCGAL_NO_EXPORT
 #else
-#define SFCGAL_API_IMPORT
-#define SFCGAL_API_EXPORT
-#define SFCGAL_API_TEMPLATE_EXPORT
-#define SFCGAL_API_TEMPLATE_IMPORT
+#  define SFCGAL_API_IMPORT
+#  define SFCGAL_API_EXPORT __attribute__ ((visibility ("default")))
+#  define SFCGAL_NO_EXPORT __attribute__ ((visibility ("hidden")))
 #endif
 
 
-//TODO : split cxx api and capi?
-
-#ifdef SFCGAL_USE_STATIC_LIBS
-// static libraries
-#  define SFCGAL_API
-#  define SFCGAL_API_TEMPLATE
+#ifdef SFCGAL_EXPORT_CXX_API
+#  define SFCGAL_CXX_API SFCGAL_API_EXPORT
 #else
-// shared libraries
-#  ifdef SFCGAL_BUILD_SHARED
-#     define SFCGAL_API SFCGAL_API_EXPORT
-#     define SFCGAL_API_TEMPLATE SFCGAL_API_TEMPLATE_EXPORT
-#  else
-#     define SFCGAL_API SFCGAL_API_IMPORT
-#     define SFCGAL_API_TEMPLATE SFCGAL_API_TEMPLATE_IMPORT
-#  endif
+#  define SFCGAL_CXX_API SFCGAL_NO_EXPORT
+#endif
+
+#ifdef SFCGAL_EXPORT_C_API
+#  define SFCGAL_C_API SFCGAL_API_EXPORT
+#else
+#  define SFCGAL_C_API SFCGAL_NO_EXPORT
 #endif
 
 #endif // _SFCGAL_EXPORT_H_

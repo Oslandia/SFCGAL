@@ -35,46 +35,46 @@ namespace algorithm {
 /**
  * Make valid 2D orientation
  */
-SFCGAL_API void makeValidOrientation( CGAL::Polygon_2< Kernel >& polygon ) ;
+SFCGAL_CXX_API void makeValidOrientation( CGAL::Polygon_2< Kernel >& polygon ) ;
 /**
  * Make valid 2D orientation
  */
-SFCGAL_API void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel >& polygon ) ;
+SFCGAL_CXX_API void makeValidOrientation( CGAL::Polygon_with_holes_2< Kernel >& polygon ) ;
 /**
  * Make valid 2D orientation
  */
-SFCGAL_API void makeValidOrientation( Polygon& polygon ) ;
+SFCGAL_CXX_API void makeValidOrientation( Polygon& polygon ) ;
 
 
 /**
  * Test if a Geometry has a consistent orientation
  */
-SFCGAL_API bool hasConsistentOrientation3D( const TriangulatedSurface& g ) ;
+SFCGAL_CXX_API bool hasConsistentOrientation3D( const TriangulatedSurface& g ) ;
 /**
  * Test if a PolyhedralSurface has a consistent orientation
  */
-SFCGAL_API bool hasConsistentOrientation3D( const PolyhedralSurface& g ) ;
+SFCGAL_CXX_API bool hasConsistentOrientation3D( const PolyhedralSurface& g ) ;
 
 
 /**
  * Try to make consistent orientation in a TriangulatedSurface
  */
-SFCGAL_API void makeConsistentOrientation3D( TriangulatedSurface& g ) ;
+SFCGAL_CXX_API void makeConsistentOrientation3D( TriangulatedSurface& g ) ;
 
 /**
  * Test if a 2D surface is oriented counter clockwise
  */
-SFCGAL_API bool isCounterClockWiseOriented( const Polygon& );
+SFCGAL_CXX_API bool isCounterClockWiseOriented( const Polygon& );
 
 /**
  * Test if a 2D surface is oriented counter clockwise
  */
-SFCGAL_API bool isCounterClockWiseOriented( const Triangle& );
+SFCGAL_CXX_API bool isCounterClockWiseOriented( const Triangle& );
 
 /**
  * Test if a 2D surface is oriented counter clockwise
  */
-SFCGAL_API bool isCounterClockWiseOriented( const LineString& );
+SFCGAL_CXX_API bool isCounterClockWiseOriented( const LineString& );
 
 }//algorithm
 }//SFCGAL

@@ -35,7 +35,7 @@ namespace algorithm {
  * @warning Ownership is taken from the parameter
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> coll );
+SFCGAL_CXX_API std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> coll );
 }
 }
 

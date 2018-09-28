@@ -35,7 +35,7 @@ struct NoValidityCheck;
  * @pre g is a valid geometry
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
+SFCGAL_CXX_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
 
 /**
  * Tesselate a geometry: this will triangulate surfaces (including polyhedral and solid's surfaces) and keep untouched
@@ -44,7 +44,7 @@ SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry& );
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry&, NoValidityCheck );
+SFCGAL_CXX_API std::auto_ptr<SFCGAL::Geometry> tesselate( const Geometry&, NoValidityCheck );
 
 }//algorithm
 }//SFCGAL

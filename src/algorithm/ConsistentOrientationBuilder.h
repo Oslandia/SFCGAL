@@ -35,7 +35,7 @@ namespace algorithm {
  * Make orientation consistent in a triangle set
  * @ingroup detail
  */
-class SFCGAL_API ConsistentOrientationBuilder {
+class SFCGAL_CXX_API ConsistentOrientationBuilder {
 public:
     typedef graph::GeometryGraph::vertex_descriptor        vertex_descriptor ;
     typedef graph::GeometryGraph::edge_descriptor          edge_descriptor ;

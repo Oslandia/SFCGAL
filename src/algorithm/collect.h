@@ -32,7 +32,7 @@ namespace algorithm {
  * Returns an aggregate of ga and gb
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb );
+SFCGAL_CXX_API std::auto_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb );
 
 /**
  * Returns an aggregate of a list of geometries

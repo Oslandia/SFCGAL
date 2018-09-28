@@ -44,7 +44,7 @@ typedef uint32_t srid_t;
  * It is noncopyable since it stores a std::auto_ptr<SFCGAL::Geometry>
  *
  */
-class SFCGAL_API PreparedGeometry : public boost::noncopyable {
+class SFCGAL_CXX_API PreparedGeometry : public boost::noncopyable {
 public:
     /**
      * Default constructor

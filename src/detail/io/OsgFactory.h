@@ -38,7 +38,7 @@ namespace io {
 /**
  * @brief helper class to convert SFCGAL::Geometry to osg::Geometry
  */
-class SFCGAL_API OsgFactory {
+class SFCGAL_CXX_API OsgFactory {
 public:
     /**
      * create a osg::Geometry from a Point

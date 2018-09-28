@@ -30,7 +30,7 @@ namespace SFCGAL {
 /**
  * Represents a coordinate transform
  */
-class SFCGAL_API Transform : public GeometryVisitor {
+class SFCGAL_CXX_API Transform : public GeometryVisitor {
 public:
     virtual ~Transform() ;
     /**

@@ -35,7 +35,7 @@ namespace transform {
  * @todo unittest
  * @todo move outside (it's not a coordinate transform)?
  */
-class SFCGAL_API ForceOrderPoints : public Transform {
+class SFCGAL_CXX_API ForceOrderPoints : public Transform {
 public:
     /**
      * Pass the forced orientation as parameter

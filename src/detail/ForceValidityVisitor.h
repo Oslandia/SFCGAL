@@ -28,7 +28,7 @@
 namespace SFCGAL {
 namespace detail {
 
-class SFCGAL_API ForceValidityVisitor : public GeometryVisitor {
+class SFCGAL_CXX_API ForceValidityVisitor : public GeometryVisitor {
 public:
     ForceValidityVisitor( bool valid ) : valid_( valid ) {}    
     virtual void visit( Point& g ) ;

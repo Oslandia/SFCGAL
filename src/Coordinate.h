@@ -38,7 +38,7 @@ namespace SFCGAL {
  * @brief Represents the Coordinate of a Point (wraps either an empty structure, or a Kernel::Point_2,
  * or a Kernel::Point_3)
  */
-class SFCGAL_API Coordinate {
+class SFCGAL_CXX_API Coordinate {
 public:
     /**
      * Empty Coordinate constructor

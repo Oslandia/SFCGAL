@@ -32,7 +32,7 @@ namespace detail {
 /**
  * Get the list of points from a Geometry
  */
-class SFCGAL_API GetPointsVisitor : public ConstGeometryVisitor {
+class SFCGAL_CXX_API GetPointsVisitor : public ConstGeometryVisitor {
 public:
     virtual void visit( const Point& g ) ;
     virtual void visit( const LineString& g ) ;

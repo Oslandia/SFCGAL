@@ -37,7 +37,7 @@ namespace tools {
 /**
  * Registry for dynamic information about SFCGAL library
  */
-class SFCGAL_API Registry {
+class SFCGAL_CXX_API Registry {
 public:
     typedef std::vector< Geometry* >::iterator       prototype_iterator ;
     typedef std::vector< Geometry* >::const_iterator const_prototype_iterator ;

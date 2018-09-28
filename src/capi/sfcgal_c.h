@@ -83,19 +83,19 @@ typedef enum {
  * @ingroup capi
  * @note obsolete
  */
-SFCGAL_API void                      sfcgal_set_geometry_validation( int enabled );
+SFCGAL_C_API void                      sfcgal_set_geometry_validation( int enabled );
 
 /**
  * Returns the type of a given geometry
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geometry_t* );
+SFCGAL_C_API sfcgal_geometry_type_t    sfcgal_geometry_type_id( const sfcgal_geometry_t* );
 
 /**
  * Tests if the given geometry is valid or not
  * @ingroup capi
  */
-SFCGAL_API int                       sfcgal_geometry_is_valid( const sfcgal_geometry_t* );
+SFCGAL_C_API int                       sfcgal_geometry_is_valid( const sfcgal_geometry_t* );
 
 /**
  * Tests if the given geometry is valid or not
@@ -105,40 +105,40 @@ SFCGAL_API int                       sfcgal_geometry_is_valid( const sfcgal_geom
  * @param invalidity_location input/output parameter. If non null, a geometry could be allocated and contain the location of the invalidity
  * @ingroup capi
  */
-SFCGAL_API int                       sfcgal_geometry_is_valid_detail( const sfcgal_geometry_t* geom, char** invalidity_reason, sfcgal_geometry_t** invalidity_location );
+SFCGAL_C_API int                       sfcgal_geometry_is_valid_detail( const sfcgal_geometry_t* geom, char** invalidity_reason, sfcgal_geometry_t** invalidity_location );
 
 /**
  * Tests if the given geometry is 3D or not
  * @ingroup capi
  */
-SFCGAL_API int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
+SFCGAL_C_API int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
 
 /**
  * Tests if the given geometry is empty or not
  * @ingroup capi
  */
-SFCGAL_API int                       sfcgal_geometry_is_empty( const sfcgal_geometry_t* );
+SFCGAL_C_API int                       sfcgal_geometry_is_empty( const sfcgal_geometry_t* );
 
 /**
  * Returns a deep clone of the given geometry
  * @post returns a pointer to an allocated geometry that must be deallocated by @ref sfcgal_geometry_delete
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_geometry_clone( const sfcgal_geometry_t* );
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_geometry_clone( const sfcgal_geometry_t* );
 
 /**
  * Deletes a given geometry
  * @pre the given pointer must have been previously allocated by a creation function
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_geometry_delete( sfcgal_geometry_t* );
+SFCGAL_C_API void                      sfcgal_geometry_delete( sfcgal_geometry_t* );
 
 /**
  * Returns a WKT representation of the given geometry using CGAL exact integer fractions as coordinate values
  * @post buffer is returned allocated and must be freed by the caller
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_geometry_as_text( const sfcgal_geometry_t*, char** buffer, size_t* len );
+SFCGAL_C_API void                      sfcgal_geometry_as_text( const sfcgal_geometry_t*, char** buffer, size_t* len );
 
 /**
  * Returns a WKT representation of the given geometry using floating point coordinate values.
@@ -147,25 +147,25 @@ SFCGAL_API void                      sfcgal_geometry_as_text( const sfcgal_geome
  * @post buffer is returned allocated and must be freed by the caller
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_geometry_as_text_decim( const sfcgal_geometry_t*, int numDecimals, char** buffer, size_t* len );
+SFCGAL_C_API void                      sfcgal_geometry_as_text_decim( const sfcgal_geometry_t*, int numDecimals, char** buffer, size_t* len );
 
 /**
  * Creates an empty point
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_point_create();
 
 /**
  * Creates a point from two X and Y coordinates
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create_from_xy( double x, double y );
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_point_create_from_xy( double x, double y );
 
 /**
  * Creates a point from three X, Y and Z coordinates
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create_from_xyz( double x, double y, double z );
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_point_create_from_xyz( double x, double y, double z );
 
 /**
  * Returns the X coordinate of the given Point
@@ -173,7 +173,7 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_point_create_from_xyz( double x, dou
  * @pre the given point must not be empty
  * @ingroup capi
  */
-SFCGAL_API double                    sfcgal_point_x( const sfcgal_geometry_t* );
+SFCGAL_C_API double                    sfcgal_point_x( const sfcgal_geometry_t* );
 
 /**
  * Returns the Y coordinate of the given Point
@@ -181,7 +181,7 @@ SFCGAL_API double                    sfcgal_point_x( const sfcgal_geometry_t* );
  * @pre the given point must not be empty
  * @ingroup capi
  */
-SFCGAL_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
+SFCGAL_C_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
 
 /**
  * Returns the Z coordinate of the given Point
@@ -190,20 +190,20 @@ SFCGAL_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
  * @post the Z coordinate can value NaN if the given point is 2D only
  * @ingroup capi
  */
-SFCGAL_API double                    sfcgal_point_z( const sfcgal_geometry_t* );
+SFCGAL_C_API double                    sfcgal_point_z( const sfcgal_geometry_t* );
 
 /**
  * Creates an empty LineString
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_linestring_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_linestring_create();
 
 /**
  * Returns the number of points of the given LineString
  * @pre linestring must be a LineString
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_linestring_num_points( const sfcgal_geometry_t* linestring );
+SFCGAL_C_API size_t                    sfcgal_linestring_num_points( const sfcgal_geometry_t* linestring );
 
 /**
  * Returns the ith point of a given LineString
@@ -213,7 +213,7 @@ SFCGAL_API size_t                    sfcgal_linestring_num_points( const sfcgal_
  * @post the returned Point is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_linestring_point_n( const sfcgal_geometry_t* linestring, size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_linestring_point_n( const sfcgal_geometry_t* linestring, size_t i );
 
 /**
  * Adds a point to a LineString
@@ -223,13 +223,13 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_linestring_point_n( const sfcgal_geo
  * @post the ownership of Point is taken by the function
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_linestring_add_point( sfcgal_geometry_t* linestring, sfcgal_geometry_t* point );
+SFCGAL_C_API void                      sfcgal_linestring_add_point( sfcgal_geometry_t* linestring, sfcgal_geometry_t* point );
 
 /**
  * Creates an empty Triangle
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_triangle_create();
 
 /**
  * Creates a Triangle from three given Point
@@ -239,7 +239,7 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create();
  * @post the ownership of the three points are not taken. The caller is still responsible of their deallocation
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const sfcgal_geometry_t* pta,
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const sfcgal_geometry_t* pta,
         const sfcgal_geometry_t* ptb,
         const sfcgal_geometry_t* ptc );
 
@@ -250,7 +250,7 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_triangle_create_from_points( const s
  * @post returns a pointer to one of the vertices as a Point. This pointer is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geometry_t* triangle, int i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geometry_t* triangle, int i );
 
 /**
  * Sets one vertex of a Triangle
@@ -259,7 +259,7 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangle_vertex( const sfcgal_geomet
  * @post returns a pointer to one of the vertices as a Point. This pointer is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_triangle_set_vertex( sfcgal_geometry_t* triangle, int i, const sfcgal_geometry_t* vertex );
+SFCGAL_C_API void                      sfcgal_triangle_set_vertex( sfcgal_geometry_t* triangle, int i, const sfcgal_geometry_t* vertex );
 
 /**
  * Sets one vertex of a Triangle from two coordinates
@@ -267,7 +267,7 @@ SFCGAL_API void                      sfcgal_triangle_set_vertex( sfcgal_geometry
  * @pre i >= 0 and i < 3
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t* triangle, int i, double x, double y );
+SFCGAL_C_API void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_geometry_t* triangle, int i, double x, double y );
 
 /**
  * Sets one vertex of a Triangle from three coordinates
@@ -275,13 +275,13 @@ SFCGAL_API void                      sfcgal_triangle_set_vertex_from_xy( sfcgal_
  * @pre i >= 0 and i < 3
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* triangle, int i, double x, double y, double z );
+SFCGAL_C_API void                      sfcgal_triangle_set_vertex_from_xyz( sfcgal_geometry_t* triangle, int i, double x, double y, double z );
 
 /**
  * Creates an empty Polygon
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_polygon_create();
 
 /**
  * Creates an empty Polygon from an extrior ring
@@ -289,7 +289,7 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create();
  * @post the ownership of the given ring is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* ring );
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_polygon_create_from_exterior_ring( sfcgal_geometry_t* ring );
 
 /**
  * Returns the exterior ring of a given Polygon
@@ -298,14 +298,14 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_polygon_create_from_exterior_ring( s
  * @post the returned ring is a LineString, is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* polygon );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_polygon_exterior_ring( const sfcgal_geometry_t* polygon );
 
 /**
  * Returns the number of interior rings of a given Polygon
  * @pre polygon must be a Polygon
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* polygon );
+SFCGAL_C_API size_t                    sfcgal_polygon_num_interior_rings( const sfcgal_geometry_t* polygon );
 
 /**
  * Returns the ith interior ring of a given Polygon
@@ -314,7 +314,7 @@ SFCGAL_API size_t                    sfcgal_polygon_num_interior_rings( const sf
  * @post the returned ring is a LineString, is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t* polygon, size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_polygon_interior_ring_n( const sfcgal_geometry_t* polygon, size_t i );
 
 /**
  * Adds an interior ring to a given Polygon
@@ -322,20 +322,20 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_polygon_interior_ring_n( const sfcga
  * @pre ring must be a LineString
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_polygon_add_interior_ring( sfcgal_geometry_t* polygon, sfcgal_geometry_t* ring );
+SFCGAL_C_API void                      sfcgal_polygon_add_interior_ring( sfcgal_geometry_t* polygon, sfcgal_geometry_t* ring );
 
 /**
  * Creates an empty  GeometryCollection
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_geometry_collection_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_geometry_collection_create();
 
 /**
  * Returns the number of geometries of a given GeometryCollection
  * @pre collection is a GeometryCollection
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* collection );
+SFCGAL_C_API size_t                    sfcgal_geometry_collection_num_geometries( const sfcgal_geometry_t* collection );
 
 /**
  * Returns the ith geometry of a GeometryCollection
@@ -344,7 +344,7 @@ SFCGAL_API size_t                    sfcgal_geometry_collection_num_geometries( 
  * @post the returned Geometry is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_geometry_collection_geometry_n( const sfcgal_geometry_t* collection , size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_geometry_collection_geometry_n( const sfcgal_geometry_t* collection , size_t i );
 
 /**
  * Adds a Geometry to a given GeometryCollection
@@ -352,38 +352,38 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_geometry_collection_geometry_n( cons
  * @post the ownership of the given geometry is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t* collection, sfcgal_geometry_t* geometry );
+SFCGAL_C_API void                      sfcgal_geometry_collection_add_geometry( sfcgal_geometry_t* collection, sfcgal_geometry_t* geometry );
 
 /**
  * Creates an empty MultiPoint
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_point_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_multi_point_create();
 
 /**
  * Creates an empty MultiLineString
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_linestring_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_multi_linestring_create();
 
 /**
  * Creates an empty MultiPolygon
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_multi_polygon_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_multi_polygon_create();
 
 /**
  * Creates an empty PolyhedralSurface
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_polyhedral_surface_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_polyhedral_surface_create();
 
 /**
  * Returns the number of polygons of a given PolyhedralSurface
  * @pre polyhedral must be a PolyhedralSurface
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* polyhedral );
+SFCGAL_C_API size_t                    sfcgal_polyhedral_surface_num_polygons( const sfcgal_geometry_t* polyhedral );
 
 /**
  * Returns the ith polygon of a given PolyhedralSurface
@@ -392,7 +392,7 @@ SFCGAL_API size_t                    sfcgal_polyhedral_surface_num_polygons( con
  * @post the returned Polygon is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t* polyhedral, size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_polyhedral_surface_polygon_n( const sfcgal_geometry_t* polyhedral, size_t i );
 
 /**
  * Adds a Polygon to a given PolyhedralSurface
@@ -401,20 +401,20 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_polyhedral_surface_polygon_n( const 
  * @post the ownership of the Polygon is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t* polyhedral, sfcgal_geometry_t* polygon );
+SFCGAL_C_API void                      sfcgal_polyhedral_surface_add_polygon( sfcgal_geometry_t* polyhedral, sfcgal_geometry_t* polygon );
 
 /**
  * Creates an empty TriangulatedSurface
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_triangulated_surface_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_triangulated_surface_create();
 
 /**
  * Returns the number of triangles of a given TriangulatedSurface
  * @pre tin must be a TriangulatedSurface
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* tin );
+SFCGAL_C_API size_t                    sfcgal_triangulated_surface_num_triangles( const sfcgal_geometry_t* tin );
 
 /**
  * Returns the ith Triangle of a given TriangulatedSurface
@@ -423,7 +423,7 @@ SFCGAL_API size_t                    sfcgal_triangulated_surface_num_triangles( 
  * @post the returned Triangle is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t* tin, size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_triangulated_surface_triangle_n( const sfcgal_geometry_t* tin, size_t i );
 
 /**
  * Adds a Triangle to a given TriangulatedSurface
@@ -432,13 +432,13 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_triangulated_surface_triangle_n( con
  * @post the ownership of the Triangle is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t* tin, sfcgal_geometry_t* triangle );
+SFCGAL_C_API void                      sfcgal_triangulated_surface_add_triangle( sfcgal_geometry_t* tin, sfcgal_geometry_t* triangle );
 
 /**
  * Creates an empty Solid
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_solid_create();
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_solid_create();
 
 /**
  * Creates a Solid from an exterior shell
@@ -446,14 +446,14 @@ SFCGAL_API sfcgal_geometry_t*        sfcgal_solid_create();
  * @post the ownership of the given shell is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*        sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* shell );
+SFCGAL_C_API sfcgal_geometry_t*        sfcgal_solid_create_from_exterior_shell( sfcgal_geometry_t* shell );
 
 /**
  * Returns the number of shells of a given Solid
  * @pre solid must be a Solid
  * @ingroup capi
  */
-SFCGAL_API size_t                    sfcgal_solid_num_shells( const sfcgal_geometry_t* solid );
+SFCGAL_C_API size_t                    sfcgal_solid_num_shells( const sfcgal_geometry_t* solid );
 
 /**
  * Returns the ith shell of a given Solid
@@ -462,7 +462,7 @@ SFCGAL_API size_t                    sfcgal_solid_num_shells( const sfcgal_geome
  * @post the returned PolyhedralSurface is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry_t* solid, size_t i );
+SFCGAL_C_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry_t* solid, size_t i );
 
 /**
  * Adds a shell to a given Solid
@@ -471,7 +471,7 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry
  * @post the ownership of the shell is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_solid_add_shell( sfcgal_geometry_t* solid, sfcgal_geometry_t* shell );
+SFCGAL_C_API void                      sfcgal_solid_add_shell( sfcgal_geometry_t* solid, sfcgal_geometry_t* shell );
 
 
 /**
@@ -503,13 +503,13 @@ typedef uint32_t srid_t;
  * Creates an empty PreparedGeometry
  * @ingroup capi
  */
-SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create();
+SFCGAL_C_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create();
 
 /**
  * Creates a PreparedGeometry from a Geometry and an SRID
  * @ingroup capi
  */
-SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geometry( sfcgal_geometry_t* geometry, srid_t srid );
+SFCGAL_C_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geometry( sfcgal_geometry_t* geometry, srid_t srid );
 
 /**
  * Deletes a given PreparedGeometry
@@ -517,7 +517,7 @@ SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_prepared_geometry_create_from_geom
  * @post the underlying Geometry linked to the given PreparedGeometry is also deleted
  * @ingroup capi
  */
-SFCGAL_API void                        sfcgal_prepared_geometry_delete( sfcgal_prepared_geometry_t* prepared );
+SFCGAL_C_API void                        sfcgal_prepared_geometry_delete( sfcgal_prepared_geometry_t* prepared );
 
 /**
  * Returns the Geometry associated with a given PreparedGeometry
@@ -525,7 +525,7 @@ SFCGAL_API void                        sfcgal_prepared_geometry_delete( sfcgal_p
  * @post the returned Geometry is not writable and must not be deallocated by the caller
  * @ingroup capi
  */
-SFCGAL_API const sfcgal_geometry_t*    sfcgal_prepared_geometry_geometry( const sfcgal_prepared_geometry_t* prepared );
+SFCGAL_C_API const sfcgal_geometry_t*    sfcgal_prepared_geometry_geometry( const sfcgal_prepared_geometry_t* prepared );
 
 /**
  * Sets the Geometry associated with the given PreparedGeometry
@@ -533,21 +533,21 @@ SFCGAL_API const sfcgal_geometry_t*    sfcgal_prepared_geometry_geometry( const 
  * @post the ownership of the given geometry is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                        sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t* prepared, sfcgal_geometry_t* geometry );
+SFCGAL_C_API void                        sfcgal_prepared_geometry_set_geometry( sfcgal_prepared_geometry_t* prepared, sfcgal_geometry_t* geometry );
 
 /**
  * Returns SRID associated with a given PreparedGeometry
  * @pre prepared must be a PreparedGeometry
  * @ingroup capi
  */
-SFCGAL_API srid_t                      sfcgal_prepared_geometry_srid( const sfcgal_prepared_geometry_t* prepared );
+SFCGAL_C_API srid_t                      sfcgal_prepared_geometry_srid( const sfcgal_prepared_geometry_t* prepared );
 
 /**
  * Sets SRID associated with a given PreparedGeometry
  * @pre prepared must be a PreparedGeometry
  * @ingroup capi
  */
-SFCGAL_API void                        sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t* prepared, srid_t );
+SFCGAL_C_API void                        sfcgal_prepared_geometry_set_srid( sfcgal_prepared_geometry_t* prepared, srid_t );
 
 /**
  * Returns an EWKT representation of the given PreparedGeometry
@@ -555,7 +555,7 @@ SFCGAL_API void                        sfcgal_prepared_geometry_set_srid( sfcgal
  * @post buffer is returned allocated and must be freed by the caller
  * @ingroup capi
  */
-SFCGAL_API void                        sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* prepared, int num_decimals, char** buffer, size_t* len );
+SFCGAL_C_API void                        sfcgal_prepared_geometry_as_ewkt( const sfcgal_prepared_geometry_t* prepared, int num_decimals, char** buffer, size_t* len );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -566,15 +566,15 @@ SFCGAL_API void                        sfcgal_prepared_geometry_as_ewkt( const s
 /**
  * io::readWKT
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_io_read_wkt( const char*, size_t len );
-SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char*, size_t len );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_io_read_wkt( const char*, size_t len );
+SFCGAL_C_API sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char*, size_t len );
 
 /**
  * Serialization
  */
 /* allocates into char**, must be freed by the caller */
-SFCGAL_API void                        sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_t*, char**, size_t* );
-SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char*, size_t l );
+SFCGAL_C_API void                        sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_t*, char**, size_t* );
+SFCGAL_C_API sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char*, size_t l );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -588,7 +588,7 @@ SFCGAL_API sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const cha
  * @pre isValid(geom2) == true
  * @ingroup capi
  */
-SFCGAL_API int                         sfcgal_geometry_intersects( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API int                         sfcgal_geometry_intersects( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Tests the 3D intersection of geom1 and geom2
@@ -596,7 +596,7 @@ SFCGAL_API int                         sfcgal_geometry_intersects( const sfcgal_
  * @pre isValid(geom2) == true
  * @ingroup capi
  */
-SFCGAL_API int                         sfcgal_geometry_intersects_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API int                         sfcgal_geometry_intersects_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the intersection of geom1 and geom2
@@ -605,7 +605,7 @@ SFCGAL_API int                         sfcgal_geometry_intersects_3d( const sfcg
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_intersection( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the 3D intersection of geom1 and geom2
@@ -614,7 +614,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection( const sfcga
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the difference of geom1 and geom2
@@ -623,7 +623,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_intersection_3d( const sf
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_difference( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the 3D difference of geom1 and geom2
@@ -632,7 +632,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference( const sfcgal_
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_difference_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the union of geom1 and geom2
@@ -641,7 +641,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_difference_3d( const sfcg
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_union( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the 3D union of geom1 and geom2
@@ -650,7 +650,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union( const sfcgal_geome
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_union_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the convex hull of geom
@@ -658,7 +658,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_union_3d( const sfcgal_ge
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the 3D convex hull of geom
@@ -666,35 +666,35 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull( const sfcgal_
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_convexhull_3d( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the volume of geom (must be a volume)
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API double                      sfcgal_geometry_volume( const sfcgal_geometry_t* geom );
+SFCGAL_C_API double                      sfcgal_geometry_volume( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the area of geom
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API double                      sfcgal_geometry_area( const sfcgal_geometry_t* geom );
+SFCGAL_C_API double                      sfcgal_geometry_area( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the 3D area of geom
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API double                      sfcgal_geometry_area_3d( const sfcgal_geometry_t* geom );
+SFCGAL_C_API double                      sfcgal_geometry_area_3d( const sfcgal_geometry_t* geom );
 
 /**
  * Tests if the given Geometry is planar
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API int                         sfcgal_geometry_is_planar( const sfcgal_geometry_t* geom );
+SFCGAL_C_API int                         sfcgal_geometry_is_planar( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the orientation of the given Polygon
@@ -705,7 +705,7 @@ SFCGAL_API int                         sfcgal_geometry_is_planar( const sfcgal_g
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API int                         sfcgal_geometry_orientation( const sfcgal_geometry_t* geom );
+SFCGAL_C_API int                         sfcgal_geometry_orientation( const sfcgal_geometry_t* geom );
 
 /**
  * Returns a tesselation of the given Geometry
@@ -713,7 +713,7 @@ SFCGAL_API int                         sfcgal_geometry_orientation( const sfcgal
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_geometry_t* geom );
 
 /**
  * Returns a triangulation of the given Geometry
@@ -721,7 +721,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_tesselate( const sfcgal_g
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sfcgal_geometry_t* geom );
 
 /**
  * Returns an extrusion of the given Geometry
@@ -729,7 +729,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_triangulate_2dz( const sf
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t* geom, double ex, double ey, double ez );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geometry_t* geom, double ex, double ey, double ez );
 
 /**
  * Convert a PolyhedralSurface to a Solid
@@ -737,7 +737,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_extrude( const sfcgal_geo
  * @post isValid(return) == true
  * @ingroup detail
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_geometry_t* geom );
 
 /**
  * Force a Left Handed Rule on the given Geometry
@@ -745,7 +745,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_make_solid( const sfcgal_
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_geometry_t* geom );
 
 /**
  * Force a Right Handed Rule on the given Geometry
@@ -753,7 +753,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_lhr( const sfcgal_g
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_geometry_t* geom );
 
 /**
  * Computes the distance of the two given Geometry objects
@@ -761,7 +761,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_force_rhr( const sfcgal_g
  * @pre isValid(geom2) == true
  * @ingroup capi
  */
-SFCGAL_API double                      sfcgal_geometry_distance( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API double                      sfcgal_geometry_distance( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Computes the 3D distance of the two given Geometry objects
@@ -769,7 +769,7 @@ SFCGAL_API double                      sfcgal_geometry_distance( const sfcgal_ge
  * @pre isValid(geom2) == true
  * @ingroup capi
  */
-SFCGAL_API double                      sfcgal_geometry_distance_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API double                      sfcgal_geometry_distance_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Round coordinates of the given Geometry
@@ -777,7 +777,7 @@ SFCGAL_API double                      sfcgal_geometry_distance_3d( const sfcgal
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_round( const sfcgal_geometry_t* geom, int r );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_round( const sfcgal_geometry_t* geom, int r );
 
 /**
  * Returns the minkowski sum geom1 + geom2
@@ -786,7 +786,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_round( const sfcgal_geome
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_minkowski_sum( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_minkowski_sum( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
 /**
  * Returns the offset polygon of the given Geometry.
@@ -794,7 +794,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_minkowski_sum( const sfcg
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfcgal_geometry_t* geom, double radius );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfcgal_geometry_t* geom, double radius );
 
 /**
  * Returns the straight skeleton of the given Geometry
@@ -802,7 +802,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_offset_polygon( const sfc
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the straight skeleton of the given Geometry with the distance to the border as M coordinate
@@ -810,7 +810,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton( const 
  * @post isValid(return) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom );
 
 /**
  * Returns the approximate medial axis for the given Polygon
@@ -818,7 +818,7 @@ SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_straight_skeleton_distanc
  * @pre isValid(geom) == true
  * @ingroup capi
  */
-SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_approximate_medial_axis( const sfcgal_geometry_t* geom );
+SFCGAL_C_API sfcgal_geometry_t*          sfcgal_geometry_approximate_medial_axis( const sfcgal_geometry_t* geom );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -840,7 +840,7 @@ typedef int ( *sfcgal_error_handler_t ) ( const char*, ... );
  * The default behaviour is to call printf.
  * @ingroup capi
  */
-SFCGAL_API void sfcgal_set_error_handlers( sfcgal_error_handler_t warning_handler, sfcgal_error_handler_t error_handler );
+SFCGAL_C_API void sfcgal_set_error_handlers( sfcgal_error_handler_t warning_handler, sfcgal_error_handler_t error_handler );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -857,7 +857,7 @@ typedef void ( *sfcgal_free_handler_t ) ( void* );
  * @param free_handler is the function to call for memory deallocation. The default behaviour is to call free()
  * @ingroup capi
  */
-SFCGAL_API void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t malloc_handler, sfcgal_free_handler_t free_handler );
+SFCGAL_C_API void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t malloc_handler, sfcgal_free_handler_t free_handler );
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -869,13 +869,13 @@ SFCGAL_API void sfcgal_set_alloc_handlers( sfcgal_alloc_handler_t malloc_handler
  * This function must be called before all the other one.
  * @ingroup capi
  */
-SFCGAL_API void sfcgal_init();
+SFCGAL_C_API void sfcgal_init();
 
 /**
  * Get version
  * @ingroup capi
  */
-SFCGAL_API const char* sfcgal_version();
+SFCGAL_C_API const char* sfcgal_version();
 
 #ifdef __cplusplus
 }

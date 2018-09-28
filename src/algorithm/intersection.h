@@ -40,7 +40,7 @@ struct NoValidityCheck;
  * @pre ga and gb are valid geometries
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
+SFCGAL_CXX_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb );
 
 /**
  * Intersection on 2D geometries. No validity check variant
@@ -48,14 +48,14 @@ SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geome
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb,NoValidityCheck );
+SFCGAL_CXX_API std::auto_ptr<Geometry> intersection( const Geometry& ga, const Geometry& gb,NoValidityCheck );
 
 /**
  * Intersection on 3D geometries. Assume z = 0 if needed
  * @pre ga and gb are valid geometries
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
+SFCGAL_CXX_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb );
 
 /**
  * Intersection on 3D geometries. Assume z = 0 if needed
@@ -63,7 +63,7 @@ SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geo
  * @ingroup detail
  * @warning@ No actual validity check is done
  */
-SFCGAL_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
+SFCGAL_CXX_API std::auto_ptr<Geometry> intersection3D( const Geometry& ga, const Geometry& gb, NoValidityCheck );
 
 /**
  * @ingroup detail

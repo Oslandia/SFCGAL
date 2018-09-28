@@ -39,7 +39,7 @@ struct NoValidityCheck;
  * @pre gA and gB are valid geometries
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB ) ;
 
 /**
  * @brief 2D minkowski sum (p+q)
@@ -51,7 +51,7 @@ SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Pol
  * @ingroup detail
  * @warning@ No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck ) ;
 
 } // namespace algorithm
 } // namespace SFCGAL
