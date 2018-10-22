@@ -30,7 +30,6 @@
 #include <CGAL/Polygon_with_holes_2.h>
 #include <CGAL/Arr_segment_traits_2.h>
 #include <CGAL/Arrangement_2.h>
-#include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/bounding_box.h>
 #include <CGAL/box_intersection_d.h>
 
@@ -232,60 +231,6 @@ int main(){
 	    for ( it = arr.faces_begin(); it != arr.faces_end(); it++ ) {
 		std::cout << "unbounded: " << it->is_unbounded() << " has holes: " << (it->holes_begin() != it->holes_end()) << std::endl;
 	    }
-	}
-	std::cout << "--- Nef_polyhedron_3 ---" << std::endl;
-	{
-	    typedef CGAL::Nef_polyhedron_3<Kernel> Nef_polyhedron;
-	    typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
-	    
-	    Polyhedron poly1;
-	    poly1.make_tetrahedron( Point_3( 0.0, -1.0, -1.0 ),
-	    			    Point_3( 2.0, -1.0, -1.0 ),
-	    			    Point_3( 1.5, 1.0, -1.0 ),
-	    			    Point_3( 1.0, 0.0, 1.0 ) );
-	    Nef_polyhedron nef1( poly1 );
-	    std::cout << "nef1.is_valid() " << nef1.is_valid() << std::endl;
-	    std::cout << "nef1.is_empty() " << nef1.is_empty() << std::endl;
-
-	    typedef Nef_polyhedron::Halffacet_const_iterator GeometryIterator;
-	    typedef CGAL::Box_intersection_d::Box_with_handle_d<double,3,GeometryIterator> Box;
-	    std::list<Box> boxes;
-
-	    // browse faces
-	    Nef_polyhedron::Halffacet_const_iterator it;
-	    for ( it = nef1.halffacets_begin(); it != nef1.halffacets_end(); ++it ) {
-		    CGAL::Iso_cuboid_3<Kernel> bbox;
-		    
-		    std::list<CGAL::Point_3<Kernel> > points;
-		    Nef_polyhedron::SHalfedge_const_handle edge( it->facet_cycles_begin() );
-		    Nef_polyhedron::SHalfedge_around_facet_const_circulator hc(edge);
-		    Nef_polyhedron::SHalfedge_around_facet_const_circulator hc_end(hc);
-		    do {
-			    points.push_back( hc->source()->center_vertex()->point() );
-			    ++hc;
-		    } while (hc != hc_end);
-		    bbox = CGAL::bounding_box( points.begin(), points.end() );
-		    boxes.push_back( Box(bbox.bbox(), it) );
-	    }
-	    // TODO use CGAL::box_intersection_d()
-
-	    Polyhedron poly2;
-	    poly2.make_tetrahedron( Point_3( -1.0, -1.0, -1.0 ),
-	    			    Point_3( 1.0, -1.0, -1.0 ),
-	    			    Point_3( 0.5, 1.0, -1.0 ),
-	    			    Point_3( 0.0, 0.0, 1.0 ) );
-
-	    Nef_polyhedron nef2( poly2 );
-	    std::cout << "# of vertices: " << nef1.number_of_vertices() << std::endl;
-	    std::cout << "# of volumes: " << nef1.number_of_volumes() << std::endl;
-	    std::cout << "# of edges: " << nef1.number_of_edges() << std::endl;
-	    std::cout << "# of facets: " << nef1.number_of_facets() << std::endl;
-
-	    nef1 = nef1.join(nef2);
-	    std::cout << "# of vertices: " << nef1.number_of_vertices() << std::endl;
-	    std::cout << "# of volumes: " << nef1.number_of_volumes() << std::endl;
-	    std::cout << "# of edges: " << nef1.number_of_edges() << std::endl;
-	    std::cout << "# of facets: " << nef1.number_of_facets() << std::endl;
 	}
 	return 0;
 }

@@ -59,10 +59,6 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_SolidTest )
 
 //-- helpers
 
-//template < typename K > CGAL::Nef_polyhedron_3<K> toNef_polyhedron_3() const
-
-
-
 //virtual Geometry *   Geometry::clone() const = 0 ;
 //virtual Geometry*    Geometry::boundary() const ;
 //Envelope             Geometry::envelope() const ;

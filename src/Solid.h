@@ -31,8 +31,6 @@
 
 #include <SFCGAL/PolyhedralSurface.h>
 
-#include <CGAL/Nef_polyhedron_3.h>
-
 namespace SFCGAL {
 
 /**
