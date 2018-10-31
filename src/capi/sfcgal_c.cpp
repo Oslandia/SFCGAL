@@ -929,7 +929,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geom
 extern "C" sfcgal_geometry_t* sfcgal_geometry_extrude( const sfcgal_geometry_t* ga, double x, double y, double z )
 {
     const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
-    SFCGAL::Geometry* gb = g->clone();
+    std::auto_ptr<SFCGAL::Geometry> gb( g->clone() );
     SFCGAL::transform::ForceZOrderPoints forceZ;
     std::auto_ptr<SFCGAL::Geometry> result;
 
