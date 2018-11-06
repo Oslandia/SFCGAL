@@ -8,6 +8,10 @@ foreach (header ${SFCGAL_HEADERS_COPIED})
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/src/${header} ${CMAKE_BINARY_DIR}/include/SFCGAL/${header} DEPENDS ${CMAKE_SOURCE_DIR}/src/${header})
 endforeach()
 
+if (CGAL_VERSION VERSION_GREATER 4.13)
+  include_directories(../CGAL_patches)
+endif()
+
 set( SFCGAL_OSG_HEADERS
   ${CMAKE_SOURCE_DIR}/src/io/osg.h
   ${CMAKE_SOURCE_DIR}/src/detail/io/OsgFactory.h )
