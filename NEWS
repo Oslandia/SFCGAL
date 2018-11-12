@@ -1,3 +1,5 @@
+2.0.0 (2017-11-12)
+    * Removes all traces of OSG
 1.3.6 (2018-11-12):
     * Get rid of boost data_time dependency
     * Fix some implicit switch/case fallthroughs

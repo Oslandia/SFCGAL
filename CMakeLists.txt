@@ -19,8 +19,6 @@ option( SFCGAL_BUILD_EXAMPLES "build examples" OFF )
 option( SFCGAL_BUILD_TESTS "build unit, garden and regress tests" OFF )
 option( SFCGAL_BUILD_BENCH "Build benchmarks" OFF )
 
-option( SFCGAL_WITH_OSG "Compile with OpenSceneGraph support" OFF )
-
 #-- include finders and co
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules;${CMAKE_MODULE_PATH}" )
 
@@ -76,7 +74,7 @@ if ( SFCGAL_BUILD_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework program_options ${SFCGAL_Boost_COMPONENTS} )
 endif()
 #-- program_options
-if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES OR SFCGAL_BUILD_OSG )
+if ( SFCGAL_BUILD_TESTS OR SFCGAL_BUILD_EXAMPLES )
 	set( SFCGAL_Boost_COMPONENTS program_options chrono filesystem timer ${SFCGAL_Boost_COMPONENTS} )
 endif()
 find_package( Boost COMPONENTS ${SFCGAL_Boost_COMPONENTS} REQUIRED )
@@ -87,17 +85,6 @@ endif()
 # patch boost 1.60.0      
 if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND (${Boost_SUBMINOR_VERSION} EQUAL 0))
   include_directories( patches/boost-1.60.0 )
-endif()
-
-#-- OpenScenegraph -----------------------------------------
-if ( SFCGAL_WITH_OSG )
-  find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
-  if( ${OPENSCENEGRAPH_FOUND} )
-    message( STATUS "OPENSCENEGRAPH_INCLUDE_DIRS = ${OPENSCENEGRAPH_INCLUDE_DIRS}" )
-    message( STATUS "OPENSCENEGRAPH_LIBRARIES = ${OPENSCENEGRAPH_LIBRARIES}" )
-
-    include_directories( SYSTEM ${OPENSCENEGRAPH_INCLUDE_DIRS} )
-  endif()
 endif()
 
 #-- note that SYSTEM turns -I/path to -isystem and avoid warnings in CGAL and Boost

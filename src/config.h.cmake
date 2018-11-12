@@ -22,10 +22,5 @@
 
 #include <SFCGAL/export.h>
 
-/**
- * indicates if OpenSceneGraph dependency is activated
- */
-#cmakedefine SFCGAL_WITH_OSG
-
 #endif
 
