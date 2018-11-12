@@ -40,21 +40,6 @@ target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
 
 target_link_libraries( SFCGAL_static ${Boost_LIBRARIES} )
 
-if ( ${Use_precompiled_headers} )
-  if(PCHSupport_FOUND)
-    # Add "-fPIC" for shared library build
-    if( ${SFCGAL_USE_STATIC_LIBS} )
-      set( pch_option "" )
-    else()
-      set( pch_option "-fPIC" )
-    endif()
-    add_precompiled_header(SFCGAL
-      include/CGAL/all.h
-      ${pch_option}
-      )
-  endif()
-endif()
-
 # install library
 install(
 	TARGETS
