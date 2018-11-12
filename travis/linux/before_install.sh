@@ -1,10 +1,9 @@
 export DEBIAN_FRONTEND=noninteractive
-sudo -E apt-add-repository -y "ppa:ppsspp/cmake"
 sudo apt-get update -qq
 sudo apt-get install --force-yes \
-    cmake libboost-chrono1.55-dev libboost-program-options1.55-dev libboost-filesystem1.55-dev libboost-timer1.55-dev \
-    libboost-test1.55-dev libboost-date-time1.55-dev libboost-thread1.55-dev \
-    libboost-system1.55-dev libboost-serialization1.55-dev \
+    cmake libboost-chrono1.58-dev libboost-program-options1.58-dev libboost-filesystem1.58-dev libboost-timer1.58-dev \
+    libboost-test1.58-dev libboost-thread1.58-dev \
+    libboost-system1.58-dev libboost-serialization1.58-dev \
     libmpfr-dev libgmp-dev \
     cmake
 #CGAL
