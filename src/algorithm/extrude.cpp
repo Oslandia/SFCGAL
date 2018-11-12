@@ -368,7 +368,7 @@ std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT 
     return result;
 }
 
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz )
+SFCGAL_CXX_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz )
 {
     if ( !std::isfinite( dx ) || !std::isfinite( dy ) || !std::isfinite( dz ) ) {
         BOOST_THROW_EXCEPTION( NonFiniteValueException( "trying to extrude with non finite value in direction" ) );

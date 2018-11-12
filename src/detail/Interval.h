@@ -29,7 +29,7 @@ namespace detail {
 /**
  * Represents an interval
  */
-class SFCGAL_API Interval {
+class SFCGAL_CXX_API Interval {
 public:
     /**
      * default constructor (empty interval)

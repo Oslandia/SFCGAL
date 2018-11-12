@@ -114,7 +114,7 @@ typedef enum {
  *
  * @ingroup public_api
  */
-class SFCGAL_API Geometry {
+class SFCGAL_CXX_API Geometry {
 public:
     virtual ~Geometry();
 
@@ -292,7 +292,7 @@ protected:
  * @todo only compare coordinate points
  * @pre the two geometries must be valid
  */
-SFCGAL_API bool operator==( const Geometry&, const Geometry& );
+SFCGAL_CXX_API bool operator==( const Geometry&, const Geometry& );
 
 } // namespace SFCGAL
 

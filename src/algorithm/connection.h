@@ -39,7 +39,7 @@ namespace algorithm {
  * @ingroup detail
  */
 
-class SFCGAL_API SurfaceGraph : boost::noncopyable {
+class SFCGAL_CXX_API SurfaceGraph : boost::noncopyable {
 public:
     typedef size_t VertexIndex;
     typedef size_t FaceIndex;
@@ -90,14 +90,14 @@ private:
  * test if a surface is connected, the graph should be build beforehand
  * @ingroup detail
  */
-SFCGAL_API bool isConnected( const SurfaceGraph& graph );
+SFCGAL_CXX_API bool isConnected( const SurfaceGraph& graph );
 
 /**
  * test if a surface is closed, the graph should be build beforehand
  * @note the surface may not be connected, eg. two spheres will yield a true result
  * @ingroup detail
  */
-SFCGAL_API bool isClosed( const SurfaceGraph& graph );
+SFCGAL_CXX_API bool isClosed( const SurfaceGraph& graph );
 
 }
 }

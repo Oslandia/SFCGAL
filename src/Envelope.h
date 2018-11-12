@@ -44,7 +44,7 @@ class PolyhedralSurface ;
  * @todo add asText instead of "print"?
  * @todo add basic operations (especialy intersects/intersects3D)
  */
-class SFCGAL_API Envelope {
+class SFCGAL_CXX_API Envelope {
 public:
     /**
      * default constructor (empty bounding box)
@@ -220,7 +220,7 @@ private:
 /**
  * Global comparison operator on Envelope
  */
-SFCGAL_API bool operator==( const Envelope&, const Envelope& );
+SFCGAL_CXX_API bool operator==( const Envelope&, const Envelope& );
 
 }//SFCGAL
 

@@ -35,7 +35,7 @@ struct NoValidityCheck;
  * @pre g is a valid geometry
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 /**
  * extrude a Geometry with a direction
@@ -43,7 +43,7 @@ SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, 
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck ) ;
 
 /**
  * extrude a Geometry with a direction
@@ -52,7 +52,7 @@ SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, 
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz );
+SFCGAL_CXX_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz );
 
 /**
  * @brief extrude a Geometry by a given vector
@@ -60,7 +60,7 @@ SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const double& d
  *         get output geometries with a clean topology)
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v ) ;
+SFCGAL_CXX_API std::auto_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v ) ;
 
 }//algorithm
 }//SFCGAL

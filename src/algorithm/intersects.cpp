@@ -239,7 +239,7 @@ bool _intersects( const PrimitiveHandle<2>& pa, const PrimitiveHandle<2>& pb )
 
 //
 // intersects of a volume with any other type
-struct intersects_volume_x : public boost::static_visitor<bool> {
+struct SFCGAL_CXX_API intersects_volume_x : public boost::static_visitor<bool> {
     const MarkedPolyhedron* polyhedron;
 
     intersects_volume_x( const MarkedPolyhedron* vol ) : polyhedron( vol ) {}

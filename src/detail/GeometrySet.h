@@ -44,7 +44,7 @@ namespace detail {
 
 ///
 /// Primitive type enumeration. Note that the value is the dimension !
-enum PrimitiveType {
+enum SFCGAL_CXX_API PrimitiveType {
     PrimitivePoint = 0,
     PrimitiveSegment = 1,
     PrimitiveSurface = 2,
@@ -54,7 +54,7 @@ enum PrimitiveType {
 ///
 /// Primitive handle. Holds a pointer to a primitive, through the 'handle' member
 template <int Dim>
-struct PrimitiveHandle {
+struct SFCGAL_CXX_API PrimitiveHandle {
     //
     // We use boost::variant here for convenience, whereas it is needed
     typedef boost::variant< const typename Point_d<Dim>::Type*,
@@ -75,7 +75,7 @@ struct PrimitiveHandle {
 ///
 /// PrimitiveBox. Type used for CGAL::Box_intersection_d
 template <int Dim>
-struct PrimitiveBox {
+struct SFCGAL_CXX_API PrimitiveBox {
     typedef CGAL::Box_intersection_d::Box_with_handle_d<double, Dim, PrimitiveHandle<Dim>*> Type;
 };
 
@@ -83,21 +83,21 @@ struct PrimitiveBox {
 ///
 /// BoxCollection for use with CGAL::Box_intersection_d
 template <int Dim>
-struct BoxCollection {
+struct SFCGAL_CXX_API BoxCollection {
     typedef std::vector<typename PrimitiveBox<Dim>::Type> Type;
 };
 
 ///
 /// HandleCollection. Used to store PrimitiveHandle
 template <int Dim>
-struct HandleCollection {
+struct SFCGAL_CXX_API HandleCollection {
     typedef std::list<PrimitiveHandle<Dim> > Type;
 };
 
 ///
 /// Flags available for each type of Geometry type.
 /// Primitives can be 'flagged' in order to speed up recomposition
-enum ElementFlag {
+enum SFCGAL_CXX_API ElementFlag {
     // the polyhedron is planar => build a triangle or a polygon
     FLAG_IS_PLANAR = 1
 };
@@ -106,7 +106,7 @@ enum ElementFlag {
 /// CollectionElement, a Primitive with flags
 /// Primitive : Point_d, Segment_d, Surface_d, Volume_d
 template <class Primitive>
-class CollectionElement {
+class SFCGAL_CXX_API CollectionElement {
 public:
     int flags() const {
         return _flags;
@@ -152,7 +152,7 @@ std::ostream& operator<<( std::ostream& ostr, const CollectionElement<Primitive>
 /// dimension 1 (segments), dimension 2 (surfaces, a.k.a. polygon or triangles)
 /// or dimension 3 (polyhedron)
 template <int Dim>
-class GeometrySet {
+class SFCGAL_CXX_API GeometrySet {
 public:
     // Points are stored in an ordered set
     typedef std::set<CollectionElement<typename Point_d<Dim>::Type> > PointCollection;
@@ -343,10 +343,10 @@ private:
 
 ///
 /// Display operator
-SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
+SFCGAL_CXX_API std::ostream& operator<<( std::ostream&, const GeometrySet<2>& g );
 ///
 /// Display operator
-SFCGAL_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
+SFCGAL_CXX_API std::ostream& operator<<( std::ostream&, const GeometrySet<3>& g );
 
 
 // bbox of a 'volume' for 2D, will never be called

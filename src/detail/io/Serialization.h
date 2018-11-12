@@ -43,12 +43,12 @@ namespace SFCGAL {
 
 namespace io {
 
-class SFCGAL_API BinarySerializer : public boost::archive::binary_oarchive {
+class SFCGAL_CXX_API BinarySerializer : public boost::archive::binary_oarchive {
 public:
     BinarySerializer( std::ostream& ostr );
 };
 
-class SFCGAL_API BinaryUnserializer : public boost::archive::binary_iarchive {
+class SFCGAL_CXX_API BinaryUnserializer : public boost::archive::binary_iarchive {
 public:
     BinaryUnserializer( std::istream& istr );
 };
@@ -57,23 +57,23 @@ public:
  * Convert a Geometry to its binary representation
  * @warning resulting string may contain 0s
  */
-SFCGAL_API std::string writeBinaryGeometry( const SFCGAL::Geometry& );
+SFCGAL_CXX_API std::string writeBinaryGeometry( const SFCGAL::Geometry& );
 
 /**
  * Convert a PreparedGeometry to its binary representation
  * @warning resulting string may contain 0s
  */
-SFCGAL_API std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
+SFCGAL_CXX_API std::string writeBinaryPrepared( const SFCGAL::PreparedGeometry& );
 
 /**
  * Read a Geometry from a binary representation
  */
-SFCGAL_API std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
+SFCGAL_CXX_API std::auto_ptr<SFCGAL::Geometry> readBinaryGeometry( const std::string& );
 
 /**
  * Read a PreparedGeometry from a binary representation
  */
-SFCGAL_API std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
+SFCGAL_CXX_API std::auto_ptr<SFCGAL::PreparedGeometry> readBinaryPrepared( const std::string& );
 }
 }
 
@@ -83,22 +83,22 @@ namespace serialization {
 /**
  * Serialization of Gmpz for text archives
  */
-SFCGAL_API void save( boost::archive::text_oarchive& ar, const CGAL::Gmpz& z, const unsigned int version );
+SFCGAL_CXX_API void save( boost::archive::text_oarchive& ar, const CGAL::Gmpz& z, const unsigned int version );
 
 /**
  * Serialization of Gmpz for binary archives
  */
-SFCGAL_API void save ( boost::archive::binary_oarchive& ar, const CGAL::Gmpz& z, const unsigned int version );
+SFCGAL_CXX_API void save ( boost::archive::binary_oarchive& ar, const CGAL::Gmpz& z, const unsigned int version );
 
 /**
  * Unserialization of Gmpz for text archives
  */
-SFCGAL_API void load( boost::archive::text_iarchive& ar, CGAL::Gmpz& z, const unsigned int version );
+SFCGAL_CXX_API void load( boost::archive::text_iarchive& ar, CGAL::Gmpz& z, const unsigned int version );
 
 /**
  * Unserialization of Gmpz for binary archives
  */
-SFCGAL_API void load( boost::archive::binary_iarchive& ar, CGAL::Gmpz& z, const unsigned int version );
+SFCGAL_CXX_API void load( boost::archive::binary_iarchive& ar, CGAL::Gmpz& z, const unsigned int version );
 
 template<class Archive>
 void serialize( Archive& ar, CGAL::Gmpz& z, const unsigned int version )
@@ -140,22 +140,22 @@ void serialize( Archive& ar, CGAL::Gmpq& q, const unsigned int version )
 /**
  * Serialization of mpz_class for text archives
  */
-SFCGAL_API void save( boost::archive::text_oarchive& ar, const mpz_class& z, const unsigned int version );
+SFCGAL_CXX_API void save( boost::archive::text_oarchive& ar, const mpz_class& z, const unsigned int version );
 
 /**
  * Serialization of mpz_class for binary archives
  */
-SFCGAL_API void save ( boost::archive::binary_oarchive& ar, const mpz_class& z, const unsigned int version );
+SFCGAL_CXX_API void save ( boost::archive::binary_oarchive& ar, const mpz_class& z, const unsigned int version );
 
 /**
  * Unserialization of mpz_class for text archives
  */
-SFCGAL_API void load( boost::archive::text_iarchive& ar, mpz_class& z, const unsigned int version );
+SFCGAL_CXX_API void load( boost::archive::text_iarchive& ar, mpz_class& z, const unsigned int version );
 
 /**
  * Unserialization of mpz_class for binary archives
  */
-SFCGAL_API void load( boost::archive::binary_iarchive& ar, mpz_class& z, const unsigned int version );
+SFCGAL_CXX_API void load( boost::archive::binary_iarchive& ar, mpz_class& z, const unsigned int version );
 
 template<class Archive>
 void serialize( Archive& ar, mpz_class& z, const unsigned int version )

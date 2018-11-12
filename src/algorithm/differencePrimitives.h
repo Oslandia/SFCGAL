@@ -544,7 +544,7 @@ VolumeOutputIteratorType difference( const MarkedPolyhedron& a, const MarkedPoly
 typedef  CGAL::Box_intersection_d::Box_with_handle_d<double,3,MarkedPolyhedron::Halfedge_around_facet_const_circulator> FaceBboxBase;
 
 
-struct FaceBbox: FaceBboxBase {
+struct SFCGAL_CXX_API FaceBbox: FaceBboxBase {
     struct Bbox: CGAL::Bbox_3 {
         Bbox( MarkedPolyhedron::Halfedge_around_facet_const_circulator handle )
             : CGAL::Bbox_3( handle->vertex()->point().bbox() ) {
@@ -564,7 +564,7 @@ struct FaceBbox: FaceBboxBase {
     }
 };
 
-struct FaceSegmentCollide {
+struct SFCGAL_CXX_API FaceSegmentCollide {
     typedef std::vector< MarkedPolyhedron::Halfedge_around_facet_const_circulator > CollisionVector;
     FaceSegmentCollide( CollisionVector& list ): _list( list ) {}
     void operator()( const FaceBboxBase&, const FaceBboxBase& face ) {

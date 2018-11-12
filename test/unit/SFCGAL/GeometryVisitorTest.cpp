@@ -45,7 +45,7 @@ using namespace boost::unit_test ;
 /**
  * get type from Geometry
  */
-class DemoVisitorGetType : public ConstGeometryVisitor {
+class SFCGAL_CXX_API DemoVisitorGetType : public ConstGeometryVisitor {
 public:
 
     virtual void visit( const Point& ) {

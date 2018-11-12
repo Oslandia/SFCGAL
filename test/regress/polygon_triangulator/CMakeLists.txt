@@ -6,7 +6,7 @@ add_executable( ${REGRESS_NAME} ${SFCGAL_REGRESS_POLYGON_TRIANGULATOR_TEST_SOURC
 
 find_package(Boost REQUIRED COMPONENTS program_options filesystem serialization)
 
-target_link_libraries( ${REGRESS_NAME}	SFCGAL)
+target_link_libraries( ${REGRESS_NAME}	SFCGAL_static)
 target_link_libraries( ${REGRESS_NAME} ${CGAL_3RD_PARTY_LIBRARIES} ${Boost_LIBRARIES})
 
 

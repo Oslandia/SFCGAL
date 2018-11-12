@@ -35,7 +35,7 @@ struct NoValidityCheck;
  * @ingroup public_api
  * @pre g is a valid geometry
  */
-SFCGAL_API double     area( const Geometry& g ) ;
+SFCGAL_CXX_API double     area( const Geometry& g ) ;
 
 /**
  * @brief Compute the 2D area for a Geometry
@@ -45,44 +45,44 @@ SFCGAL_API double     area( const Geometry& g ) ;
  * @pre g is a valid geometry
  * @warning No actual validity check is done
  */
-SFCGAL_API double     area( const Geometry& g, NoValidityCheck ) ;
+SFCGAL_CXX_API double     area( const Geometry& g, NoValidityCheck ) ;
 
 /**
  * @brief Compute the 2D signed area for a Triangle
  * @ingroup detail
  */
-SFCGAL_API Kernel::FT signedArea( const Triangle& g );
+SFCGAL_CXX_API Kernel::FT signedArea( const Triangle& g );
 /**
  * @brief Compute the 2D signed area for a closed LineString
  * @ingroup detail
  */
-SFCGAL_API Kernel::FT signedArea( const LineString& g );
+SFCGAL_CXX_API Kernel::FT signedArea( const LineString& g );
 
 /**
  * Returns Compute the 2D area for a Triangle
  * @ingroup detail
  */
-SFCGAL_API double    area( const Triangle& g ) ;
+SFCGAL_CXX_API double    area( const Triangle& g ) ;
 /**
  * Returns Compute the 2D area for a Polygon
  * @ingroup detail
  */
-SFCGAL_API double     area( const Polygon& g ) ;
+SFCGAL_CXX_API double     area( const Polygon& g ) ;
 /**
  * Returns the 2D area for a GeometryCollection
  * @ingroup detail
  */
-SFCGAL_API double     area( const GeometryCollection& g ) ;
+SFCGAL_CXX_API double     area( const GeometryCollection& g ) ;
 /**
  * Returns the 2D area for a TriangulatedSurface
  * @ingroup detail
  */
-SFCGAL_API double     area( const TriangulatedSurface& g ) ;
+SFCGAL_CXX_API double     area( const TriangulatedSurface& g ) ;
 /**
  * Returns the 2D area for a TriangulatedSurface
  * @ingroup detail
  */
-SFCGAL_API double      area( const PolyhedralSurface& g ) ;
+SFCGAL_CXX_API double      area( const PolyhedralSurface& g ) ;
 
 
 /**
@@ -92,7 +92,7 @@ SFCGAL_API double      area( const PolyhedralSurface& g ) ;
  * @ingroup public_api
  * @pre g is a valid geometry
  */
-SFCGAL_API double         area3D( const Geometry& g ) ;
+SFCGAL_CXX_API double         area3D( const Geometry& g ) ;
 
 /**
  * Returns 3D area for a Geometry
@@ -102,36 +102,36 @@ SFCGAL_API double         area3D( const Geometry& g ) ;
  * @pre g is a valid geometry
  * @warning No actual validity check is done
  */
-SFCGAL_API double         area3D( const Geometry& g, NoValidityCheck ) ;
+SFCGAL_CXX_API double         area3D( const Geometry& g, NoValidityCheck ) ;
 
 /**
  * Returns 3D area for a Polygon
  * @ingroup detail
  */
-SFCGAL_API double         area3D( const Polygon& g ) ;
+SFCGAL_CXX_API double         area3D( const Polygon& g ) ;
 /**
  * Returns the 3D area for a MultiPolygon
  * @ingroup detail
  */
-SFCGAL_API double         area3D( const GeometryCollection& g ) ;
+SFCGAL_CXX_API double         area3D( const GeometryCollection& g ) ;
 
 /**
  * Returns the 3D area for a PolyhedralSurface
  * @ingroup detail
  */
-SFCGAL_API double         area3D( const PolyhedralSurface& g ) ;
+SFCGAL_CXX_API double         area3D( const PolyhedralSurface& g ) ;
 
 /**
  * Returns the 3D area for a Triangle
  * @ingroup detail
  */
-SFCGAL_API double         area3D( const Triangle& g ) ;
+SFCGAL_CXX_API double         area3D( const Triangle& g ) ;
 
 /**
  * Returns the 3D area for a TriangulatedSurface
  * @ingroup detail
  */
-SFCGAL_API double         area3D( const TriangulatedSurface& g ) ;
+SFCGAL_CXX_API double         area3D( const TriangulatedSurface& g ) ;
 
 
 

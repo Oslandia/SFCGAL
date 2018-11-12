@@ -32,7 +32,7 @@ namespace graph {
  * @brief [private]A vertex in a GeometryGraph with minimal requirements (some algorithms could need
  * a richer class)
  */
-struct SFCGAL_API Vertex {
+struct SFCGAL_CXX_API Vertex {
     /**
      * [requirement]Constructor with coordinate
      */

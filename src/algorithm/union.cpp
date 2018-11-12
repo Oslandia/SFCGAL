@@ -295,7 +295,7 @@ std::ostream& operator<<( std::ostream& out, std::set< T* >& obs )
 // takes care of RAII of primitives
 
 template <int Dim>
-class Handle {
+class SFCGAL_CXX_API Handle {
     struct ObservablePrimitive: boost::variant<
             typename detail::Point_d<Dim>::Type,
             Segment_d<Dim>,

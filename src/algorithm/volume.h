@@ -35,14 +35,14 @@ struct NoValidityCheck;
  * @pre g is a valid Geometry
  * @ingroup public_api
  */
-SFCGAL_API const Kernel::FT volume( const Geometry& g );
+SFCGAL_CXX_API const Kernel::FT volume( const Geometry& g );
 
 /**
  * Computes the volume of a Solid
  * @pre (not checked) volume is closed and consistently oriented
  * @ingroup detail
  */
-SFCGAL_API const Kernel::FT volume( const Solid& g, NoValidityCheck );
+SFCGAL_CXX_API const Kernel::FT volume( const Solid& g, NoValidityCheck );
 
 }
 }

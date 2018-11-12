@@ -12,24 +12,21 @@ if (CGAL_VERSION VERSION_GREATER 4.13)
   include_directories(../CGAL_patches)
 endif()
 
-if( SFCGAL_USE_STATIC_LIBS )
-  add_definitions( "-fPIC" )
-  add_library(
-    SFCGAL
-    ${SFCGAL_HEADERS}
-    ${SFCGAL_SOURCES}
-    )
+add_definitions( "-fPIC" )
+add_library(
+SFCGAL_static
+${SFCGAL_HEADERS}
+${SFCGAL_SOURCES}
+)
 
-else()
-  add_definitions( "-DSFCGAL_BUILD_SHARED" )
-  add_library(
-    SFCGAL SHARED
-    ${SFCGAL_HEADERS}
-    ${SFCGAL_SOURCES}
-    )
-endif()
+add_library(
+SFCGAL SHARED
+${SFCGAL_HEADERS}
+${SFCGAL_SOURCES}
+)
 
 add_dependencies( SFCGAL copy )
+add_dependencies( SFCGAL_static copy )
 
 # set VERSION and SOVERSION
 set_target_properties( SFCGAL PROPERTIES VERSION ${SFCGAL_VERSION}
@@ -37,7 +34,11 @@ set_target_properties( SFCGAL PROPERTIES VERSION ${SFCGAL_VERSION}
 
 target_link_libraries( SFCGAL CGAL::CGAL CGAL::CGAL_Core)
 
+target_link_libraries( SFCGAL_static CGAL::CGAL CGAL::CGAL_Core)
+
 target_link_libraries( SFCGAL ${Boost_LIBRARIES} )
+
+target_link_libraries( SFCGAL_static ${Boost_LIBRARIES} )
 
 if ( ${Use_precompiled_headers} )
   if(PCHSupport_FOUND)

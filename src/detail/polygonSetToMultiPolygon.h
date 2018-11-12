@@ -33,7 +33,7 @@ namespace detail {
  * @brief convert a CGAL::Polygon_set_2 to a MultiPolygon
  * @todo unittest
  */
-SFCGAL_API std::auto_ptr< MultiPolygon > polygonSetToMultiPolygon( const CGAL::Polygon_set_2< Kernel >& polygonSet ) ;
+SFCGAL_CXX_API std::auto_ptr< MultiPolygon > polygonSetToMultiPolygon( const CGAL::Polygon_set_2< Kernel >& polygonSet ) ;
 
 } // namespace detail
 } // namespace SFCGAL

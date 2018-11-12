@@ -39,7 +39,7 @@ namespace SFCGAL {
  * A Polygon in SFA with holes
  * @ingroup public_api
  */
-class SFCGAL_API Polygon : public Surface {
+class SFCGAL_CXX_API Polygon : public Surface {
 public:
     typedef boost::ptr_vector< LineString >::iterator       iterator ;
     typedef boost::ptr_vector< LineString >::const_iterator const_iterator ;

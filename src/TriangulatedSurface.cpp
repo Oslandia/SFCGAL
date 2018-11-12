@@ -207,7 +207,7 @@ void TriangulatedSurface::accept( ConstGeometryVisitor& visitor ) const
 // Private class
 // A modifier creating triangles from a TriangulatedSurface with the incremental builder.
 template <class HDS>
-class Triangulated2Polyhedron : public CGAL::Modifier_base<HDS> {
+class SFCGAL_CXX_API Triangulated2Polyhedron : public CGAL::Modifier_base<HDS> {
 public:
     Triangulated2Polyhedron( const TriangulatedSurface& surf ) : surf( surf ) {}
 
@@ -301,8 +301,8 @@ std::auto_ptr<Polyhedron> TriangulatedSurface::toPolyhedron_3() const
     return std::auto_ptr<Polyhedron>( poly );
 }
 
-template SFCGAL_API std::auto_ptr< detail::MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, detail::MarkedPolyhedron >() const;
-template SFCGAL_API std::auto_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
+template SFCGAL_CXX_API std::auto_ptr< detail::MarkedPolyhedron > TriangulatedSurface::toPolyhedron_3<Kernel, detail::MarkedPolyhedron >() const;
+template SFCGAL_CXX_API std::auto_ptr< CGAL::Polyhedron_3<Kernel> > TriangulatedSurface::toPolyhedron_3<Kernel, CGAL::Polyhedron_3<Kernel> >() const;
 
 }//SFCGAL
 

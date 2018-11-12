@@ -31,7 +31,7 @@
 ///
 /// http://www.mr-edd.co.uk/blog/beginners_guide_streambuf
 ///
-class SFCGAL_API CharArrayBuffer : public std::streambuf {
+class SFCGAL_CXX_API CharArrayBuffer : public std::streambuf {
 public:
     CharArrayBuffer( const char* begin, const char* end );
     explicit CharArrayBuffer( const char* str );

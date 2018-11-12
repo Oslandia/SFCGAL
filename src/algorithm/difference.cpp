@@ -43,7 +43,7 @@ namespace SFCGAL {
 namespace algorithm {
 
 template <int Dim>
-struct CollisionMapper {
+struct SFCGAL_CXX_API CollisionMapper {
     typedef std::vector< PrimitiveHandle<Dim>* > PrimitiveHandleSet;
     typedef std::map< PrimitiveHandle<Dim>*, PrimitiveHandleSet > Map;
     CollisionMapper( Map& map ) : _map( map ) {};

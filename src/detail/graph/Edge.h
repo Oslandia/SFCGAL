@@ -30,7 +30,7 @@ namespace graph {
  * @brief [private]An edge in a GeometryGraph with minimal requirements (some algorithms could need
  * more information)
  */
-struct SFCGAL_API Edge {
+struct SFCGAL_CXX_API Edge {
     Edge( const int& face_ = -1 );
 
     int face ;

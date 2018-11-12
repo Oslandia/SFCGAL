@@ -42,7 +42,7 @@ struct NoValidityCheck;
  * @ingroup public_api
  * @pre g is a valid geometry
  */
-SFCGAL_API std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g );
+SFCGAL_CXX_API std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g );
 
 /**
  * @brief build a 2D straight skeleton for a Polygon
@@ -53,7 +53,7 @@ SFCGAL_API std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometr
  * @ingroup public_api
  * @pre g is a valid geometry
  */
-SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
+SFCGAL_CXX_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
 
 /**
  * @brief build a 2D straight skeleton for a Polygon
@@ -64,18 +64,18 @@ SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g,
  * @pre g is a valid geometry
  * @warning No actual validity check is done
  */
-SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly = false, bool outputDistanceInM = false ) ;
+SFCGAL_CXX_API std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoOrientation, NoValidityCheck, bool innerOnly = false, bool outputDistanceInM = false ) ;
 
 /**
  * @brief build a 2D straight skeleton for a Polygon
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
+SFCGAL_CXX_API std::auto_ptr< MultiLineString > straightSkeleton( const Polygon& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
 /**
  * @brief build a 2D straight skeleton for a Polygon
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
+SFCGAL_CXX_API std::auto_ptr< MultiLineString > straightSkeleton( const MultiPolygon& g, bool autoOrientation = true, bool innerOnly = false, bool outputDistanceInM = false ) ;
 
 }//namespace algorithm
 }//namespace SFCGAL

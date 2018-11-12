@@ -35,7 +35,7 @@ namespace SFCGAL {
  * A MultiSolid
  * @ingroup public_api
  */
-class SFCGAL_API MultiSolid : public GeometryCollection {
+class SFCGAL_CXX_API MultiSolid : public GeometryCollection {
 public:
     /**
      * Empty MultiSolid constructor

@@ -75,7 +75,7 @@ template void intersection<2>( const PrimitiveHandle<2>& a, const PrimitiveHandl
 template void intersection<3>( const PrimitiveHandle<3>& a, const PrimitiveHandle<3>& b, GeometrySet<3>& );
 
 template <int Dim>
-struct intersection_cb {
+struct SFCGAL_CXX_API intersection_cb {
     intersection_cb( GeometrySet<Dim>& out ) : output( out ) {}
 
     void operator()( const typename PrimitiveBox<Dim>::Type& a,

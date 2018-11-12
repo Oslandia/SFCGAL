@@ -36,17 +36,17 @@ namespace algorithm {
  * @brief translate a geometry from a given vector
  * @todo unittest
  */
-SFCGAL_API void       translate( Geometry& g, const Kernel::Vector_3& v ) ;
+SFCGAL_CXX_API void       translate( Geometry& g, const Kernel::Vector_3& v ) ;
 /**
  * @brief translate a geometry from a given vector
  * @todo unittest
  */
-SFCGAL_API void       translate( Geometry& g, const Kernel::Vector_2& v ) ;
+SFCGAL_CXX_API void       translate( Geometry& g, const Kernel::Vector_2& v ) ;
 /**
  * @brief translate a geometry from a given vector
  * @todo unittest
  */
-SFCGAL_API void       translate( Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
+SFCGAL_CXX_API void       translate( Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
 
 } // namespace algorithm
 } // namespace SFCGAL

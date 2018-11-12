@@ -35,7 +35,7 @@ namespace detail {
  *
  * @todo ConstPointVisitor
  */
-class SFCGAL_API EnvelopeVisitor : public ConstGeometryVisitor {
+class SFCGAL_CXX_API EnvelopeVisitor : public ConstGeometryVisitor {
 public:
     EnvelopeVisitor( Envelope& envelope_ );
 

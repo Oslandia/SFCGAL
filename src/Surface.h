@@ -28,7 +28,7 @@ namespace SFCGAL {
 /**
  * Abstract Surface class
  */
-class SFCGAL_API Surface : public Geometry {
+class SFCGAL_CXX_API Surface : public Geometry {
 public:
     /**
      * destructor

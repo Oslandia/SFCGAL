@@ -80,7 +80,7 @@ namespace SFCGAL {
  *
  * @warning saved_lines and co removed (dangerous for memory and could be done in a LogWriter).
  */
-class SFCGAL_API Logger {
+class SFCGAL_CXX_API Logger {
 public:
     /**
      * destructor
@@ -165,7 +165,7 @@ private:
 /**
  * get the logger
  */
-SFCGAL_API Logger& logger() ;
+SFCGAL_CXX_API Logger& logger() ;
 
 
 }//SFCGAL

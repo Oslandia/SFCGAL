@@ -36,7 +36,7 @@ namespace algorithm {
  * @brief force a geometry to be 2D (project on O,x,y)
  * @warning ignore empty geometries
  */
-SFCGAL_API void force2D( Geometry& g );
+SFCGAL_CXX_API void force2D( Geometry& g );
 
 } // namespace algorithm
 } // namespace SFCGAL

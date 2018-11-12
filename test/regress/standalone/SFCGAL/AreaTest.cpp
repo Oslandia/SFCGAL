@@ -45,7 +45,7 @@ using namespace boost::unit_test ;
 using namespace SFCGAL ;
 
 
-class RotateCoordinate : public Transform {
+class SFCGAL_CXX_API RotateCoordinate : public Transform {
 public:
 
     virtual void transform( Point& p ) {

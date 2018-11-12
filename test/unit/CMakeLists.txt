@@ -4,7 +4,7 @@ find_package(Boost REQUIRED COMPONENTS unit_test_framework serialization)
 
 file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES *.cpp )
 add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
-target_link_libraries( unit-test-SFCGAL SFCGAL)
+target_link_libraries( unit-test-SFCGAL SFCGAL_static)
 target_link_libraries(unit-test-SFCGAL ${CGAL_3RD_PARTY_LIBRARIES} ${Boost_LIBRARIES})
 
 #include( PrecompiledHeader )

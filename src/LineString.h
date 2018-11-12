@@ -38,7 +38,7 @@ namespace SFCGAL {
  * A LineString in SFA
  * @ingroup public_api
  */
-class SFCGAL_API LineString : public Geometry {
+class SFCGAL_CXX_API LineString : public Geometry {
 public:
     typedef boost::ptr_vector< Point >::iterator       iterator ;
     typedef boost::ptr_vector< Point >::const_iterator const_iterator ;
