@@ -110,6 +110,8 @@ std::auto_ptr<Geometry> collectionToMulti( std::auto_ptr<Geometry> g )
             if ( gi->isEmpty() ) {
                 continue;
             }
+            ret_geo->addGeometry( *gi );
+            break;
 
         default:
             ret_geo->addGeometry( *gi );
