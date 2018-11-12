@@ -73,10 +73,8 @@
  * 
  * Every processing algorithm takes <b>valid</b> geometries as input parameters (no self intersection, etc.). Validity of geometries is tested with the algorithm::isValid() function and corresponds to validity preconditions asked for by OGC standards.
  *
- * Since these validity checkings may be slow, each algorithm comes with a variant where no actual check is made (taking a NoValidityCheck tag as additional parameter).
+ * Geometries can also be marked as permanently valid by using a geometry flag. See Geometry::hasValidityFlag() and Geometry::forceValidityFlag()
  *
- * Validity checking could also be bypassed at a global level, by setting to 'OFF' the 'SFCGAL_CHECK_VALIDITY' CMake option.
- * 
  * @section api API
  *
  * Two sets of functionalities are exposed and will be maintained as a stable API :
