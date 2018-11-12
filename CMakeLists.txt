@@ -94,7 +94,7 @@ else()
 endif()
 
 #-- minimalist build allowed with boost version older than 1.48
-set( SFCGAL_Boost_COMPONENTS date_time thread system serialization )
+set( SFCGAL_Boost_COMPONENTS thread system serialization )
 #-- unit test
 if ( SFCGAL_BUILD_TESTS )
 	set( SFCGAL_Boost_COMPONENTS unit_test_framework program_options ${SFCGAL_Boost_COMPONENTS} )

@@ -19,7 +19,6 @@
  */
 
 #include <iostream>
-#include <boost/date_time.hpp>
 
 #include <SFCGAL/detail/tools/Log.h>
 
@@ -65,8 +64,6 @@ void Logger::log(
     const int& lineNumber
 )
 {
-    using namespace boost::posix_time;
-
     if ( level < _logLevel ) {
         return ;
     }
