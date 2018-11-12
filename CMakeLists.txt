@@ -35,6 +35,11 @@ set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VE
 
 include( Libtoolize )
 
+#-- C++ version --------------------------------------------
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
+    add_definitions("-std=c++98")
+endif()
+
 #-----------------------------------------------------------
 # dependencies
 #-----------------------------------------------------------
