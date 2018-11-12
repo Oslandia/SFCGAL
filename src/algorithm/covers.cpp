@@ -152,7 +152,7 @@ bool equalLength( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, int dim 
             return false;
         }
     }
-        break;
+    break;
 
     case 1: {
 
@@ -166,7 +166,7 @@ bool equalLength( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, int dim 
             return false;
         }
     }
-        break;
+    break;
 
     case 2: {
         //
@@ -179,7 +179,7 @@ bool equalLength( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, int dim 
             return false;
         }
     }
-        break;
+    break;
 
     case 3: {
         // Compare volumes
@@ -191,7 +191,7 @@ bool equalLength( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, int dim 
             return false;
         }
     }
-        break;
+    break;
     }
 
     return true;
