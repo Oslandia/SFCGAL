@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
         try {
             g = io::readWkt( tg.wkt );
         }
-        catch ( WktParseException ) {
+        catch ( WktParseException& ) {
             BOOST_CHECK_MESSAGE( !tg.isValid, ( boost::format( "%d: parse error on valid geometry %s" ) % t % tg.wkt ) );
             continue;
         }

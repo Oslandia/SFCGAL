@@ -115,7 +115,7 @@ int main( int argc, char* argv[] )
                 std::auto_ptr< Geometry > g( io::readWkt( tg->wkt ) );
                 testCollection.addGeometry( g.release() );
             }
-            catch ( WktParseException ) {
+            catch ( WktParseException& ) {
                 BOOST_ASSERT( !tg->isValid );
             }
         }
@@ -173,7 +173,7 @@ int main( int argc, char* argv[] )
                 ( void )p.y();
                 ( void )p.z();
             }
-            catch ( Exception ) {
+            catch ( Exception& ) {
                 BOOST_ASSERT( p.isEmpty() );
             }
         }
@@ -205,7 +205,7 @@ int main( int argc, char* argv[] )
             try {
                 ( void )l.pointN( l.numPoints() );
             }
-            catch ( std::exception ) {
+            catch ( std::exception& ) {
                 threw = true;
             }
 
@@ -238,7 +238,7 @@ int main( int argc, char* argv[] )
             try {
                 ( void )p.interiorRingN( p.numInteriorRings() );
             }
-            catch ( std::exception ) {
+            catch ( std::exception& ) {
                 threw = true;
             }
 
@@ -283,7 +283,7 @@ int main( int argc, char* argv[] )
             try {
                 ( void )s.polygonN( s.numPolygons() );
             }
-            catch ( std::exception ) {
+            catch ( std::exception& ) {
                 threw = true;
             }
 
@@ -312,7 +312,7 @@ int main( int argc, char* argv[] )
             try {
                 ( void )s.triangleN( s.numTriangles() );
             }
-            catch ( std::exception ) {
+            catch ( std::exception& ) {
                 threw = true;
             }
 
@@ -356,7 +356,7 @@ int main( int argc, char* argv[] )
             try {
                 ( void )s.shellN( s.numShells() );
             }
-            catch ( std::exception ) {
+            catch ( std::exception& ) {
                 threw = true;
             }
 
@@ -384,9 +384,9 @@ int main( int argc, char* argv[] )
     {\
     ++calls ;\
     try{ call }\
-    catch ( GeometryInvalidityException ) {}\
-    catch ( InappropriateGeometryException ) {}\
-    catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
+    catch ( GeometryInvalidityException& ) {}\
+    catch ( InappropriateGeometryException& ) {}\
+    catch ( NotImplementedException& e ) { notImplemented.insert(e.what()) ; }\
     catch ( std::exception& e )\
     { \
         try{\
@@ -404,7 +404,7 @@ int main( int argc, char* argv[] )
         }\
         std::cerr << "\n";\
         }\
-        catch ( NotImplementedException e ) { notImplemented.insert(e.what()) ; }\
+        catch ( NotImplementedException& e ) { notImplemented.insert(e.what()) ; }\
     }\
     }
 
