@@ -35,6 +35,10 @@ set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VE
 
 include( Libtoolize )
 
+if (CMAKE_CXX_COMPILER MATCHES ".*clang")
+    set(CMAKE_COMPILER_IS_CLANGXX 1)
+endif ()
+
 #-- C++ version --------------------------------------------
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
     add_definitions("-std=c++98")
