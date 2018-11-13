@@ -12,18 +12,14 @@ if (CGAL_VERSION VERSION_GREATER 4.13)
   include_directories(../CGAL_patches)
 endif()
 
-add_definitions( "-fPIC" )
-add_library(
-SFCGAL_static
-${SFCGAL_HEADERS}
-${SFCGAL_SOURCES}
-)
+#add_definitions( "-fPIC" )
 
-add_library(
-SFCGAL SHARED
-${SFCGAL_HEADERS}
-${SFCGAL_SOURCES}
-)
+add_library(objlib OBJECT ${SFCGAL_HEADERS} ${SFCGAL_SOURCES})
+set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+
+add_library( SFCGAL_static $<TARGET_OBJECTS:objlib> )
+
+add_library( SFCGAL SHARED $<TARGET_OBJECTS:objlib> )
 
 add_dependencies( SFCGAL copy )
 add_dependencies( SFCGAL_static copy )
