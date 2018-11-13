@@ -287,7 +287,7 @@ std::auto_ptr< MultiLineString > straightSkeleton( const Geometry& g, bool autoO
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( g );
 
     std::auto_ptr<MultiLineString> result( straightSkeleton( g, autoOrientation, NoValidityCheck(), innerOnly, outputDistanceInM ) );
-    propagateValidityFlag( *result, true );
+    result->forceValidityFlag( true );
     return result;
 }
 ///
@@ -365,7 +365,7 @@ std::auto_ptr< MultiLineString > approximateMedialAxis( const Geometry& g )
         straightSkeletonToMedialAxis( *skeleton, *mx, trans ) ;
     }
 
-    propagateValidityFlag( *mx, true );
+    mx->forceValidityFlag( true );
     return mx;
 }
 

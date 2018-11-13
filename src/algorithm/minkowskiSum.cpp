@@ -284,7 +284,7 @@ std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gB );
 
     std::auto_ptr<Geometry> result( minkowskiSum( gA, gB, NoValidityCheck() ) );
-    propagateValidityFlag( *result, true );
+    result->forceValidityFlag( true );
     return result;
 }
 

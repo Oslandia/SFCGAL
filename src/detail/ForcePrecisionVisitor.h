@@ -49,13 +49,15 @@ public:
     virtual void visit( TriangulatedSurface& g ) ;
 
     template < class G >
-    void forcePrecision( G g )
+    void forcePrecision( G & g )
     {
         if ( hasPrecision_ ) {
-            g.setPrecision( precisionXY_, precisionZ_ );
+            g.precisionFlag_ = true;
+            g.precisionXY_ = precisionXY_;
+            g.precisionZ_ = precisionZ_;
         }
         else {
-            g.setPrecision();
+            g.precisionFlag_ = false;
         }
     }
     

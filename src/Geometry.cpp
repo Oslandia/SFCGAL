@@ -30,6 +30,8 @@
 #include <SFCGAL/algorithm/distance3d.h>
 
 #include <SFCGAL/detail/EnvelopeVisitor.h>
+#include <SFCGAL/detail/ForceValidityVisitor.h>
+#include <SFCGAL/detail/ForcePrecisionVisitor.h>
 
 #include <SFCGAL/detail/transform/RoundTransform.h>
 
@@ -174,7 +176,8 @@ bool Geometry::hasValidityFlag() const
 
 void Geometry::forceValidityFlag( bool valid )
 {
-        validityFlag_ = valid;
+    detail::ForceValidityVisitor v( valid );
+    accept( v );
 }
 
 bool Geometry::hasPrecision() const
@@ -196,14 +199,14 @@ int Geometry::precisionZ() const
 
 void Geometry::setPrecision( const int& xy, const int& z )
 {
-    precisionFlag_ = true;
-    precisionXY_ = xy;
-    precisionZ_ = z;
+    detail::ForcePrecisionVisitor v( xy, z );
+    accept( v );
 }
 
 void Geometry::setPrecision()
 {
-    precisionFlag_ = false;
+    detail::ForcePrecisionVisitor v;
+    accept( v );
 }
 
 ///

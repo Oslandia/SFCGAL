@@ -62,6 +62,13 @@ class ConstGeometryVisitor ;
 
 namespace SFCGAL {
 
+namespace detail
+{
+    class ForcePrecisionVisitor;
+    class ForceValidityVisitor;
+}
+
+
 /**
  * [OGC/SFA]8.2.3 "A common list of codes for geometric types"
  *
@@ -303,6 +310,9 @@ protected:
     bool precisionFlag_;
     int precisionXY_;
     int precisionZ_;
+
+    friend class detail::ForceValidityVisitor;
+    friend class detail::ForcePrecisionVisitor;
 };
 
 /**

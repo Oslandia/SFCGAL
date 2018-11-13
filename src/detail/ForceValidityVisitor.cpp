@@ -41,7 +41,7 @@ namespace detail {
 ///
 void ForceValidityVisitor::visit( Point& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
 }
 
 ///
@@ -49,7 +49,7 @@ void ForceValidityVisitor::visit( Point& g )
 ///
 void ForceValidityVisitor::visit( LineString& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numPoints(); i++ ) {
         visit( g.pointN( i ) );
     }
@@ -60,7 +60,7 @@ void ForceValidityVisitor::visit( LineString& g )
 ///
 void ForceValidityVisitor::visit( Polygon& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numRings(); i++ ) {
         visit( g.ringN( i ) );
     }
@@ -71,7 +71,7 @@ void ForceValidityVisitor::visit( Polygon& g )
 ///
 void ForceValidityVisitor::visit( Triangle& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     visit( g.vertex( 0 ) );
     visit( g.vertex( 1 ) );
     visit( g.vertex( 2 ) );
@@ -82,7 +82,7 @@ void ForceValidityVisitor::visit( Triangle& g )
 ///
 void ForceValidityVisitor::visit( Solid& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numShells(); i++ ) {
         visit( g.shellN( i ) );
     }
@@ -93,7 +93,7 @@ void ForceValidityVisitor::visit( Solid& g )
 ///
 void ForceValidityVisitor::visit( MultiPoint& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         visit( g.pointN( i ) );
     }
@@ -104,7 +104,7 @@ void ForceValidityVisitor::visit( MultiPoint& g )
 ///
 void ForceValidityVisitor::visit( MultiLineString& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         visit( g.lineStringN( i ) );
     }
@@ -115,7 +115,7 @@ void ForceValidityVisitor::visit( MultiLineString& g )
 ///
 void ForceValidityVisitor::visit( MultiPolygon& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         visit( g.polygonN( i ) );
     }
@@ -126,7 +126,7 @@ void ForceValidityVisitor::visit( MultiPolygon& g )
 ///
 void ForceValidityVisitor::visit( MultiSolid& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         visit( g.solidN( i ) );
     }
@@ -137,7 +137,7 @@ void ForceValidityVisitor::visit( MultiSolid& g )
 ///
 void ForceValidityVisitor::visit( GeometryCollection& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         g.geometryN( i ).accept( *this );
     }
@@ -148,7 +148,7 @@ void ForceValidityVisitor::visit( GeometryCollection& g )
 ///
 void ForceValidityVisitor::visit( PolyhedralSurface& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numPolygons(); i++ ) {
         visit( g.polygonN( i ) );
     }
@@ -159,7 +159,7 @@ void ForceValidityVisitor::visit( PolyhedralSurface& g )
 ///
 void ForceValidityVisitor::visit( TriangulatedSurface& g )
 {
-    g.forceValidityFlag( valid_ );
+    g.validityFlag_ = true;
     for ( size_t i = 0; i < g.numGeometries(); i++ ) {
         visit( g.geometryN( i ) );
     }

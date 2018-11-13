@@ -47,19 +47,6 @@ namespace algorithm {
 SFCGAL_CXX_API const Validity isValid( const Geometry& g, const double& toleranceAbs= 1e-9 );
 
 /**
- * Sets the geometry flag on a geometry and propagate to every internal geometries
- * @ingroup public_api
- */
-SFCGAL_CXX_API void propagateValidityFlag( Geometry& g, bool valid );
-
-/**
- * Sets the precision on a geometry and propagate to every internal geometries
- * @ingroup public_api
- */
-SFCGAL_CXX_API void propagatePrecison( Geometry& g );
-
-
-/**
  * Tag used for variants of algorithm that do not do validity check
  * @ingroup public_api
  */

@@ -58,6 +58,8 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
             continue;
         }
 
+        g->setPrecision(-2, -2);
+        BOOST_CHECK_MESSAGE( g->hasPrecision(), "no precision" );
         Validity v = algorithm::isValid( *g );
         BOOST_CHECK_MESSAGE( v == tg.isValid, ( boost::format( "%d:%s should be %s (%s)%s%s : %s" ) % t % g->geometryType() % ( tg.isValid?"valid":"invalid" ) % tg.comment % ( v?".":", reason: " ) % v.reason() % tg.wkt ) );
     }

@@ -44,8 +44,6 @@
 #include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
-#include <SFCGAL/detail/ForceValidityVisitor.h>
-#include <SFCGAL/detail/ForcePrecisionVisitor.h>
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Exception.h>
 
@@ -170,16 +168,23 @@ const Validity isValid( const Polygon& p, const double& toleranceAbs )
             return Validity::invalid( ( boost::format( "not enough points in ring %d" ) % r ).str() );
         }
 
-//        const Validity v = isValid( p.ringN(r) );
-//        if (!v) return Validity::invalid((boost::format("ring %d is invalid: %s") % r % v.reason()).str() );
+        if ( p.hasPrecision() ) {
+            if ( SnappedPoint( p.ringN( r ).startPoint() ) != SnappedPoint( p.ringN( r ).endPoint() ) ) {
+                return Validity::invalid( ( boost::format( "ring %d is not closed" ) % r ).str() );
+            }
+        }
+        else {
+            const double distanceToClose =
+                p.is3D() ? distancePointPoint3D( p.ringN( r ).startPoint(), p.ringN( r ).endPoint() )
+                : distancePointPoint( p.ringN( r ).startPoint(), p.ringN( r ).endPoint() )
+                ;
 
-        const double distanceToClose =
-            p.is3D() ? distancePointPoint3D( p.ringN( r ).startPoint(), p.ringN( r ).endPoint() )
-            : distancePointPoint( p.ringN( r ).startPoint(), p.ringN( r ).endPoint() )
-            ;
-
-        if ( distanceToClose > 0 ) {
-            return Validity::invalid( ( boost::format( "ring %d is not closed" ) % r ).str() );
+            if ( distanceToClose > 0 ) {
+                return Validity::invalid( ( boost::format( "ring %d is not closed" ) % r ).str() );
+            }
+        }
+        if ( p.hasPrecision() ) {
+            throw NotImplementedException("validation of polygon with precision is not implemented");
         }
 
         if ( p.is3D() ? selfIntersects3D( p.ringN( r ) ) : selfIntersects( p.ringN( r ) ) ) {
@@ -541,26 +546,6 @@ const Validity isValid( const Geometry& g, const double& toleranceAbs )
                            ) );
     return Validity::invalid( ( boost::format( "isValid( %s ) is not defined" ) % g.geometryType() ).str() ); // to avoid warning
 }
-
-void propagateValidityFlag( Geometry& g, bool valid )
-{
-    detail::ForceValidityVisitor v( valid );
-    g.accept( v );
-}
-
-void propagatePrecison( Geometry& g )
-{
-    if ( g.hasPrecision() ) {
-        detail::ForcePrecisionVisitor v( g.precisionXY(), g.precisionZ() );
-        g.accept( v );
-    }
-    else
-    {
-        detail::ForcePrecisionVisitor v;
-        g.accept( v );
-    }
-}
-
 
 } // namespace algorithm
 } // namespace SFCGAL

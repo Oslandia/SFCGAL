@@ -40,9 +40,9 @@ namespace algorithm {
 struct SnappedPoint
 {
     SnappedPoint( const Point& p )
-        : x( round( CGAL::to_double( p.x() ) * pow( 10, p.precisionXY() ) ) )
-        , y( round( CGAL::to_double( p.y() ) * pow( 10, p.precisionXY() ) ) )
-        , z( p.is3D() ? round( CGAL::to_double( p.z() * pow( 10, p.precisionZ() ) ) ) : 0 )
+        : x( round( CGAL::to_double( p.x() ) / pow( 10, p.precisionXY() ) ) )
+        , y( round( CGAL::to_double( p.y() ) / pow( 10, p.precisionXY() ) ) )
+        , z( p.is3D() ? round( CGAL::to_double( p.z() / pow( 10, p.precisionZ() ) ) ) : 0 )
     {}
     long x;
     long y;
