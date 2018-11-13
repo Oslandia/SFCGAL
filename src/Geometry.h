@@ -175,6 +175,21 @@ public:
     /** Returns the validity flag */
     bool hasValidityFlag() const;
 
+    /** Returns the precision flag */
+    bool hasPrecision() const;
+
+    /** Returns the precsion in xy (power of 10) hasPrecision() must be true */
+    int precisionXY() const;
+
+    /** Returns the precision in z (power of 10) hasPrecision() must be true */
+    int precisionZ() const;
+
+    /** Set the precision (power of 10) hasPrecision() becomes true */
+    void setPrecision( const int& xy, const int& z);
+
+    /** Unsset the precision, hasPrecision() becomes false */
+    void setPrecision();
+
     /**
      * [OGC/SFA]returns the WKT string
      * @param numDecimals extension specify fix precision output
@@ -285,6 +300,9 @@ protected:
     const Geometry& operator=( const Geometry& );
 
     bool validityFlag_;
+    bool precisionFlag_;
+    int precisionXY_;
+    int precisionZ_;
 };
 
 /**

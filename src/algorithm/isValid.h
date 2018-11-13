@@ -42,6 +42,7 @@ namespace algorithm {
 /**
  * @brief Check validity of a geometry
  * @ingroup public_api
+ * @ note if geometry has precision, the toleranceAbs parameter is ignored 
  */
 SFCGAL_CXX_API const Validity isValid( const Geometry& g, const double& toleranceAbs= 1e-9 );
 
@@ -50,6 +51,13 @@ SFCGAL_CXX_API const Validity isValid( const Geometry& g, const double& toleranc
  * @ingroup public_api
  */
 SFCGAL_CXX_API void propagateValidityFlag( Geometry& g, bool valid );
+
+/**
+ * Sets the precision on a geometry and propagate to every internal geometries
+ * @ingroup public_api
+ */
+SFCGAL_CXX_API void propagatePrecison( Geometry& g );
+
 
 /**
  * Tag used for variants of algorithm that do not do validity check

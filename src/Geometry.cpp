@@ -148,7 +148,9 @@ Geometry&   Geometry::geometryN( size_t const& n )
 ///
 ///
 ///
-Geometry::Geometry() : validityFlag_( false )
+Geometry::Geometry() 
+    : validityFlag_( false )
+    , precisionFlag_(false)
 {
 
 }
@@ -156,7 +158,11 @@ Geometry::Geometry() : validityFlag_( false )
 ///
 ///
 ///
-Geometry::Geometry( Geometry const& other ) : validityFlag_( other.validityFlag_ )
+Geometry::Geometry( Geometry const& other )
+    : validityFlag_( other.validityFlag_ )
+    , precisionFlag_( other.precisionFlag_ )
+    , precisionXY_( other.precisionXY_ )
+    , precisionZ_( other.precisionZ_ )
 {
 
 }
@@ -169,6 +175,35 @@ bool Geometry::hasValidityFlag() const
 void Geometry::forceValidityFlag( bool valid )
 {
         validityFlag_ = valid;
+}
+
+bool Geometry::hasPrecision() const
+{
+    return precisionFlag_;
+}
+
+int Geometry::precisionXY() const
+{
+    BOOST_ASSERT(precisionFlag_);
+    return precisionXY_;
+}
+
+int Geometry::precisionZ() const
+{
+    BOOST_ASSERT(precisionFlag_);
+    return precisionZ_;
+}
+
+void Geometry::setPrecision( const int& xy, const int& z )
+{
+    precisionFlag_ = true;
+    precisionXY_ = xy;
+    precisionZ_ = z;
+}
+
+void Geometry::setPrecision()
+{
+    precisionFlag_ = false;
 }
 
 ///

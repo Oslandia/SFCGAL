@@ -39,11 +39,13 @@
 #include <SFCGAL/algorithm/distance3d.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/normal.h>
+#include <SFCGAL/algorithm/snapped.h>
 #include <SFCGAL/detail/algorithm/coversPoints.h>
 #include <SFCGAL/algorithm/connection.h>
 #include <SFCGAL/detail/tools/Log.h>
 #include <SFCGAL/detail/GetPointsVisitor.h>
 #include <SFCGAL/detail/ForceValidityVisitor.h>
+#include <SFCGAL/detail/ForcePrecisionVisitor.h>
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Exception.h>
 
@@ -131,29 +133,9 @@ private:
     bool& _hasLoop;
 };
 
-
-
-/**
- * @note empty geometries are valid, but the test is only performed in the interface function
- * in individual functions for implementation, an assertion !empty is present for this reason
- */
-
-//const Validity isValid( const Coordinate & p)
-//{
-//    BOOST_ASSERT( !p.isEmpty() );
-//    if ( !CGAL::is_finite(p.x()) || CGAL::is_finite(p.y()) ) return Validity::invalid("NaN coordinate");
-//    //if ( p.x().is_inf() || p.y().is_inf() ) return Validity::invalid("infinite coordinate");
-//    return Validity::valid();
-//}
-//
 const Validity isValid( const Point& p )
 {
-    if ( p.isEmpty() ) {
-        return Validity::valid();
-    }
-
     ( void )p;
-    //return( isValid(p.coordinate() ) );
     return Validity::valid();
 }
 
@@ -163,13 +145,15 @@ const Validity isValid( const LineString& l, const double& toleranceAbs )
         return Validity::valid();
     }
 
-//    const size_t numPoints = l.numPoints();
-//    for ( size_t p=0; p!=numPoints; ++p) {
-//        const Validity v = isValid(l.pointN(p));
-//        if (!v) return Validity::invalid( ( boost::format("Point %d is invalid: %s") % p % v.reason() ).str() );
-//    }
-
-    return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid( "no length" );
+    if ( l.hasPrecision() ) {
+        SnappedLine s( l );
+        return std::adjacent_find( s.begin(), s.end(), std::not_equal_to< SnappedPoint >() ) != s.end() 
+            ? Validity::valid()
+            : Validity::invalid( "no length" );
+    } 
+    else {
+        return length3D( l ) > toleranceAbs ? Validity::valid() : Validity::invalid( "no length" );
+    }
 }
 
 const Validity isValid( const Polygon& p, const double& toleranceAbs )
@@ -563,6 +547,20 @@ void propagateValidityFlag( Geometry& g, bool valid )
     detail::ForceValidityVisitor v( valid );
     g.accept( v );
 }
+
+void propagatePrecison( Geometry& g )
+{
+    if ( g.hasPrecision() ) {
+        detail::ForcePrecisionVisitor v( g.precisionXY(), g.precisionZ() );
+        g.accept( v );
+    }
+    else
+    {
+        detail::ForcePrecisionVisitor v;
+        g.accept( v );
+    }
+}
+
 
 } // namespace algorithm
 } // namespace SFCGAL
