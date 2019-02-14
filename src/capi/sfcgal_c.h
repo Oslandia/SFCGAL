@@ -471,7 +471,7 @@ SFCGAL_API const sfcgal_geometry_t*  sfcgal_solid_shell_n( const sfcgal_geometry
  * @post the ownership of the shell is taken. The caller is not responsible anymore of its deallocation
  * @ingroup capi
  */
-SFCGAL_API void                      sfcgal_solid_add_shell( sfcgal_geometry_t* solid, sfcgal_geometry_t* shell );
+SFCGAL_API void                      sfcgal_solid_add_interior_shell( sfcgal_geometry_t* solid, sfcgal_geometry_t* shell );
 
 
 /**
