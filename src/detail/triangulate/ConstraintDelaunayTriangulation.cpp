@@ -145,14 +145,9 @@ void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface& triangu
 
         const Coordinate& c = it->vertex( 2 )->info().original ;
 
-        // check that vertex has an original vertex
-        if ( a.isEmpty() || b.isEmpty() || c.isEmpty() ) {
-            BOOST_THROW_EXCEPTION( Exception(
-                                       ( boost::format( "Can't convert Triangulation to TriangulatedSurface (constraint intersection found)" ) ).str()
-                                   ) ) ;
+        if ( !a.isEmpty() &&  !b.isEmpty() && !c.isEmpty() ) {
+            triangulatedSurface.addTriangle( new Triangle( Point( a ), Point( b ), Point( c ) ) );
         }
-
-        triangulatedSurface.addTriangle( new Triangle( Point( a ), Point( b ), Point( c ) ) );
     }
 }
 
