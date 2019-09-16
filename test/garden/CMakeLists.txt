@@ -1,4 +1,9 @@
 #-- polygon_triangulator test
+
+if( SFCGAL_USE_STATIC_LIBS )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+endif()
+
 file( GLOB_RECURSE SFCGAL_REGRESS_GARDEN_TEST_SOURCES *.cpp )
 
 find_package(Boost REQUIRED COMPONENTS program_options serialization)

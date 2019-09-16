@@ -23,7 +23,10 @@ list(REMOVE_ITEM SFCGAL_HEADERS ${SFCGAL_OSG_HEADERS})
 list(REMOVE_ITEM SFCGAL_SOURCES ${SFCGAL_OSG_SOURCES})
 
 if( SFCGAL_USE_STATIC_LIBS )
-  add_definitions( "-fPIC" )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+  if (NOT MSVC)
+    add_definitions( "-fPIC" )
+  endif()
   add_library(
     SFCGAL
     ${SFCGAL_HEADERS}
@@ -77,7 +80,10 @@ install(
 # SFCGAL-osg
 if ( SFCGAL_WITH_OSG )
   if( SFCGAL_USE_STATIC_LIBS )
-    add_definitions( "-fPIC" )
+    add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+    if (NOT MSVC)
+      add_definitions( "-fPIC" )
+    endif()
     add_library(
       SFCGAL-osg
       ${SFCGAL_OSG_HEADERS}
