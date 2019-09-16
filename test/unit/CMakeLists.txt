@@ -2,6 +2,10 @@
 
 find_package(Boost REQUIRED COMPONENTS unit_test_framework serialization)
 
+if( SFCGAL_USE_STATIC_LIBS )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+endif()
+
 file( GLOB_RECURSE SFCGAL_UNIT_TEST_SOURCES *.cpp )
 add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
 target_link_libraries( unit-test-SFCGAL SFCGAL)

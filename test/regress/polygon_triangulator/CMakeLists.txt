@@ -1,4 +1,9 @@
 #-- polygon_triangulator test
+
+if( SFCGAL_USE_STATIC_LIBS )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+endif()
+
 file( GLOB_RECURSE SFCGAL_REGRESS_POLYGON_TRIANGULATOR_TEST_SOURCES *.cpp )
 
 set( REGRESS_NAME test-regress-polygon_triangulator )

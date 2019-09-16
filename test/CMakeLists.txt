@@ -1,4 +1,9 @@
 #-- configure tests
+
+if( SFCGAL_USE_STATIC_LIBS )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+endif()
+
 set( SFCGAL_TEST_DIRECTORY "${CMAKE_SOURCE_DIR}/test" )
 configure_file( ${SFCGAL_TEST_DIRECTORY}/test_config.h.cmake ${SFCGAL_TEST_DIRECTORY}/test_config.h )
 

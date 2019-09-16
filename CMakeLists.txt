@@ -113,6 +113,13 @@ if((${Boost_MAJOR_VERSION} EQUAL 1) AND (${Boost_MINOR_VERSION} EQUAL 60) AND ($
   include_directories( patches/boost-1.60.0 )
 endif()
 
+if( SFCGAL_USE_STATIC_LIBS )
+  add_definitions( "-DSFCGAL_USE_STATIC_LIBS" )
+  if (NOT MSVC)
+    add_definitions( "-fPIC" )
+  endif()
+endif()
+
 #-- OpenScenegraph -----------------------------------------
 if ( SFCGAL_WITH_OSG )
   find_package( OpenSceneGraph COMPONENTS osgDB osgUtil )
