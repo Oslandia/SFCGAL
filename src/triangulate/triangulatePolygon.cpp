@@ -146,6 +146,16 @@ void triangulatePolygon3D(
     }
 
     /*
+     * Make sure polygon is not degenerate
+     */
+    if (!algorithm::hasPlane3D< Kernel >(polygon))
+    {
+        BOOST_THROW_EXCEPTION( Exception(
+                                   ( boost::format( "can't find plane for polygon %s" ) % polygon.asText() ).str()
+                               ) );
+    }
+
+    /*
      * Prepare a Constraint Delaunay Triangulation
      */
     ConstraintDelaunayTriangulation cdt;
@@ -153,13 +163,7 @@ void triangulatePolygon3D(
     /*
      * find polygon plane
      */
-    Kernel::Plane_3 polygonPlane = algorithm::plane3D< Kernel >( polygon, false ) ;
-
-    if ( polygonPlane.is_degenerate() ) {
-        BOOST_THROW_EXCEPTION( Exception(
-                                   ( boost::format( "can't find plane for polygon %s" ) % polygon.asText() ).str()
-                               ) );
-    }
+    Kernel::Plane_3 polygonPlane = algorithm::plane3D< Kernel >( polygon, algorithm::Plane3DInexactUnsafe() ) ;
 
     cdt.setProjectionPlane( polygonPlane );
 

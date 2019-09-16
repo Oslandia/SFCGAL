@@ -107,19 +107,48 @@ void plane3D(
 
 /**
  * Returns the oriented 3D plane of a polygon (supposed to be planar).
- * @warning result is rounded to double if exact is false (avoid huge expression tree)
+ * May return degenerate plane.
  */
 template < typename Kernel >
-CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact = true )
+CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon )
 {
-    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, exact );
-
-    if ( !exact ) {
-        const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
-        nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
-    }
+    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, true );
 
     return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
+}
+
+struct Plane3DInexactUnsafe
+{};
+
+/**
+ * Returns the oriented 3D plane of a polygon (supposed to be planar) - inexact version.
+ * @warning Will divide by zero if polygon is degenerate.
+ * @warning result is rounded to double (avoid huge expression tree).
+ */
+template < typename Kernel >
+CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, const Plane3DInexactUnsafe& )
+{
+    CGAL::Vector_3< Kernel > nrml = normal3D< Kernel >( polygon, false );
+
+    const double nrm = std::sqrt( CGAL::to_double( nrml.squared_length() ) );
+    nrml = CGAL::Vector_3< Kernel >( nrml.x()/nrm, nrml.y()/nrm, nrml.z()/nrm );
+
+    return CGAL::Plane_3< Kernel >( polygon.exteriorRing().pointN( 0 ).toPoint_3(), nrml );
+}
+
+/**
+ * Returns the oriented 3D plane of a polygon (supposed to be planar).
+ * This is legacy code for SFCGAL users and should be deprecated.
+ * @warning result is rounded to double if exact is false (avoid huge expression tree).
+ * @warning Will divide by zero if polygon is degenerate. This maintains the previous behaviour.
+ */
+template < typename Kernel >
+CGAL::Plane_3< Kernel > plane3D( const Polygon& polygon, bool exact )
+{
+    if ( exact )
+        return plane3D< Kernel >( polygon );
+    else 
+        return plane3D< Kernel >( polygon, Plane3DInexactUnsafe() );
 }
 
 

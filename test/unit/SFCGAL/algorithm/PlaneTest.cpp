@@ -78,6 +78,28 @@ BOOST_AUTO_TEST_CASE( testPlane )
     }
 }
 
+BOOST_AUTO_TEST_CASE( testPlane3DDivideByZeroCrash )
+{
+    std::auto_ptr< Geometry > degenerate_polygon = io::readWkt("POLYGON((1 -1 -1,1 0.5 0.5,1 0.5 0.5,1 -1 -1))");
+    BOOST_CHECK( degenerate_polygon->geometryTypeId() == TYPE_POLYGON );
+
+    // Should return degenerate plane without throwing
+    auto degenerate_plane = algorithm::plane3D< Kernel >( degenerate_polygon->as<Polygon>() );
+
+    // See triangulatePolygon3D for this pattern
+    if (algorithm::hasPlane3D< Kernel >(degenerate_polygon->as<Polygon>()))
+    {
+        // Should not get here, OR plane3D with Plane3DInexactUnsafe should not divide by zero
+        auto div_by_zero_check = algorithm::plane3D< Kernel >( degenerate_polygon->as<Polygon>(), algorithm::Plane3DInexactUnsafe() );
+    }
+
+    std::auto_ptr< Geometry > ok_polygon = io::readWkt("POLYGON((1 0.5 0.5,1.5 1.5 0.5,1.5 0.5 0.5,1 0.5 0.5))");
+    BOOST_CHECK( ok_polygon->geometryTypeId() == TYPE_POLYGON );
+
+    BOOST_CHECK( algorithm::hasPlane3D< Kernel >(ok_polygon->as<Polygon>()) );
+
+    auto valid_plane = algorithm::plane3D< Kernel >( ok_polygon->as<Polygon>(), algorithm::Plane3DInexactUnsafe() );
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()
