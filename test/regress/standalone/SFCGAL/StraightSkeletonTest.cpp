@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_StraightSkeletonTest )
 
 namespace {
 
-    void runTest(const std::string& filename)
+    void runTest(const boost::filesystem::path::string_type& filename)
     {
         std::ifstream ifs( filename.c_str() );
         BOOST_REQUIRE( ifs.good() ) ;
