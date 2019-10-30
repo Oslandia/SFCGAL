@@ -37,6 +37,7 @@
 #include <SFCGAL/MultiPolygon.h>
 #include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/detail/transform/AffineTransform3.h>
+#include <SFCGAL/algorithm/extrude.h>
 
 #include "../../../test_config.h"
 
@@ -239,5 +240,89 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
     }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_CASE(testSolidSolidInxWithMultiSolidResult)
+{
+   std::unique_ptr<SFCGAL::Geometry> poly1 = SFCGAL::io::readWkt("POLYGON Z((0 0,1 0,1 1,0 1,0 0))");
+   std::unique_ptr<SFCGAL::Geometry> solid1 = SFCGAL::algorithm::extrude(*poly1, 0.0, 0.0, 1.0);
 
+   std::unique_ptr<SFCGAL::Geometry> poly2 = SFCGAL::io::readWkt("POLYGON Z((0.5 0, 1.5 0, 1.5 1, 0.5 1, 1.1 0.5, 0.5 0))");
+   std::unique_ptr<SFCGAL::Geometry> solid2 = SFCGAL::algorithm::extrude(*poly2, 0.0, 0.0, 1.0);
+
+   std::unique_ptr<SFCGAL::Geometry> inx = SFCGAL::algorithm::intersection3D(*solid1, *solid2);
+
+   const std::string expected
+       = "MULTISOLID Z("
+           "(("
+             "((0.50000 0.00000 1.00000,0.50000 0.00000 0.00000,1.00000 0.00000 0.00000,1.00000 0.00000 1.00000,0.50000 0.00000 1.00000)),"
+             "((1.00000 0.00000 0.00000,0.50000 0.00000 0.00000,1.00000 0.41667 0.00000,1.00000 0.00000 0.00000)),"
+             "((1.00000 0.41667 0.00000,0.50000 0.00000 0.00000,0.50000 0.00000 1.00000,1.00000 0.41667 1.00000,1.00000 0.41667 0.00000)),"
+             "((1.00000 0.41667 1.00000,0.50000 0.00000 1.00000,1.00000 0.00000 1.00000,1.00000 0.41667 1.00000)),"
+             "((1.00000 0.00000 1.00000,1.00000 0.00000 0.00000,1.00000 0.41667 0.00000,1.00000 0.41667 1.00000,1.00000 0.00000 1.00000))"
+           ")),"
+          "(("
+            "((1.00000 0.58333 0.00000,0.50000 1.00000 0.00000,1.00000 1.00000 0.00000,1.00000 0.58333 0.00000)),"
+            "((1.00000 1.00000 0.00000,0.50000 1.00000 0.00000,0.50000 1.00000 1.00000,1.00000 1.00000 1.00000,1.00000 1.00000 0.00000)),"
+            "((0.50000 1.00000 1.00000,0.50000 1.00000 0.00000,1.00000 0.58333 0.00000,1.00000 0.58333 1.00000,0.50000 1.00000 1.00000)),"
+            "((1.00000 0.58333 1.00000,1.00000 0.58333 0.00000,1.00000 1.00000 0.00000,1.00000 1.00000 1.00000,1.00000 0.58333 1.00000)),"
+            "((1.00000 1.00000 1.00000,0.50000 1.00000 1.00000,1.00000 0.58333 1.00000,1.00000 1.00000 1.00000))"
+          "))"
+         ")";
+
+#if 0
+   std::cout << "TEST testSolidSolidInxWithMultiSolidResult: actual\n"
+             << actual
+             << "\nexpected:\n"
+             << expected
+             << std::endl;
+#endif
+
+   BOOST_ASSERT(inx->geometryType() == SFCGAL::TYPE_MULTISOLID);
+   BOOST_CHECK_EQUAL(inx->as<SFCGAL::GeometryCollection>().numGeometries(), 2);
+}
+
+BOOST_AUTO_TEST_CASE(testSolidSolidInxWithMultiSolidResult2)
+{
+   std::unique_ptr<SFCGAL::Geometry> poly1 = SFCGAL::io::readWkt("POLYGON((0 0,1 0,1 1,0 1,0 0))");
+   std::unique_ptr<SFCGAL::Geometry> solid1 = SFCGAL::algorithm::extrude(*poly1, 0.0, 0.0, 1.0);
+
+   std::unique_ptr<SFCGAL::Geometry> poly2
+       = SFCGAL::io::readWkt("POLYGON((-1 0.2,1.8 0.2,1.8 0.4,-0.8 0.4,-0.8 0.6,1.8 0.6,1.8 0.8,-1 0.8,-1 0.2))");
+
+   std::unique_ptr<SFCGAL::Geometry> solid2 = SFCGAL::algorithm::extrude(*poly2, 0.0, 0.0, 1.0);
+
+   std::unique_ptr<SFCGAL::Geometry> inx = SFCGAL::algorithm::intersection3D(*solid1, *solid2);
+
+   const std::string expected
+       = "MULTISOLID Z("
+           "(("
+             "((0.00000 0.20000 1.00000,0.00000 0.20000 0.00000,1.00000 0.20000 0.00000,1.00000 0.20000 1.00000,0.00000 0.20000 1.00000)),"
+             "((1.00000 0.20000 0.00000,0.00000 0.20000 0.00000,0.00000 0.40000 0.00000,1.00000 0.40000 0.00000,1.00000 0.20000 0.00000)),"
+             "((0.00000 0.40000 0.00000,0.00000 0.20000 0.00000,0.00000 0.20000 1.00000,0.00000 0.40000 1.00000,0.00000 0.40000 0.00000)),"
+             "((0.00000 0.40000 1.00000,0.00000 0.20000 1.00000,1.00000 0.20000 1.00000,1.00000 0.40000 1.00000,0.00000 0.40000 1.00000)),"
+             "((1.00000 0.20000 1.00000,1.00000 0.20000 0.00000,1.00000 0.40000 0.00000,1.00000 0.40000 1.00000,1.00000 0.20000 1.00000)),"
+             "((1.00000 0.40000 0.00000,0.00000 0.40000 0.00000,0.00000 0.40000 1.00000,1.00000 0.40000 1.00000,1.00000 0.40000 0.00000))"
+           ")),"
+           "(("
+             "((0.00000 0.80000 0.00000,0.00000 0.60000 0.00000,0.00000 0.60000 1.00000,0.00000 0.80000 1.00000,0.00000 0.80000 0.00000)),"
+             "((0.00000 0.60000 1.00000,0.00000 0.60000 0.00000,1.00000 0.60000 0.00000,1.00000 0.60000 1.00000,0.00000 0.60000 1.00000)),"
+             "((1.00000 0.60000 0.00000,0.00000 0.60000 0.00000,0.00000 0.80000 0.00000,1.00000 0.80000 0.00000,1.00000 0.60000 0.00000)),"
+             "((1.00000 0.80000 0.00000,0.00000 0.80000 0.00000,0.00000 0.80000 1.00000,1.00000 0.80000 1.00000,1.00000 0.80000 0.00000)),"
+             "((0.00000 0.80000 1.00000,0.00000 0.60000 1.00000,1.00000 0.60000 1.00000,1.00000 0.80000 1.00000,0.00000 0.80000 1.00000)),"
+             "((1.00000 0.60000 1.00000,1.00000 0.60000 0.00000,1.00000 0.80000 0.00000,1.00000 0.80000 1.00000,1.00000 0.60000 1.00000))"
+           "))"
+         ")";
+
+#if 0
+   const std::string actual = inx->asText(5);
+   std::cout << "TEST testSolidSolidInxWithMultiSolidResult2: actual\n"
+             << actual
+             << "\nexpected:\n"
+             << expected
+             << std::endl;
+#endif
+
+   BOOST_ASSERT(inx->geometryType() == SFCGAL::TYPE_MULTISOLID);
+   BOOST_CHECK_EQUAL(inx->as<SFCGAL::GeometryCollection>().numGeometries(), 2);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
