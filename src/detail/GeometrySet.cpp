@@ -927,6 +927,7 @@ void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
     for ( IT it = ibegin; it != iend; ++it ) {
         GeometrySet<Dim> v1;
         v1.addPrimitive( it->primitive() );
+        std::unique_ptr<Geometry> g1 = v1.recompose();
         bool v1_covered = false;
 
         for ( IT it2 = it; it2 != iend; ++it2 ) {
@@ -937,7 +938,19 @@ void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
             GeometrySet<Dim> v2;
             v2.addPrimitive( it2->primitive() );
 
-            if ( algorithm::covers( v2, v1 ) ) {
+            bool b = false;
+            if ( g1->is3D() ) {
+                std::unique_ptr<Geometry> g2 = v2.recompose();
+                if ( g2->is3D() ) {
+                    b = algorithm::covers3D( *g1, *g2 );
+                } else {
+                    b = algorithm::covers( v2, v1 );
+                }
+            } else {
+                b = algorithm::covers( v2, v1 );
+            }
+
+            if (b) {
                 v1_covered = true;
                 break;
             }
@@ -946,7 +959,17 @@ void _filter_covered( IT ibegin, IT iend, GeometrySet<Dim>& output )
         // if its not covered by another primitive
         if ( !v1_covered ) {
             // and not covered by another already inserted primitive
-            bool b = algorithm::covers( output, v1 );
+            bool b = false;
+            if ( g1->is3D() ) {
+                std::unique_ptr<Geometry> goutput = output.recompose();
+                if ( goutput->is3D() ) {
+                    b = algorithm::covers3D( *goutput, *g1 );
+                } else {
+                    b = algorithm::covers( output, v1 );
+                }
+            } else {
+                b = algorithm::covers( output, v1 );
+            }
 
             if ( !b ) {
                 output.addPrimitive( it->primitive(), it->flags() );
