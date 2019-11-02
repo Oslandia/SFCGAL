@@ -35,6 +35,11 @@
 
 #include <SFCGAL/detail/Point_inside_polyhedron.h>
 
+#include <CGAL/Nef_polyhedron_3.h>
+#include <CGAL/IO/Nef_polyhedron_iostream_3.h>
+#include <CGAL/Nef_3/SNC_indexed_items.h>
+#include <CGAL/convex_decomposition_3.h>
+
 using namespace SFCGAL::detail;
 
 namespace SFCGAL {
@@ -320,9 +325,49 @@ void _intersection_solid_solid( const MarkedPolyhedron& pa, const MarkedPolyhedr
         }
 
         // else, we have an intersection
-        MarkedPolyhedron* res_poly = result[0].first;
-        output.addPrimitive( *res_poly );
-        delete res_poly;
+        std::vector<std::unique_ptr<MarkedPolyhedron>> res_poly;
+        res_poly.reserve(result.size());
+
+        Decomposition::const_iterator end_citer = result.cend();
+        for ( Decomposition::const_iterator citer = result.cbegin(); citer != end_citer; ++citer ) {
+            res_poly.push_back( std::unique_ptr<MarkedPolyhedron>( citer->first ) );
+        }
+
+        // Decompose the intersection geometry into separate
+        // convex parts.
+        using Nef_polyhedron_3
+            = CGAL::Nef_polyhedron_3<SFCGAL::Kernel, CGAL::SNC_indexed_items>;
+
+        Nef_polyhedron_3 N( *res_poly[0] );
+
+        CGAL::convex_decomposition_3( N );
+        std::list<MarkedPolyhedron> convex_parts;
+
+        // The first volume is the outer volume, which should be
+        // ignored in the decomposition, so we skip it.
+        using Volume_const_iterator = Nef_polyhedron_3::Volume_const_iterator;
+
+        Volume_const_iterator ci = ++N.volumes_begin();
+        while ( ci != N.volumes_end() ) {
+            if ( ci->mark() ) {
+                MarkedPolyhedron P;
+                N.convert_inner_shell_to_polyhedron( ci->shells_begin(), P );
+                convex_parts.push_back( P );
+            }
+
+            ++ci;
+        }
+
+        // Add convex parts to output geometry collection.
+        if ( convex_parts.size() == 1 ) {
+            // Don't bother copying the original Polyhedron
+            // if it is the only part.
+            output.addPrimitive( *res_poly[0] );
+        } else {
+            for ( const MarkedPolyhedron& mp : convex_parts ) {
+                output.addPrimitive( mp );
+            }
+        }
     }
 }
 
