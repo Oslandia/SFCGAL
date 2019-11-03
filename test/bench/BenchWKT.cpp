@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( testReadTriangle )
     bench().start( boost::format( "READ WKT TRIANGLE" ) ) ;
 
     for ( int i = 0; i < N; i++ ) {
-        io::readWkt( "TRIANGLE((0 0,0 1000,1000 1000,1000 0,0 0))" ) ;
+        io::readWkt( "TRIANGLE((0 0,0 1000,1000 1000,0 0))" ) ;
     }
 
     bench().stop();
