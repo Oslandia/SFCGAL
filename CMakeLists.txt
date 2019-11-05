@@ -51,7 +51,7 @@ endif()
 
 # 4.3 minimal
 # 4.13 recommended
-find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
+find_package( CGAL COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
 include_directories( ${CMAKE_BINARY_DIR}/include )
