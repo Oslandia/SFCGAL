@@ -39,11 +39,6 @@ if (CMAKE_CXX_COMPILER MATCHES ".*clang")
     set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
 
-#-- C++ version --------------------------------------------
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
-    add_definitions("-std=c++98")
-endif()
-
 #-----------------------------------------------------------
 # dependencies
 #-----------------------------------------------------------
@@ -56,7 +51,7 @@ endif()
 
 # 4.3 minimal
 # 4.13 recommended
-find_package( CGAL 4.3 COMPONENTS Core REQUIRED )
+find_package( CGAL COMPONENTS Core REQUIRED )
 message( STATUS "CGAL ${CGAL_VERSION} found" )
 
 include_directories( ${CMAKE_BINARY_DIR}/include )

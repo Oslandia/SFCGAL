@@ -80,7 +80,7 @@ namespace {
                 continue;
             }
 
-            std::auto_ptr< Geometry > g;
+            std::unique_ptr< Geometry > g;
             try {
               g = io::readWkt( inputWkt );
             } catch (const std::exception &e) {
@@ -89,7 +89,7 @@ namespace {
               BOOST_CHECK_EQUAL("", ss.str());
               continue;
             }
-            std::auto_ptr< MultiLineString > result;
+            std::unique_ptr< MultiLineString > result;
             try {
               result = algorithm::straightSkeleton( *g ) ;
               obtWkt = result->asText( 6 );

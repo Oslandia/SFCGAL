@@ -644,7 +644,7 @@ extern "C" void sfcgal_io_write_binary_prepared( const sfcgal_prepared_geometry_
 extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const char* str, size_t len )
 {
     std::string sstr( str, len );
-    std::auto_ptr<SFCGAL::PreparedGeometry> g;
+    std::unique_ptr<SFCGAL::PreparedGeometry> g;
 
     try {
         g = SFCGAL::io::readBinaryPrepared( sstr );
@@ -660,7 +660,7 @@ extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_binary_prepared( const cha
 
 extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char* str, size_t len )
 {
-    std::auto_ptr<SFCGAL::PreparedGeometry> g;
+    std::unique_ptr<SFCGAL::PreparedGeometry> g;
 
     try {
         g = SFCGAL::io::readEwkt( str, len );
@@ -716,7 +716,7 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_MEASURE( distance_3d, SFCGAL::algorithm::distanc
 #define SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( name, sfcgal_function ) \
 	extern "C" sfcgal_geometry_t* sfcgal_geometry_##name( const sfcgal_geometry_t* ga, const sfcgal_geometry_t* gb ) \
 	{								\
-		std::auto_ptr<SFCGAL::Geometry> result;			\
+		std::unique_ptr<SFCGAL::Geometry> result;			\
 		try							\
 		{							\
 			result = sfcgal_function( *(const SFCGAL::Geometry*)(ga), *(const SFCGAL::Geometry*)(gb) ); \
@@ -742,7 +742,7 @@ SFCGAL_GEOMETRY_FUNCTION_BINARY_CONSTRUCTION( union_3d, SFCGAL::algorithm::union
 #define SFCGAL_GEOMETRY_FUNCTION_UNARY_CONSTRUCTION( name, sfcgal_function ) \
 	extern "C" sfcgal_geometry_t* sfcgal_geometry_##name( const sfcgal_geometry_t* ga ) \
 	{								\
-		std::auto_ptr<SFCGAL::Geometry> result;			\
+		std::unique_ptr<SFCGAL::Geometry> result;			\
 		try							\
 		{							\
 			result = sfcgal_function( *(const SFCGAL::Geometry*)(ga) ); \
@@ -929,9 +929,9 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_triangulate_2dz( const sfcgal_geom
 extern "C" sfcgal_geometry_t* sfcgal_geometry_extrude( const sfcgal_geometry_t* ga, double x, double y, double z )
 {
     const SFCGAL::Geometry* g = reinterpret_cast<const SFCGAL::Geometry*>( ga );
-    std::auto_ptr<SFCGAL::Geometry> gb( g->clone() );
+    std::unique_ptr<SFCGAL::Geometry> gb( g->clone() );
     SFCGAL::transform::ForceZOrderPoints forceZ;
-    std::auto_ptr<SFCGAL::Geometry> result;
+    std::unique_ptr<SFCGAL::Geometry> result;
 
     try {
         gb->accept( forceZ );
@@ -979,7 +979,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_minkowski_sum( const sfcgal_geomet
         return 0;
     }
 
-    std::auto_ptr<SFCGAL::Geometry> sum;
+    std::unique_ptr<SFCGAL::Geometry> sum;
 
     try {
         sum = SFCGAL::algorithm::minkowskiSum( *g1, g2->as<const SFCGAL::Polygon>() );
@@ -998,7 +998,7 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_minkowski_sum( const sfcgal_geomet
 extern "C" sfcgal_geometry_t* sfcgal_geometry_offset_polygon( const sfcgal_geometry_t* ga, double offset )
 {
     const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( ga );
-    std::auto_ptr<SFCGAL::MultiPolygon> mp;
+    std::unique_ptr<SFCGAL::MultiPolygon> mp;
 
     try {
         mp = SFCGAL::algorithm::offset( *g1, offset );
@@ -1028,7 +1028,7 @@ extern "C" int sfcgal_geometry_has_validity_flag( const sfcgal_geometry_t* geom 
 extern "C" sfcgal_geometry_t* sfcgal_geometry_straight_skeleton_distance_in_m( const sfcgal_geometry_t* geom )
 {
     const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
-    std::auto_ptr<SFCGAL::MultiLineString> mls;
+    std::unique_ptr<SFCGAL::MultiLineString> mls;
 
     try {
         mls = SFCGAL::algorithm::straightSkeleton( *g1, /*autoOrientation*/ true, /*innerOnly*/ false, /*outputDistanceInM*/ true );

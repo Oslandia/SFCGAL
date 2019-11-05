@@ -35,7 +35,7 @@ const Kernel::FT volume( const Solid& solid, NoValidityCheck )
     const size_t numShells = solid.numShells();
 
     for ( size_t i=0; i<numShells; i++ ) {
-        std::auto_ptr<Geometry> t( tesselate( solid.shellN( i ), NoValidityCheck() ) );
+        std::unique_ptr<Geometry> t( tesselate( solid.shellN( i ), NoValidityCheck() ) );
         const TriangulatedSurface& tin = t->as<TriangulatedSurface>();
         const size_t numTriangles = tin.numTriangles();
 

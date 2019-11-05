@@ -37,7 +37,7 @@ namespace generator {
 ///
 ///
 ///
-std::auto_ptr< Polygon > disc(
+std::unique_ptr< Polygon > disc(
     const Point& center,
     const double& radius,
     const unsigned int& nQuadrantSegments
@@ -45,7 +45,7 @@ std::auto_ptr< Polygon > disc(
 {
     BOOST_ASSERT( nQuadrantSegments > 1 );
 
-    std::auto_ptr< LineString > exteriorRing( new LineString() ) ;
+    std::unique_ptr< LineString > exteriorRing( new LineString() ) ;
 
     double dTheta = M_PI_4 / nQuadrantSegments ;
 
@@ -56,7 +56,7 @@ std::auto_ptr< Polygon > disc(
 
     exteriorRing->addPoint( exteriorRing->startPoint() ) ;
 
-    return std::auto_ptr< Polygon >( new Polygon( exteriorRing.release() ) );
+    return std::unique_ptr< Polygon >( new Polygon( exteriorRing.release() ) );
 }
 
 } // namespace generator

@@ -41,7 +41,7 @@ typedef uint32_t srid_t;
  * A PreparedGeometry is a shell around a SFCGAL::Geometry.
  * It is used to store annex data, like SRID or cached computations
  *
- * It is noncopyable since it stores a std::auto_ptr<SFCGAL::Geometry>
+ * It is noncopyable since it stores a std::unique_ptr<SFCGAL::Geometry>
  *
  */
 class SFCGAL_API PreparedGeometry : public boost::noncopyable {
@@ -55,7 +55,7 @@ public:
      * Constructor
      * @param geometry pointer to the underlying SFCGAL::Geometry. Takes ownership
      */
-    PreparedGeometry( std::auto_ptr<Geometry> geometry, srid_t srid = 0 );
+    PreparedGeometry( std::unique_ptr<Geometry>&& geometry, srid_t srid = 0 );
 
     /**
      * Constructor
@@ -131,7 +131,7 @@ public:
 
 protected:
     // Pointer to underlying Geometry
-    std::auto_ptr<Geometry> _geometry;
+    std::unique_ptr<Geometry> _geometry;
 
     // SRID of the geometry
     srid_t _srid;

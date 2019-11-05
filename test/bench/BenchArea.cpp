@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_BenchArea )
 
 BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 {
-    std::auto_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
+    std::unique_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
 
     bench().start( "area sierpinski" ) ;
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( testAreaSierpinski )
 
 BOOST_AUTO_TEST_CASE( testAreaSierpinski3D )
 {
-    std::auto_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
+    std::unique_ptr< MultiPolygon > fractal( generator::sierpinski( 9 ) ) ;
 
     bench().start( "area sierpinski" ) ;
 

@@ -933,7 +933,7 @@ void collectPrimitives( const typename HandledBox<Dim>::Vector& boxes, detail::G
     }
 }
 
-std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     HandledBox<2>::Vector boxes;
     compute_bboxes( detail::GeometrySet<2>( ga ), std::back_inserter( boxes ) );
@@ -949,15 +949,15 @@ std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb, NoValidi
     return output.recompose();
 }
 
-std::auto_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> union_( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
-    std::auto_ptr<Geometry>  result( union_( ga, gb, NoValidityCheck() ) );
+    std::unique_ptr<Geometry>  result( union_( ga, gb, NoValidityCheck() ) );
     return result;
 }
 
-std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     HandledBox<3>::Vector boxes;
     compute_bboxes( detail::GeometrySet<3>( ga ), std::back_inserter( boxes ) );
@@ -974,11 +974,11 @@ std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb, NoValid
 }
 
 
-std::auto_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> union3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
-    std::auto_ptr<Geometry>  result( union3D( ga, gb, NoValidityCheck() ) );
+    std::unique_ptr<Geometry>  result( union3D( ga, gb, NoValidityCheck() ) );
     return result;
 }
 

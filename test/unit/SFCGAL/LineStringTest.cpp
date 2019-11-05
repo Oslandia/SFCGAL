@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE( testClone )
     LineString g ;
     g.addPoint( Point( 0.0,0.0 ) );
     g.addPoint( Point( 1.0,1.0 ) );
-    std::auto_ptr< Geometry > copy( g.clone() );
+    std::unique_ptr< Geometry > copy( g.clone() );
     BOOST_REQUIRE( copy->is< LineString >() );
     BOOST_CHECK_EQUAL( copy->as< LineString >().numPoints(), 2U );
 }
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE( testClone )
 BOOST_AUTO_TEST_CASE( testBoundary_empty )
 {
     LineString g ;
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     BOOST_CHECK( boundary->isEmpty() );
     BOOST_CHECK( boundary->is< GeometryCollection >() );
 }
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE( testBoundary_3points )
     g.addPoint( Point( 1.0,1.0 ) );
     g.addPoint( Point( 2.0,2.0 ) );
 
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     BOOST_CHECK( ! boundary->isEmpty() );
     BOOST_REQUIRE( boundary->is< MultiPoint >() );
     BOOST_CHECK_EQUAL( boundary->numGeometries(), 2U );
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE( testBoundary_closed )
     g.addPoint( Point( 2.0,2.0 ) );
     g.addPoint( g.startPoint() );
 
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     BOOST_CHECK( boundary->isEmpty() );
     BOOST_CHECK( boundary->is< GeometryCollection >() );
 }

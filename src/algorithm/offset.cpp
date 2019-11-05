@@ -147,12 +147,12 @@ Polygon_with_holes_2 approximate( const Offset_polygon_with_holes_2& polygon, co
 /**
  * @brief convert Offset_polygon_set_2 to MultiPolygon
  */
-std::auto_ptr< MultiPolygon > polygonSetToMultiPolygon( const Offset_polygon_set_2& polygonSet, const int& n )
+std::unique_ptr< MultiPolygon > polygonSetToMultiPolygon( const Offset_polygon_set_2& polygonSet, const int& n )
 {
     std::list<Offset_polygon_with_holes_2> res;
     polygonSet.polygons_with_holes( std::back_inserter( res ) ) ;
 
-    std::auto_ptr< MultiPolygon > result( new MultiPolygon );
+    std::unique_ptr< MultiPolygon > result( new MultiPolygon );
 
     for ( std::list<Offset_polygon_with_holes_2>::const_iterator it = res.begin(); it != res.end(); ++it ) {
         result->addGeometry( new Polygon( approximate( *it, n ) ) );
@@ -341,7 +341,7 @@ void offset( const Geometry& g, const double& radius, Offset_polygon_set_2& poly
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r, NoValidityCheck )
+std::unique_ptr< MultiPolygon > offset( const Geometry& g, const double& r, NoValidityCheck )
 {
     SFCGAL_OFFSET_ASSERT_FINITE_RADIUS( r );
     Offset_polygon_set_2 polygonSet ;
@@ -349,7 +349,7 @@ std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r, NoVali
     return polygonSetToMultiPolygon( polygonSet, 8 );
 }
 
-std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r )
+std::unique_ptr< MultiPolygon > offset( const Geometry& g, const double& r )
 {
     SFCGAL_OFFSET_ASSERT_FINITE_RADIUS( r );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( g );

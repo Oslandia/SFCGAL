@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation )
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 {
     const int N = 7 ;
-    std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
+    std::unique_ptr< Polygon > fractal( generator::hoch( N ) );
     BOOST_CHECK_EQUAL( fractal->exteriorRing().numPoints(), 49153U );
 
     bench().start( boost::format( "triangulate hoch(%s)" ) % N );
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch )
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch_roundingSixDecimal )
 {
     const int N = 7 ;
-    std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
+    std::unique_ptr< Polygon > fractal( generator::hoch( N ) );
     BOOST_CHECK_EQUAL( fractal->exteriorRing().numPoints(), 49153U );
 
     fractal->round( 100000 ) ;
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc )
 {
     const int N = 20000 ;
 
-    std::auto_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) );
+    std::unique_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) );
 //	std::cout << fractal->asText(5) << std::endl ;
 
     bench().start( boost::format( "triangulate disc x %s" ) % N );
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( testMultiPointTriangulation2D )
 BOOST_AUTO_TEST_CASE( testPolygonTriangulationHoch2D )
 {
     const int N = 7 ;
-    std::auto_ptr< Polygon > fractal( generator::hoch( N ) );
+    std::unique_ptr< Polygon > fractal( generator::hoch( N ) );
 //	std::cout << fractal->asText(5) << std::endl ;
 
     bench().start( boost::format( "triangulate2D hoch(%s)" ) % N );
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D )
 {
     const int N = 20000 ;
 
-    std::auto_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
+    std::unique_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
 //	std::cout << fractal->asText(5) << std::endl ;
 
     bench().start( boost::format( "triangulate2D disc x %s" ) % N ) ;
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE( testPolygonTriangulationDisc2D_roundingSixDecimal )
 {
     const int N = 20000 ;
 
-    std::auto_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
+    std::unique_ptr< Polygon > disc( generator::disc( Point( 0.0,0.0 ), 1.0, 8U ) ) ;
     disc->round( 100000 ) ;
 
     bench().start( boost::format( "triangulate2D disc x %s (round 6 six decimals)" ) % N ) ;

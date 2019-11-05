@@ -186,23 +186,23 @@ public:
      * @brief convenience method to convert to 2D Polygon ring
      * @warning empty LineString for empty Envelope, may be X or Y collapsed
      */
-    std::auto_ptr< LineString > toRing() const ;
+    std::unique_ptr< LineString > toRing() const ;
     /**
      * @brief convenience method to convert to 2D Polygon
      * @warning empty Polygon for empty Envelope, may be X or Y collapsed
      */
-    std::auto_ptr< Polygon >    toPolygon() const ;
+    std::unique_ptr< Polygon >    toPolygon() const ;
 
     /**
      * @brief convenience method to convert to 3D Shell
      * @warning empty Solid for empty or non 3D Envelope, may be X, Y or Z collapsed
      */
-    std::auto_ptr< PolyhedralSurface >   toShell() const ;
+    std::unique_ptr< PolyhedralSurface >   toShell() const ;
     /**
      * @brief convenience method to convert to 3D Solid
      * @warning empty Solid for empty or non 3D Envelope, may be X, Y or Z collapsed
      */
-    std::auto_ptr< Solid >      toSolid() const ;
+    std::unique_ptr< Solid >      toSolid() const ;
 
 
     /*

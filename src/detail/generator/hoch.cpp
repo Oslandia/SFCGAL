@@ -51,7 +51,7 @@ std::vector< Kernel::Vector_2 > _hoch( const std::vector< Kernel::Vector_2 >& po
 ///
 ///
 ///
-std::auto_ptr< Polygon > hoch( const unsigned int& order )
+std::unique_ptr< Polygon > hoch( const unsigned int& order )
 {
     std::vector< Kernel::Vector_2 > points ;
     points.push_back( Kernel::Vector_2( 1.0, sqrt( 3.0 ) ) );
@@ -63,8 +63,8 @@ std::auto_ptr< Polygon > hoch( const unsigned int& order )
         points = _hoch( points );
     }
 
-    std::auto_ptr< Polygon > result( new Polygon() ) ;
-    std::auto_ptr< LineString > ring( new LineString() ) ;
+    std::unique_ptr< Polygon > result( new Polygon() ) ;
+    std::unique_ptr< LineString > ring( new LineString() ) ;
 
     for ( std::vector< Kernel::Vector_2 >::const_iterator it = points.begin(); it != points.end(); ++it ) {
         ring->addPoint( new Point( it->x(), it->y() ) ) ;

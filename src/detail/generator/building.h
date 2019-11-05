@@ -41,7 +41,7 @@ namespace generator {
  * @warning only supports Polygon and MultiPolygon
  * @todo unittest
  */
-SFCGAL_API std::auto_ptr< Geometry > building(
+SFCGAL_API std::unique_ptr< Geometry > building(
     const Geometry& g,
     const Kernel::FT& wallHeight,
     const Kernel::FT& roofSlope

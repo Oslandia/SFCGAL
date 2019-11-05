@@ -145,9 +145,9 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
             }
         }
 
-        std::auto_ptr< Geometry > gA( 0 );
-        std::auto_ptr< Geometry > gB( 0 );
-        std::auto_ptr< Geometry > gOut( 0 );
+        std::unique_ptr< Geometry > gA;
+        std::unique_ptr< Geometry > gB;
+        std::unique_ptr< Geometry > gOut;
 
         std::getline( iss, wktGA, '|' ) ;
 
@@ -219,11 +219,11 @@ BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
 
         try {
             if ( dimension == "2" ) {
-                std::auto_ptr<Geometry> result = algorithm::intersection( *gA,*gB );
+                std::unique_ptr<Geometry> result = algorithm::intersection( *gA,*gB );
                 BOOST_CHECK_MESSAGE( *result == *gOut, numLine << ": intersection(" << gA->asText() << ", " << gB->asText() << ") is " << result->asText() << " and should be " << gOut->asText() );
             }
             else if ( dimension == "3" ) {
-                std::auto_ptr<Geometry> result = algorithm::intersection3D( *gA,*gB );
+                std::unique_ptr<Geometry> result = algorithm::intersection3D( *gA,*gB );
                 BOOST_CHECK_MESSAGE( *result == *gOut, numLine << ": intersection3D(" << gA->asText() << ", " << gB->asText() << ") is " << result->asText() << " and should be " << gOut->asText() );
             }
             else {

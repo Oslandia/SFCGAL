@@ -262,15 +262,15 @@ void minkowskiSumCollection( const Geometry& gA, const Polygon_2& gB, Polygon_se
 }
 
 
-std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck )
+std::unique_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, NoValidityCheck )
 {
     if ( gB.isEmpty() ) {
-        return std::auto_ptr< Geometry >( gA.clone() );
+        return std::unique_ptr< Geometry >( gA.clone() );
     }
 
     Polygon_set_2 polygonSet ;
     minkowskiSum( gA, gB.toPolygon_2(), polygonSet ) ;
-    return std::auto_ptr< Geometry >( detail::polygonSetToMultiPolygon( polygonSet ).release() ) ;
+    return std::unique_ptr< Geometry >( detail::polygonSetToMultiPolygon( polygonSet ).release() ) ;
 }
 
 //-- public interface implementation
@@ -278,12 +278,12 @@ std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB, N
 ///
 ///
 ///
-std::auto_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
+std::unique_ptr< Geometry > minkowskiSum( const Geometry& gA, const Polygon& gB )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gA );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gB );
 
-    std::auto_ptr<Geometry> result( minkowskiSum( gA, gB, NoValidityCheck() ) );
+    std::unique_ptr<Geometry> result( minkowskiSum( gA, gB, NoValidityCheck() ) );
     propagateValidityFlag( *result, true );
     return result;
 }

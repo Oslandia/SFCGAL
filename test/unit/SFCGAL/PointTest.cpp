@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( xyToVector_3 )
 BOOST_AUTO_TEST_CASE( testClone )
 {
     Point p( 3.0,4.0 );
-    std::auto_ptr< Geometry > copy( p.clone() );
+    std::unique_ptr< Geometry > copy( p.clone() );
     BOOST_REQUIRE( copy->is< Point >() );
     BOOST_CHECK_EQUAL( copy->as< Point >().x(), 3.0 );
     BOOST_CHECK_EQUAL( copy->as< Point >().y(), 4.0 );
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE( testClone )
 BOOST_AUTO_TEST_CASE( testBoundary )
 {
     Point p( 3.0,4.0 );
-    std::auto_ptr< Geometry > boundary( p.boundary() );
+    std::unique_ptr< Geometry > boundary( p.boundary() );
     BOOST_CHECK( boundary->isEmpty() );
     BOOST_CHECK( boundary->is< GeometryCollection >() );
 }
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( isPoint )
 //template < typename Derived > inline Derived &        Geometry::as()
 BOOST_AUTO_TEST_CASE( asPoint )
 {
-    std::auto_ptr< Geometry > g( new Point() );
+    std::unique_ptr< Geometry > g( new Point() );
     BOOST_CHECK( g->as< Point >().isEmpty() );
 }
 

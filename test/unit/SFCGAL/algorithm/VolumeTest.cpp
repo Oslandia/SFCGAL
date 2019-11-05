@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_VolumeTest )
 
 BOOST_AUTO_TEST_CASE( cubeVolume )
 {
-    std::auto_ptr<Geometry> s = io::readWkt( "SOLID((((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
+    std::unique_ptr<Geometry> s = io::readWkt( "SOLID((((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
                                                      ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),\
                                                      ((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),\
                                                      ((1 0 0,1 1 0,1 1 1,1 0 1,1 0 0)),\
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE( cubeVolume )
 
 BOOST_AUTO_TEST_CASE( cubeWithHoleVolume )
 {
-    std::auto_ptr<Geometry> s = io::readWkt(
+    std::unique_ptr<Geometry> s = io::readWkt(
                                     "SOLID((((0 0 0,0 0 1,0 1 1,0 1 0,0 0 0)),\
                 ((0 0 0,0 1 0,1 1 0,1 0 0,0 0 0)),\
                 ((0 0 0,1 0 0,1 0 1,0 0 1,0 0 0)),\
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( cubeWithHoleVolume )
 
 BOOST_AUTO_TEST_CASE( invertedCubeVolume )
 {
-    std::auto_ptr<Geometry> s = io::readWkt( "SOLID((((0 0 0,0 1 0,0 1 1,0 0 1,0 0 0)),\
+    std::unique_ptr<Geometry> s = io::readWkt( "SOLID((((0 0 0,0 1 0,0 1 1,0 0 1,0 0 0)),\
                                                      ((0 0 0,1 0 0,1 1 0,0 1 0,0 0 0)),\
                                                      ((0 0 0,0 0 1,1 0 1,1 0 0,0 0 0)),\
                                                      ((1 0 0,1 0 1,1 1 1,1 1 0,1 0 0)),\

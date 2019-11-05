@@ -62,7 +62,7 @@ void BoundaryVisitor::visit( const LineString& g )
         _boundary.reset() ;
     }
     else {
-        std::auto_ptr< MultiPoint > boundary( new MultiPoint );
+        std::unique_ptr< MultiPoint > boundary( new MultiPoint );
         boundary->addGeometry( g.startPoint() );
         boundary->addGeometry( g.endPoint() );
         _boundary.reset( boundary.release() );
@@ -83,7 +83,7 @@ void BoundaryVisitor::visit( const Polygon& g )
         _boundary.reset( g.exteriorRing().clone() );
     }
     else {
-        std::auto_ptr< MultiLineString > boundary( new MultiLineString );
+        std::unique_ptr< MultiLineString > boundary( new MultiLineString );
 
         for ( size_t i = 0; i < g.numRings(); i++ ) {
             boundary->addGeometry( g.ringN( i ) );
@@ -103,7 +103,7 @@ void BoundaryVisitor::visit( const Triangle& g )
         return ;
     }
 
-    std::auto_ptr< LineString > boundary( new LineString );
+    std::unique_ptr< LineString > boundary( new LineString );
 
     for ( size_t i = 0; i < 4; i++ ) {
         boundary->addPoint( g.vertex( i ) );
@@ -255,7 +255,7 @@ void BoundaryVisitor::getBoundaryFromLineStrings( const graph::GeometryGraph& gr
         _boundary.reset( new Point( graph[ vertices[0] ].coordinate ) );
     }
     else {
-        std::auto_ptr< MultiPoint > boundary( new MultiPoint );
+        std::unique_ptr< MultiPoint > boundary( new MultiPoint );
 
         for ( size_t i = 0; i < vertices.size(); i++ ) {
             boundary->addGeometry( new Point( graph[ vertices[i] ].coordinate ) ) ;
@@ -292,7 +292,7 @@ void BoundaryVisitor::getBoundaryFromPolygons( const graph::GeometryGraph& g )
     }
     else {
         //TODO merge Line Segments into LineString
-        std::auto_ptr< MultiLineString > boundary( new MultiLineString );
+        std::unique_ptr< MultiLineString > boundary( new MultiLineString );
 
         for ( size_t i = 0; i < boundaryEdges.size(); i++ ) {
             const edge_descriptor& edge = boundaryEdges[i] ;

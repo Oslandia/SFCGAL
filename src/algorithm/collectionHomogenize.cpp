@@ -32,7 +32,7 @@ namespace algorithm {
 // Use of auto_ptr :
 // If nothing has to be built, g will be moved to the result without copy and new allocation.
 // Otherwise, a new geometry is built and the old one is deleted
-std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> g )
+std::unique_ptr<Geometry> collectionHomogenize( std::unique_ptr<Geometry> g )
 {
     // unknown type
     int common_type = 0;
@@ -46,7 +46,7 @@ std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> g )
 
     // test if it is a singleton
     if ( coll.numGeometries() == 1 ) {
-        return std::auto_ptr<Geometry>( coll.geometryN( 0 ).clone() );
+        return std::unique_ptr<Geometry>( coll.geometryN( 0 ).clone() );
     }
 
     for ( size_t i = 0; i < coll.numGeometries(); ++i ) {
@@ -88,7 +88,7 @@ std::auto_ptr<Geometry> collectionHomogenize( std::auto_ptr<Geometry> g )
         ret_geo->addGeometry( coll.geometryN( i ) );
     }
 
-    return std::auto_ptr<Geometry>( ret_geo );
+    return std::unique_ptr<Geometry>( ret_geo );
 }
 
 }

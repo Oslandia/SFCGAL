@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( geometryIsValid )
     for ( std::size_t t=0; t<nbOfTest; t++ ) {
         const TestGeometry& tg = testGeometry[t];
         //std::cerr << t << ":" << tg.wkt << "\n";
-        std::auto_ptr< Geometry > g;
+        std::unique_ptr< Geometry > g;
 
         try {
             g = io::readWkt( tg.wkt );
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( geometryWithNan )
 
 BOOST_AUTO_TEST_CASE( disconnectedTIN )
 {
-    std::auto_ptr< Geometry > g( io::readWkt( "TIN(((0 0,1 0,0 1,0 0)),((2 0,3 0,2 1,2 0)))" ) );
+    std::unique_ptr< Geometry > g( io::readWkt( "TIN(((0 0,1 0,0 1,0 0)),((2 0,3 0,2 1,2 0)))" ) );
     Validity v = algorithm::isValid( *g );
     BOOST_CHECK( !v );
 }

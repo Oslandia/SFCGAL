@@ -171,7 +171,7 @@ public:
      * @brief Converts a TriangulatedSurface to a CGAL::Polyhedron_3
      */
     template < typename K, typename Polyhedron >
-    std::auto_ptr<Polyhedron> toPolyhedron_3() const;
+    std::unique_ptr<Polyhedron> toPolyhedron_3() const;
 
     /**
      * Serializer

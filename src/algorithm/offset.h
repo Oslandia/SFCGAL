@@ -41,7 +41,7 @@ struct NoValidityCheck;
  * @pre g is a valid Geometry
  * @ingroup public_api
  */
-SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r ) ;
+SFCGAL_API std::unique_ptr< MultiPolygon > offset( const Geometry& g, const double& r ) ;
 
 /**
  * @brief [experimental]compute polygon offset
@@ -51,7 +51,7 @@ SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double
  * @ingroup detail
  * @warning No actual validity check is done.
  */
-SFCGAL_API std::auto_ptr< MultiPolygon > offset( const Geometry& g, const double& r, NoValidityCheck ) ;
+SFCGAL_API std::unique_ptr< MultiPolygon > offset( const Geometry& g, const double& r, NoValidityCheck ) ;
 
 }//namespace algorithm
 }//namespace SFCGAL

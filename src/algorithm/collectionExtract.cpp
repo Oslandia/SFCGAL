@@ -34,7 +34,7 @@ namespace algorithm {
 // Use of auto_ptr :
 // If nothing has to be built, g will be moved to the result without copy and new allocation.
 // Otherwise, a new geometry is built and the old one is deleted
-std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> g )
+std::unique_ptr<Geometry> collectionExtractPolygons( std::unique_ptr<Geometry> g )
 {
     if ( ! g->is<GeometryCollection>() ) {
         // not a collection, nothing to do
@@ -84,7 +84,7 @@ std::auto_ptr<Geometry> collectionExtractPolygons( std::auto_ptr<Geometry> g )
         }
     }
 
-    return std::auto_ptr<Geometry>( ret_geo );
+    return std::unique_ptr<Geometry>( ret_geo );
 }
 
 }

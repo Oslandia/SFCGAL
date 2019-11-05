@@ -97,8 +97,8 @@ BOOST_AUTO_TEST_CASE( testLimitsIntersects )
     std::getline( ifs, wkt1 );
     std::getline( ifs, wkt2 );
 
-    std::auto_ptr< Geometry > g1( io::readWkt( wkt1 ) );
-    std::auto_ptr< Geometry > g2( io::readWkt( wkt2 ) );
+    std::unique_ptr< Geometry > g1( io::readWkt( wkt1 ) );
+    std::unique_ptr< Geometry > g2( io::readWkt( wkt2 ) );
 
     // check that a call to intersects() does not throw
     bool throws = false;

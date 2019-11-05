@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( testComputeArea )
         std::string inputWkt ;
         std::getline( iss, inputWkt ) ;
 
-        std::auto_ptr< Geometry > g( io::readWkt( inputWkt ) );
+        std::unique_ptr< Geometry > g( io::readWkt( inputWkt ) );
         double area = algorithm::area3D( *g ) ;
         BOOST_TEST_MESSAGE( boost::format( "area( '%1%' ) = %2%" ) % inputWkt % area );
 

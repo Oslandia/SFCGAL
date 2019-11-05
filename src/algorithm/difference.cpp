@@ -390,7 +390,7 @@ void difference( const GeometrySet<Dim>& a, const GeometrySet<Dim>& b, GeometryS
 template void difference<2>( const GeometrySet<2>& a, const GeometrySet<2>& b, GeometrySet<2>& );
 template void difference<3>( const GeometrySet<3>& a, const GeometrySet<3>& b, GeometrySet<3>& );
 
-std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     GeometrySet<2> gsa( ga ), gsb( gb ), output;
     algorithm::difference( gsa, gsb, output );
@@ -400,7 +400,7 @@ std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb, NoVa
     return filtered.recompose();
 }
 
-std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_2D( gb );
@@ -408,7 +408,7 @@ std::auto_ptr<Geometry> difference( const Geometry& ga, const Geometry& gb )
     return difference( ga, gb, NoValidityCheck() );
 }
 
-std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
+std::unique_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, NoValidityCheck )
 {
     GeometrySet<3> gsa( ga ), gsb( gb ), output;
     algorithm::difference( gsa, gsb, output );
@@ -419,7 +419,7 @@ std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb, No
     return filtered.recompose();
 }
 
-std::auto_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb )
+std::unique_ptr<Geometry> difference3D( const Geometry& ga, const Geometry& gb )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( ga );
     SFCGAL_ASSERT_GEOMETRY_VALIDITY_3D( gb );
