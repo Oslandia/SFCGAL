@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( testClone )
     exteriorRing.addPoint( Point( 0.0,0.0 ) );
 
     Polygon g( exteriorRing );
-    std::auto_ptr< Polygon > copy( g.clone() );
+    std::unique_ptr< Polygon > copy( g.clone() );
 
     BOOST_CHECK( ! copy->isEmpty() );
     BOOST_CHECK( ! copy->is3D() );
@@ -164,21 +164,21 @@ BOOST_AUTO_TEST_CASE( testClone )
 //virtual Geometry*    Geometry::boundary() const ;
 BOOST_AUTO_TEST_CASE( testBoundaryEmpty )
 {
-    std::auto_ptr< Geometry > boundary( Polygon().boundary() );
+    std::unique_ptr< Geometry > boundary( Polygon().boundary() );
     BOOST_CHECK( boundary->isEmpty() );
     BOOST_CHECK( boundary->is< GeometryCollection >() );
 }
 BOOST_AUTO_TEST_CASE( testBoundaryWithoutHoles )
 {
     std::string wkt( "POLYGON((0 0,0 1,1 1,0 0))" ) ;
-    std::auto_ptr< Geometry > boundary( io::readWkt( wkt )->boundary() );
+    std::unique_ptr< Geometry > boundary( io::readWkt( wkt )->boundary() );
     BOOST_CHECK( ! boundary->isEmpty() );
     BOOST_CHECK_EQUAL( boundary->asText( 0 ), "LINESTRING(0 0,0 1,1 1,0 0)" );
 }
 BOOST_AUTO_TEST_CASE( testBoundaryWithHoles )
 {
     std::string wkt( "POLYGON((0 0,0 5,5 5,0 5,0 0),(1 1,2 1,2 2,1 1))" ) ;
-    std::auto_ptr< Geometry > boundary( io::readWkt( wkt )->boundary() );
+    std::unique_ptr< Geometry > boundary( io::readWkt( wkt )->boundary() );
     BOOST_CHECK( ! boundary->isEmpty() );
     BOOST_CHECK_EQUAL( boundary->asText( 0 ), "MULTILINESTRING((0 0,0 5,5 5,0 5,0 0),(1 1,2 1,2 2,1 1))" );
 }

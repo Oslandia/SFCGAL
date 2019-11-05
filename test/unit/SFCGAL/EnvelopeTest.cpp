@@ -111,14 +111,14 @@ BOOST_AUTO_TEST_CASE( testExpandToInclude )
 }
 
 
-//std::auto_ptr< LineString > toRing() const ;
+//std::unique_ptr< LineString > toRing() const ;
 BOOST_AUTO_TEST_CASE( testToRing )
 {
     Envelope box( 0.0,1.0,2.0,3.0 );
     BOOST_CHECK_EQUAL( box.toRing()->asText( 0 ), "LINESTRING(0 2,1 2,1 3,0 3,0 2)" );
 }
 
-//std::auto_ptr< Polygon >    toPolygon() const ;
+//std::unique_ptr< Polygon >    toPolygon() const ;
 BOOST_AUTO_TEST_CASE( testToPolygon )
 {
     Envelope box( 0.0,1.0,2.0,3.0,4.0,5.0 );

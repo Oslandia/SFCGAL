@@ -186,13 +186,13 @@ public:
      * @todo In order to adapt to 3D, would be better to define an "Envelope type",
      * otherway would lead to Polygon and PolyhedralSurface
      */
-    //std::auto_ptr< Geometry > envelope() const = 0 ;
+    //std::unique_ptr< Geometry > envelope() const = 0 ;
     Envelope              envelope() const ;
 
     /**
      * @brief [OGC/SFA]Returns the boundary of the geometry
      */
-    virtual std::auto_ptr< Geometry > boundary() const ;
+    virtual std::unique_ptr< Geometry > boundary() const ;
 
     /**
      * @brief Computes the distance to an other geometry

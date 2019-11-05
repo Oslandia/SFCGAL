@@ -33,20 +33,20 @@ namespace io {
 ///
 ///
 ///
-std::auto_ptr< Geometry > readWkt( std::istream& s )
+std::unique_ptr< Geometry > readWkt( std::istream& s )
 {
     WktReader wktReader( s );
-    return std::auto_ptr< Geometry >( wktReader.readGeometry() );
+    return std::unique_ptr< Geometry >( wktReader.readGeometry() );
 }
 
 ///
 ///
 ///
-std::auto_ptr< Geometry > readWkt( const std::string& s )
+std::unique_ptr< Geometry > readWkt( const std::string& s )
 {
     std::istringstream iss( s );
     WktReader wktReader( iss );
-    std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
+    std::unique_ptr< Geometry > geom( wktReader.readGeometry() );
 
     char extra;
     if ( iss >> extra ) {
@@ -59,12 +59,12 @@ std::auto_ptr< Geometry > readWkt( const std::string& s )
 ///
 ///
 ///
-std::auto_ptr< Geometry > readWkt( const char* str, size_t len )
+std::unique_ptr< Geometry > readWkt( const char* str, size_t len )
 {
     CharArrayBuffer buf( str, str + len );
     std::istream istr( &buf );
     WktReader wktReader( istr );
-    std::auto_ptr< Geometry > geom( wktReader.readGeometry() );
+    std::unique_ptr< Geometry > geom( wktReader.readGeometry() );
     char extra;
     if ( istr >> extra ) {
         std::string remaining( str + int(istr.tellg()) - 1, str + len );

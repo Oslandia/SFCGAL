@@ -683,7 +683,7 @@ void recompose_surfaces( const GeometrySet<3>::SurfaceCollection& surfaces, std:
     }
 
 
-    std::auto_ptr<TriangulatedSurface> tri( new TriangulatedSurface );
+    std::unique_ptr<TriangulatedSurface> tri( new TriangulatedSurface );
 
     for ( GeometrySet<3>::SurfaceCollection::const_iterator it = surfaces.begin(); it != surfaces.end(); ++it ) {
         tri->addTriangle( new Triangle( it->primitive() ) );
@@ -787,7 +787,7 @@ void recompose_volumes( const GeometrySet<3>::VolumeCollection& volumes, std::ve
 }
 
 template <int Dim>
-std::auto_ptr<Geometry> GeometrySet<Dim>::recompose() const
+std::unique_ptr<Geometry> GeometrySet<Dim>::recompose() const
 {
     std::vector<Geometry*> geometries;
 
@@ -797,11 +797,11 @@ std::auto_ptr<Geometry> GeometrySet<Dim>::recompose() const
     recompose_volumes( _volumes, geometries, dim_t<Dim>() );
 
     if ( geometries.empty() ) {
-        return std::auto_ptr<Geometry>( new GeometryCollection );
+        return std::unique_ptr<Geometry>( new GeometryCollection );
     }
 
     if ( geometries.size() == 1 ) {
-        return std::auto_ptr<Geometry>( geometries[0] );
+        return std::unique_ptr<Geometry>( geometries[0] );
     }
 
     // else we have a mix of different types
@@ -845,7 +845,7 @@ std::auto_ptr<Geometry> GeometrySet<Dim>::recompose() const
         ret->addGeometry( geometries[i] );
     }
 
-    return std::auto_ptr<Geometry>( ret );
+    return std::unique_ptr<Geometry>( ret );
 }
 
 void _collect_points( const CGAL::Polygon_with_holes_2<Kernel>& poly, GeometrySet<2>::PointCollection& points )

@@ -32,14 +32,14 @@ namespace algorithm {
  * Returns an aggregate of ga and gb
  * @ingroup detail
  */
-SFCGAL_API std::auto_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb );
+SFCGAL_API std::unique_ptr<Geometry> collect( const Geometry& ga, const Geometry& gb );
 
 /**
  * Returns an aggregate of a list of geometries
  * @ingroup detail
  */
 template <typename GeometryIterator>
-std::auto_ptr<Geometry> collect( GeometryIterator begin, GeometryIterator end )
+std::unique_ptr<Geometry> collect( GeometryIterator begin, GeometryIterator end )
 {
     GeometryIterator it;
     // FIXME: optimize type. For instance, if all the given geometries are points, return a MultiPoint instead of a GeometryCollection
@@ -49,7 +49,7 @@ std::auto_ptr<Geometry> collect( GeometryIterator begin, GeometryIterator end )
         coll->addGeometry( *it );
     }
 
-    return std::auto_ptr<Geometry>( coll );
+    return std::unique_ptr<Geometry>( coll );
 }
 }
 }

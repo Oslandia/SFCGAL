@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( testIgnoreEmpty )
     for ( size_t i = 0; i < typeNames.size(); i++ ) {
         BOOST_TEST_MESSAGE( typeNames[i] ) ;
 
-        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+        std::unique_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
         BOOST_REQUIRE( g.get() != NULL ) ;
         algorithm::force3D( *g ) ;
         BOOST_CHECK( g->isEmpty() ) ;

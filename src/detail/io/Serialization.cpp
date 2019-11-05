@@ -98,25 +98,25 @@ std::string writeBinaryPrepared( const PreparedGeometry& g )
 ///
 ///
 ///
-std::auto_ptr<Geometry> readBinaryGeometry( const std::string& str )
+std::unique_ptr<Geometry> readBinaryGeometry( const std::string& str )
 {
     std::istringstream istr( str );
     BinaryUnserializer iarc( istr );
     Geometry* g;
     iarc >> g;
-    return std::auto_ptr<Geometry>( g );
+    return std::unique_ptr<Geometry>( g );
 }
 
 ///
 ///
 ///
-std::auto_ptr<PreparedGeometry> readBinaryPrepared( const std::string& str )
+std::unique_ptr<PreparedGeometry> readBinaryPrepared( const std::string& str )
 {
     std::istringstream istr( str );
     BinaryUnserializer iarc( istr );
     PreparedGeometry* pg;
     iarc >> pg;
-    return std::auto_ptr<PreparedGeometry>( pg );
+    return std::unique_ptr<PreparedGeometry>( pg );
 }
 }
 }

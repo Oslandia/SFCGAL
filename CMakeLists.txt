@@ -39,11 +39,6 @@ if (CMAKE_CXX_COMPILER MATCHES ".*clang")
     set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
 
-#-- C++ version --------------------------------------------
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANGXX)
-    add_definitions("-std=c++98")
-endif()
-
 #-----------------------------------------------------------
 # dependencies
 #-----------------------------------------------------------

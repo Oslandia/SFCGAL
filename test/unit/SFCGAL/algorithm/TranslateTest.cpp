@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( testEmpty )
     for ( size_t i = 0; i < typeNames.size(); i++ ) {
         BOOST_TEST_MESSAGE( typeNames[i] ) ;
 
-        std::auto_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
+        std::unique_ptr< Geometry > g( registry.newGeometryByTypeName( typeNames[i] ) ) ;
         BOOST_REQUIRE( g.get() != NULL ) ;
         algorithm::translate( *g, 1.0, 1.0, 1.0 );
         BOOST_CHECK( g->isEmpty() );

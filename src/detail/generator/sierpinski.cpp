@@ -52,7 +52,7 @@ std::vector< Kernel::Triangle_2 > _sierpinski( const std::vector< Kernel::Triang
 ///
 ///
 ///
-std::auto_ptr< MultiPolygon > sierpinski( const unsigned int& order )
+std::unique_ptr< MultiPolygon > sierpinski( const unsigned int& order )
 {
     std::vector< Kernel::Triangle_2 > triangles ;
     triangles.push_back( Kernel::Triangle_2(
@@ -65,7 +65,7 @@ std::auto_ptr< MultiPolygon > sierpinski( const unsigned int& order )
         triangles = _sierpinski( triangles );
     }
 
-    std::auto_ptr< MultiPolygon > result( new MultiPolygon ) ;
+    std::unique_ptr< MultiPolygon > result( new MultiPolygon ) ;
 
     for ( size_t i = 0; i < triangles.size(); i++ ) {
         result->addGeometry( Triangle( triangles[i] ).toPolygon() ) ;

@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( testIntersectionPerf )
             mp.addGeometry( Point( x, y ) );
         }
 
-        std::auto_ptr<Geometry> g( algorithm::convexHull( mp ) );
+        std::unique_ptr<Geometry> g( algorithm::convexHull( mp ) );
         polygons.push_back( g.release() );
     }
 

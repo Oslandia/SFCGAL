@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_transform_ForceZOrderPointsTest )
 
 BOOST_AUTO_TEST_CASE( simple )
 {
-    std::auto_ptr<Geometry> g1 = io::readWkt( "POLYGON((0 0,0 1,1 1,1 0,0 0))" );
+    std::unique_ptr<Geometry> g1 = io::readWkt( "POLYGON((0 0,0 1,1 1,1 0,0 0))" );
 
     const Polygon& p = g1->as<Polygon>();
     BOOST_CHECK( ! p.isCounterClockWiseOriented() );

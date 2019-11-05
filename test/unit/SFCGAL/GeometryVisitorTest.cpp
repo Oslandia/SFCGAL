@@ -96,7 +96,7 @@ public:
 template < typename T >
 std::string getTypeWithVisitor()
 {
-    std::auto_ptr< Geometry > geometry( new T() );
+    std::unique_ptr< Geometry > geometry( new T() );
     DemoVisitorGetType visitor;
     geometry->accept( visitor );
     return visitor.type ;

@@ -452,7 +452,7 @@ bool selfIntersectsImpl( const LineString& line )
             /** @todo find a way to avoid ugly copy/paste here, toPoint_d< Dim > can be used,
              * but I dont know what to do with Kernel::Segment_Dim and Kernel::Point_Dim
              */
-            std::auto_ptr< Geometry > inter; // null if no intersection
+            std::unique_ptr< Geometry > inter; // null if no intersection
 
             if ( Dim == 2 ) {
                 const CGAL::Segment_2< Kernel > s1( l.pointN( i ).toPoint_2(), l.pointN( i + 1 ).toPoint_2() ) ;
@@ -515,7 +515,7 @@ bool selfIntersectsImpl( const PolyhedralSurface& s, const SurfaceGraph& graph )
 
     for ( size_t pi=0; pi != numPolygons; ++pi ) {
         for ( size_t pj=pi+1; pj < numPolygons; ++pj ) {
-            std::auto_ptr< Geometry > inter = Dim == 3
+            std::unique_ptr< Geometry > inter = Dim == 3
                                               ? intersection3D( s.polygonN( pi ), s.polygonN( pj ) )
                                               : intersection( s.polygonN( pi ), s.polygonN( pj ) ) ;
 
@@ -564,7 +564,7 @@ bool selfIntersectsImpl( const TriangulatedSurface& tin, const SurfaceGraph& gra
 
     for ( size_t ti=0; ti != numTriangles; ++ti ) {
         for ( size_t tj=ti+1; tj < numTriangles; ++tj ) {
-            std::auto_ptr< Geometry > inter = Dim == 3
+            std::unique_ptr< Geometry > inter = Dim == 3
                                               ? intersection3D( tin.triangleN( ti ), tin.triangleN( tj ) )
                                               : intersection( tin.triangleN( ti ), tin.triangleN( tj ) ) ;
 

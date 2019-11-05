@@ -154,9 +154,9 @@ void ConstraintDelaunayTriangulation::getTriangles( TriangulatedSurface& triangu
 ///
 ///
 ///
-std::auto_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
+std::unique_ptr< TriangulatedSurface > ConstraintDelaunayTriangulation::getTriangulatedSurface() const
 {
-    std::auto_ptr< TriangulatedSurface > result( new TriangulatedSurface );
+    std::unique_ptr< TriangulatedSurface > result( new TriangulatedSurface );
     getTriangles( *result, false );
     return result ;
 }

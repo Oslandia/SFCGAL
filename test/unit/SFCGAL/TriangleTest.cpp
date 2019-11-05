@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE( testClone )
 
     Triangle g( Kernel::Triangle_3( a,b,c ) ) ;
 
-    std::auto_ptr< Geometry > copy( g.clone() );
+    std::unique_ptr< Geometry > copy( g.clone() );
     BOOST_REQUIRE( copy->is< Triangle >() );
     BOOST_CHECK_EQUAL( copy->asText( 0 ), "TRIANGLE((0 0 1,1 0 2,1 1 3,0 0 1))" );
 }
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( testBoundary )
 
     Triangle g( Kernel::Triangle_2( a,b,c ) ) ;
 
-    std::auto_ptr< Geometry > boundary( g.boundary() );
+    std::unique_ptr< Geometry > boundary( g.boundary() );
     BOOST_CHECK_EQUAL( boundary->asText( 0 ), "LINESTRING(0 0,1 0,1 1,0 0)" );
 }
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE( isTriangle )
 //template < typename Derived > inline Derived &        Geometry::as()
 BOOST_AUTO_TEST_CASE( asTriangle )
 {
-    std::auto_ptr< Geometry > g( new Triangle() );
+    std::unique_ptr< Geometry > g( new Triangle() );
     BOOST_CHECK( g->as< Triangle >().isEmpty() );
 }
 

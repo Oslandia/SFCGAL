@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_CASE( testErrorOnBadGeometryType )
 {
     sfcgal_set_error_handlers( printf, on_error );
 
-    std::auto_ptr<Geometry> l( io::readWkt( "LINESTRING(0 0, 0 1)" ) );
-    std::auto_ptr<Geometry> p( io::readWkt( "POINT(0 2)" ) );
+    std::unique_ptr<Geometry> l( io::readWkt( "LINESTRING(0 0, 0 1)" ) );
+    std::unique_ptr<Geometry> p( io::readWkt( "POINT(0 2)" ) );
     sfcgal_geometry_t* gl = l.get();
 
     hasError = false;
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE( testStraightSkeletonPolygon )
 {
     sfcgal_set_error_handlers( printf, on_error );
 
-    std::auto_ptr<Geometry> g( io::readWkt(
+    std::unique_ptr<Geometry> g( io::readWkt(
 "POLYGON((0 0, 20 0, 20 10, 0 10, 0 0))"
     ) );
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( testStraightSkeletonMultiPolygon )
 {
     sfcgal_set_error_handlers( printf, on_error );
 
-    std::auto_ptr<Geometry> g( io::readWkt(
+    std::unique_ptr<Geometry> g( io::readWkt(
 "MULTIPOLYGON(((0 0, 20 0, 20 10, 0 10, 0 0)),((100 0,200 0,150 100,100 0)))"
     ) );
 
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( testApproximateMedialAxis )
 {
     sfcgal_set_error_handlers( printf, on_error );
 
-    std::auto_ptr<Geometry> g( io::readWkt(
+    std::unique_ptr<Geometry> g( io::readWkt(
 "POLYGON((-42 9,-44 9,-42 8,-22 7,-22 21,1 22,-5 13,-5 12,-4 13,2 23,-23 22,-23 8,-42 9))"
     ) );
 
