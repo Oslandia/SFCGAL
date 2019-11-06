@@ -282,7 +282,7 @@ public:
 protected:
     Geometry();
     Geometry( const Geometry& );
-    const Geometry& operator=( const Geometry& );
+    Geometry& operator=( const Geometry& other );
 
     bool validityFlag_;
 };

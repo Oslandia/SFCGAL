@@ -161,6 +161,12 @@ Geometry::Geometry( Geometry const& other ) : validityFlag_( other.validityFlag_
 
 }
 
+Geometry& Geometry::operator=( const Geometry& other )
+{
+    validityFlag_ = other.validityFlag_;
+    return *this;
+}
+
 bool Geometry::hasValidityFlag() const
 {
         return validityFlag_;
