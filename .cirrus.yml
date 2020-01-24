@@ -1,0 +1,14 @@
+freebsd_instance:
+  image: freebsd-12-1-release-amd64
+  cpu: 4
+  
+env:
+  MAKE_FLAGS: -j 4
+  
+task:
+  install_script: pkg install -y cgal gmp mpfr boost-libs cmake ninja
+  build_script:
+    - mkdir build
+    - cmake -DSFCGAL_BUILD_TESTS=ON
+    - make $(MAKE_FLAGS)
+    - ctest -VV
