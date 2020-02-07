@@ -192,7 +192,7 @@ void _intersection_solid_triangle( const MarkedPolyhedron& pa, const CGAL::Trian
     // triangle decomposition
     std::list<MarkedPolyhedron> decomposition;
     Is_not_marked criterion;
-#if CGAL_VERSION_NR < 1040701000 // version 4.7
+#if CGAL_VERSION_NR < 1040700000 // version 4.7
     // Before 4.7, extract_connected_components lies in CGAL::internal
     CGAL::internal::extract_connected_components( polyb, criterion, std::back_inserter( decomposition ) );
 #else
