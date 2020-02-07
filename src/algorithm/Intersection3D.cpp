@@ -31,7 +31,6 @@
 #include <SFCGAL/detail/triangulate/triangulateInGeometrySet.h>
 
 #include <CGAL/IO/Polyhedron_iostream.h>
-#include <CGAL/Polygon_mesh_processing/corefinement.h>
 
 #include <SFCGAL/detail/Point_inside_polyhedron.h>
 
