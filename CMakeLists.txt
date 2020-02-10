@@ -217,7 +217,7 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/include DESTINATION .)
 
 
 #-- create a libtool file for SFCGAL (needed by PostGIS)
-create_libtool_file( SFCGAL /lib )
+create_libtool_file( SFCGAL )
 
 #-- sfcgal-config
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )

@@ -5,7 +5,7 @@ MACRO(GET_TARGET_PROPERTY_WITH_DEFAULT _variable _target _property _default_valu
    ENDIF (${_variable} MATCHES NOTFOUND)
  ENDMACRO (GET_TARGET_PROPERTY_WITH_DEFAULT)
 
- MACRO(CREATE_LIBTOOL_FILE _target _install_DIR)
+MACRO(CREATE_LIBTOOL_FILE _target)
    GET_TARGET_PROPERTY(_target_location ${_target} LOCATION)
    GET_TARGET_PROPERTY_WITH_DEFAULT(_target_static_lib ${_target} STATIC_LIB "")
    GET_TARGET_PROPERTY_WITH_DEFAULT(_target_dependency_libs ${_target} LT_DEPENDENCY_LIBS "")
@@ -44,6 +44,6 @@ MACRO(GET_TARGET_PROPERTY_WITH_DEFAULT _variable _target _property _default_valu
    FILE(APPEND ${_laname} "dlopen='${_target_dlopen}'\n")
    FILE(APPEND ${_laname} "dlpreopen='${_target_dlpreopen}'\n\n")
    FILE(APPEND ${_laname} "# Directory that this library needs to be installed in:\n")
-   FILE(APPEND ${_laname} "libdir='${CMAKE_INSTALL_PREFIX}${_install_DIR}'\n")
-   INSTALL( FILES ${_laname} DESTINATION ${CMAKE_INSTALL_PREFIX}${_install_DIR})
- ENDMACRO(CREATE_LIBTOOL_FILE)
+   FILE(APPEND ${_laname} "libdir='${CMAKE_INSTALL_LIBDIR}'\n")
+   INSTALL( FILES ${_laname} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+ENDMACRO(CREATE_LIBTOOL_FILE)
