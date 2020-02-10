@@ -763,9 +763,8 @@ squared_distance_t squaredDistanceSegmentTriangle3D(
     /*
      * If [sAsB] intersects the triangle (tA,tB,tC), distance is 0.0
      */
-    if ( boost::none != CGAL::intersection( sAB, tABC ) ) {
+    if ( CGAL::do_intersect( sAB, tABC ) )
         return 0.0 ;
-    }
 
     /*
      * else, distance is the min of the following values :
@@ -821,9 +820,8 @@ squared_distance_t squaredDistanceTriangleTriangle3D(
     const Triangle_3& triangleB
 )
 {
-    if ( boost::none != CGAL::intersection( triangleA, triangleB ) ) {
+    if ( CGAL::do_intersect( triangleA, triangleB ) )
         return squared_distance_t( 0 );
-    }
 
     /*
      * min of distance from A segments to B triangle and B segments to A triangle
