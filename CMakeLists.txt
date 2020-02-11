@@ -228,3 +228,6 @@ endif()
 #set( SFCGAL_LIB_NAME ${${CMAKE_BUILD_TYPE}
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/sfcgal-config.in ${CMAKE_CURRENT_BINARY_DIR}/sfcgal-config @ONLY)
 install( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sfcgal-config DESTINATION bin )
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/sfcgal.pc.in ${CMAKE_CURRENT_BINARY_DIR}/sfcgal.pc @ONLY)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/sfcgal.pc DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
