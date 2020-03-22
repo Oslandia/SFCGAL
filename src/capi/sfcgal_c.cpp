@@ -280,6 +280,13 @@ extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
     )
 }
 
+extern "C" double sfcgal_point_m( const sfcgal_geometry_t* geom )
+{
+    SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
+        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->m() );
+    )
+}
+
 /**
  * LineString
  */

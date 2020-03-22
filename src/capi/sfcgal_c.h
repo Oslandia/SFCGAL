@@ -193,6 +193,15 @@ SFCGAL_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
 SFCGAL_API double                    sfcgal_point_z( const sfcgal_geometry_t* );
 
 /**
+ * Returns the M coordinate of the given Point
+ * @pre the given geometry must be a Point
+ * @pre the given point must not be empty
+ * @post the M coordinate can value NaN if the given point has no m
+ * @ingroup capi
+ */
+SFCGAL_API double                    sfcgal_point_m( const sfcgal_geometry_t* );
+
+/**
  * Creates an empty LineString
  * @ingroup capi
  */
