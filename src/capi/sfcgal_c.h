@@ -114,6 +114,12 @@ SFCGAL_API int                       sfcgal_geometry_is_valid_detail( const sfcg
 SFCGAL_API int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
 
 /**
+ * Tests if the given geometry is measured (has an m) or not
+ * @ingroup capi
+ */
+SFCGAL_API int                       sfcgal_geometry_is_measured( const sfcgal_geometry_t* );
+
+/**
  * Tests if the given geometry is empty or not
  * @ingroup capi
  */
