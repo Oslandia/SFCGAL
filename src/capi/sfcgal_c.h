@@ -114,6 +114,12 @@ SFCGAL_API int                       sfcgal_geometry_is_valid_detail( const sfcg
 SFCGAL_API int                       sfcgal_geometry_is_3d( const sfcgal_geometry_t* );
 
 /**
+ * Tests if the given geometry is measured (has an m) or not
+ * @ingroup capi
+ */
+SFCGAL_API int                       sfcgal_geometry_is_measured( const sfcgal_geometry_t* );
+
+/**
  * Tests if the given geometry is empty or not
  * @ingroup capi
  */
@@ -191,6 +197,15 @@ SFCGAL_API double                    sfcgal_point_y( const sfcgal_geometry_t* );
  * @ingroup capi
  */
 SFCGAL_API double                    sfcgal_point_z( const sfcgal_geometry_t* );
+
+/**
+ * Returns the M coordinate of the given Point
+ * @pre the given geometry must be a Point
+ * @pre the given point must not be empty
+ * @post the M coordinate can value NaN if the given point has no m
+ * @ingroup capi
+ */
+SFCGAL_API double                    sfcgal_point_m( const sfcgal_geometry_t* );
 
 /**
  * Creates an empty LineString

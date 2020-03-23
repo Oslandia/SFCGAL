@@ -197,6 +197,13 @@ extern "C" int sfcgal_geometry_is_3d( const sfcgal_geometry_t* geom )
     )
 }
 
+extern "C" int sfcgal_geometry_is_measured( const sfcgal_geometry_t* geom )
+{
+    SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
+        return ( int )reinterpret_cast<const SFCGAL::Geometry*>( geom )->isMeasured();
+    )
+}
+
 extern "C" int sfcgal_geometry_is_empty( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
@@ -277,6 +284,13 @@ extern "C" double sfcgal_point_z( const sfcgal_geometry_t* geom )
 {
     SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
         return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->z() );
+    )
+}
+
+extern "C" double sfcgal_point_m( const sfcgal_geometry_t* geom )
+{
+    SFCGAL_GEOMETRY_CONVERT_CATCH_TO_ERROR(
+        return CGAL::to_double( down_const_cast<SFCGAL::Point>( geom )->m() );
     )
 }
 
