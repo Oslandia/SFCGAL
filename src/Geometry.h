@@ -116,7 +116,26 @@ typedef enum {
  */
 class SFCGAL_API Geometry {
 public:
-    virtual ~Geometry();
+
+    /**
+     * @brief Default constructor.
+     */
+    Geometry();
+
+    /**
+     * @brief Copy constructor.
+     */
+    Geometry( const Geometry& ) = default;
+
+    /**
+     * @brief Copy assignemnt operator.
+     */
+    Geometry& operator=( const Geometry& other ) = default;
+
+    /**
+     * @brief Destructor.
+     */
+    virtual ~Geometry() = default;
 
     /**
      * @brief Get a deep copy of the geometry
@@ -279,10 +298,8 @@ public:
     template <class Archive>
     void serialize( Archive& /*ar*/, const unsigned int /*version*/ ) {
     }
+
 protected:
-    Geometry();
-    Geometry( const Geometry& );
-    Geometry& operator=( const Geometry& other );
 
     bool validityFlag_;
 };
