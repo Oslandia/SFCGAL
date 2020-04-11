@@ -40,15 +40,6 @@ namespace SFCGAL {
 ///
 ///
 ///
-Geometry::~Geometry()
-{
-
-}
-
-
-///
-///
-///
 std::string Geometry::asText( const int& numDecimals ) const
 {
     std::ostringstream oss;
@@ -144,27 +135,12 @@ Geometry&   Geometry::geometryN( size_t const& n )
     return *this ;
 }
 
-
 ///
 ///
 ///
 Geometry::Geometry() : validityFlag_( false )
 {
 
-}
-
-///
-///
-///
-Geometry::Geometry( Geometry const& other ) : validityFlag_( other.validityFlag_ )
-{
-
-}
-
-Geometry& Geometry::operator=( const Geometry& other )
-{
-    validityFlag_ = other.validityFlag_;
-    return *this;
 }
 
 bool Geometry::hasValidityFlag() const
