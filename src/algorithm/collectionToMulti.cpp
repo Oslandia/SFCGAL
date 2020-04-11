@@ -31,9 +31,10 @@
 namespace SFCGAL {
 namespace algorithm {
 
-// Use of auto_ptr :
-// If nothing has to be built, g will be moved to the result without copy and new allocation.
-// Otherwise, a new geometry is built and the old one is deleted
+
+// If nothing has to be built, g will be moved to the result without
+// copying and a new allocation. Otherwise, a new geometry is built and
+// the old one is deleted.
 std::unique_ptr<Geometry> collectionToMulti( std::unique_ptr<Geometry> g )
 {
     if ( ! g->is<GeometryCollection>() ) {
