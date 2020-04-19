@@ -34,6 +34,7 @@
 #include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
+#include <SFCGAL/algorithm/covers.h>
 
 #include <SFCGAL/detail/tools/Registry.h>
 
@@ -77,16 +78,27 @@ BOOST_AUTO_TEST_CASE( testPolygon )
         BOOST_CHECK_EQUAL( result->asText( 0 ), expectedWKT );
     }
 }
+
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-    std::unique_ptr< Geometry > g( io::readWkt( "POLYGON((0 0,10 0,10 10,0 10,0 0),(4 4,4 6,6 6,6 4,4 4))" ) );
+    std::unique_ptr< Geometry > g( io::readWkt( "POLYGON( (0 0,10 0,10 10,0 10,0 0)"
+                                                       ", (4 4,4 6,6 6,6 4,4 4)"
+                                                       ")"
+                                              )
+                                 );
 
-    std::string expectedWKT( "MULTILINESTRING((2 2,8 2),(2 2,2 8),(8 2,8 8),(2 8,8 8))" );
-    {
-        std::unique_ptr< MultiLineString > result( algorithm::approximateMedialAxis( *g ) ) ;
-        BOOST_CHECK_EQUAL( result->numGeometries(), 4U );
-        BOOST_CHECK_EQUAL( result->asText( 0 ), expectedWKT );
-    }
+    std::unique_ptr< MultiLineString > result( algorithm::approximateMedialAxis( *g ) ) ;
+    BOOST_CHECK_EQUAL( result->numGeometries(), 4 );
+
+    std::unique_ptr< Geometry > expected( io::readWkt( "MULTILINESTRING( (2 2,8 2)"
+                                                                      ", (2 2,2 8)"
+                                                                      ", (8 2,8 8)"
+                                                                      ", (2 8,8 8)"
+                                                                      ")"
+                                                     )
+                                        );
+
+    BOOST_CHECK( algorithm::covers( *result, *expected ) );
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonWithTouchingHoles )
