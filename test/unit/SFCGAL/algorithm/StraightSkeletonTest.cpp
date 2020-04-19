@@ -34,6 +34,7 @@
 #include <SFCGAL/MultiSolid.h>
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/straightSkeleton.h>
+#include <SFCGAL/algorithm/covers.h>
 
 #include <SFCGAL/detail/tools/Registry.h>
 
@@ -84,13 +85,33 @@ BOOST_AUTO_TEST_CASE( testPolygon )
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHole )
 {
-    std::unique_ptr< Geometry > g( io::readWkt( "POLYGON((-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0),(-0.5 -0.5,-0.5 0.5,0.5 0.5,-0.5 -0.5))" ) );
-    std::string expectedWKT( "MULTILINESTRING((-1.00 -1.00,-0.75 -0.75),(1.00 -1.00,0.41 -0.41),(1.00 1.00,0.75 0.75),(-1.00 1.00,-0.75 0.75),(-0.50 -0.50,-0.65 -0.85),(-0.50 0.50,-0.75 0.75),(0.50 0.50,0.85 0.65),(-0.65 -0.85,0.41 -0.41),(-0.65 -0.85,-0.75 -0.75),(0.85 0.65,0.75 0.75),(0.85 0.65,0.41 -0.41),(-0.75 -0.75,-0.75 0.75),(0.75 0.75,-0.75 0.75))" );
-    {
-        std::unique_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ) ;
-        //BOOST_CHECK_EQUAL( result->numGeometries(), 4U );
-        BOOST_CHECK_EQUAL( result->asText( 2 ), expectedWKT );
-    }
+    std::unique_ptr< Geometry > g( io::readWkt( "POLYGON( (-1.0 -1.0,1.0 -1.0,1.0 1.0,-1.0 1.0,-1.0 -1.0)"
+                                                       ", (-0.5 -0.5,-0.5 0.5,0.5 0.5,-0.5 -0.5)"
+                                                       ")"
+                                              )
+                                 );
+
+    std::unique_ptr< MultiLineString > result( algorithm::straightSkeleton( *g ) ) ;
+    BOOST_CHECK_EQUAL( result->numGeometries(), 13 );
+
+    std::unique_ptr< Geometry > expected( io::readWkt( "MULTILINESTRING( (-1/1 -1/1,-3/4 -3/4)"
+                                                                      ", (1/1 -1/1,1865452045155277/4503599627370496 -3730904090310553/9007199254740992)"
+                                                                      ", (1/1 1/1,3/4 3/4)"
+                                                                      ", (-1/1 1/1,-3/4 3/4)"
+                                                                      ", (-1/2 -1/2,-5822673418478105/9007199254740992 -7688125463633383/9007199254740992)"
+                                                                      ", (-1/2 1/2,-3/4 3/4)"
+                                                                      ", (1/2 1/2,3844062731816691/4503599627370496 727834177309763/1125899906842624)"
+                                                                      ", (-5822673418478105/9007199254740992 -7688125463633383/9007199254740992,1865452045155277/4503599627370496 -3730904090310553/9007199254740992)"
+                                                                      ", (-5822673418478105/9007199254740992 -7688125463633383/9007199254740992,-3/4 -3/4)"
+                                                                      ", (3844062731816691/4503599627370496 727834177309763/1125899906842624,3/4 3/4)"
+                                                                      ", (3844062731816691/4503599627370496 727834177309763/1125899906842624,1865452045155277/4503599627370496 -3730904090310553/9007199254740992)"
+                                                                      ", (-3/4 3/4,3/4 3/4)"
+                                                                      ", (-3/4 3/4,-3/4 -3/4)"
+                                                                      ")"
+                                                     )
+                                        );
+
+    BOOST_CHECK( algorithm::covers( *result, *expected ) );
 }
 
 BOOST_AUTO_TEST_CASE( testPolygonWithHoleTouchingShell )
