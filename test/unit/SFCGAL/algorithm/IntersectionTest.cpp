@@ -65,20 +65,6 @@ void insertOrReplace( boost::ptr_map<std::string, Geometry >& map, std::string k
     map.insert( key, value );
 }
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_IntersectionTest )
-                          
-BOOST_AUTO_TEST_CASE( testIssue200 )
-{
-  std::unique_ptr< SFCGAL::Geometry > poly1 = SFCGAL::io::readWkt( "POLYGON((0 0,1 0,1 1,0 1,0 0))" );
-  std::unique_ptr< SFCGAL::Geometry > solid1 = SFCGAL::algorithm::extrude( *poly1, 0.0, 0.0, 1.0 );
-
-  std::unique_ptr< SFCGAL::Geometry > poly2
-    = SFCGAL::io::readWkt( "POLYGON((-1 0.2,1.8 0.2,1.8 0.4,-0.8 0.4,-0.8 0.6,1.8 0.6,1.8 0.8,-1 0.8,-1 0.2))" );
-  std::unique_ptr< SFCGAL::Geometry > solid2 = SFCGAL::algorithm::extrude( *poly2, 0.0, 0.0, 1.0 );
-
-  std::unique_ptr< SFCGAL::Geometry > inx = SFCGAL::algorithm::intersection3D( *solid1, *solid2 );
-
-  BOOST_CHECK( SFCGAL::algorithm::isValid( *inx ) );
-}
 
 BOOST_AUTO_TEST_CASE( testFileIntersectionTest )
 {

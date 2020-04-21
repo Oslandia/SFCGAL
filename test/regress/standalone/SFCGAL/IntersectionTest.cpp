@@ -20,6 +20,9 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/Geometry.h>
+#include <SFCGAL/algorithm/extrude.h>
+#include <SFCGAL/algorithm/isValid.h>
+#include <SFCGAL/MultiSolid.h>
 
 #include "../../../test_config.h"
 
@@ -57,8 +60,47 @@ BOOST_AUTO_TEST_CASE( test_postgis_4157 )
     algorithm::intersection3D( *g1, *g2 );
 }
 
+BOOST_AUTO_TEST_CASE( test_sfcgal_issue_200 )
+{
+  std::unique_ptr< SFCGAL::Geometry > poly1 = SFCGAL::io::readWkt( "POLYGON(( 0 0"
+								           ", 1 0"
+								           ", 1 1"
+								           ", 0 1"
+								           ", 0 0"
+								           "))"
+								 );
+
+  std::unique_ptr< SFCGAL::Geometry > solid1 = SFCGAL::algorithm::extrude( *poly1
+									 , 0.0
+									 , 0.0
+									 , 1.0
+									 );
+
+  std::unique_ptr< SFCGAL::Geometry > poly2 = SFCGAL::io::readWkt( "POLYGON(( -1 0.2"
+								           ", 1.8 0.2"
+								           ", 1.8 0.4"
+								           ", -0.8 0.4"
+								           ", -0.8 0.6"
+								           ", 1.8 0.6"
+								           ", 1.8 0.8"
+								           ", -1 0.8"
+								           ", -1 0.2"
+								           "))"
+								 );
+
+  std::unique_ptr< SFCGAL::Geometry > solid2 = SFCGAL::algorithm::extrude( *poly2
+									 , 0.0
+									 , 0.0
+									 , 1.0
+									 );
+
+  std::unique_ptr< SFCGAL::Geometry > inx = SFCGAL::algorithm::intersection3D( *solid1
+									     , *solid2
+									     );
+
+  BOOST_CHECK( algorithm::isValid( *inx ) );
+  BOOST_CHECK_EQUAL( inx->geometryTypeId(), TYPE_MULTISOLID );
+  BOOST_CHECK_EQUAL( inx->as<MultiSolid>().numGeometries(), 2 );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
-
-
-
-
