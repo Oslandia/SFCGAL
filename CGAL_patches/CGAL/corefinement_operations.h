@@ -343,10 +343,15 @@ public:
     
     if (!intersection.empty())
     {
-      Volume_import_modifier modifier(final_map,intersection.begin(),intersection.end());
-      Output_polyhedron* new_poly=new Output_polyhedron();
-      new_poly->delegate(modifier);
-      *poly_output++=std::make_pair( new_poly,static_cast<int>(Intersection_tag) );
+        for (const auto& dart : intersection)
+        {
+            Volume_import_modifier modifier(final_map, dart);
+            Output_polyhedron *new_poly = new Output_polyhedron();
+            new_poly->delegate(modifier);
+            *poly_output++ = std::make_pair( new_poly
+                                           , static_cast<int>(Intersection_tag)
+                                           );
+        }
     }
     
     if (!P_minus_Q.empty())

@@ -319,9 +319,12 @@ void _intersection_solid_solid( const MarkedPolyhedron& pa, const MarkedPolyhedr
         }
 
         // else, we have an intersection
-        MarkedPolyhedron* res_poly = result[0].first;
-        output.addPrimitive( *res_poly );
-        delete res_poly;
+        for (std::pair< MarkedPolyhedron*, int >& p : result )
+        {
+	    std::unique_ptr< MarkedPolyhedron > res_poly( p.first );
+	    output.addPrimitive( *res_poly );
+	    p.first = nullptr;
+        }
     }
 }
 
