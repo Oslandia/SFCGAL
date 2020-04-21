@@ -38,7 +38,7 @@ case $1 in
 	echo -I${prefix}/include 
 	;;
     --libs)
-	echo -L${libdir} -l@SFCGAL_LIB_NAME@
+	echo -L${libdir} -l@SFCGAL_LIB_NAME@ -lgmpxx
 	;;
     --ldflags)
 	echo -L${libdir}
