@@ -11,14 +11,6 @@ add_executable( unit-test-SFCGAL ${SFCGAL_UNIT_TEST_SOURCES} )
 target_link_libraries( unit-test-SFCGAL SFCGAL)
 target_link_libraries(unit-test-SFCGAL ${CGAL_3RD_PARTY_LIBRARIES} ${Boost_LIBRARIES})
 
-#include( PrecompiledHeader )
-#if(PCHSupport_FOUND)
-#  add_precompiled_header(unit-test-SFCGAL
-#    ${CMAKE_CURRENT_SOURCE_DIR}/../../include/all.h
-##    "-fPIC"
-#    )
-#endif()
-
 set_target_properties( unit-test-SFCGAL PROPERTIES DEBUG_POSTFIX "d" )
 install( TARGETS unit-test-SFCGAL DESTINATION bin )
 
