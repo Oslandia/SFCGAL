@@ -214,7 +214,7 @@ checkNoTouchingHoles( const Polygon& g )
             //       still dangerous. @todo find out !
             if ( ! inter->isEmpty() && inter->is< Point >() ) {
                 BOOST_THROW_EXCEPTION( NotImplementedException(
-                                           "straight skeleton of Polygon with touching interior rings is not implemented"
+                                           "straight skeleton of Polygon with point touching rings is not implemented."
                                        ) );
             }
         }
