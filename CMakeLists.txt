@@ -36,10 +36,6 @@ set( SFCGAL_VERSION_PATCH 7 )
 
 set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VERSION_PATCH}" )
 
-# disabled for 1.0
-#include( PrecompiledHeader )
-#option( Use_precompiled_headers "Use precompiled headers" OFF )
-
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
     set(CMAKE_COMPILER_IS_CLANGXX 1)
 endif ()
