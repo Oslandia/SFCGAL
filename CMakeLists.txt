@@ -3,6 +3,13 @@ project( SFCGAL )
 
 set( CMAKE_DEBUG_POSTFIX "d" )
 
+#
+# Cmake policies
+#
+if(POLICY CMP0077)
+    cmake_policy(SET CMP0077 NEW)
+endif()
+
 #----------------------------------------------------------------------------
 # build options
 #----------------------------------------------------------------------------
@@ -32,8 +39,6 @@ set( SFCGAL_VERSION "${SFCGAL_VERSION_MAJOR}.${SFCGAL_VERSION_MINOR}.${SFCGAL_VE
 # disabled for 1.0
 #include( PrecompiledHeader )
 #option( Use_precompiled_headers "Use precompiled headers" OFF )
-
-include( Libtoolize )
 
 if (CMAKE_CXX_COMPILER MATCHES ".*clang")
     set(CMAKE_COMPILER_IS_CLANGXX 1)
@@ -215,9 +220,6 @@ add_subdirectory( doc )
 #-- install directories
 install(DIRECTORY ${CMAKE_BINARY_DIR}/include DESTINATION .)
 
-
-#-- create a libtool file for SFCGAL (needed by PostGIS)
-create_libtool_file( SFCGAL )
 
 #-- sfcgal-config
 if ( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
