@@ -21,6 +21,10 @@
 #ifndef _SFCGAL_ALGORITHM_LINESEGMENT_H_
 #define _SFCGAL_ALGORITHM_LINESEGMENT_H_
 
+// C++
+#include <memory>
+
+// SFCGAL
 #include <SFCGAL/config.h>
 
 namespace SFCGAL
