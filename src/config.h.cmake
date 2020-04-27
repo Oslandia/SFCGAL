@@ -21,7 +21,6 @@
 #define _SFCGAL_CONFIG_H_
 
 #define CGAL_DO_NOT_USE_BOOST_MP 1
-#define CGAL_DO_NOT_USE_GMPXX 1
 
 #include <SFCGAL/export.h>
 

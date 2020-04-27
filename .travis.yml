@@ -11,7 +11,7 @@ compiler:
   - clang
 
 env:
-  - CGAL_VERSION=4.13
+  - CGAL_VERSION=5.0.2
 
 before_install:
   - ./travis/${TRAVIS_OS_NAME}/before_install.sh $CGAL_VERSION
