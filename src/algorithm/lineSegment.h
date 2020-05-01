@@ -1,8 +1,8 @@
 /**
  *   SFCGAL
  *
- *   Copyright (C) 2020 Oslandia <infos@oslandia.com>
- *   Copyright (C) 2020 IGN (http://www.ign.fr)
+ *   Copyright (C) 2012-2020 Oslandia <infos@oslandia.com>
+ *   Copyright (C) 2012-2020 IGN (http://www.ign.fr)
  *
  *   This library is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU Library General Public
