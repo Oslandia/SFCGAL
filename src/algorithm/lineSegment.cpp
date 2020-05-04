@@ -34,89 +34,102 @@ namespace algorithm
 
 namespace
 {
-  Point find_position( const LineString& ls
-	 	     , const long N
-		     , const double line_fraction
-		     , const double tol
-		     , const bool find_start
-		     , std::size_t& idx
-		     , std::size_t& frac
-		     , bool& on_point
-		     )
-  {
-      double cur_length = 0.0;
-      double seg_length = 0.0;
-      double target_length = len * line_fraction;
-      on_point = false;
+    Point find_position( const LineString& ls
+		       , const long N
+		       , const double line_fraction
+		       , const double tol
+		       , const bool find_start
+		       , std::size_t& idx
+		       , std::size_t& frac
+		       , bool& on_point
+		       )
+    {
+	double cur_length = 0.0;
+	double seg_length = 0.0;
+	double target_length = len * line_fraction;
+	on_point = false;
 
-      for ( ; idx < N ; ++idx )
-      {
-	  const Point& p = ls.pointN( idx );
-	  const Point& q = ls.pointN( idx+1 );
+	for ( ; idx < N ; ++idx )
+	{
+	    const Point& p = ls.pointN( idx );
+	    const Point& q = ls.pointN( idx+1 );
 
-	  seg_length = std::sqrt( std::pow(CGAL::to_double(p.x()), 2.0) +
-				  std::pow(CGAL::to_double(p.y()), 2.0)
-				);
+	    double seg_length_sq = std::pow(CGAL::to_double(p.x()), 2.0) +
+	                           std::pow(CGAL::to_double(p.y()), 2.0);
+	    if ( ls.is3D() )
+	    {
+	        seg_length_sq += std::pow(CGAL::to_double(p.z()), 2.0);
+	    }
 
-	  cur_length += seg_length;
+	    seg_length = std::sqrt( seg_length_sq );
 
-	  if ( std::fabs( cur_length - target_length ) < tol )
-	  {
-	      // Adjust idx to be that of the Point coincident
-	      // with the desired position.
+	    cur_length += seg_length;
 
-	      ++idx;
-	      on_point = true;
+	    if ( std::fabs( cur_length - target_length ) < tol )
+	    {
+		// Adjust idx to be that of the Point coincident
+		// with the desired position.
 
-	      break;
-	  }
-	  else if ( cur_length > target_length )
-	  {
-	      // We went too far. Subtract seg_length so
-	      // cur_length is the distance along ls
-	      // to the idx'th point.
-	      cur_length -= seg_length;
-	      break;
-	  }
-      }
+		++idx;
+		on_point = true;
 
-      // Calculate fraction between idx and idx + 1 where
-      // the desired position resides.
+		break;
+	    }
+	    else if ( cur_length > target_length )
+	    {
+		// We went too far. Subtract seg_length so
+		// cur_length is the distance along ls
+		// to the idx'th point.
+		cur_length -= seg_length;
+		break;
+	    }
+	}
 
-      frac = 0.0;
-      if ( ! on_point )
-      {
-	  BOOST_ASSERT( seg_length > tol );
-	  frac = ( target_length - cur_length ) / seg_length ;
-      }
+	// Calculate fraction between idx and idx + 1 where
+	// the desired position resides.
 
-      // Calculate point.
+	frac = 0.0;
+	if ( ! on_point )
+	{
+	    BOOST_ASSERT( seg_length > tol );
+	    frac = ( target_length - cur_length ) / seg_length ;
+	}
 
-      Point ret;
-      if ( on_point )
-      {
-	  ret = ls.pointN( idx );
-      }
-      else
-      {
-	  const Point& p = ls.pointN( idx );
-	  const Point& q = ls.pointN( idx + 1 );
+	// Calculate point.
 
-	  ret.x() = p.x() + ( frac * ( q.x() - p.x() ) ) ;
-	  ret.y() = p.y() + ( frac * ( q.y() - p.y() ) ) ;
+	Point ret;
+	if ( on_point )
+	{
+	    ret = ls.pointN( idx );
+	}
+	else
+	{
+	    const Point& p = ls.pointN( idx );
+	    const Point& q = ls.pointN( idx + 1 );
 
-	  if ( is_measured )
-	  {
-	      ret.m() = p.m() + ( frac * ( q.m() - p.m() ) ) ;
-	  }
-      }
+	    ret.x() = p.x() + ( frac * ( q.x() - p.x() ) ) ;
+	    ret.y() = p.y() + ( frac * ( q.y() - p.y() ) ) ;
 
-      return ret;
-  }
+	    if ( ls.is3D() )
+	    {
+	        ret.z() = p.z() + ( frac * ( q.z() - p.z() ) ) ;
+	    }
+
+	    if ( is_measured )
+	    {
+		ret.m() = p.m() + ( frac * ( q.m() - p.m() ) ) ;
+	    }
+	}
+
+	return ret;
+    }
 
 } // ! anonymous namespace
 
-std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, double end )
+std::unique_ptr<LineString> lineSegment( const LineString& ls
+				       , double start
+				       , double end
+				       )
 {
     const double len = SFCGAL::algorithm::length(ls);
     if ( ls.isEmpty() || ( len < tol ) )
@@ -130,12 +143,20 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
 
     if ( std::fabs( start ) > 1.0 )
     {
-        BOOST_THROW_EXCEPTION( Exception( "SFCGAL::algorithm::lineSegment: start value out of range." ) );
+        BOOST_THROW_EXCEPTION(
+	    Exception(
+	        "SFCGAL::algorithm::lineSegment: start value out of range."
+	    )
+	);
     }
 
     if ( std::fabs( end ) > 1.0 )
     {
-        BOOST_THROW_EXCEPTION( Exception( "SFCGAL::algorithm::lineSegment: end value out of range." ) );
+        BOOST_THROW_EXCEPTION(
+	    Exception(
+	        "SFCGAL::algorithm::lineSegment: end value out of range."
+            )
+        );
     }
 
     // Check for equal start and end.
@@ -265,12 +286,6 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
     }
 
     return segment;
-}
-
-std::unique_ptr<LineString> lineSegment3D( const LineString& ls, double start, double end )
-{
-    BOOST_THROW_EXCEPTION( Exception( "SFCGAL::lineSegment3D:- Not implemented." ) );
-    return nullptr;
 }
 
 } // ! namespace algorithm

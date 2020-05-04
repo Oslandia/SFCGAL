@@ -37,7 +37,7 @@ namespace algorithm
 {
 
 /**
- * @brief Retrieve a segment of a specified 2D LineString,
+ * @brief Retrieve a segment of a specified LineString,
  *   between the specified fractional distances from the start
  *   of the specified LineString.
  * @param ls The specified LineString.
@@ -54,31 +54,12 @@ namespace algorithm
  *   orientation reversed relative to {@code ls}. For closed lines the
  *   a negative range corresponds to the complentary section of {@code ls}
  *   with an orientation equal to that of it.
- * @return The specified 2D line segment.
+ * @return The specified line segment.
  */
-SFCGAL_API std::unique<LineString> lineSegment( const LineString& ls, double start, double end ) ;
-
-/**
- * @brief Retrieve a segment of a specified 3D LineString,
- *   between the specified fractional distances from the start
- *   of the specified LineString.
- * @param ls The specified LineString.
- * @param start The fraction along the specified LineString defining the
- *   start of the desired segment.
- * @param end The fraction along the specified LineString defining the
- *   end of the desired segment.
- * @note Negative values of {@code start} and/or {@code end} will be
- *   interpreted as a fractional distance taken from the end of the
- *   specified LineString. +/-0 will always be interpreted as the start
- *   of {@code ls}.
- * @note For open lines, a negative length range will result in a line
- *   segment terminating at the specified points, but with an
- *   orientation reversed relative to {@code ls}. For closed lines the
- *   a negative range corresponds to the complentary section of {@code ls}
- *   with an orientation equal to that of it.
- * @return The specified 3D line segment.
- */
-SFCGAL_API std::unique<LineString> lineSegment3D( const LineString& ls, double start, double end ) ;
+SFCGAL_API std::unique<LineString> lineSegment( const LineString& ls
+					      , double start
+					      , double end
+					      );
 
 } // ! namespace algorithm
 
