@@ -261,7 +261,6 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
     if ( reverse && ( ! closed ) )
     {
 	// Reverse the constructed segment.
-        /// @todo Performance: remove this.
 	segment.reverse();
     }
 
