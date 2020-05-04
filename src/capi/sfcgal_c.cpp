@@ -42,6 +42,7 @@
 
 #include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/intersects.h>
+#include <SFCGAL/algorithm/covers.h>
 #include <SFCGAL/algorithm/intersection.h>
 #include <SFCGAL/algorithm/difference.h>
 #include <SFCGAL/algorithm/union.h>
@@ -716,6 +717,9 @@ extern "C" sfcgal_prepared_geometry_t* sfcgal_io_read_ewkt( const char* str, siz
 
 #define SFCGAL_GEOMETRY_FUNCTION_BINARY_PREDICATE( name, sfcgal_function ) \
 	SFCGAL_GEOMETRY_FUNCTION_BINARY_SCALAR( name, sfcgal_function, int, bool, -1 )
+
+SFCGAL_GEOMETRY_FUNCTION_BINARY_PREDICATE( covers, SFCGAL::algorithm::covers )
+SFCGAL_GEOMETRY_FUNCTION_BINARY_PREDICATE( covers_3d, SFCGAL::algorithm::covers3D )
 
 SFCGAL_GEOMETRY_FUNCTION_BINARY_PREDICATE( intersects, SFCGAL::algorithm::intersects )
 SFCGAL_GEOMETRY_FUNCTION_BINARY_PREDICATE( intersects_3d, SFCGAL::algorithm::intersects3D )
