@@ -122,6 +122,20 @@ BOOST_AUTO_TEST_CASE( testApproximateMedialAxis )
     sfcgal_geometry_delete(sk);
 }
 
+BOOST_AUTO_TEST_CASE( testCovers )
+{
+    sfcgal_set_error_handlers( printf, on_error );
+
+    std::unique_ptr<Geometry> g1( io::readWkt(
+"MULTIPOLYGON(((0 0, 20 0, 20 10, 0 10, 0 0)),((100 0,200 0,150 100,100 0)))"
+    ) );
+    std::unique_ptr<Geometry> g2( io::readWkt(
+"MULTIPOLYGON(((100 0,200 0,150 100,100 0)), ((0 0, 20 0, 20 10, 0 10, 0 0)))"
+    ) );
+
+    BOOST_CHECK( sfcgal_geometry_covers( g1.get(), g2.get() ) );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
