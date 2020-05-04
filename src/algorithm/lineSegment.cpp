@@ -32,6 +32,90 @@ namespace SFCGAL
 namespace algorithm
 {
 
+namespace
+{
+  Point find_position( const LineString& ls
+	 	     , const long N
+		     , const double line_fraction
+		     , const double tol
+		     , const bool find_start
+		     , std::size_t& idx
+		     , std::size_t& frac
+		     , bool& on_point
+		     )
+  {
+      double cur_length = 0.0;
+      double seg_length = 0.0;
+      double target_length = len * line_fraction;
+      on_point = false;
+
+      for ( ; idx < N ; ++idx )
+      {
+	  const Point& p = ls.pointN( idx );
+	  const Point& q = ls.pointN( idx+1 );
+
+	  seg_length = std::sqrt( std::pow(CGAL::to_double(p.x()), 2.0) +
+				  std::pow(CGAL::to_double(p.y()), 2.0)
+				);
+
+	  cur_length += seg_length;
+
+	  if ( std::fabs( cur_length - target_length ) < tol )
+	  {
+	      // Adjust idx to be that of the Point coincident
+	      // with the desired position.
+
+	      ++idx;
+	      on_point = true;
+
+	      break;
+	  }
+	  else if ( cur_length > target_length )
+	  {
+	      // We went too far. Subtract seg_length so
+	      // cur_length is the distance along ls
+	      // to the idx'th point.
+	      cur_length -= seg_length;
+	      break;
+	  }
+      }
+
+      // Calculate fraction between idx and idx + 1 where
+      // the desired position resides.
+
+      frac = 0.0;
+      if ( ! on_point )
+      {
+	  BOOST_ASSERT( seg_length > tol );
+	  frac = ( target_length - cur_length ) / seg_length ;
+      }
+
+      // Calculate point.
+
+      Point ret;
+      if ( on_point )
+      {
+	  ret = ls.pointN( idx );
+      }
+      else
+      {
+	  const Point& p = ls.pointN( idx );
+	  const Point& q = ls.pointN( idx + 1 );
+
+	  ret.x() = p.x() + ( frac * ( q.x() - p.x() ) ) ;
+	  ret.y() = p.y() + ( frac * ( q.y() - p.y() ) ) ;
+
+	  if ( is_measured )
+	  {
+	      ret.m() = p.m() + ( frac * ( q.m() - p.m() ) ) ;
+	  }
+      }
+
+      return ret;
+  }
+
+} // ! anonymous namespace
+
 std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, double end )
 {
     const double len = SFCGAL::algorithm::length(ls);
@@ -91,147 +175,34 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
     }
 
     // Find Point immediately before/on start position.
-    /// @todo Refactor this to a separate function since repeated for
-    ///   end point calculation below.
-    double cur_length = 0.0;
-
-    double seg_length = 0.0;
-    double target_length = len * start;
-    bool on_point = false;
-
-    std::size_t start_idx = 0 ;
-    for ( start_idx = 0 ; start_idx < N ; ++start_idx )
-    {
-	const Point& p = ls.pointN( start_idx );
-	const Point& q = ls.pointN( start_idx+1 );
-
-	seg_length = std::sqrt( std::pow(CGAL::to_double(p.x()), 2.0) +
-				std::pow(CGAL::to_double(p.y()), 2.0)
-			      );
-
-	cur_length += seg_length;
-
-	if ( std::fabs( cur_length - target_length ) < tol )
-	{
-	    // Adjust start_idx to be that of the Point coincident
-	    // with the desired start position.
-
-	    ++start_idx;
-	    on_point = true;
-
-	    break;
-	}
-	else if ( cur_length > target_length )
-	{
-	    // We went too far. Subtract seg_length so
-	    // cur_length is the distance along ls
-	    // to the start_idx'th point.
-	    cur_length -= seg_length;
-	    break;
-	}
-    }
-
-    // Calculate fraction between start_idx and start_idx + 1 where
-    // the desired start position resides.
-
+    std::size_t start_idx = 0; // Must initialise first.
     double start_frac = 0.0;
-    if ( ! on_point )
-    {
-        BOOST_ASSERT( seg_length > tol );
-        start_frac = ( target_length - cur_length ) / seg_length ;
-    }
-
-    // Calculate start point.
-
-    Point pstart;
-    if ( ! on_point )
-    {
-	start = ls.pointN( start_idx );
-    }
-    else
-    {
-	const Point& p = ls.pointN( start_idx );
-	const Point& q = ls.pointN( start_idx + 1 );
-
-	pstart.x() = p.x() + ( start_frac * ( q.x() - p.x() ) ) ;
-	pstart.y() = p.y() + ( start_frac * ( q.y() - p.y() ) ) ;
-
-	if ( is_measured )
-	{
-	    pstart.m() = p.m() + ( start_frac * ( q.m() - p.m() ) ) ;
-	}
-    }
+    on_point = false;
+    const Point pstart = find_position( ls
+				      , N
+				      , start
+				      , tol
+				      , true // Find start.
+				      , start_idx
+				      , start_frac
+				      , on_point // This result is not used.
+				      );
 
     // Find Point immediately before/on end position.
-
-    seg_length = 0.0;
-    target_length = len * end;
-    bool on_point = false;
-
-    std::size_t end_idx = start_idx ;
-    for ( end_idx = 0 ; end_idx < N ; ++end_idx )
-    {
-	const Point& p = ls.pointN( end_idx );
-	const Point& q = ls.pointN( end_idx+1 );
-
-	seg_length = std::sqrt( std::pow(CGAL::to_double(p.x()), 2.0) +
-				std::pow(CGAL::to_double(p.y()), 2.0)
-			      );
-
-	cur_length += seg_length;
-
-	if ( std::fabs( cur_length - target_length ) < tol )
-	{
-	    // Adjust end_idx to be that of the Point coincident
-	    // with the desired end position.
-
-	    ++end_idx;
-	    on_point = true;
-
-	    break;
-	}
-	else if ( cur_length > target_length )
-	{
-	    // We went too far. Subtract seg_length so
-	    // cur_length is the distance along ls
-	    // to the end_idx'th point.
-	    cur_length -= seg_length;
-	    break;
-	}
-    }
-
-    // Calculate fraction between end_idx and end_idx + 1 where
-    // the desired end position resides.
-
+    std::size_t end_idx = start_idx; // Must initialise first.
     double end_frac = 0.0;
-    if ( ! on_point )
-    {
-      BOOST_ASSERT( seg_length > tol );
-      end_frac = ( target_length - cur_length ) / seg_length ;
-    }
+    on_point = false;
+    const Point pend = find_position( ls
+				    , N
+				    , end
+				    , tol
+				    , false // Find end.
+				    , end_idx
+				    , end_frac
+				    , on_point // This result is used.
+				    );
 
-    // Calculate end point.
-
-    Point pend;
-    if ( ! on_point )
-    {
-	pend = ls.pointN( end_idx );
-    }
-    else
-    {
-      const Point& p = ls.pointN( end_idx );
-      const Point& q = ls.pointN( end_idx + 1 );
-
-      pend.x() = p.x() + ( end_frac * ( q.x() - p.x() ) ) ;
-      pend.y() = p.y() + ( end_frac * ( q.y() - p.y() ) ) ;
-
-      if ( is_measured )
-      {
-	  pend.m() = p.m() + ( end_frac * ( q.m() - p.m() ) ) ;
-      }
-    }
-
-    if ( reversed && ls.isClosed() )
+    if ( reverse && ls.isClosed() )
     {
         // For closed lines we always want to follow the
         // direction of the original line. A set reversed
@@ -246,11 +217,15 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
 	end_idx += N;
     }
 
-    // Construct desired line segment.
+    // Construct the desired line segment.
+
     LineString segment;
 
     // Add start point.
+
     segment.addPoint( pstart );
+
+    // Add intermediate points.
 
     for ( std::size_t i = start_idx + 1 ; i <= end_idx; ++i )
     {
@@ -277,6 +252,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls, double start, dou
     }
 
     // Add end point if we have not already.
+
     if ( ! on_point )
     {
 	segment.addPoint ( pend ) ;
