@@ -32,7 +32,7 @@ using namespace SFCGAL ;
 
 BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_LengthSegmentTest )
 
-BOOST_AUTO_TEST_CASE( testZeroLength )
+BOOST_AUTO_TEST_CASE( testIssue130 )
 {
   std::unique_ptr<Geometry> result
     = algorithm::lineSegment( io::readWkt( "LINESTRING Z(0 0 0, 0 0 10)" )->as<LineString>()
