@@ -121,17 +121,23 @@ namespace
 	    const Point& p = ls.pointN( idx );
 	    const Point& q = ls.pointN( idx + 1 );
 
-	    ret.x() = p.x() + ( frac * CGAL::to_double( q.x() - p.x() ) ) ;
-	    ret.y() = p.y() + ( frac * CGAL::to_double( q.y() - p.y() ) ) ;
+	    const Kernel::RT x = p.x() + ( frac * ( q.x() - p.x() ) ) ;
+	    const Kernel::RT y = p.y() + ( frac * ( q.y() - p.y() ) ) ;
 
+	    Kernel::RT z;
 	    if ( ls.is3D() )
 	    {
-	      ret.z() = p.z() + ( frac * CGAL::to_double( q.z() - p.z() ) ) ;
+	        z = p.z() + ( frac * ( q.z() - p.z() ) ) ;
+	        ret = Point(x, y, z);
+	    }
+	    else
+	    {
+	        ret = Point(x, y);
 	    }
 
 	    if ( ls.isMeasured() )
 	    {
-	      ret.setM( p.m() + ( frac * CGAL::to_double( q.m() - p.m() ) ) ) ;
+	        ret.setM( p.m() + ( frac * ( q.m() - p.m() ) ) ) ;
 	    }
 	}
 
