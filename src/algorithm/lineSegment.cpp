@@ -196,7 +196,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     }
 
     bool reverse = false;
-    if ( start < end )
+    if ( start > end )
     {
 	// Swap the start and end positions so that they
 	// define a positive range on ls, setting the
