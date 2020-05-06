@@ -68,11 +68,11 @@ namespace
 	    const Point& p = ls.pointN( idx );
 	    const Point& q = ls.pointN( idx+1 );
 
-	    double seg_length_sq = std::pow( CGAL::to_double( p.x() ), 2.0 ) +
-	                           std::pow( CGAL::to_double( p.y() ), 2.0 );
+            double seg_length_sq = std::pow( CGAL::to_double( p.x() - q.x() ), 2.0 ) +
+                                   std::pow( CGAL::to_double( p.y() - q.y() ), 2.0 );
 	    if ( ls.is3D() )
 	    {
-	        seg_length_sq += std::pow( CGAL::to_double( p.z() ), 2.0 );
+	        seg_length_sq += std::pow( CGAL::to_double( p.z() - q.z() ), 2.0 );
 	    }
 
 	    seg_length = std::sqrt( seg_length_sq );
