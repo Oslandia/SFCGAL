@@ -56,10 +56,10 @@ namespace algorithm
  *   with an orientation equal to that of it.
  * @return The specified line segment.
  */
-SFCGAL_API std::unique<LineString> lineSegment( const LineString& ls
-					      , double start
-					      , double end
-					      );
+SFCGAL_API std::unique_ptr<LineString> lineSegment( const LineString& ls
+                                                  , double start
+                                                  , double end
+                                                  );
 
 } // ! namespace algorithm
 

@@ -22,6 +22,8 @@
 #include <cmath>
 
 // SFCGAL
+#include <SFCGAL/algorithm/length.h>
+#include <SFCGAL/algorithm/isValid.h>
 #include <SFCGAL/algorithm/lineSegment.h>
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Exception.h>
@@ -34,16 +36,28 @@ namespace algorithm
 
 namespace
 {
+    static const double tol = 1.0e-9;
+
     Point find_position( const LineString& ls
 		       , const long N
 		       , const double line_fraction
 		       , const double tol
 		       , const bool find_start
 		       , std::size_t& idx
-		       , std::size_t& frac
+		       , double& frac
 		       , bool& on_point
 		       )
     {
+	double len = 0.0;
+	if ( ls.is3D() )
+	{
+	    len = algorithm::length3D(ls);
+	}
+	else
+	{
+	    len = algorithm::length(ls);
+        }
+
 	double cur_length = 0.0;
 	double seg_length = 0.0;
 	double target_length = len * line_fraction;
@@ -54,11 +68,11 @@ namespace
 	    const Point& p = ls.pointN( idx );
 	    const Point& q = ls.pointN( idx+1 );
 
-	    double seg_length_sq = std::pow(CGAL::to_double(p.x()), 2.0) +
-	                           std::pow(CGAL::to_double(p.y()), 2.0);
+	    double seg_length_sq = std::pow( CGAL::to_double( p.x() ), 2.0 ) +
+	                           std::pow( CGAL::to_double( p.y() ), 2.0 );
 	    if ( ls.is3D() )
 	    {
-	        seg_length_sq += std::pow(CGAL::to_double(p.z()), 2.0);
+	        seg_length_sq += std::pow( CGAL::to_double( p.z() ), 2.0 );
 	    }
 
 	    seg_length = std::sqrt( seg_length_sq );
@@ -107,17 +121,17 @@ namespace
 	    const Point& p = ls.pointN( idx );
 	    const Point& q = ls.pointN( idx + 1 );
 
-	    ret.x() = p.x() + ( frac * ( q.x() - p.x() ) ) ;
-	    ret.y() = p.y() + ( frac * ( q.y() - p.y() ) ) ;
+	    ret.x() = p.x() + ( frac * CGAL::to_double( q.x() - p.x() ) ) ;
+	    ret.y() = p.y() + ( frac * CGAL::to_double( q.y() - p.y() ) ) ;
 
 	    if ( ls.is3D() )
 	    {
-	        ret.z() = p.z() + ( frac * ( q.z() - p.z() ) ) ;
+	      ret.z() = p.z() + ( frac * CGAL::to_double( q.z() - p.z() ) ) ;
 	    }
 
-	    if ( is_measured )
+	    if ( ls.isMeasured() )
 	    {
-		ret.m() = p.m() + ( frac * ( q.m() - p.m() ) ) ;
+	      ret.setM( p.m() + ( frac * CGAL::to_double( q.m() - p.m() ) ) ) ;
 	    }
 	}
 
@@ -131,10 +145,11 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 				       , double end
 				       )
 {
-    const double len = SFCGAL::algorithm::length(ls);
-    if ( ls.isEmpty() || ( len < tol ) )
+    SFCGAL_ASSERT_GEOMETRY_VALIDITY( ls );
+
+    if ( ls.isEmpty() )
     {
-        // Empty or zero-length line, start and end are
+        // Empty line, therefore start and end are
         // irrelevant.
         return std::unique_ptr<LineString>( new LineString() );
     }
@@ -167,7 +182,6 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     }
 
     const long N = static_cast<long>( ls.numPoints() );
-    const bool is_measured = ls.isMeasured();
 
     // Convert start and end into their equivalent positive values.
 
@@ -198,30 +212,32 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     // Find Point immediately before/on start position.
     std::size_t start_idx = 0; // Must initialise first.
     double start_frac = 0.0;
-    on_point = false;
-    const Point pstart = find_position( ls
-				      , N
-				      , start
-				      , tol
-				      , true // Find start.
-				      , start_idx
-				      , start_frac
-				      , on_point // This result is not used.
-				      );
+    bool on_point = false;
+    Point pstart = find_position( ls
+				, N
+				, start
+				, tol
+				, true // Find start.
+				, start_idx
+				, start_frac
+				, on_point // This result is not used.
+				);
 
     // Find Point immediately before/on end position.
     std::size_t end_idx = start_idx; // Must initialise first.
     double end_frac = 0.0;
     on_point = false;
-    const Point pend = find_position( ls
-				    , N
-				    , end
-				    , tol
-				    , false // Find end.
-				    , end_idx
-				    , end_frac
-				    , on_point // This result is used.
-				    );
+    Point pend = find_position( ls
+			      , N
+			      , end
+			      , tol
+			      , false // Find end.
+			      , end_idx
+			      , end_frac
+			      , on_point // This result is used.
+			      );
+
+    const bool closed = ls.isClosed();
 
     if ( reverse && ls.isClosed() )
     {
@@ -231,32 +247,33 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
         // join, and hence we add N to the end_idx and
         // use modulus operation when dereferncing the points
         // to be added to the desired line segment.
+
         std::swap( start_idx, end_idx );
 	std::swap( start_frac, end_frac );
-	std::swap( pstart, pend );
+	std::swap< Point >( pstart, pend );
 
 	end_idx += N;
     }
 
     // Construct the desired line segment.
 
-    LineString segment;
+    std::unique_ptr<LineString> segment = std::unique_ptr<LineString>( new LineString() ) ;
 
     // Add start point.
 
-    segment.addPoint( pstart );
+    segment->addPoint( pstart );
 
     // Add intermediate points.
 
     for ( std::size_t i = start_idx + 1 ; i <= end_idx; ++i )
     {
-        const Point& p = ls.pointN( i % N ) ) ;
+        const Point& p = ls.pointN( ( i % N ) ) ;
 
         if ( reverse && closed && ( i == 0 ) )
 	{
 	    // Check we are not adding a duplicate point.
 	    // at the join of the closed line.
-	    if ( p == segment.end() )
+	    if ( p == *segment->end() )
 	    {
 	        // Skip the duplicate point. If this was
 	        // the last point and we ended up with
@@ -269,20 +286,20 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 	    }
 	}
 
-	segment.addPoint( p ) ;
+	segment->addPoint( p ) ;
     }
 
     // Add end point if we have not already.
 
     if ( ! on_point )
     {
-	segment.addPoint ( pend ) ;
+	segment->addPoint ( pend ) ;
     }
 
     if ( reverse && ( ! closed ) )
     {
 	// Reverse the constructed segment.
-	segment.reverse();
+	segment->reverse();
     }
 
     return segment;

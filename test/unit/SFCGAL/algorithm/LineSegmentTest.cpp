@@ -34,10 +34,11 @@ BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_LengthSegmentTest )
 
 BOOST_AUTO_TEST_CASE( testZeroLength )
 {
-    std::unique_ptr<LineString> result = algorithm::lineSegment( *io::readWkt( "LINESTRING Z(0 0 0, 0 0 10)" )
-							       , 0.3
-		  				               , 0.7
-						               );
+  std::unique_ptr<Geometry> result
+    = algorithm::lineSegment( io::readWkt( "LINESTRING Z(0 0 0, 0 0 10)" )->as<LineString>()
+			    , 0.3
+			    , 0.7
+			    );
     std::unique_ptr<Geometry> expected = io::readWkt( "LINESTRING Z(0 0 3, 0 0 7)" );
 
     BOOST_CHECK( algorithm::covers3D( *result, *expected ) );
