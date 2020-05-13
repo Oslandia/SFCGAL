@@ -44,17 +44,42 @@ namespace
                                     , end_frac
                                     );
         std::unique_ptr<Geometry> expected = io::readWkt( expected_wkt );
-
         BOOST_CHECK( algorithm::covers3D( *result, *expected ) );
     }
 } // ! anonymous namespace
 
-BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_LengthSegmentTest )
+BOOST_AUTO_TEST_SUITE( SFCGAL_algorithm_LineSegmentTest )
 
 BOOST_AUTO_TEST_CASE( testIssue130 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 10)", 0.3, 0.7, "LINESTRING Z(0 0 3, 0 0 7)");
 }
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward1 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.0, 0.7, "LINESTRING Z(0 0 0, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 3, 0 0 10)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward3 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 3, 0 0 7, 0 0 10)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.0, 0.7, "LINESTRING Z(0 0 0, 0 0 3, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.3, 0.7, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
 

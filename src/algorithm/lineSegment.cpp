@@ -40,27 +40,18 @@ namespace
 
     Point find_position( const LineString& ls
 		       , const long N
-		       , const double line_fraction
+		       , const double target_length
+                       , const double offset
 		       , const double tol
 		       , const bool find_start
 		       , std::size_t& idx
 		       , double& frac
 		       , bool& on_point
+                       , double& len_to_idx
 		       )
     {
-	double len = 0.0;
-	if ( ls.is3D() )
-	{
-	    len = algorithm::length3D(ls);
-	}
-	else
-	{
-	    len = algorithm::length(ls);
-        }
-
-	double cur_length = 0.0;
+	double cur_length = offset;
 	double seg_length = 0.0;
-	double target_length = len * line_fraction;
 	on_point = false;
 
 	for ( ; idx < N ; ++idx )
@@ -98,6 +89,10 @@ namespace
 		break;
 	    }
 	}
+
+        // Return distance to point immediately before
+        // desired position.
+        len_to_idx = cur_length;
 
 	// Calculate fraction between idx and idx + 1 where
 	// the desired position resides.
@@ -215,32 +210,49 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 	reverse = true;
     }
 
+    // Retrieve length of the line.
+    double len = 0.0;
+    if ( ls.is3D() )
+    {
+        len = algorithm::length3D(ls);
+    }
+    else
+    {
+        len = algorithm::length(ls);
+    }
+
     // Find Point immediately before/on start position.
     std::size_t start_idx = 0; // Must initialise first.
     double start_frac = 0.0;
     bool on_point = false;
+    double len_to_start_idx = 0.0;
     Point pstart = find_position( ls
 				, N
-				, start
+                                , len * start
+                                , 0.0
 				, tol
 				, true // Find start.
 				, start_idx
 				, start_frac
 				, on_point // This result is not used.
+                                , len_to_start_idx
 				);
 
     // Find Point immediately before/on end position.
     std::size_t end_idx = start_idx; // Must initialise first.
     double end_frac = 0.0;
     on_point = false;
+    double len_to_end_idx = 0.0;
     Point pend = find_position( ls
 			      , N
-			      , end
+                              , len * end
+                              , len_to_start_idx
 			      , tol
 			      , false // Find end.
 			      , end_idx
 			      , end_frac
 			      , on_point // This result is used.
+                              , len_to_end_idx // This result is not used.
 			      );
 
     const bool closed = ls.isClosed();
