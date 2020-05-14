@@ -178,7 +178,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     // Check for equal start and end.
     if ( ( std::fabs ( start - end ) < tol ) || ( std::fabs( start + end ) < tol ) )
     {
-        // start and end are equal, return empty line segment.
+        // start and end are equal, hence return an empty line segment.
         return std::unique_ptr<LineString>( new LineString() );
     }
 
@@ -196,9 +196,19 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 	end = 1.0 - end;
     }
 
+    const bool closed = ls.isClosed();
+
     bool reverse = false;
     if ( start > end )
     {
+        if ( closed && std::fabs( start - end - 1.0 ) < tol )
+        {
+            // We desire a complement line segment of a closed
+            // line which has zero length, hence return empty
+            // segment.
+            return std::unique_ptr<LineString>( new LineString() );
+        }
+
 	// Swap the start and end positions so that they
 	// define a positive range on ls, setting the
 	// reverse flag to reverse to indicate that
@@ -208,6 +218,11 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 
         std::swap( start, end );
 	reverse = true;
+    }
+    else if ( closed && std::fabs( end - start - 1.0 ) < tol )
+    {
+        // The desired line segment is the entire line.
+        return std::unique_ptr<LineString>( ls.clone() );
     }
 
     // Retrieve length of the line.
@@ -255,9 +270,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
                               , len_to_end_idx // This result is not used.
 			      );
 
-    const bool closed = ls.isClosed();
-
-    if ( reverse && ls.isClosed() )
+    if ( reverse && closed )
     {
         // For closed lines we always want to follow the
         // direction of the original line. A set reversed
@@ -298,10 +311,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
              ( ! skipped_duplicate ) &&
              // check current point is one of the two duplicates at
              // the join, we encounter first.
-             ( ( ( i % N ) == 0 ) || ( ( i % N ) == ( N - 1 ) ) ) &&
-             // If we start/end on the join then the line segment is the
-             // original line and we preserve the duplicate.
-             ( ! ( on_end && ( i == end_idx ) ) )
+             ( ( ( i % N ) == 0 ) || ( ( i % N ) == ( N - 1 ) ) )
            )
 	{
             // Skip the duplicate point. If this was
@@ -315,7 +325,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
             continue;
 	}
 
-        const Point& p = ls.pointN( ( i % N ) ) ;
+        const Point& p = ls.pointN( i % N ) ;
 
 	segment->addPoint( p ) ;
     }
