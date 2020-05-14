@@ -50,6 +50,20 @@ namespace
                        , double& len_to_idx
 		       )
     {
+        BOOST_ASSERT( ! ( offset < 0.0 ) );
+        BOOST_ASSERT( ! ( target_length < 0.0 ) );
+        BOOST_ASSERT( offset < ( target_length + tol ) );
+
+        if ( std::fabs( offset - target_length ) < tol )
+        {
+            // Point(idx) is the target position.
+
+            frac = 0.0;
+            on_point = true;
+            len_to_idx = offset;
+            return ls.pointN( idx );
+        }
+
 	double cur_length = offset;
 	double seg_length = 0.0;
 	on_point = false;
