@@ -36,6 +36,8 @@ namespace
              , double start_frac
              , double end_frac
 	     , const std::string& expected_wkt
+             , bool verify_using_covers = true
+             , bool verify_is_empty = false
 	     )
     {
         std::unique_ptr<Geometry> result
@@ -44,7 +46,16 @@ namespace
                                     , end_frac
                                     );
         std::unique_ptr<Geometry> expected = io::readWkt( expected_wkt );
-        BOOST_CHECK( algorithm::covers3D( *result, *expected ) );
+        std::cout << result->asText(1) << std::endl;
+        if ( verify_using_covers )
+        {
+            BOOST_CHECK( algorithm::covers3D( *result, *expected ) );
+        }
+
+        if ( verify_is_empty )
+        {
+            BOOST_CHECK( result->isEmpty() );
+        }
     }
 } // ! anonymous namespace
 
@@ -78,6 +89,158 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward4 )
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward5 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.3, 0.7, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.7, 0.0, "LINESTRING Z(0 0 7, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward3 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 10, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 1.0, 0.3, "LINESTRING Z(0 0 10, 0 0 7, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.7, 0.0, "LINESTRING Z(0 0 7, 0 0 3, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward6 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.7, 0.3, "LINESTRING Z(0 0 7, 0 0 5, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward7 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 1.0, 0.0, "LINESTRING Z(0 0 10, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOfEmptyLine )
+{
+    test( "LINESTRING EMPTY", 0.0, 1.0, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOfEmptyLine2 )
+{
+    test( "LINESTRING EMPTY", 0.0, 0.0, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOfEmptyLine3 )
+{
+    test( "LINESTRING EMPTY", 1.0, 0.0, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenEmptySegment1 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.0, 0.0, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenEmptySegment2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.5, 0.5, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenEmptySegment3 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 1.0, 1.0, "LINESTRING EMPTY", false, true );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosed1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.0
+        , 0.7
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosed2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.1
+        , 0.7
+        , "LINESTRING Z(1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosed3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.3
+        , 0.7
+        , "LINESTRING Z(1 1 1, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosed4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.5
+        , 0.8
+        , "LINESTRING Z(1 1 3, 0 1 3, 0 0 3, 0 0 2)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosed5 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.0
+        , 1.0
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , 0.0
+        , "LINESTRING Z(0 0 3, 0 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , 0.1
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , 0.3
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0, 1 1 0, 1 1 1)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.8
+        , 0.5
+        , "LINESTRING Z(0 0 2, 0 0 0, 1 0 0, 1 1 0, 1 1 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement5 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 1.0
+        , 0.0
+        , "LINESTRING EMPTY"
+        , false
+        , true
+        );
 }
 
 
