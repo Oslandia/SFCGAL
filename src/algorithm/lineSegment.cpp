@@ -224,7 +224,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     // Find Point immediately before/on start position.
     std::size_t start_idx = 0; // Must initialise first.
     double start_frac = 0.0;
-    bool on_point = false;
+    bool on_start = false;
     double len_to_start_idx = 0.0;
     Point pstart = find_position( ls
 				, N
@@ -234,14 +234,14 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 				, true // Find start.
 				, start_idx
 				, start_frac
-				, on_point // This result is not used.
+				, on_start
                                 , len_to_start_idx
 				);
 
     // Find Point immediately before/on end position.
     std::size_t end_idx = start_idx; // Must initialise first.
     double end_frac = 0.0;
-    on_point = false;
+    bool on_end = false;
     double len_to_end_idx = 0.0;
     Point pend = find_position( ls
 			      , N
@@ -251,7 +251,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 			      , false // Find end.
 			      , end_idx
 			      , end_frac
-			      , on_point // This result is used.
+			      , on_end
                               , len_to_end_idx // This result is not used.
 			      );
 
@@ -269,7 +269,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
         std::swap( start_idx, end_idx );
 	std::swap( start_frac, end_frac );
 	std::swap< Point >( pstart, pend );
-
+        std::swap( on_start, on_end );
 	end_idx += N;
     }
 
@@ -283,33 +283,46 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 
     // Add intermediate points.
 
+    bool skipped_duplicate = false;
     for ( std::size_t i = start_idx + 1 ; i <= end_idx; ++i )
     {
-        const Point& p = ls.pointN( ( i % N ) ) ;
-
-        if ( reverse && closed && ( i == 0 ) )
+        // Ensure that we don't add a duplicate point to match the
+        // one at the join of a closed line if our desired line
+        // segment crosses that join.
+        if ( closed &&
+             // Check the required line segment is one that crosses
+             // the join.
+             reverse &&
+             // Check we have not already skipped the duplicate point
+             // at the join.
+             ( ! skipped_duplicate ) &&
+             // check current point is one of the two duplicates at
+             // the join, we encounter first.
+             ( ( ( i % N ) == 0 ) || ( ( i % N ) == ( N - 1 ) ) ) &&
+             // If we start/end on the join then the line segment is the
+             // original line and we preserve the duplicate.
+             ( ! ( on_end && ( i == end_idx ) ) )
+           )
 	{
-	    // Check we are not adding a duplicate point.
-	    // at the join of the closed line.
-	    if ( p == *segment->end() )
-	    {
-	        // Skip the duplicate point. If this was
-	        // the last point and we ended up with
-	        // an invalid single point segment, the
-	        // fact that it is now made invalid is
-	        // not a concern since if added we would
-	        // have obtained a zero-length segment,
-	        // which is also invalid.
-	        continue;
-	    }
+            // Skip the duplicate point. If this was
+            // the last point and we ended up with
+            // an invalid single point segment, the
+            // fact that it is now made invalid is
+            // not a concern since if added we would
+            // have obtained a zero-length segment,
+            // which is also invalid.
+            skipped_duplicate = true;
+            continue;
 	}
+
+        const Point& p = ls.pointN( ( i % N ) ) ;
 
 	segment->addPoint( p ) ;
     }
 
     // Add end point if we have not already.
 
-    if ( ! on_point )
+    if ( ! on_end )
     {
 	segment->addPoint ( pend ) ;
     }
