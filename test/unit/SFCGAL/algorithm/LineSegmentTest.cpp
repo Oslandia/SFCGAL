@@ -46,7 +46,6 @@ namespace
                                     , end_frac
                                     );
         std::unique_ptr<Geometry> expected = io::readWkt( expected_wkt );
-        std::cout << result->asText(1) << std::endl;
         if ( verify_using_covers )
         {
             BOOST_CHECK( algorithm::covers3D( *result, *expected ) );
@@ -71,9 +70,29 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward1 )
     test( "LINESTRING Z(0 0 0, 0 0 10)", 0.0, 0.7, "LINESTRING Z(0 0 0, 0 0 7)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeEnd1 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.0, -0.3, "LINESTRING Z(0 0 0, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeStart1 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -1.0, 0.7, "LINESTRING Z(0 0 0, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeEnds1 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -1.0,- 0.3, "LINESTRING Z(0 0 0, 0 0 7)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward2 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 3, 0 0 10)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeStart2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -0.7, 1.0, "LINESTRING Z(0 0 3, 0 0 10)");
 }
 
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward3 )
@@ -81,9 +100,29 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward3 )
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 3, 0 0 7, 0 0 10)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeStart3 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", -0.7, 1.0, "LINESTRING Z(0 0 3, 0 0 7, 0 0 10)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward4 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.0, 0.7, "LINESTRING Z(0 0 0, 0 0 3, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardStart4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", -1.0, 0.7, "LINESTRING Z(0 0 0, 0 0 3, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardEnd4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.0, -0.3, "LINESTRING Z(0 0 0, 0 0 3, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardEnds4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", -1.0, -0.3, "LINESTRING Z(0 0 0, 0 0 3, 0 0 7)");
 }
 
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward5 )
@@ -91,9 +130,39 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenForward5 )
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.3, 0.7, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeStart5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", -0.7, 0.7, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeEnd5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.3, -0.3, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenForwardNegativeEnds5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", -0.7, -0.3, "LINESTRING Z(0 0 3, 0 0 5, 0 0 7)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward2 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 10)", 0.7, 0.0, "LINESTRING Z(0 0 7, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeStart2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -0.3, 0.0, "LINESTRING Z(0 0 7, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnd2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 0.7, -1.0, "LINESTRING Z(0 0 7, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnds2 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -0.3, -1.0, "LINESTRING Z(0 0 7, 0 0 0)");
 }
 
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward3 )
@@ -101,9 +170,19 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward3 )
     test( "LINESTRING Z(0 0 0, 0 0 10)", 0.3, 1.0, "LINESTRING Z(0 0 10, 0 0 3)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeStart3 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", -0.7, 1.0, "LINESTRING Z(0 0 10, 0 0 3)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward4 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 1.0, 0.3, "LINESTRING Z(0 0 10, 0 0 7, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnd4 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 1.0, -0.7, "LINESTRING Z(0 0 10, 0 0 7, 0 0 3)");
 }
 
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward5 )
@@ -111,14 +190,49 @@ BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward5 )
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.7, 0.0, "LINESTRING Z(0 0 7, 0 0 3, 0 0 0)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeStart5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", -0.3, 0.0, "LINESTRING Z(0 0 7, 0 0 3, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnd5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", 0.7, -1.0, "LINESTRING Z(0 0 7, 0 0 3, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnds5 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 7, 0 0 10)", -0.3, -1.0, "LINESTRING Z(0 0 7, 0 0 3, 0 0 0)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward6 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.7, 0.3, "LINESTRING Z(0 0 7, 0 0 5, 0 0 3)");
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeStart6 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", -0.3, 0.3, "LINESTRING Z(0 0 7, 0 0 5, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnd6 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", 0.7, -0.7, "LINESTRING Z(0 0 7, 0 0 5, 0 0 3)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnds6 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 3, 0 0 5, 0 0 7, 0 0 10)", -0.3, -0.7, "LINESTRING Z(0 0 7, 0 0 5, 0 0 3)");
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackward7 )
 {
     test( "LINESTRING Z(0 0 0, 0 0 10)", 1.0, 0.0, "LINESTRING Z(0 0 10, 0 0 0)");
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentOpenBackwardNegativeEnd7 )
+{
+    test( "LINESTRING Z(0 0 0, 0 0 10)", 1.0, -1.0, "LINESTRING Z(0 0 10, 0 0 0)");
 }
 
 BOOST_AUTO_TEST_CASE( testLineSegmentOfEmptyLine )
@@ -160,11 +274,65 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosed1 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeStart1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -1.0
+        , 0.7
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnd1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.0
+        , -0.3
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnds1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -1.0
+        , -0.3
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentClosed2 )
 {
     test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
         , 0.1
         , 0.7
+        , "LINESTRING Z(1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeStart2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.9
+        , 0.7
+        , "LINESTRING Z(1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnd2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.1
+        , -0.3
+        , "LINESTRING Z(1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnds2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.9
+        , -0.3
         , "LINESTRING Z(1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3)"
         );
 }
@@ -178,6 +346,33 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosed3 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeStart3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.7
+        , 0.7
+        , "LINESTRING Z(1 1 1, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnd3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.3
+        , -0.3
+        , "LINESTRING Z(1 1 1, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnds3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.7
+        , -0.3
+        , "LINESTRING Z(1 1 1, 1 1 3, 0 1 3, 0 0 3)"
+        );
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentClosed4 )
 {
     test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
@@ -187,10 +382,46 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosed4 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeStart4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.5
+        , 0.8
+        , "LINESTRING Z(1 1 3, 0 1 3, 0 0 3, 0 0 2)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnd4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.5
+        , -0.2
+        , "LINESTRING Z(1 1 3, 0 1 3, 0 0 3, 0 0 2)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeEnds4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.5
+        , -0.2
+        , "LINESTRING Z(1 1 3, 0 1 3, 0 0 3, 0 0 2)"
+        );
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentClosed5 )
 {
     test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
         , 0.0
+        , 1.0
+        , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedNegativeStart5 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -1.0
         , 1.0
         , "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
         );
@@ -205,11 +436,65 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement1 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeStart1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , 0.0
+        , "LINESTRING Z(0 0 3, 0 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , -1.0
+        , "LINESTRING Z(0 0 3, 0 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnds1 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , -1.0
+        , "LINESTRING Z(0 0 3, 0 0 0)"
+        );
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement2 )
 {
     test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
         , 0.7
         , 0.1
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeStart2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , 0.1
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , -0.9
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnds2 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , -0.9
         , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0)"
         );
 }
@@ -223,11 +508,65 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement3 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeStart3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , 0.3
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0, 1 1 0, 1 1 1)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.7
+        , -0.7
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0, 1 1 0, 1 1 1)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnds3 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.3
+        , -0.7
+        , "LINESTRING Z(0 0 3, 0 0 0, 1 0 0, 1 1 0, 1 1 1)"
+        );
+}
+
 BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement4 )
 {
     test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
         , 0.8
         , 0.5
+        , "LINESTRING Z(0 0 2, 0 0 0, 1 0 0, 1 1 0, 1 1 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeStart4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.2
+        , 0.5
+        , "LINESTRING Z(0 0 2, 0 0 0, 1 0 0, 1 1 0, 1 1 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 0.8
+        , -0.5
+        , "LINESTRING Z(0 0 2, 0 0 0, 1 0 0, 1 1 0, 1 1 3)"
+        );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnds4 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , -0.2
+        , -0.5
         , "LINESTRING Z(0 0 2, 0 0 0, 1 0 0, 1 1 0, 1 1 3)"
         );
 }
@@ -243,6 +582,16 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplement5 )
         );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd5 )
+{
+    test( "LINESTRING Z(0 0 0, 1 0 0, 1 1 0, 1 1 3, 0 1 3, 0 0 3, 0 0 0)"
+        , 1.0
+        , -1.0
+        , "LINESTRING EMPTY"
+        , false
+        , true
+        );
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
