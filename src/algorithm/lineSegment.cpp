@@ -202,12 +202,12 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 
     if ( start < 0.0 )
     {
-	start = 1.0 - start;
+	start = 1.0 + start;
     }
 
     if ( end < 0.0 )
     {
-	end = 1.0 - end;
+	end = 1.0 + end;
     }
 
     const bool closed = ls.isClosed();
