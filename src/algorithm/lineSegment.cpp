@@ -189,15 +189,6 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
         );
     }
 
-    // Check for equal start and end.
-    if ( ( std::fabs ( start - end ) < tol ) || ( std::fabs( start + end ) < tol ) )
-    {
-        // start and end are equal, hence return an empty line segment.
-        return std::unique_ptr<LineString>( new LineString() );
-    }
-
-    const long N = static_cast<long>( ls.numPoints() );
-
     // Convert start and end into their equivalent positive values.
 
     if ( start < 0.0 )
@@ -209,6 +200,15 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     {
 	end = 1.0 + end;
     }
+
+    // Check for equal start and end.
+    if ( std::fabs ( start - end ) < tol )
+    {
+        // start and end are equal, hence return an empty line segment.
+        return std::unique_ptr<LineString>( new LineString() );
+    }
+
+    const long N = static_cast<long>( ls.numPoints() );
 
     const bool closed = ls.isClosed();
 
