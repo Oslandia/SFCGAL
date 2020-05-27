@@ -55,6 +55,8 @@ namespace algorithm
  *   a negative range corresponds to the complentary section of {@code ls}
  *   with an orientation equal to that of it.
  * @return The specified line segment.
+ * @throws If either {@code start} or {@code end} have an absolute value
+ *   greater than 1.
  */
 SFCGAL_API std::unique_ptr<LineString> lineSegment( const LineString& ls
                                                   , double start
