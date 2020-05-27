@@ -26,6 +26,7 @@
 #include <SFCGAL/io/wkt.h>
 #include <SFCGAL/algorithm/lineSegment.h>
 #include <SFCGAL/algorithm/covers.h>
+#include <SFCGAL/Exception.h>
 
 using namespace boost::unit_test ;
 using namespace SFCGAL ;
@@ -1104,6 +1105,54 @@ BOOST_AUTO_TEST_CASE( testLineSegmentClosedComplementNegativeEnd2D5 )
         , false
         , true
         );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentInvalidStartFraction )
+{
+    BOOST_CHECK_THROW(
+        algorithm::lineSegment(
+            io::readWkt( "LINESTRING(0 0, 2.5 0, 2.5 2.5, 0 2.5, 0 0)" )->as<LineString>()
+                       , 1.1
+                       , 1.0
+                       ),
+        Exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentInvalidNegativeStartFraction )
+{
+    BOOST_CHECK_THROW(
+        algorithm::lineSegment(
+            io::readWkt( "LINESTRING(0 0, 2.5 0, 2.5 2.5, 0 2.5, 0 0)" )->as<LineString>()
+                       , -1.1
+                       , 1.0
+                       ),
+        Exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentInvalidEndFraction )
+{
+    BOOST_CHECK_THROW(
+        algorithm::lineSegment(
+            io::readWkt( "LINESTRING(0 0, 2.5 0, 2.5 2.5, 0 2.5, 0 0)" )->as<LineString>()
+                       , 0.0
+                       , 1.1
+                       ),
+        Exception
+    );
+}
+
+BOOST_AUTO_TEST_CASE( testLineSegmentInvalidNegativeEndFraction )
+{
+    BOOST_CHECK_THROW(
+        algorithm::lineSegment(
+            io::readWkt( "LINESTRING(0 0, 2.5 0, 2.5 2.5, 0 2.5, 0 0)" )->as<LineString>()
+                       , 0.0
+                       , -1.1
+                       ),
+        Exception
+    );
 }
 
 BOOST_AUTO_TEST_SUITE_END()
