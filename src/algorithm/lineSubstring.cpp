@@ -24,7 +24,7 @@
 // SFCGAL
 #include <SFCGAL/algorithm/length.h>
 #include <SFCGAL/algorithm/isValid.h>
-#include <SFCGAL/algorithm/lineSegment.h>
+#include <SFCGAL/algorithm/lineSubstring.h>
 #include <SFCGAL/LineString.h>
 #include <SFCGAL/Exception.h>
 
@@ -155,10 +155,10 @@ namespace
 
 } // ! anonymous namespace
 
-std::unique_ptr<LineString> lineSegment( const LineString& ls
-				       , double start
-				       , double end
-				       )
+std::unique_ptr<LineString> lineSubstring( const LineString& ls
+				         , double start
+				         , double end
+				         )
 {
     SFCGAL_ASSERT_GEOMETRY_VALIDITY( ls );
 
@@ -175,7 +175,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     {
         BOOST_THROW_EXCEPTION(
 	    Exception(
-	        "SFCGAL::algorithm::lineSegment: start value out of range."
+	        "SFCGAL::algorithm::lineSubstring: start value out of range."
 	    )
 	);
     }
@@ -184,7 +184,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     {
         BOOST_THROW_EXCEPTION(
 	    Exception(
-	        "SFCGAL::algorithm::lineSegment: end value out of range."
+	        "SFCGAL::algorithm::lineSubstring: end value out of range."
             )
         );
     }
@@ -204,7 +204,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     // Check for equal start and end.
     if ( std::fabs ( start - end ) < tol )
     {
-        // start and end are equal, hence return an empty line segment.
+        // start and end are equal, hence return an empty line substring.
         return std::unique_ptr<LineString>( new LineString() );
     }
 
@@ -217,9 +217,9 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     {
         if ( closed && std::fabs( start - end - 1.0 ) < tol )
         {
-            // We desire a complement line segment of a closed
+            // We desire a complement line substring of a closed
             // line which has zero length, hence return empty
-            // segment.
+            // substring.
             return std::unique_ptr<LineString>( new LineString() );
         }
 
@@ -235,7 +235,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     }
     else if ( closed && std::fabs( end - start - 1.0 ) < tol )
     {
-        // The desired line segment is the entire line.
+        // The desired line substring is the entire line.
         return std::unique_ptr<LineString>( ls.clone() );
     }
 
@@ -291,7 +291,7 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
         // flag indicates that we are going to cross the
         // join, and hence we add N to the end_idx and
         // use modulus operation when dereferncing the points
-        // to be added to the desired line segment.
+        // to be added to the desired line substring.
 
         std::swap( start_idx, end_idx );
 	std::swap( start_frac, end_frac );
@@ -300,13 +300,13 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 	end_idx += N;
     }
 
-    // Construct the desired line segment.
+    // Construct the desired line substring.
 
-    std::unique_ptr<LineString> segment = std::unique_ptr<LineString>( new LineString() ) ;
+    std::unique_ptr<LineString> substring = std::unique_ptr<LineString>( new LineString() ) ;
 
     // Add start point.
 
-    segment->addPoint( pstart );
+    substring->addPoint( pstart );
 
     // Add intermediate points.
 
@@ -315,9 +315,9 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
     {
         // Ensure that we don't add a duplicate point to match the
         // one at the join of a closed line if our desired line
-        // segment crosses that join.
+        // substring crosses that join.
         if ( closed &&
-             // Check the required line segment is one that crosses
+             // Check the required line substring is one that crosses
              // the join.
              reverse &&
              // Check we have not already skipped the duplicate point
@@ -330,10 +330,10 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 	{
             // Skip the duplicate point. If this was
             // the last point and we ended up with
-            // an invalid single point segment, the
+            // an invalid single point substring, the
             // fact that it is now made invalid is
             // not a concern since if added we would
-            // have obtained a zero-length segment,
+            // have obtained a zero-length substring,
             // which is also invalid.
             skipped_duplicate = true;
             continue;
@@ -341,23 +341,23 @@ std::unique_ptr<LineString> lineSegment( const LineString& ls
 
         const Point& p = ls.pointN( i % N ) ;
 
-	segment->addPoint( p ) ;
+	substring->addPoint( p ) ;
     }
 
     // Add end point if we have not already.
 
     if ( ! on_end )
     {
-	segment->addPoint ( pend ) ;
+	substring->addPoint ( pend ) ;
     }
 
     if ( reverse && ( ! closed ) )
     {
-	// Reverse the constructed segment.
-	segment->reverse();
+	// Reverse the constructed substring.
+	substring->reverse();
     }
 
-    return segment;
+    return substring;
 }
 
 } // ! namespace algorithm
