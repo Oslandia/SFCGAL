@@ -13,7 +13,7 @@
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *   Library General Public License for more details.
-
+ *
  *   You should have received a copy of the GNU Library General Public
  *   License along with this library; if not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,48 +21,124 @@
 #ifndef _SFCGAL_ALGORITHM_EXTRUDE_H_
 #define _SFCGAL_ALGORITHM_EXTRUDE_H_
 
+// SFCGAL
 #include <SFCGAL/config.h>
-
 #include <SFCGAL/Kernel.h>
 #include <SFCGAL/Geometry.h>
 
-namespace SFCGAL {
-namespace algorithm {
+namespace SFCGAL
+{
+namespace algorithm
+{
+
+// Class forward declarations.
 struct NoValidityCheck;
 
 /**
- * extrude a Geometry with a direction
- * @pre g is a valid geometry
+ * @brief Returns a Geometry equal to the specified Geometry,
+ *   extruded by the specified displacement.
+ * @param g The specified Geometry.
+ * @param dx The component of the specified displacement in
+ *   the x-direction.
+ * @param dy The component of the specified displacement in
+ *   the y-direction.
+ * @param dz The component of the specified displacement in
+ *   the z-direction.
+ * @return A Geometry equal to g extruded by the displacement
+ *   vector {dx, dy, dz}.
+ * @pre g must be a valid geometry.
+ * @pre dx, dy and dz must all be finite.
+ * @note If g is such that g.isMeasured() is true, then,
+ *   since there is no common expectation of the
+ *   values of the measures on the returned Geometry,
+ *   all measures from the result are removed.
  * @ingroup public_api
  */
-SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz ) ;
+SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g
+                                              , Kernel::FT dx
+                                              , Kernel::FT dy
+                                              , Kernel::FT dz
+                                              ) ;
 
 /**
- * extrude a Geometry with a direction
- * @pre g is a valid geometry
+ * @brief Returns a Geometry equal to the specified Geometry,
+ *   extruded by the specified displacement.
+ * @param g The specified Geometry.
+ * @param dx The component of the specified displacement in
+ *   the x-direction.
+ * @param dy The component of the specified displacement in
+ *   the y-direction.
+ * @param dz The component of the specified displacement in
+ *   the z-direction.
+ * @param nvc A NoValidityCheck object.
+ * @return A Geometry equal to g extruded by the displacement
+ *   vector {dx, dy, dz}.
+ * @pre g must be a valid geometry.
+ * @pre dx, dy and dz must all be finite.
+ * @note If g is such that g.isMeasured() is true, then,
+ *   since there is no common expectation of the
+ *   values of the measures on the returned Geometry,
+ *   all measures from the result are removed.
  * @ingroup detail
- * @warning No actual validity check is done.
+ * @warning No actual validity check is conducted.
  */
-SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g, Kernel::FT dx, Kernel::FT dy, Kernel::FT dz, NoValidityCheck ) ;
+SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g
+                                              , Kernel::FT dx
+                                              , Kernel::FT dy
+                                              , Kernel::FT dz
+                                              , NoValidityCheck nvc
+                                              ) ;
 
 /**
- * extrude a Geometry with a direction
- * @pre g is a valid geometry
- * @pre dx, dy and dz are finite values
+ * @brief Returns a Geometry equal to the specified Geometry,
+ *   extruded by the specified displacement.
+ * @param g The specified Geometry.
+ * @param dx The component of the specified displacement in
+ *   the x-direction.
+ * @param dy The component of the specified displacement in
+ *   the y-direction.
+ * @param dz The component of the specified displacement in
+ *   the z-direction.
+ * @return A Geometry equal to g extruded by the displacement
+ *   vector {dx, dy, dz}.
+ * @pre g must be a valid geometry.
+ * @pre dx, dy and dz must all be finite.
+ * @note If g is such that g.isMeasured() is true, then,
+ *   since there is no common expectation of the
+ *   values of the measures on the returned Geometry,
+ *   all measures from the result are removed.
  * @ingroup detail
- * @warning No actual validity check is done.
+ * @warning No actual validity check is conducted.
  */
-SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g, const double& dx, const double& dy, const double& dz );
+SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g
+                                              , const double& dx
+                                              , const double& dy
+                                              , const double& dz
+                                              );
 
 /**
- * @brief extrude a Geometry by a given vector
- * @todo Improve 3D surface extrude (Extrude only faces whose dot( v, normal ) > 0 and use Polyhedron union to
- *         get output geometries with a clean topology)
+ * @brief Returns a Geometry equal to the specified Geometry,
+ *   extruded by the specified displacement vector.
+ * @param g The specified Geometry.
+ * @param v The specified displacement vector.
+ * @return A Geometry equal to g extruded by the displacement
+ *   vector v.
+ * @pre g must be a valid geometry.
+ * @note If g is such that g.isMeasured() is true, then,
+ *   since there is no common expectation of the
+ *   values of the measures on the returned Geometry,
+ *   all measures from the result are removed.
+ * @todo Improve extrude for 3D surfaces - Extrude only
+ *   faces whose scalar_product(v,normal) > 0 and use
+ *   Polyhedron union to get output geometries with a clean
+ *   topology.
  * @ingroup detail
  */
-SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g, const Kernel::Vector_3& v ) ;
+SFCGAL_API std::unique_ptr< Geometry > extrude( const Geometry& g
+                                              , const Kernel::Vector_3& v
+                                              ) ;
 
-}//algorithm
-}//SFCGAL
+} // ! namespace algorithm
+} // ! namespace SFCGAL
 
-#endif
+#endif // ! _SFCGAL_ALGORITHM_EXTRUDE_H_
