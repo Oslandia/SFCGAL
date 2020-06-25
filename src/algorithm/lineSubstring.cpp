@@ -295,7 +295,14 @@ std::unique_ptr<LineString> lineSubstring( const LineString& ls
 
         std::swap( start_idx, end_idx );
 	std::swap( start_frac, end_frac );
+#if defined(_MSC_VER) && (_MSC_VER < 1921)
+        // https://developercommunity.visualstudio.com/content/problem/431904/vc-2017-stdswap-is-not-conforming.html
+        Point temporary = std::move( pstart );
+        pstart = std::move( pend );
+        pend = std::move( temporary );
+#else
 	std::swap< Point >( pstart, pend );
+#endif
         std::swap( on_start, on_end );
 	end_idx += N;
     }
