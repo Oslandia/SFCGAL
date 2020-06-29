@@ -1,3 +1,22 @@
+1.3.8 (2020-06-29):
+NOTE: This is the last release on Github. Oslandia migrates from GitHub to GitLab:
+    - https://github.com/Oslandia/SFCGAL/issues/230
+    - https://oslandia.com/en/2020/06/19/en-oslandia-migrates-from-github-to-gitlab/
+Changes:
+    * Fix CMake scripts so that SFCGAL_USE_STATIC_LIBS works properly again (Dave Chambers)
+    * Fix for divide by zero error in triangulatePolygon3D (Fix #190, by Dave Chambers)
+    * Replace of auto_ptr with unique_ptr and move to c++14 (Sébastien Loriot)
+    * Add implementation of Geometry::operator=  (Hugo Mercier)
+    * Fix CGAL v4.7 compatibility (Enrico Weigelt)
+    * add pkg-config descriptor file (Enrico Weigelt)
+    * Remove libtoolize (Loïc Bartoletti)
+    * Add point_m and is_measured to c api (Hannes Janetzek)
+    * Fix SFCGAL with CGAL 5 (and GMPXX issues) (Fix #198, by Loïc Bartoletti)
+    * Add covers and covers3D to c api (Loïc Bartoletti)
+    * Add documentation to SFCGAL::algorithm::extrude (Fix #110, by Daniel Cumberbatch)
+    * Add 3D linear referencing / LineSubString (Fix #130, by Daniel Cumberbatch) and Fix built with MSCV 14 (< VisualStudio 2019 version 16.1) and export to C API (Loïc Bartoletti)
+    * Fix CAPI export symbol for windows (Loïc Bartoletti)
+    * Update and fix documentation (Fix #138, by Daniel Cumberbatch)
 1.3.7 (2019-06-03):
     * Fix compilation with CGAL 4.14 (fix #188, path by Sebastien Loriot)
     * Build Triangulation even with intersecting constraint edges (Patch by Darafei Praliaskouski)
@@ -60,5 +79,5 @@
       * Add detection of lib64 directories
 1.0.4 (2013-11-29):
     Fix compilation with CGAL 4.3
- 
+
 For older news, see https://github.com/Oslandia/SFCGAL/releases
