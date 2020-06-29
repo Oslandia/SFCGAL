@@ -492,13 +492,13 @@ SFCGAL_API void                      sfcgal_solid_add_interior_shell( sfcgal_geo
 /**
  * Gets the validity flag of the geometry.
  */
-int sfcgal_geometry_has_validity_flag( const sfcgal_geometry_t* geom );
+SFCGAL_API int sfcgal_geometry_has_validity_flag( const sfcgal_geometry_t* geom );
 
 /**
  * Sets the validity flag of the geometry.
  * FIXME We better have geometry constructors to directly build valid geometries
  */
-void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid );
+SFCGAL_API void sfcgal_geometry_force_valid( sfcgal_geometry_t* geom, int valid );
 
 /*--------------------------------------------------------------------------------------*
  *
