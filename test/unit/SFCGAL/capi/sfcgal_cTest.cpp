@@ -136,8 +136,15 @@ BOOST_AUTO_TEST_CASE( testCovers )
     BOOST_CHECK( sfcgal_geometry_covers( g1.get(), g2.get() ) );
 }
 
+BOOST_AUTO_TEST_CASE( testLineSubstring )
+{
+    sfcgal_set_error_handlers( printf, on_error );
+    std::unique_ptr<Geometry> g1( io::readWkt( "LINESTRING Z(0 0 0, 0 0 10)" ) );
+    std::unique_ptr<Geometry> g2( io::readWkt( "LINESTRING Z(0 0 3, 0 0 7)" ) );
+    hasError = false;
+    sfcgal_geometry_t* ls = sfcgal_geometry_line_sub_string( g1.get(), 0.3, 0.7);
+    BOOST_CHECK( hasError == false );
+
+    BOOST_CHECK( sfcgal_geometry_covers_3d( ls, g2.get() ) );
+}
 BOOST_AUTO_TEST_SUITE_END()
-
-
-
-

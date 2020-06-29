@@ -49,6 +49,7 @@
 #include <SFCGAL/algorithm/convexHull.h>
 #include <SFCGAL/algorithm/distance.h>
 #include <SFCGAL/algorithm/distance3d.h>
+#include <SFCGAL/algorithm/lineSubstring.h>
 #include <SFCGAL/algorithm/plane.h>
 #include <SFCGAL/algorithm/volume.h>
 #include <SFCGAL/algorithm/area.h>
@@ -1059,4 +1060,25 @@ extern "C" sfcgal_geometry_t* sfcgal_geometry_straight_skeleton_distance_in_m( c
     }
 
     return mls.release();
+}
+
+extern "C" sfcgal_geometry_t* sfcgal_geometry_line_sub_string( const sfcgal_geometry_t* geom, double start, double end )
+{
+    const SFCGAL::Geometry* g1 = reinterpret_cast<const SFCGAL::Geometry*>( geom );
+    if ( g1->geometryTypeId() != SFCGAL::TYPE_LINESTRING ) {
+        SFCGAL_ERROR( "line_sub_string(): the first argument must be a lineString" );
+        return 0;
+    }
+    std::unique_ptr<SFCGAL::LineString> ls;
+    try {
+      ls = SFCGAL::algorithm::lineSubstring( g1->as<const SFCGAL::LineString>(), start, end );
+    }
+    catch ( std::exception& e ) {
+      SFCGAL_WARNING( "During line_sub_string(A, %g, %g):", start, end );
+      SFCGAL_WARNING( "  with A: %s", ( ( const SFCGAL::Geometry* )( geom ) )->asText().c_str() );
+      SFCGAL_ERROR( "%s", e.what() );
+      return 0;
+    }
+
+    return ls.release();
 }
