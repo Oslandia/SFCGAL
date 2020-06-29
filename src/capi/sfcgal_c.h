@@ -851,6 +851,17 @@ SFCGAL_API int                         sfcgal_geometry_covers( const sfcgal_geom
  */
 SFCGAL_API int                         sfcgal_geometry_covers_3d( const sfcgal_geometry_t* geom1, const sfcgal_geometry_t* geom2 );
 
+
+/**
+ * Returns the substring of the given LineString between fractional distances
+ * @pre isValid(geom) == true
+ * @pre geom is a Linestring
+ * @pre -1 <= start <= 1
+ * @pre -1 <= end <= 1
+ * @post isValid(return) == true
+ * @ingroup capi
+ */
+SFCGAL_API sfcgal_geometry_t*          sfcgal_geometry_line_sub_string( const sfcgal_geometry_t* geom, double start, double end );
 /*--------------------------------------------------------------------------------------*
  *
  * Error handling
